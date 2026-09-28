@@ -1,0 +1,8 @@
+flowchart LR
+  A["Scaffold @alisio/plugin-*<br/>with the alisio-plugin keyword"] --> B["Implement the plugin<br/>and unit tests"]
+  B --> C["pnpm check:<br/>lint, types, tests, build, pack check"]
+  C --> D["pnpm diagrams:check:<br/>SVGs are current"]
+  D --> E["Record a Changeset"]
+  E --> F["Publish to the<br/>@alisio npm organization"]
+  F --> G["alisio install npm:@alisio/plugin-x"]
+  G --> H["Smoke-test:<br/>alisio plugins doctor --plugin path"]

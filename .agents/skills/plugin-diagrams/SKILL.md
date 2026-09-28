@@ -15,11 +15,18 @@ Load this skill before choosing a diagram type, authoring, updating, or renderin
 
 - Author diagram labels in ENGLISH by default. Use another language only when explicitly requested; identifiers,
   file names, code, and paths stay English.
-- Sources: `diagrams/<plugin-name>/*.mmd` at the repository root. Output: `packages/<plugin-name>/assets/*.svg`.
-  The root split keeps sources out of the workspace glob (`packages/*`) and the published tarball.
+- Sources: `diagrams/<target>/*.mmd` at the repository root. Output: `packages/<target>/assets/*.svg` by
+  default. The root split keeps sources out of the workspace glob (`packages/*`) and the published
+  tarball. A default target needs a matching `packages/<target>` directory; a typo is an error.
+- A target may render to a repository-level directory instead: place a `diagram.config.json` beside
+  its sources declaring `{"output": "<dir relative to the repository root>"}`. Then no package is
+  required and the SVGs go there. The declaration is explicit on purpose — there is no silent
+  fallback and an output outside the repository is rejected. Repository-level diagrams live in
+  `diagrams/repository/` and write the shared `assets/` directory; those SVGs are embedded from the
+  root `README.md` / `README.es.md`, not from a package.
 - Generated SVGs are never hand-edited. Change the `.mmd` source and re-render.
 - Keep each diagram small, legible, and single-concept, with no decorative noise.
-- Reference the SVG from the package README with a relative path, e.g. `./assets/<name>.svg`.
+- Reference the SVG with a relative path, e.g. `./assets/<name>.svg`.
 - Toolchain: `@mermaid-js/mermaid-cli@12.0.0` is the lowest CLI rendering all ten types (`usecase-beta` needs
   Mermaid 12). An optional `mermaid.config.json` beside the sources sets look/theme; Wayfinder pins
   `look: classic` because Mermaid 12 changed the default look.
@@ -42,18 +49,23 @@ Load this skill before choosing a diagram type, authoring, updating, or renderin
 ## Execution Steps
 
 1. Pick the type from the table, then read `references/diagram-types.md` for minimal syntax.
-2. Author `diagrams/<plugin>/<name>.mmd`.
-3. Render one plugin with `node scripts/render-diagrams.mjs --plugin=<plugin>`, or all with `pnpm diagrams`.
+2. Author `diagrams/<target>/<name>.mmd`. For a repository-level output, also add
+   `diagrams/<target>/diagram.config.json` with `{"output": "assets"}`.
+3. Render one target with `node scripts/render-diagrams.mjs --plugin=<target>`, or all with `pnpm diagrams`.
 4. Verify with `pnpm diagrams:check` (mtime-based; no browser needed).
-5. Embed the SVG in `packages/<plugin>/README.md` with one sentence explaining it.
-6. Commit the source and its generated SVG in the same work unit.
+5. Embed the SVG with a relative path and one sentence explaining it: in
+   `packages/<target>/README.md` for a package target, or in the root `README.md` / `README.es.md`
+   when `diagram.config.json` declares the repository-level output.
+6. Commit the source, its config (if any), and its generated SVG in the same work unit.
 
 ## Output Contract
 
-Report the source path, the rendered SVG path, the render result, and the README reference.
+Report the source path, the config path (when repository-level), the rendered SVG path, the render
+result, and the README reference.
 
 ## References
 
 - `references/diagram-types.md` — minimal rendered syntax per type, the common pitfall, and version notes.
-- `../../../scripts/render-diagrams.mjs` — renderer, browser detection, `--check`, config support.
+- `../../../scripts/render-diagrams.mjs` — renderer, browser detection, `--check`, `mermaid.config.json`
+  look/theme support, and `diagram.config.json` repository-level output.
 - `../../../AGENTS.md` — repository package rules.

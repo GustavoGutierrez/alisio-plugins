@@ -1,0 +1,13 @@
+flowchart TD
+  A["Trusted sources:<br/>--plugin path or package, config plugins array,<br/>config-home/plugins, trusted project plugins"] --> B{"Path or npm package?"}
+  B -->|"path"| C["Import the file or directory entry"]
+  B -->|"npm package"| D["Resolve in node_modules upward,<br/>then global roots;<br/>require the alisio-plugin keyword"]
+  D --> C
+  C --> E["Validate the contract:<br/>id regex, strict semver version,<br/>apiVersion 1, setup function"]
+  E -->|"invalid"| F["Reject the plugin"]
+  E -->|"valid"| G["Activation order:<br/>built-ins first, then external plugins;<br/>--read-only skips external plugins (not loaded)"]
+  G --> H["Run setup(api)"]
+  H --> I["Register capabilities:<br/>tools, commands, events, context, resources,<br/>state, storage, compaction, session hooks,<br/>model, models, providers, sessions, ui, extensions"]
+  I --> J["Plugin is live:<br/>its tools and commands serve the run"]
+  H -->|"throws"| K["Roll back every registration,<br/>then call dispose()"]
+  J --> L["On close: dispose()<br/>then unregister everything"]

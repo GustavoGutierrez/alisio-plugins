@@ -14,13 +14,27 @@
 - Substantial methodology plugins ship package-local `.agents/agents` definitions and multiple
   focused `.agents/skills` contracts, then use those same files for catalog registration and direct
   child-session instructions.
-- Do not add repository, homepage, or bugs metadata until a real remote exists.
+- Declare `repository`, `homepage`, and `bugs` metadata in every publishable package, pointing at the
+  real remote `https://github.com/GustavoGutierrez/alisio-plugins`, and keep them consistent across
+  the monorepo. Include the package `directory` in `repository` metadata.
+
+## Language policy
+
+- **Bilingual, kept in sync (English + Spanish):** repo-level user-facing docs — `README.md` /
+  `README.es.md` and everything under `docs/` / `docs/es/`. Each pair links to its mirror, states
+  that the two must be updated together, and is updated in the same change. Spanish is neutral and
+  professional.
+- **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this file, all source,
+  all package READMEs, all code comments, and every diagram label.
 
 ## Required checks
 
-Run `pnpm check` before review. The dynamic pack check verifies names, metadata, exports, files,
-licenses, READMEs, built JavaScript/types, and packaged resources for every publishable package.
-Use Changesets for semantic versions; never hand-publish without a prepared version.
+Run `pnpm check` before review; CI runs the same command on pull requests. It chains `lint`,
+`typecheck`, `test`, `build`, and `pack:check`. The dynamic pack check verifies names, metadata,
+exports, files, licenses, READMEs, built JavaScript/types, and packaged resources for every
+publishable package; its resource policy is documented in the header of `scripts/pack-check.mjs`.
+Run `pnpm diagrams:check` separately after touching a diagram (it is an mtime-based authoring aid,
+not a CI gate). Use Changesets for semantic versions; never hand-publish without a prepared version.
 
 ## Project skills
 

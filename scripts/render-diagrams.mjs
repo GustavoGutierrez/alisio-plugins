@@ -20,6 +20,15 @@
  * `-c`. Wayfinder pins `look: classic` there, because Mermaid 12 changed the
  * default look and the older diagrams are authored for the classic rendering.
  *
+ * A target can also render to a repository-level directory instead of a package.
+ * When a `diagram.config.json` sits beside the sources and declares an `output`
+ * directory relative to the repository root, the target is a repository-level
+ * one: its SVGs go there and no `packages/<name>` directory is required. This is
+ * an explicit, per-target opt-in rather than a silent fallback, so a mistyped or
+ * misconfigured target still fails. The repository-level diagrams live in
+ * `diagrams/repository/` and declare `{"output": "assets"}`, writing the shared
+ * `assets/` directory the root READMEs embed from.
+ *
  * WHY THE SOURCES SIT AT THE REPOSITORY ROOT. `pnpm-workspace.yaml` declares
  * `packages/*`, so a `diagrams/` directory placed under `packages/` would be
  * swallowed by the workspace glob and treated as a workspace package. Keeping
@@ -52,6 +61,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readdirSync,
+  readFileSync,
   rmSync,
   statSync,
   writeFileSync,
@@ -71,6 +81,12 @@ const NPX = process.platform === "win32" ? "npx.cmd" : "npx";
 
 /** The mermaid-cli spec npx resolves and runs. Overridable for pinning. */
 const CLI_SPEC = process.env.MERMAID_CLI_VERSION || "@mermaid-js/mermaid-cli@12.0.0";
+
+/**
+ * Optional per-target declaration that redirects a diagram target to a
+ * repository-level output directory. See the header for the policy.
+ */
+const DIAGRAM_CONFIG = "diagram.config.json";
 
 function parseArgs(argv) {
   const args = { plugins: [], all: false, check: false, noSandbox: false };
@@ -103,6 +119,9 @@ function usage() {
     "  --all             Render every directory under diagrams/.",
     "  --check           Report stale or missing SVGs and exit non-zero. No browser needed.",
     "  --no-sandbox      Add --no-sandbox to the browser args (containers/root only).",
+    "",
+    `  A target with ${DIAGRAM_CONFIG} beside its sources renders to that`,
+    '  repository-relative "output" directory instead of packages/<name>/assets.',
     "",
     `  MERMAID_CLI_VERSION   Override the npx spec (default ${CLI_SPEC}).`,
     "  MERMAID_BROWSER       Explicit browser executable; also PUPPETEER_EXECUTABLE_PATH.",
@@ -269,7 +288,48 @@ function sourceFiles(name) {
 }
 
 function outputPath(name, source) {
-  return path.join(PACKAGES_ROOT, name, "assets", source.replace(/\.mmd$/, ".svg"));
+  return path.join(outputDir(name), source.replace(/\.mmd$/, ".svg"));
+}
+
+/**
+ * The output directory for one target, from an explicit declaration only.
+ *
+ *   diagrams/<name>/diagram.config.json  { "output": "assets" }
+ *
+ * Without a declaration the target renders into its publishable package at
+ * `packages/<name>/assets`. With one it may render anywhere INSIDE the
+ * repository; an output that escapes the repository root is rejected. There is
+ * deliberately no fallback: an undeclared target still needs its package
+ * directory, so a typo cannot silently write somewhere unexpected.
+ */
+function outputDir(name) {
+  return targetConfig(name)?.output ?? path.join(PACKAGES_ROOT, name, "assets");
+}
+
+/**
+ * Parses `diagram.config.json` for a target, or returns undefined when absent.
+ * Throws with a clear message when the file is present but malformed, so an
+ * invalid declaration is reported rather than ignored.
+ */
+function targetConfig(name) {
+  const file = path.join(DIAGRAMS_ROOT, name, DIAGRAM_CONFIG);
+  if (!existsSync(file)) return undefined;
+  let parsed;
+  try {
+    parsed = JSON.parse(readFileSync(file, "utf8"));
+  } catch (error) {
+    throw new Error(`Invalid ${DIAGRAM_CONFIG} for "${name}": ${error.message}`);
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+    throw new Error(`${DIAGRAM_CONFIG} for "${name}" must be a JSON object`);
+  if (typeof parsed.output !== "string" || !parsed.output.trim())
+    throw new Error(`${DIAGRAM_CONFIG} for "${name}" must declare a non-empty "output" directory`);
+  const output = path.resolve(REPO_ROOT, parsed.output);
+  if (output !== REPO_ROOT && !output.startsWith(`${REPO_ROOT}${path.sep}`))
+    throw new Error(
+      `${DIAGRAM_CONFIG} for "${name}" output must stay inside the repository: ${parsed.output}`,
+    );
+  return { output };
 }
 
 /**
@@ -367,7 +427,7 @@ function render(browser, targets, noSandbox) {
         console.log(`${name}: no .mmd sources, nothing to render.`);
         continue;
       }
-      const assetsDir = path.join(PACKAGES_ROOT, name, "assets");
+      const assetsDir = outputDir(name);
       mkdirSync(assetsDir, { recursive: true });
       const config = path.join(DIAGRAMS_ROOT, name, "mermaid.config.json");
       for (const source of sources) {
@@ -461,11 +521,22 @@ function main() {
     process.exit(2);
   }
 
-  for (const name of selected) {
-    if (!isDirectory(path.join(PACKAGES_ROOT, name))) {
-      console.error(`Diagram target "${name}" has no package directory at packages/${name}.`);
-      process.exit(2);
+  try {
+    for (const name of selected) {
+      // A declared output directory makes the target repository-level: no package
+      // is required. Without a declaration the package must exist, so a typo is
+      // still an error rather than a silent write into packages/<typo>/assets.
+      if (targetConfig(name)) continue;
+      if (!isDirectory(path.join(PACKAGES_ROOT, name))) {
+        console.error(
+          `Diagram target "${name}" has no package directory at packages/${name} and no ${DIAGRAM_CONFIG}.`,
+        );
+        process.exit(2);
+      }
     }
+  } catch (error) {
+    console.error(error.message);
+    process.exit(2);
   }
 
   if (args.check) {
