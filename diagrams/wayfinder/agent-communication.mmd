@@ -1,0 +1,26 @@
+%% One Wayfinder phase handoff: from command to persisted artifact and back.
+%% Sources live at diagrams/wayfinder/ and render to packages/wayfinder/assets/.
+sequenceDiagram
+    autonumber
+    actor User
+    participant Coord as WayfinderCoordinator (authority)
+    participant Store as Artifact store (state.json + Markdown)
+    participant Child as Fresh child session (one agent + mapped skills)
+    participant Next as Next phase child session
+
+    User->>Coord: /wayfinder:next [change]
+    Coord->>Coord: load agent definition and every mapped skill
+    Coord->>Child: create capability-narrowed session
+    Note over Child: one phase, one result schema, no delegation
+    Child-->>Coord: one phase-specific JSON result
+
+    alt Valid and complete result
+        Coord->>Coord: validate against the phase schema
+        Coord->>Store: render Markdown artifact (atomic replace)
+        Coord->>Store: update state.json (atomic replace)
+        Coord-->>User: phase complete, next action
+        Store-->>Next: persisted artifacts as phase context
+    else Malformed, partial, or turn-limited
+        Coord->>Coord: reject and keep state unchanged
+        Coord-->>User: retry the same phase after fixing the cause
+    end

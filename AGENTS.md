@@ -26,3 +26,4 @@ Use Changesets for semantic versions; never hand-publish without a prepared vers
 
 - `.agents/skills/create-alisio-plugin/SKILL.md` — load when creating or restructuring a plugin package.
 - `.agents/skills/release-alisio-plugin/SKILL.md` — load when versioning, packing, or publishing packages.
+- `.agents/skills/plugin-diagrams/SKILL.md` — load when authoring Mermaid diagrams or rendering them to SVG.

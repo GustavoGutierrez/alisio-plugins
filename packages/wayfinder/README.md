@@ -125,6 +125,25 @@ verifier checks the implemented workspace against the persisted requirements. Ag
 also deny `task`, `delegate`, `subagent`, and `sessions_create`, so no phase can create a hidden
 delegation chain.
 
+## Methodology diagrams
+
+![Wayfinder lifecycle, phase pipeline, and gates](./assets/methodology-flow.svg)
+
+`methodology-flow.svg` maps the full lifecycle: user commands drive the deterministic
+`WayfinderCoordinator`, which runs each phase in a fresh child session, persists every artifact
+under `.alisio/wayfinder/changes/<change>/`, and enforces the proposal, plan, TDD, and mutation
+gates together with the verification and mutation feedback loops.
+
+![One phase handoff between the coordinator and a child session](./assets/agent-communication.svg)
+
+`agent-communication.svg` shows a single phase handoff: the coordinator loads one agent and its
+mapped skills, creates a capability-narrowed child session, validates the one JSON result,
+persists the Markdown artifact and `state.json`, and rejects malformed, partial, or turn-limited
+output without advancing state.
+
+The Mermaid sources live in `diagrams/wayfinder/` at the repository root and are rendered with
+`pnpm diagrams`. The SVGs are generated output; never edit them by hand.
+
 ## Lifecycle and gates
 
 ```text

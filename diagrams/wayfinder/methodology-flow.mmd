@@ -1,0 +1,44 @@
+%% Wayfinder methodology: the full lifecycle, its phases, and its gates.
+%% Sources live at diagrams/wayfinder/ and render to packages/wayfinder/assets/.
+flowchart TD
+    User["User commands<br/>new, status, answer, next, approve,<br/>tdd, build, verify, mutate, close"] --> Coord["WayfinderCoordinator (TypeScript)<br/>deterministic workflow authority"]
+
+    Store[("Artifact store<br/>.alisio/wayfinder/changes/&lt;change&gt;/<br/>state.json + Markdown artifacts<br/>(the medium between phases)")]
+    Coord -. "reads and writes" .-> Store
+
+    subgraph Pipeline["Phase pipeline - one fresh child session per phase"]
+        direction TB
+        Discover["discoverer<br/>discovery"] --> Propose["proposer<br/>proposal"]
+        Spec["specifier<br/>specification"] --> Design["designer<br/>design"]
+        Design --> Plan["planner<br/>plan"]
+        Implement["implementer<br/>one work unit"] --> Verify["verifier<br/>independent verification"]
+        ArchiveReady["archivist<br/>archive readiness"]
+    end
+
+    Coord --> Discover
+    Store -.-> Pipeline
+    Coord -. "agents never call each other;<br/>every handoff goes through the coordinator<br/>and the artifact store" .-> Handoff["No direct agent-to-agent calls"]
+
+    Propose --> GateProposal{"Proposal approval<br/>user gate"}
+    GateProposal -- "approved" --> Spec
+    GateProposal -- "rejected or unanswered:<br/>stays in proposal-approval" --> GateProposal
+
+    Plan --> GatePlan{"Plan approval plus<br/>TDD decision gate<br/>(strict or off)"}
+    GatePlan -- "approved with a recorded decision" --> Implement
+    GatePlan -- "not yet or no TDD decision:<br/>stays in plan-approval" --> GatePlan
+
+    Verify -- "failed" --> Remediate["remediation unit<br/>bounded to two attempts"]
+    Remediate --> Implement
+
+    Verify --> GateMutation{"Mutation decision gate<br/>run or skip"}
+    GateMutation -- "skip (recorded)" --> ArchiveReady
+    GateMutation -- "run" --> Mutationist["mutationist<br/>one bounded mutation run"]
+    Mutationist -- "non-equivalent survivors" --> Strengthen["test-strengthening unit<br/>tests-only guardrail over reported paths"]
+    Mutationist -- "clean or unavailable" --> ArchiveReady
+
+    Strengthen --> Implement
+    Verify -. "targeted mutation remediation pending" .-> ReVerify["targeted re-verification<br/>verifier, affected requirement ids only"]
+    ReVerify -- "passes" --> ArchiveReady
+    ReVerify -- "fails" --> Strengthen
+
+    ArchiveReady --> Archive["archive<br/>.alisio/wayfinder/archive/YYYY-MM-DD-&lt;change&gt;/"]

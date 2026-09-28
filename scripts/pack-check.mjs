@@ -20,6 +20,19 @@ const exists = async (path) =>
     () => true,
     () => false,
   );
+/** Every .svg under a directory, as forward-slash paths relative to it. */
+const collectSvgs = async (root, prefix = "") => {
+  const out = [];
+  for (const entry of await readdir(root, { withFileTypes: true })) {
+    const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      out.push(...(await collectSvgs(join(root, entry.name), relative)));
+    } else if (entry.name.endsWith(".svg")) {
+      out.push(relative);
+    }
+  }
+  return out;
+};
 for (const [dir, manifest] of packageDirs) {
   const fail = (message) => {
     throw new Error(`${manifest.name}: ${message}`);
@@ -102,6 +115,13 @@ for (const [dir, manifest] of packageDirs) {
       if (extract.status !== 0) fail(`cannot extract tarball: ${extract.stderr.trim()}`);
       const module = await import(join(unpacked, "package/dist/resources.js"));
       for (const role of expectedAgents) await module.loadRoleInstructions(role);
+    }
+    const assetsDir = join(dir, "assets");
+    if (await exists(assetsDir)) {
+      for (const relative of await collectSvgs(assetsDir)) {
+        const packedPath = `package/assets/${relative}`;
+        if (!files.includes(packedPath)) fail(`packed tarball missing ${packedPath}`);
+      }
     }
     console.log(`OK ${manifest.name}@${manifest.version}`);
   } finally {
