@@ -1,0 +1,42 @@
+{
+  "name": "alisio-plugins",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.17.1",
+  "author": {
+    "name": "Gustavo Gutiérrez",
+    "url": "https://github.com/GustavoGutierrez"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "engines": {
+    "node": ">=22.16"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test": "pnpm -r test",
+    "pack:check": "node scripts/pack-check.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm pack:check",
+    "changeset": "changeset",
+    "version": "changeset version && node scripts/sync-versions.mjs",
+    "release": "pnpm check && changeset publish",
+    "publish-all": "pnpm release",
+    "publish-one": "node scripts/publish-one.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@changesets/cli": "3.0.3",
+    "@types/node": "26.6.2",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}
