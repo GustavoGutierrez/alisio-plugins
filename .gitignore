@@ -4,3 +4,16 @@ coverage/
 *.tgz
 .DS_Store
 .alisio/wayfinder/
+
+# Credentials and local machine state (never committed).
+.npmrc
+.env
+.env.*
+# Template env files carry no secrets and are meant to be committed.
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.pnpm-store/
+*.log

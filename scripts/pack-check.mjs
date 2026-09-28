@@ -39,11 +39,18 @@
  * every publishable package. The check asserts all three exist, that
  * `repository.url` points at this monorepo, and that `repository.directory`
  * matches the package's own directory.
+ *
+ * LEAK SCAN. Every tarball this check builds is also scanned by
+ * `scripts/leak-check.mjs`, so `pnpm check` covers a packed artifact even on a
+ * pull request that never runs the release preflight. The leak rules live in
+ * that module; this file only reuses its scanner and its credential-safe report.
  */
 import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readdir, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join, relative, resolve, sep } from "node:path";
+
+import { formatFindings, scanTarball } from "./leak-check.mjs";
 
 const selected = process.argv[2];
 const REPOSITORY_URL = "https://github.com/GustavoGutierrez/alisio-plugins";
@@ -194,6 +201,16 @@ for (const [dir, manifest] of packageDirs) {
     });
     if (packed.status !== 0) fail(`pnpm pack failed: ${packed.stderr.trim()}`);
     const archive = join(temp, basename(packed.stdout.trim().split("\n").at(-1)));
+
+    // The tarball that would ship must not carry a machine path or credential.
+    // Reuse the leak guard's scanner so `pnpm check` and the release preflight
+    // enforce the same rules from one definition.
+    const leak = scanTarball(archive);
+    if (leak.findings.length > 0)
+      fail(
+        `packed tarball contains machine paths or credentials:\n${formatFindings(leak.findings).join("\n")}`,
+      );
+
     const listed = spawnSync("tar", ["-tf", archive], { encoding: "utf8" });
     if (listed.status !== 0) fail(`cannot inspect tarball: ${listed.stderr.trim()}`);
     const files = listed.stdout.split("\n");

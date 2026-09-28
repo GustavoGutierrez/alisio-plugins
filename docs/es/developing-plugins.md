@@ -164,10 +164,23 @@ Esta es la sección que hay que leer antes de cargar código que no escribiste.
 | `alisio-plugin.json` | Obligatorio cuando el plugin es un **directorio dado como ruta**: `{ "apiVersion": 1, "entry": "./index.js" }`, y el entry debe permanecer dentro del directorio. Opcional para un paquete npm (un paquete también puede incluirlo). |
 | Dependencias | Solo módulos integrados de Node y `@alisio/sdk`. `@alisio/sdk` permanece en **ambos**, `peerDependencies` y `devDependencies`. Nunca importes otro plugin ni `@alisio/core`. |
 | Archivos publicados | JavaScript y declaraciones de `dist`, README, `LICENSE` MIT y cada recurso registrado (por ejemplo `.agents`, `assets`). |
-| Versionado aquí | Changesets. Ejecuta `pnpm changeset`, luego `pnpm version` (que además corre `scripts/sync-versions.mjs`). `pnpm publish-one -- <nombre>` es un ensayo; añade `--publish` para una publicación intencional. `pnpm publish-all` comprueba y publica las versiones preparadas. |
+| Versionado aquí | Changesets. Sube un paquete con `pnpm bump-one -- <nombre> <patch\|minor\|major> --summary "<texto>"`, o ejecuta `pnpm changeset` y luego `pnpm run version` (que además corre `scripts/sync-versions.mjs`). `pnpm publish-one -- <nombre>` y `pnpm publish-all` son ensayos; añade `--publish` para una publicación intencional. |
 
 Ninguna versión se publica sin autorización explícita y autenticación de npm. Este repositorio no
 almacena secretos; consulta [SECURITY.md](../../SECURITY.md).
+
+La herramienta de publicación ejecuta un preflight por paquete: autenticación de npm (`npm login` o
+`NPM_TOKEN`), árbol de trabajo limpio y confirmado, `package.json`/`src/version.ts` coincidentes, un
+tarball empaquetado sin rutas locales de la máquina ni credenciales (`pnpm pack:check`, que ejecuta el
+escáner de fugas sobre cada tarball), y una versión que no esté ya en el registro. Los dist-tags por
+defecto son `latest`, o `next` para versiones de prelanzamiento. `pnpm release:changesets` es el flujo
+nativo de Changesets que crea etiquetas git y lo usa la CI; `pnpm publish-all` es el flujo explícito con
+preflight.
+
+Los paquetes publicados no contienen rutas específicas de la máquina ni credenciales. La misma garantía
+se aplica en cada pull request mediante `pnpm check`: `leak:check` escanea cada archivo rastreado y
+`pack:check` escanea cada tarball empaquetado, así que ambas superficies quedan cubiertas antes de
+integrar.
 
 ## Instalación y pruebas de humo
 

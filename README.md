@@ -92,10 +92,30 @@ The full capability surface, the hard limits and the sharpest failure modes live
 
 | Command | What it verifies |
 | --- | --- |
-| `pnpm check` | Lint, types, tests, build, and the pack check (names, metadata, exports, files, licenses, READMEs, built JS/types, packaged resources). |
+| `pnpm check` | Lint, leak check, types, tests, build, and the pack check (names, metadata, exports, files, licenses, READMEs, built JS/types, packaged resources, and a leak scan of each packed tarball). |
 | `pnpm diagrams:check` | That every committed SVG is newer than its `.mmd` source. A local authoring aid, not a CI gate. |
 
 Run `pnpm check` before opening a review. Use Changesets for versions; never hand-publish.
+
+## Releasing
+
+Releases are explicit and dry-run first; nothing is published without an authorized operator and
+working npm authentication (`npm login`, or `NPM_TOKEN` with publish rights on the `@alisio` scope).
+
+```bash
+pnpm bump-one -- @alisio/plugin-<name> patch --summary "Public change summary"
+pnpm publish-one -- @alisio/plugin-<name>             # dry run
+pnpm publish-one -- @alisio/plugin-<name> --publish   # real publish
+pnpm publish-all                                      # dry run for every package
+pnpm publish-all --publish                            # real publish for every package
+```
+
+The tooling refuses to publish from a dirty tree, a version already on the registry, or a package
+whose `package.json` and `src/version.ts` disagree. It also packs each package and scans the tarball
+for local machine paths and credentials (`pnpm pack:check`, which runs the leak scanner over each
+tarball), so published packages carry neither.
+Dist-tags default to `latest`, and to `next` for prerelease versions. `pnpm release:changesets` is the
+Changesets-native, tag-creating flow used by CI; `pnpm publish-all` is the explicit, preflighted flow.
 
 ## Contributing and support
 

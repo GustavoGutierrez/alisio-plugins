@@ -25,8 +25,8 @@ jobs:
       - run: pnpm install --no-frozen-lockfile
       - uses: changesets/action@v1
         with:
-          version: pnpm version
-          publish: pnpm publish-all
+          version: pnpm run version
+          publish: pnpm release:changesets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

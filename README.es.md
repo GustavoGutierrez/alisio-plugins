@@ -94,11 +94,33 @@ La superficie completa de capacidades, los límites duros y los errores más fre
 
 | Comando | Qué verifica |
 | --- | --- |
-| `pnpm check` | Lint, tipos, tests, build y el pack check (nombres, metadatos, exports, archivos, licencias, READMEs, JS/tipos compilados y recursos empaquetados). |
+| `pnpm check` | Lint, comprobación de fugas, tipos, tests, build y el pack check (nombres, metadatos, exports, archivos, licencias, READMEs, JS/tipos compilados, recursos empaquetados y un escaneo de fugas de cada tarball empaquetado). |
 | `pnpm diagrams:check` | Que cada SVG confirmado sea más reciente que su fuente `.mmd`. Es una ayuda local de autoría, no una barrera de CI. |
 
 Ejecuta `pnpm check` antes de abrir una revisión. Usa Changesets para las versiones; nunca publiques
 a mano.
+
+## Publicación
+
+Las publicaciones son explícitas y con ensayo previo por defecto; nada se publica sin un operador
+autorizado y autenticación de npm vigente (`npm login`, o `NPM_TOKEN` con permisos de publicación
+sobre el scope `@alisio`).
+
+```bash
+pnpm bump-one -- @alisio/plugin-<nombre> patch --summary "Resumen público del cambio"
+pnpm publish-one -- @alisio/plugin-<nombre>             # ensayo (dry run)
+pnpm publish-one -- @alisio/plugin-<nombre> --publish   # publicación real
+pnpm publish-all                                        # ensayo para todos los paquetes
+pnpm publish-all --publish                              # publicación real de todos
+```
+
+La herramienta se niega a publicar desde un árbol sucio, una versión que ya está en el registro o un
+paquete cuyo `package.json` y `src/version.ts` no coinciden. Además empaqueta cada paquete y escanea el
+tarball en busca de rutas locales de la máquina y credenciales (`pnpm pack:check`, que ejecuta el
+escáner de fugas sobre cada tarball), así que los paquetes publicados no contienen ninguna de las dos
+cosas. Los dist-tags por defecto son `latest`, y `next` para versiones de prelanzamiento.
+`pnpm release:changesets` es el flujo nativo de Changesets que crea etiquetas git y lo usa la CI;
+`pnpm publish-all` es el flujo explícito con preflight.
 
 ## Contribución y soporte
 

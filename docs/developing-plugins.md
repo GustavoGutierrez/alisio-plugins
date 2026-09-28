@@ -163,10 +163,21 @@ This is the section to read before loading code you did not write.
 | `alisio-plugin.json` | Required when a plugin is a **directory given as a path**: `{ "apiVersion": 1, "entry": "./index.js" }`, and the entry must stay inside the directory. Optional for an npm package (a package may ship one too). |
 | Dependencies | Node built-ins and `@alisio/sdk` only. `@alisio/sdk` stays in **both** `peerDependencies` and `devDependencies`. Never import another plugin or `@alisio/core`. |
 | Shipped files | `dist` JavaScript and declarations, README, MIT `LICENSE`, and every registered resource (e.g. `.agents`, `assets`). |
-| Versioning here | Changesets. Run `pnpm changeset`, then `pnpm version` (which also runs `scripts/sync-versions.mjs`). `pnpm publish-one -- <name>` is a dry run; add `--publish` for an intentional publish. `pnpm publish-all` checks and publishes prepared versions. |
+| Versioning here | Changesets. Bump one package with `pnpm bump-one -- <name> <patch\|minor\|major> --summary "<text>"`, or run `pnpm changeset` then `pnpm run version` (which also runs `scripts/sync-versions.mjs`). `pnpm publish-one -- <name>` and `pnpm publish-all` are dry runs; add `--publish` for an intentional publish. |
 
 No version is published without explicit authorization and npm authentication. This repository stores
 no secret; see [SECURITY.md](../SECURITY.md).
+
+The publish tooling runs a preflight per package: npm authentication (`npm login` or `NPM_TOKEN`), a
+clean committed tree, matching `package.json`/`src/version.ts`, a packed tarball free of local machine
+paths and credentials (`pnpm pack:check`, which runs the leak scanner over each tarball), and a version
+not already on the registry. Dist-tags default to `latest`, or `next` for prerelease versions.
+`pnpm release:changesets` is the Changesets-native, tag-creating flow used by CI; `pnpm publish-all`
+is the explicit, preflighted flow.
+
+Published packages carry no machine-specific paths and no credentials. The same guarantee is enforced
+on every pull request by `pnpm check`: `leak:check` scans every tracked file and `pack:check` scans
+each packed tarball, so both surfaces are covered before a merge.
 
 ## Installing and smoke-testing
 

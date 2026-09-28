@@ -1,34 +1,117 @@
-import { spawnSync } from "node:child_process";
-import { readdir, readFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+#!/usr/bin/env node
+/**
+ * Preflight-and-publish ONE plugin. Dry run by default.
+ *
+ * USAGE
+ *   pnpm publish-one -- @alisio/plugin-<name> [--publish] [--tag <dist-tag>] [--otp <code>]
+ *
+ * SAFETY. Without `--publish` this never touches the registry for a write; it
+ * runs the full preflight and `pnpm pack` dry run so the operator can review
+ * exactly what would ship. With `--publish` it publishes under the chosen
+ * dist-tag with public access.
+ *
+ * DIST-TAGS. Default `latest`. A version with a prerelease suffix (for example
+ * `0.2.0-alpha.1`) defaults to `next`, so a prerelease is never promoted to
+ * `latest` by accident; pass `--tag` to override explicitly.
+ */
+import {
+  checkCleanTree,
+  checkNpmAuth,
+  discoverPackages,
+  parseFlags,
+  preflightPackage,
+  printSummaryTable,
+  publishPackage,
+  resolveDistTag,
+  runPackageChecks,
+  scriptArgs,
+  USAGE_EXIT,
+  UsageError,
+  validateDistTag,
+} from "./lib/release.mjs";
 
-const [name, mode] = process.argv.slice(2);
-if (!name || !/^@alisio\/plugin-[a-z0-9][a-z0-9-]*$/.test(name)) {
-  console.error("Usage: pnpm publish-one -- @alisio/plugin-<name> [--publish]");
-  process.exit(2);
+const USAGE =
+  "Usage: pnpm publish-one -- @alisio/plugin-<name> [--publish] [--tag <dist-tag>] [--otp <code>]";
+
+let parsed;
+try {
+  parsed = parseFlags(scriptArgs(), {
+    booleans: ["publish"],
+    values: ["tag", "otp"],
+  });
+} catch (error) {
+  if (!(error instanceof UsageError)) throw error;
+  console.error(error.message);
+  console.error(USAGE);
+  process.exit(USAGE_EXIT);
 }
-if (mode && mode !== "--publish") {
-  console.error(`Unknown option: ${mode}`);
-  process.exit(2);
+
+const { positionals, flags } = parsed;
+if (positionals.length !== 1) {
+  console.error(USAGE);
+  process.exit(USAGE_EXIT);
 }
-let selected;
-for (const entry of await readdir("packages", { withFileTypes: true })) {
-  if (!entry.isDirectory()) continue;
-  const dir = resolve("packages", entry.name);
-  const manifest = JSON.parse(await readFile(join(dir, "package.json"), "utf8"));
-  if (manifest.name === name) selected = dir;
+
+const name = positionals[0];
+let pkg;
+try {
+  pkg = await discoverPackages({ selected: name });
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
 }
-if (!selected) throw new Error(`Package not found: ${name}`);
-const run = (args) => {
-  const result = spawnSync("pnpm", args, { stdio: "inherit" });
-  if (result.status !== 0) process.exit(result.status ?? 1);
-};
-run(["--filter", name, "test"]);
-run(["--filter", name, "build"]);
-run(["pack:check", "--", name]);
-if (mode === "--publish") {
-  run(["--dir", selected, "publish", "--access", "public", "--no-git-checks"]);
+
+let tag;
+try {
+  tag = validateDistTag(resolveDistTag(pkg.version, flags.tag));
+} catch (error) {
+  if (!(error instanceof UsageError)) throw error;
+  console.error(error.message);
+  console.error(USAGE);
+  process.exit(USAGE_EXIT);
+}
+
+const dryRun = flags.publish !== true;
+console.log(`\n${dryRun ? "DRY RUN" : "PUBLISH"} ${pkg.name}@${pkg.version} (dist-tag: ${tag})`);
+
+const auth = checkNpmAuth();
+const tree = checkCleanTree();
+const preflight = await preflightPackage(pkg, { auth, tree });
+if (preflight.kind !== "ok") {
+  console.error(`\nCannot publish ${pkg.name}: ${preflight.message}`);
+  printSummaryTable([
+    {
+      name: pkg.name,
+      version: pkg.version,
+      action: "skipped",
+      outcome: preflight.kind,
+      note: preflight.message.split("\n")[0],
+    },
+  ]);
+  process.exit(1);
+}
+
+try {
+  runPackageChecks(pkg);
+  publishPackage(pkg, { dryRun, tag, otp: flags.otp });
+} catch (error) {
+  console.error(`\n${error instanceof Error ? error.message : String(error)}`);
+  process.exit(1);
+}
+
+printSummaryTable([
+  {
+    name: pkg.name,
+    version: pkg.version,
+    action: dryRun ? "dry-run publish" : "published",
+    outcome: "ok",
+    note: dryRun ? "repeat with --publish to release" : `dist-tag: ${tag}`,
+  },
+]);
+
+if (dryRun) {
+  console.log(`Dry run only. Repeat with: pnpm publish-one -- ${name} --publish`);
 } else {
-  run(["--dir", selected, "publish", "--access", "public", "--dry-run", "--no-git-checks"]);
-  console.log("Dry run only. Repeat with --publish after reviewing the output.");
+  console.log(`Published ${pkg.name}@${pkg.version} under dist-tag "${tag}".`);
+  console.log(`Install with: alisio install npm:${name}@${pkg.version}`);
 }

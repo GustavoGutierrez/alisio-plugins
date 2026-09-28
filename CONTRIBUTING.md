@@ -29,7 +29,7 @@ pnpm check
 
 | Command | What it verifies |
 | --- | --- |
-| `pnpm check` | `lint`, `typecheck`, `test`, `build`, and `pack:check` across every package. |
+| `pnpm check` | `lint`, `leak:check`, `typecheck`, `test`, `build`, and `pack:check` across every package; `pack:check` also runs the leak scanner over each tarball it builds. |
 | `pnpm diagrams:check` | Every committed SVG is newer than its `.mmd` source (a local authoring aid). |
 
 Run `pnpm check` before opening a pull request. `pnpm diagrams:check` is not part of `pnpm check`
@@ -62,6 +62,67 @@ no AI tooling in the author or committer fields.
   authoring contract changes.
 - Use Changesets for versions: run `pnpm changeset`, describe the public change, and include it in
   the pull request.
+
+## Releasing
+
+Releases are explicit and dry-run first. Nothing is published without an authorized operator and
+working npm authentication.
+
+Prerequisite (once per machine):
+
+```bash
+npm login        # or export NPM_TOKEN with publish rights on the @alisio scope
+npm whoami       # must print your username
+```
+
+Bump and publish one package:
+
+```bash
+pnpm bump-one -- @alisio/plugin-<name> patch --summary "Public change summary"
+pnpm publish-one -- @alisio/plugin-<name>             # dry run: preflight, test, build, pack check
+pnpm publish-one -- @alisio/plugin-<name> --publish   # real publish (--otp <code> for 2FA)
+```
+
+Preview or publish every package:
+
+```bash
+pnpm publish-all           # dry run for every package
+pnpm publish-all --publish # real publish for every package
+```
+
+Rules the tooling enforces: the working tree must be clean and committed; `package.json` and
+`src/version.ts` must agree; a version already on the registry is refused; dist-tags default to
+`latest` and to `next` for prerelease versions (`--tag` overrides). `pnpm bump-one` writes one
+changeset, then runs `changeset version`, which applies **every** pending changeset, not just the
+one it wrote. For the first release, delete changesets already contained in the shipped version
+before publishing. `pnpm release:changesets` (alias `pnpm release`) is the Changesets-native,
+tag-creating flow driven by CI; `pnpm publish-all` is the explicit preflighted flow. They are not
+interchangeable.
+
+
+## Never commit secrets
+
+This repository must never contain a local machine path or a credential — not in the working tree and
+not in a published package. Two layered guards enforce it. `pnpm leak:check` scans every tracked file,
+and `pnpm pack:check` packs each publishable package and runs the same leak scanner over the tarball
+that would ship. The release preflight repeats the tarball scan before publishing.
+
+```bash
+pnpm leak:check                                    # scan tracked files
+node scripts/leak-check.mjs --tarball <file.tgz>   # scan a packed archive
+node scripts/leak-check.mjs --package <name>       # pack one package and scan it
+```
+
+Both run inside `pnpm check`, so a leak fails the pull request; the release preflight blocks the
+release. The report names the file, the line, and the rule; a credential-shaped match is redacted, so
+the guard never prints a secret.
+
+If a leak is found: remove the material from the source — replace an absolute path with a relative one
+or `os.homedir()`/`os.tmpdir()`, and move any credential to an environment variable — rebuild if the
+value was baked into `dist`, then rerun `pnpm leak:check` and `pnpm pack:check` (both are in
+`pnpm check`). If a real credential was ever committed, rotate it; deleting the file is not enough
+because history keeps it.
+
 
 ## Pull requests
 
