@@ -85,6 +85,33 @@ Each agent links one focused skill: `wayfinder-coordinate`, `wayfinder-discover`
 `wayfinder-propose`, `wayfinder-specify`, `wayfinder-design`, `wayfinder-plan`,
 `wayfinder-implement`, `wayfinder-verify`, or `wayfinder-archive`. Child phases cannot delegate.
 
+## How agents communicate
+
+Agents never call each other directly and do not inherit another agent's conversation. Every phase
+communicates through the TypeScript `WayfinderCoordinator` and durable artifacts:
+
+```text
+User command
+  -> WayfinderCoordinator loads one agent and its matching skill
+  -> coordinator creates a fresh, capability-narrowed child session
+  -> child returns one phase-specific JSON result
+  -> coordinator validates the complete result
+  -> coordinator renders the validated result as a Markdown artifact
+  -> coordinator updates state.json
+  -> a later phase receives the relevant persisted artifacts as context
+```
+
+The coordinator uses `api.sessions.create` and `api.sessions.run` for each phase. A malformed,
+partial, turn-limited, or schema-invalid response is rejected before state advances. The child
+session cannot write lifecycle state directly; even the implementer may modify only the assigned
+workspace unit and must return evidence to the coordinator.
+
+This artifact-mediated handoff keeps phases independently resumable. For example, the specifier
+works from the approved proposal, the planner works from the specification and design, and the
+verifier checks the implemented workspace against the persisted requirements. Agent definitions
+also deny `task`, `delegate`, `subagent`, and `sessions_create`, so no phase can create a hidden
+delegation chain.
+
 ## Lifecycle and gates
 
 ```text
