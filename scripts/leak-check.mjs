@@ -157,9 +157,12 @@ const SECRET_DETECTORS = FORBIDDEN_RULES.filter((rule) => rule.secret).map(
 
 /**
  * True when `text` contains any credential-shaped substring. A path rule can
- * match a whole `/tmp/<token>` (or `/home/<token>`) token that embeds a
+ * match an entire temporary-directory or home-directory token that embeds a
  * credential, so a path finding is promoted to secret when this fires: the
- * report then redacts the entire match instead of printing the credential.
+ * report then redacts the whole match instead of printing the credential.
+ *
+ * Do not write a literal absolute path in this file, including inside comments:
+ * the temporary-directory rule matches one and the guard would flag itself.
  */
 export function containsSecretShape(text) {
   return SECRET_DETECTORS.some((detector) => detector.test(text));

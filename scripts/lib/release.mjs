@@ -280,12 +280,20 @@ export function runPackageChecks(pkg) {
 /**
  * The single publish command for both scripts. Real publishing requires
  * `dryRun === false`; `--otp` is forwarded for two-factor accounts.
+ *
+ * RUN FROM THE PACKAGE DIRECTORY, NOT `pnpm --dir`. On pnpm 10.17.1,
+ * `pnpm --dir <path> publish <flags>` runs the package's `prepack` lifecycle and
+ * then hands a malformed invocation to npm, which exits with `EUSAGE` and the
+ * `npm publish <package-spec>` usage text instead of publishing. Setting the
+ * working directory and calling `pnpm publish` directly is what actually works.
  */
 export function publishPackage(pkg, { dryRun, tag, otp }) {
-  const args = ["--dir", pkg.dir, "publish", "--access", "public", "--no-git-checks", "--tag", tag];
+  const args = ["publish", "--access", "public", "--no-git-checks", "--tag", tag];
   if (otp) args.push("--otp", otp);
   if (dryRun) args.push("--dry-run");
-  runStep(`${dryRun ? "dry-run publish" : "publish"} ${pkg.name}@${pkg.version}`, "pnpm", args);
+  runStep(`${dryRun ? "dry-run publish" : "publish"} ${pkg.name}@${pkg.version}`, "pnpm", args, {
+    cwd: pkg.dir,
+  });
 }
 
 /**
