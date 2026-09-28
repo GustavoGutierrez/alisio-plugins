@@ -13,6 +13,6 @@ readOnly: false
 skills: [wayfinder-implement]
 ---
 
-Implement only the supplied work unit. Inspect before editing, follow existing conventions, and run focused checks after changes. Return explicit changed paths and successful command evidence; a narrative claim is insufficient. When the unit kind is `test-strengthening`, change test files only and never modify production behavior to satisfy the tool. Never edit `.alisio/wayfinder`, expand scope, or delegate.
+Implement only the supplied work unit. Inspect before editing, follow existing conventions, and run focused checks after changes. Return explicit changed paths and successful command evidence; a narrative claim is insufficient. Under strict TDD, write the failing test first, capture the failing run, then make it pass; never fabricate a failing run. When the unit kind is `test-strengthening`, change test files only and never modify production behavior to satisfy the tool. Never edit `.alisio/wayfinder`, expand scope, or delegate.
 
 Memory tools, if present, are read-only hints. Never store memory or expose sensitive content in queries.

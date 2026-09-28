@@ -34,6 +34,7 @@ import type {
   PlanOutput,
   ProposalOutput,
   SpecificationOutput,
+  TddDecisionValue,
   VerificationOutput,
   WorkUnit,
 } from "./types.js";
@@ -122,9 +123,9 @@ const schemas = {
     '{ "schemaVersion": 1, "requirements": [{ "id": "REQ-001", "statement": "...", "acceptance": ["..."] }], "criticalQuestions": [] }',
   design:
     '{ "schemaVersion": 1, "summary": "...", "decisions": [{ "topic": "...", "choice": "...", "rationale": "..." }], "paths": ["relative/path"], "risks": [] }',
-  plan: '{ "schemaVersion": 1, "units": [{ "id": "UNIT-001", "title": "...", "goal": "...", "requirements": ["REQ-001"], "paths": ["relative/path"], "checks": ["command or observable check"] }] }',
+  plan: '{ "schemaVersion": 1, "units": [{ "id": "UNIT-001", "title": "...", "goal": "...", "requirements": ["REQ-001"], "paths": ["relative/path"], "checks": ["command or observable check"], "tddExempt": false, "tddExemptReason": "required when tddExempt is true" }] }',
   implementation:
-    '{ "schemaVersion": 1, "unitId": "UNIT-001", "summary": "...", "changedPaths": ["relative/path"], "checks": [{ "command": "...", "status": "passed", "summary": "..." }], "notes": [] }',
+    '{ "schemaVersion": 1, "unitId": "UNIT-001", "summary": "...", "changedPaths": ["relative/path"], "checks": [{ "command": "...", "status": "passed", "summary": "..." }], "testFirst": { "failingCommand": "...", "failingEvidenceRef": "...", "passingCommand": "..." }, "notes": [] }',
   verification:
     '{ "schemaVersion": 1, "passed": true, "summary": "...", "requirements": [{ "id": "REQ-001", "status": "passed", "evidence": ["..."] }], "checks": [{ "command": "...", "status": "passed", "summary": "..." }], "blockers": [] }',
   mutation:
@@ -165,14 +166,17 @@ function renderPlan(units: WorkUnit[]): string {
   return `# Plan\n\n${units
     .map(
       (unit) =>
-        `## ${unit.id}: ${unit.title}\n\n${unit.goal}\n\n${unit.kind === "test-strengthening" ? `- Kind: ${unit.kind}\n` : ""}- Requirements: ${unit.requirements.join(", ")}\n- Paths: ${unit.paths.join(", ")}\n- Checks: ${unit.checks.join("; ")}\n- Status: ${unit.status}`,
+        `## ${unit.id}: ${unit.title}\n\n${unit.goal}\n\n${unit.kind === "test-strengthening" ? `- Kind: ${unit.kind}\n` : ""}${unit.tddExempt === true ? `- TDD exempt: ${unit.tddExemptReason}\n` : ""}- Requirements: ${unit.requirements.join(", ")}\n- Paths: ${unit.paths.join(", ")}\n- Checks: ${unit.checks.join("; ")}\n- Status: ${unit.status}`,
     )
     .join("\n\n")}`;
 }
 const nextUnitId = (state: ChangeState): string =>
   `UNIT-${String(state.units.length + 1).padStart(3, "0")}`;
 function renderImplementation(output: ImplementationOutput): string {
-  return `## ${output.unitId}\n\n${output.summary}\n\n- Changed paths: ${output.changedPaths.join(", ")}\n- Checks: ${output.checks.map((item) => `${item.command} — ${item.summary}`).join("; ")}\n- Notes: ${output.notes.join("; ") || "None"}\n`;
+  const testFirst = output.testFirst
+    ? `- Test-first: ${output.testFirst.failingCommand} (failing) → ${output.testFirst.passingCommand} (passing)\n`
+    : "";
+  return `## ${output.unitId}\n\n${output.summary}\n\n- Changed paths: ${output.changedPaths.join(", ")}\n${testFirst}- Checks: ${output.checks.map((item) => `${item.command} — ${item.summary}`).join("; ")}\n- Notes: ${output.notes.join("; ") || "None"}\n`;
 }
 function renderVerification(output: VerificationOutput): string {
   return `# Verification\n\n**Result:** ${output.passed ? "passed" : "failed"}\n\n${output.summary}\n\n${output.requirements
@@ -322,12 +326,17 @@ export class WayfinderCoordinator {
     const mutation = state.mutation?.decision
       ? `Mutation: ${state.mutation.decision.decision}${state.mutation.targeted ? " (targeted)" : ""} (${state.mutationRemediationCount}/${mutationRemediationLimit})`
       : "Mutation: decision pending";
-    return `${state.name}\nPhase: ${state.phase}\nUnits: ${state.units.filter(({ status }) => status === "completed").length}/${state.units.length}\nRemediation: ${state.remediationCount}/2\n${mutation}\nNext action: ${this.nextAction(state)}`;
+    const tdd = state.tdd ? `TDD: ${state.tdd.decision}` : "TDD: decision pending";
+    return `${state.name}\nPhase: ${state.phase}\nUnits: ${state.units.filter(({ status }) => status === "completed").length}/${state.units.length}\nRemediation: ${state.remediationCount}/2\n${mutation}\n${tdd}\nNext action: ${this.nextAction(state)}`;
   }
 
   private nextAction(state: ChangeState): string {
     if (state.phase === "proposal-approval") return `/wayfinder:approve ${state.name} proposal`;
-    if (state.phase === "plan-approval") return `/wayfinder:approve ${state.name} plan`;
+    if (state.phase === "plan-approval") {
+      return state.tdd
+        ? `/wayfinder:approve ${state.name} plan`
+        : `/wayfinder:tdd ${state.name} strict|off -- <reason>`;
+    }
     if (["discovery", "proposal", "specification", "design", "plan"].includes(state.phase)) {
       return `/wayfinder:next ${state.name}`;
     }
@@ -376,6 +385,7 @@ export class WayfinderCoordinator {
       state.proposalApproved = true;
       state.phase = "specification";
     } else if (target === "plan" && state.phase === "plan-approval") {
+      if (!state.tdd) return this.requestTddDecision(state, workspace);
       state.planApproved = true;
       state.phase = "implementation";
     } else {
@@ -384,6 +394,103 @@ export class WayfinderCoordinator {
     state.updatedAt = now();
     await writeState(workspace, state);
     return `Approved ${target} for ${state.name}. Next: ${this.nextAction(state)}`;
+  }
+
+  private tddRecommendation(state: ChangeState): { decision: TddDecisionValue; reason: string } {
+    const testable = state.units.filter((unit) => unit.tddExempt !== true).length;
+    if (testable > 0) {
+      return {
+        decision: "strict",
+        reason: `${testable} non-exempt unit(s) can be driven by tests`,
+      };
+    }
+    return { decision: "off", reason: "every planned unit is exempt from test-first" };
+  }
+
+  private async requestTddDecision(state: ChangeState, workspace: string): Promise<string> {
+    const recommended = this.tddRecommendation(state);
+    const blocked = `TDD decision required for ${state.name} before implementation. Recommendation: ${recommended.decision} — ${recommended.reason}. Record it with /wayfinder:tdd ${state.name} strict -- <reason> or /wayfinder:tdd ${state.name} off -- <reason>`;
+    if (!this.api.ui.interactive()) return blocked;
+    const result = await this.api.ui.askQuestions({
+      label: "Wayfinder TDD",
+      questions: [
+        {
+          id: "tdd",
+          header: "Test-first",
+          question: `Adopt strict test-first for ${state.name}?`,
+          options: [
+            {
+              value: "strict",
+              label: "Strict test-first",
+              description: recommended.reason,
+              recommended: recommended.decision === "strict",
+            },
+            {
+              value: "off",
+              label: "No test-first requirement",
+              description: recommended.reason,
+              recommended: recommended.decision === "off",
+            },
+          ],
+        },
+      ],
+    });
+    const choice = result.tdd;
+    if (choice !== "strict" && choice !== "off") return blocked;
+    const reason =
+      choice === recommended.decision
+        ? recommended.reason
+        : `Developer selected ${choice} over the recommended ${recommended.decision}.`;
+    await this.recordTddDecision(state, workspace, {
+      decision: choice,
+      reason,
+      source: "recommended",
+    });
+    return this.recordApproval(state, workspace, "plan");
+  }
+
+  private async recordTddDecision(
+    state: ChangeState,
+    workspace: string,
+    input: { decision: TddDecisionValue; reason: string; source: "recommended" | "manual" },
+  ): Promise<string> {
+    if (state.tdd) {
+      throw new Error(`TDD decision already recorded for ${state.name}; it is immutable`);
+    }
+    state.tdd = {
+      decision: input.decision,
+      reason: input.reason,
+      decidedAt: now(),
+      source: input.source,
+    };
+    state.updatedAt = now();
+    await writeState(workspace, state);
+    const semantics =
+      input.decision === "strict"
+        ? "Strict test-first is enabled for non-exempt units."
+        : "No test-first evidence will be required for future units.";
+    return `Recorded TDD decision (${input.decision}) for ${state.name}. ${semantics} Next: /wayfinder:approve ${state.name} plan`;
+  }
+
+  async tdd(args: string, sessionId?: string): Promise<string> {
+    const { workspace } = this.workspace(sessionId);
+    const usage = "Usage: /wayfinder:tdd <change> <strict|off> -- <reason>";
+    const delimiter = args.indexOf(" -- ");
+    if (delimiter < 0) throw new Error(usage);
+    const head = args.slice(0, delimiter).trim();
+    const reason = args.slice(delimiter + 4).trim();
+    if (!head || !reason) throw new Error(usage);
+    const parts = head.split(/\s+/);
+    const name = validateChangeName(parts[0] ?? "");
+    const action = parts[1];
+    if ((action !== "strict" && action !== "off") || parts.length !== 2) throw new Error(usage);
+    const state = await readState(workspace, name);
+    if (state.phase !== "plan-approval") {
+      throw new Error(
+        `TDD decision must be recorded while ${name} is in plan-approval (currently ${state.phase}); approve the proposal first`,
+      );
+    }
+    return this.recordTddDecision(state, workspace, { decision: action, reason, source: "manual" });
   }
 
   async approve(args: string, sessionId?: string): Promise<string> {
@@ -522,6 +629,33 @@ export class WayfinderCoordinator {
       if (offending.length) {
         throw new Error(
           `Test-strengthening unit ${unit.id} may modify test paths only; rejected production edits: ${offending.join(", ")}. Strengthen tests only and do not change production behavior, then retry /wayfinder:build ${name}.`,
+        );
+      }
+    }
+    // Grandfather policy: a change already past plan approval without a recorded decision
+    // predates the TDD gate, so it is not retroactively gated or deadlocked. Only a change that
+    // recorded `strict` (which current code requires at plan approval) is enforced.
+    if (
+      state.tdd?.decision === "strict" &&
+      unit.tddExempt !== true &&
+      unit.kind !== "test-strengthening"
+    ) {
+      const testPaths = output.changedPaths.filter((path) => isTestPath(path));
+      const testFirst = output.testFirst;
+      const scope = testPaths.length ? testPaths.join(", ") : output.changedPaths.join(", ");
+      if (!testPaths.length) {
+        throw new Error(
+          `TDD (strict) rejected ${unit.id}: change at least one test file, then provide test-first evidence: a failing test run for ${scope} before the change, then a passing run after. Retry /wayfinder:build ${name}.`,
+        );
+      }
+      if (!testFirst) {
+        throw new Error(
+          `TDD (strict) rejected ${unit.id}: provide test-first evidence: a failing test run for ${scope} before the change, then a passing run after. Retry /wayfinder:build ${name}.`,
+        );
+      }
+      if (testFirst.failingCommand !== testFirst.passingCommand) {
+        throw new Error(
+          `TDD (strict) rejected ${unit.id}: the failing and passing runs must reference the same test scope; got "${testFirst.failingCommand}" then "${testFirst.passingCommand}". Provide test-first evidence for ${scope} and retry /wayfinder:build ${name}.`,
         );
       }
     }

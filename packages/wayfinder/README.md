@@ -43,6 +43,7 @@ use `/wayfinder:answer <change> -- <clarification>`. Proposal and plan approval 
 /wayfinder:next add-health-check       # specification
 /wayfinder:next add-health-check       # design
 /wayfinder:next add-health-check       # plan
+/wayfinder:tdd add-health-check strict -- drive the new behavior test-first
 /wayfinder:approve add-health-check plan
 /wayfinder:build add-health-check      # repeat once per pending unit
 /wayfinder:verify add-health-check     # verification passes, mutation decision required
@@ -53,6 +54,9 @@ use `/wayfinder:answer <change> -- <clarification>`. Proposal and plan approval 
 
 Mutation testing is recommended, but the developer decides. Record `run` or `skip` with a reason
 before archive; the decision is immutable per change. Skipping is fine when justified.
+
+Test-first is also recommended and developer-decided. Record `strict` or `off` with a reason before
+approving the plan; the decision is immutable per change.
 
 Use `/wayfinder:status add-health-check` at any point to recover the next action. If a phase reports
 a critical question, answer it and retry the same phase:
@@ -140,7 +144,10 @@ question and persists the answer; headless use returns an actionable blocked sta
 
 Proposal and plan approval are explicit. In an interactive UI, `next` asks one concise confirmation.
 In headless use, it returns an actionable blocked status and requires `approve`; scope is never
-silently accepted.
+silently accepted. Plan approval additionally requires a recorded test-first decision for changes
+created by the current code; without it, the transition to implementation is blocked and
+`/wayfinder:tdd` is named. A change already past plan approval from an earlier version is
+grandfathered and is not retroactively gated (see the TDD section).
 
 ## Mutation testing
 
@@ -202,6 +209,42 @@ Detection uses the project's own manifests and lockfiles:
 
 When nothing is detected, the coordinator recommends and continues without blocking.
 
+## Test-first (TDD)
+
+TDD is recommended, but the developer decides. The decision is persisted per change, is immutable,
+and gates plan approval. There is no implicit default.
+
+| Topic | Behavior |
+| --- | --- |
+| Gate position | Approving the plan cannot transition to implementation until `/wayfinder:tdd <change> strict\|off -- <reason>` is recorded |
+| Recommendation | `strict` when the plan has non-exempt units; `off` only when every unit is exempt |
+| `off` | No test-first evidence is required for any unit |
+| `strict` | Non-exempt units must provide test-first evidence (see below) |
+| Exemption | A unit marked `tddExempt: true` must carry a non-blank `tddExemptReason` (whitespace-only is rejected); exemptions are irrelevant when the decision is `off` |
+| Grandfathering | A change already past plan approval without a decision predates this gate and is not retroactively gated; every change created by the current code must record a decision at plan approval |
+| Immutability | A second `/wayfinder:tdd` call is rejected |
+
+Under `strict`, an implementation result for a non-exempt unit is rejected (the unit stays pending and
+no state advances) unless it reports all of:
+
+- at least one test path in `changedPaths`;
+- a `testFirst` object with a failing run before the change and a passing run after;
+- the failing and passing runs referencing the same test scope (identical command).
+
+The rejection message names the required scope and the next command. Mutation-generated
+`test-strengthening` units are already test-scoped, so they are exempt from the test-first evidence.
+
+Enforcement is report-based and applies only to the paths and commands the implementing child
+returns, using a filename/directory heuristic: a production file placed under a `test`-style directory
+or named `*Test.*`/`*Spec.*` can pass, and a fabricated failing run is not independently detected.
+The independent verifier still inspects the workspace and runs focused checks, so this is a guardrail,
+not a sandbox.
+
+Legacy grandfather policy: a change that reached implementation before this gate existed has no
+recorded decision and is intentionally neither blocked nor retroactively gated; it proceeds through
+implementation and verification without test-first enforcement. Every change created by the current
+code must record a decision at plan approval. This policy is pinned by a test so it cannot drift.
+
 ## Commands
 
 | Command | Purpose |
@@ -211,6 +254,7 @@ When nothing is detected, the coordinator recommends and continues without block
 | `/wayfinder:answer <name> -- <text>` | Append clarification during discovery, proposal, or specification |
 | `/wayfinder:next <name>` | Run exactly one analytical phase, or request a pending approval |
 | `/wayfinder:approve <name> <proposal\|plan>` | Record explicit approval |
+| `/wayfinder:tdd <name> <strict\|off> -- <reason>` | Record the immutable test-first decision before plan approval |
 | `/wayfinder:mutate <name> <run\|skip> [--mode changed\|full] -- <reason>` | Record the immutable mutation-testing decision |
 | `/wayfinder:build <name>` | Implement exactly one pending unit |
 | `/wayfinder:verify <name>` | Independently verify every requirement exactly once |

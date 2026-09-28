@@ -177,7 +177,7 @@ const validOutputs = [
   }),
 ];
 
-async function reachImplementation(h: Awaited<ReturnType<typeof harness>>, name = "health-check") {
+async function reachPlanApproval(h: Awaited<ReturnType<typeof harness>>, name = "health-check") {
   await h.run("new", `${name} -- Expose health for load balancers`);
   await h.run("next", name);
   await h.run("next", name);
@@ -185,6 +185,18 @@ async function reachImplementation(h: Awaited<ReturnType<typeof harness>>, name 
   await h.run("next", name);
   await h.run("next", name);
   await h.run("next", name);
+}
+
+async function reachImplementation(
+  h: Awaited<ReturnType<typeof harness>>,
+  name = "health-check",
+  decision: "strict" | "off" = "off",
+) {
+  await reachPlanApproval(h, name);
+  await h.run(
+    "tdd",
+    `${name} ${decision} -- ${decision === "strict" ? "enforce test-first" : "documented decision to skip test-first"}`,
+  );
   await h.run("approve", `${name} plan`);
 }
 
@@ -309,6 +321,7 @@ describe("canonical package resources", () => {
       "next",
       "approve",
       "mutate",
+      "tdd",
       "build",
       "verify",
       "close",
@@ -498,6 +511,7 @@ describe("complete lifecycle", () => {
     await h.run("next", "health-check");
     await h.run("next", "health-check");
     await expect(h.run("next", "health-check")).resolves.toContain("Approval required for plan");
+    await h.run("tdd", "health-check off -- low-risk additive change");
     await h.run("approve", "health-check plan");
     await h.run("build", "health-check");
     await h.run("verify", "health-check");
@@ -574,14 +588,17 @@ describe("complete lifecycle", () => {
     const legacy = JSON.parse(await readFile(stateFile, "utf8"));
     delete legacy.mutationRemediationCount;
     delete legacy.mutation;
+    delete legacy.tdd;
     await writeFile(stateFile, JSON.stringify(legacy));
     expect(await h.run("status", "legacy")).toContain("Mutation: decision pending");
+    expect(await h.run("status", "legacy")).toContain("TDD: decision pending");
     await h.run("next", "legacy");
     await h.run("next", "legacy");
     await h.run("approve", "legacy proposal");
     await h.run("next", "legacy");
     await h.run("next", "legacy");
     await h.run("next", "legacy");
+    await h.run("tdd", "legacy off -- legacy state without mutation or tdd fields");
     await h.run("approve", "legacy plan");
     await h.run("build", "legacy");
     await h.run("verify", "legacy");
@@ -596,6 +613,7 @@ describe("complete lifecycle", () => {
     );
     expect(archived.mutationRemediationCount).toBe(0);
     expect(archived.mutation.decision.decision).toBe("skip");
+    expect(archived.tdd.decision).toBe("off");
   });
 
   it("refuses archive when a required artifact is missing", async () => {
@@ -1086,5 +1104,260 @@ describe("mutation testing", () => {
     expect(state.mutation.run.unavailableReason).toContain("whole-repository");
     expect(await h.run("status", "java-bounded")).toContain("Phase: archive");
     await expect(h.run("close", "java-bounded")).resolves.toContain("atomically archived");
+  });
+});
+
+describe("test-first (TDD) gate", () => {
+  it("rejects a TDD decision outside plan-approval", async () => {
+    const h = await harness();
+    await h.run("new", "tdd-phase -- Expose behavior");
+    await expect(h.run("tdd", "tdd-phase off -- too early")).rejects.toThrow("plan-approval");
+  });
+
+  it("requires a TDD decision before plan approval and rejects a second decision", async () => {
+    const h = await harness([...validOutputs]);
+    await reachPlanApproval(h, "tdd-gate");
+    await expect(h.run("approve", "tdd-gate plan")).resolves.toContain("/wayfinder:tdd tdd-gate");
+    expect(await h.run("status", "tdd-gate")).toContain("Phase: plan-approval");
+    await expect(h.run("approve", "tdd-gate plan")).resolves.toContain("TDD decision required");
+    expect(await h.run("status", "tdd-gate")).toContain("TDD: decision pending");
+    await expect(h.run("tdd", "tdd-gate off -- documentation only")).resolves.toContain(
+      "No test-first evidence",
+    );
+    await expect(h.run("tdd", "tdd-gate strict -- change my mind")).rejects.toThrow("immutable");
+    await expect(h.run("approve", "tdd-gate plan")).resolves.toContain("Approved plan");
+    expect(await h.run("status", "tdd-gate")).toContain("Phase: implementation");
+  });
+
+  it("persists the interactive TDD decision with source recommended", async () => {
+    const h = await harness([...validOutputs], true, { approval: "approve", tdd: "off" });
+    await reachPlanApproval(h, "tdd-interactive");
+    await h.run("approve", "tdd-interactive plan");
+    const state = JSON.parse(
+      await readFile(
+        join(h.workspace, ".alisio/wayfinder/changes/tdd-interactive/state.json"),
+        "utf8",
+      ),
+    );
+    expect(state.tdd).toMatchObject({ decision: "off", source: "recommended" });
+    expect(state.phase).toBe("implementation");
+  });
+
+  it("blocks when the interactive TDD answer is invalid and does not advance", async () => {
+    const h = await harness([...validOutputs], true, { approval: "approve" });
+    await reachPlanApproval(h, "tdd-invalid");
+    await expect(h.run("approve", "tdd-invalid plan")).resolves.toContain(
+      "/wayfinder:tdd tdd-invalid",
+    );
+    const state = JSON.parse(
+      await readFile(join(h.workspace, ".alisio/wayfinder/changes/tdd-invalid/state.json"), "utf8"),
+    );
+    expect(state.tdd).toBeUndefined();
+    expect(state.phase).toBe("plan-approval");
+  });
+
+  it("allows implementation without test-first evidence when TDD is off", async () => {
+    const h = await harness([...validOutputs]);
+    await reachImplementation(h, "tdd-off");
+    await expect(h.run("build", "tdd-off")).resolves.toContain("Completed UNIT-001");
+  });
+
+  it("rejects a strict unit that reports no test path and keeps it pending", async () => {
+    const h = await harness([...validOutputs]);
+    await reachImplementation(h, "tdd-no-test-path", "strict");
+    await expect(h.run("build", "tdd-no-test-path")).rejects.toThrow(
+      "change at least one test file",
+    );
+    expect(await h.run("status", "tdd-no-test-path")).toContain("Phase: implementation");
+    const state = JSON.parse(
+      await readFile(
+        join(h.workspace, ".alisio/wayfinder/changes/tdd-no-test-path/state.json"),
+        "utf8",
+      ),
+    );
+    expect(state.units[0].status).toBe("pending");
+    expect(state.tdd.decision).toBe("strict");
+  });
+
+  it("rejects a strict unit that reports a test path without testFirst evidence", async () => {
+    const noTestFirst = JSON.stringify({
+      schemaVersion: 1,
+      unitId: "UNIT-001",
+      summary: "Added behavior",
+      changedPaths: ["src/health.test.ts"],
+      checks: [{ command: "pnpm test", status: "passed", summary: "ok" }],
+      notes: [],
+    });
+    const h = await harness([...validOutputs.slice(0, 5), noTestFirst]);
+    await reachImplementation(h, "tdd-no-test-first", "strict");
+    await expect(h.run("build", "tdd-no-test-first")).rejects.toThrow(
+      "provide test-first evidence",
+    );
+    expect(await h.run("status", "tdd-no-test-first")).toContain("Phase: implementation");
+  });
+
+  it("rejects a strict unit when the failing and passing runs reference different scopes", async () => {
+    const mismatch = JSON.stringify({
+      schemaVersion: 1,
+      unitId: "UNIT-001",
+      summary: "Added behavior",
+      changedPaths: ["src/health.test.ts"],
+      checks: [{ command: "pnpm test", status: "passed", summary: "ok" }],
+      testFirst: {
+        failingCommand: "pnpm vitest run src/a.test.ts",
+        passingCommand: "pnpm vitest run src/b.test.ts",
+      },
+      notes: [],
+    });
+    const h = await harness([...validOutputs.slice(0, 5), mismatch]);
+    await reachImplementation(h, "tdd-mismatch", "strict");
+    await expect(h.run("build", "tdd-mismatch")).rejects.toThrow("same test scope");
+  });
+
+  it("accepts a strict unit with complete test-first evidence", async () => {
+    const complete = JSON.stringify({
+      schemaVersion: 1,
+      unitId: "UNIT-001",
+      summary: "Added behavior",
+      changedPaths: ["src/health.test.ts"],
+      checks: [{ command: "pnpm test", status: "passed", summary: "ok" }],
+      testFirst: {
+        failingCommand: "pnpm vitest run src/health.test.ts",
+        failingEvidenceRef: "first run: 1 failing",
+        passingCommand: "pnpm vitest run src/health.test.ts",
+      },
+      notes: [],
+    });
+    const h = await harness([...validOutputs.slice(0, 5), complete]);
+    await reachImplementation(h, "tdd-complete", "strict");
+    await expect(h.run("build", "tdd-complete")).resolves.toContain("Completed UNIT-001");
+    expect(await h.run("status", "tdd-complete")).toContain("Phase: verification");
+    const plan = await readFile(
+      join(h.workspace, ".alisio/wayfinder/changes/tdd-complete/plan.md"),
+      "utf8",
+    );
+    expect(plan).toContain("Requirements: REQ-001");
+  });
+
+  it("rejects a plan exemption without justification and accepts one with justification", async () => {
+    const unit = {
+      id: "UNIT-001",
+      title: "Bump dependency",
+      goal: "Bump dependency version",
+      requirements: ["REQ-001"],
+      paths: ["package.json"],
+      checks: ["pnpm test"],
+    };
+    expect(() =>
+      validatePlan(
+        { schemaVersion: 1, units: [{ ...unit, tddExempt: true }] },
+        new Set(["REQ-001"]),
+      ),
+    ).toThrow("tddExemptReason");
+    expect(() =>
+      validatePlan(
+        {
+          schemaVersion: 1,
+          units: [
+            { ...unit, tddExempt: true, tddExemptReason: "Dependency bump with no behavior" },
+          ],
+        },
+        new Set(["REQ-001"]),
+      ),
+    ).not.toThrow();
+    expect(() =>
+      validatePlan(
+        {
+          schemaVersion: 1,
+          units: [{ ...unit, tddExempt: true, tddExemptReason: "   " }],
+        },
+        new Set(["REQ-001"]),
+      ),
+    ).toThrow();
+
+    const exemptPlan = JSON.stringify({
+      schemaVersion: 1,
+      units: [
+        {
+          ...unit,
+          tddExempt: true,
+          tddExemptReason: "Dependency bump with no behavior",
+        },
+      ],
+    });
+    const exemptImplementation = JSON.stringify({
+      schemaVersion: 1,
+      unitId: "UNIT-001",
+      summary: "Bumped dependency",
+      changedPaths: ["package.json"],
+      checks: [{ command: "pnpm test", status: "passed", summary: "ok" }],
+      notes: [],
+    });
+    const h = await harness([
+      validOutputs[0],
+      validOutputs[1],
+      validOutputs[2],
+      validOutputs[3],
+      exemptPlan,
+      exemptImplementation,
+    ]);
+    await reachImplementation(h, "tdd-exempt", "strict");
+    await expect(h.run("build", "tdd-exempt")).resolves.toContain("Completed UNIT-001");
+    expect(await h.run("status", "tdd-exempt")).toContain("Phase: verification");
+  });
+
+  it("grandfathers a legacy state past plan approval without a tdd decision", async () => {
+    const h = await harness([...validOutputs]);
+    await reachPlanApproval(h, "tdd-legacy");
+    const stateFile = join(h.workspace, ".alisio/wayfinder/changes/tdd-legacy/state.json");
+    const legacy = JSON.parse(await readFile(stateFile, "utf8"));
+    expect(legacy.tdd).toBeUndefined();
+    legacy.planApproved = true;
+    legacy.phase = "implementation";
+    await writeFile(stateFile, JSON.stringify(legacy));
+    expect(await h.run("status", "tdd-legacy")).toContain("TDD: decision pending");
+    await expect(h.run("build", "tdd-legacy")).resolves.toContain("Completed UNIT-001");
+    expect(await h.run("status", "tdd-legacy")).toContain("Phase: verification");
+  });
+
+  it("validates persisted tddExempt units and rejects blank or invalid reasons", () => {
+    const timestamp = new Date().toISOString();
+    const base = {
+      schemaVersion: 2,
+      name: "exempt-state",
+      intent: "intent",
+      phase: "implementation",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      proposalApproved: true,
+      planApproved: true,
+      requirementIds: ["REQ-001"],
+      remediationCount: 0,
+    };
+    const unit = {
+      id: "UNIT-001",
+      title: "Bump dependency",
+      goal: "Bump dependency",
+      requirements: ["REQ-001"],
+      paths: ["package.json"],
+      checks: ["pnpm test"],
+      status: "pending",
+      tddExempt: true,
+      tddExemptReason: "Dependency bump with no behavior",
+    };
+    expect(() => validateState({ ...base, units: [unit] })).not.toThrow();
+    for (const bad of ["", "   "]) {
+      expect(() => validateState({ ...base, units: [{ ...unit, tddExemptReason: bad }] })).toThrow(
+        "Invalid Wayfinder state",
+      );
+    }
+    const withoutReason: Record<string, unknown> = { ...unit };
+    delete withoutReason.tddExemptReason;
+    expect(() => validateState({ ...base, units: [withoutReason] })).toThrow(
+      "Invalid Wayfinder state",
+    );
+    expect(() => validateState({ ...base, units: [{ ...unit, tddExemptReason: 7 }] })).toThrow(
+      "Invalid Wayfinder state",
+    );
   });
 });

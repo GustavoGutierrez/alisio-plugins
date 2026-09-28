@@ -175,6 +175,17 @@ function validMutation(value: unknown): boolean {
   return true;
 }
 
+function validTdd(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return (
+    (value.decision === "strict" || value.decision === "off") &&
+    typeof value.reason === "string" &&
+    Boolean(value.reason.trim()) &&
+    isIso(value.decidedAt) &&
+    (value.source === "recommended" || value.source === "manual")
+  );
+}
+
 function validUnit(value: unknown): value is WorkUnit {
   if (!isRecord(value)) return false;
   const base =
@@ -190,6 +201,11 @@ function validUnit(value: unknown): value is WorkUnit {
     (value.kind === undefined ||
       value.kind === "implementation" ||
       value.kind === "test-strengthening") &&
+    (value.tddExempt === undefined || typeof value.tddExempt === "boolean") &&
+    (value.tddExemptReason === undefined ||
+      (typeof value.tddExemptReason === "string" && value.tddExemptReason.trim().length > 0)) &&
+    (value.tddExempt !== true ||
+      (typeof value.tddExemptReason === "string" && value.tddExemptReason.trim().length > 0)) &&
     (value.status === "pending" || value.status === "completed");
   if (!base) return false;
   if (value.status === "pending")
@@ -225,6 +241,8 @@ export function validateState(value: unknown, expectedName?: string): ChangeStat
       isIso(verification.checkedAt));
   const mutation = value.mutation;
   const validMutationBlock = mutation === undefined || validMutation(mutation);
+  const tdd = value.tdd;
+  const validTddBlock = tdd === undefined || validTdd(tdd);
   if (
     value.schemaVersion !== 2 ||
     typeof value.name !== "string" ||
@@ -250,7 +268,8 @@ export function validateState(value: unknown, expectedName?: string): ChangeStat
         (value.mutationRemediationCount as number) < 0 ||
         (value.mutationRemediationCount as number) > 2)) ||
     !validVerification ||
-    !validMutationBlock
+    !validMutationBlock ||
+    !validTddBlock
   ) {
     throw new Error(`Invalid Wayfinder state${expectedName ? ` for ${expectedName}` : ""}`);
   }

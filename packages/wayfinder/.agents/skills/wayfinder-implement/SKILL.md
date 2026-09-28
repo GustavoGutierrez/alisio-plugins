@@ -14,6 +14,8 @@ Load for exactly one pending unit from an approved plan.
 ## Hard Rules
 
 - Change only what the unit requires.
+- Under strict TDD, write the failing test first, capture the failing run, then make it pass.
+- Never fabricate a failing run, and never change production code merely to satisfy a check.
 - For a `test-strengthening` unit, edit test files only; never change production code.
 - Never edit `.alisio/wayfinder` lifecycle files.
 - Run focused commands and report only successful evidence.

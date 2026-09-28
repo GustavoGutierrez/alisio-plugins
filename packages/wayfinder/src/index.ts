@@ -79,6 +79,12 @@ const plugin = definePlugin({
       coordinator.mutate.bind(coordinator),
     );
     register(
+      "tdd",
+      "Record the test-first decision (strict or off) with a reason",
+      "<change> <strict|off> -- <reason>",
+      coordinator.tdd.bind(coordinator),
+    );
+    register(
       "build",
       "Implement the next planned work unit",
       "<change>",

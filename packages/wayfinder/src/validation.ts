@@ -149,6 +149,17 @@ export function validatePlan(raw: unknown, requirementIds: Set<string>): PlanOut
     if (requirements.some((requirement) => !requirementIds.has(requirement))) {
       throw new Error(`${id} references an unknown requirement`);
     }
+    const tddExempt = entry.tddExempt;
+    if (tddExempt !== undefined && typeof tddExempt !== "boolean") {
+      throw new Error(`${id}.tddExempt must be boolean`);
+    }
+    const tddExemptReason =
+      entry.tddExemptReason === undefined
+        ? undefined
+        : string(entry.tddExemptReason, `${id}.tddExemptReason`);
+    if (tddExempt === true && !tddExemptReason) {
+      throw new Error(`${id} is tddExempt and requires a non-empty tddExemptReason`);
+    }
     return {
       id,
       title: string(entry.title, `${id}.title`),
@@ -156,6 +167,8 @@ export function validatePlan(raw: unknown, requirementIds: Set<string>): PlanOut
       requirements,
       paths: strings(entry.paths, `${id}.paths`, true).map(assertRelativePath),
       checks: strings(entry.checks, `${id}.checks`, true),
+      ...(tddExempt !== undefined ? { tddExempt } : {}),
+      ...(tddExemptReason !== undefined ? { tddExemptReason } : {}),
     };
   });
   if (!units.length || new Set(units.map(({ id }) => id)).size !== units.length) {
@@ -174,12 +187,28 @@ export function validateImplementation(raw: unknown, expectedUnit: string): Impl
   if (string(value.unitId, "unitId") !== expectedUnit) {
     throw new Error(`Implementation output must describe ${expectedUnit}`);
   }
+  let testFirst: ImplementationOutput["testFirst"];
+  if (value.testFirst !== undefined) {
+    const entry = object(value.testFirst, "testFirst");
+    const failingCommand = string(entry.failingCommand, "testFirst.failingCommand");
+    const passingCommand = string(entry.passingCommand, "testFirst.passingCommand");
+    const failingEvidenceRef =
+      entry.failingEvidenceRef === undefined
+        ? undefined
+        : string(entry.failingEvidenceRef, "testFirst.failingEvidenceRef");
+    testFirst = {
+      failingCommand,
+      passingCommand,
+      ...(failingEvidenceRef !== undefined ? { failingEvidenceRef } : {}),
+    };
+  }
   return {
     schemaVersion: 1,
     unitId: expectedUnit,
     summary: string(value.summary, "summary"),
     changedPaths: strings(value.changedPaths, "changedPaths", true).map(assertRelativePath),
     checks: evidence(value.checks, "checks"),
+    ...(testFirst !== undefined ? { testFirst } : {}),
     notes: strings(value.notes, "notes"),
   };
 }

@@ -43,6 +43,9 @@ export interface WorkUnit {
   status: "pending" | "completed";
   /** Optional unit intent; absent means a normal implementation unit. */
   kind?: "implementation" | "test-strengthening";
+  /** When true, strict TDD does not require test-first evidence; a justification is mandatory. */
+  tddExempt?: boolean;
+  tddExemptReason?: string;
   changedPaths?: string[];
   evidence?: CommandEvidence[];
 }
@@ -54,6 +57,15 @@ export type MutationDecisionValue = "run" | "skip";
 export type MutationScopeSupport = "paths" | "none";
 /** Whether the coordinator's concurrency bound is actually passed to the tool. */
 export type MutationConcurrency = "applied" | "unsupported";
+
+export type TddDecisionValue = "strict" | "off";
+
+export interface TddState {
+  decision: TddDecisionValue;
+  reason: string;
+  decidedAt: string;
+  source: "recommended" | "manual";
+}
 
 export interface MutationDecision {
   decision: MutationDecisionValue;
@@ -126,6 +138,8 @@ export interface ChangeState {
   /** Optional for additive compatibility; absent legacy states normalize to 0 on load. */
   mutationRemediationCount?: number;
   mutation?: MutationState;
+  /** Optional test-first decision; absent means the plan-approval gate is still pending. */
+  tdd?: TddState;
   verification?: VerificationSummary;
 }
 
@@ -183,6 +197,11 @@ export interface ImplementationOutput {
   summary: string;
   changedPaths: string[];
   checks: CommandEvidence[];
+  testFirst?: {
+    failingCommand: string;
+    passingCommand: string;
+    failingEvidenceRef?: string;
+  };
   notes: string[];
 }
 

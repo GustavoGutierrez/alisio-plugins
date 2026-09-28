@@ -16,6 +16,7 @@ Load when specification and design are complete.
 - Cover every requirement in at least one work unit.
 - Keep each unit independently understandable and verifiable.
 - Include expected paths and focused checks.
+- Mark `tddExempt: true` only for units that cannot be test-first, and always give a non-empty `tddExemptReason`.
 - Do not edit files or approve the resulting plan.
 
 ## Decision Gates
@@ -25,6 +26,7 @@ Load when specification and design are complete.
 | Multiple unrelated outcomes | Split it |
 | No focused verification | Add a check |
 | Requirement uncovered | Add or revise a unit |
+| Cannot be test-first | Set `tddExempt: true` with a justification |
 
 ## Execution Steps
 
