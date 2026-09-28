@@ -15,7 +15,8 @@ Load after all approved work units report completion.
 
 - Treat implementation reports as context, never proof.
 - Inspect actual files and execute focused checks independently.
-- Cover every requirement exactly once with non-empty evidence.
+- Cover every requirement the coordinator assigns exactly once with non-empty evidence.
+- When a targeted requirement subset is supplied, cover exactly that subset and no others.
 - Fail on missing evidence, failed behavior, or any blocker.
 - Never write or delegate.
 

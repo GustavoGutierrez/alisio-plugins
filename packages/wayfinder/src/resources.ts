@@ -16,6 +16,7 @@ export const roleSkills: Record<ResourceRole, string> = {
   planner: "wayfinder-plan",
   implementer: "wayfinder-implement",
   verifier: "wayfinder-verify",
+  mutationist: "wayfinder-mutate",
   archivist: "wayfinder-archive",
 };
 

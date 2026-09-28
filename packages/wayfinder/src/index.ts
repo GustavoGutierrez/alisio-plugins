@@ -4,6 +4,17 @@ import { resourcePaths } from "./resources.js";
 import { VERSION } from "./version.js";
 
 export { phaseProfiles, phaseRoles, WayfinderCoordinator } from "./coordinator.js";
+export {
+  assertScopePath,
+  boundedSurvivors,
+  buildMutationPlan,
+  detectStack,
+  inspectMutationEnvironment,
+  isTestPath,
+  mutationBounds,
+  mutationRemediationLimit,
+  nonEquivalentSurvivors,
+} from "./mutation.js";
 export { loadRoleInstructions, parseResource, resourcePaths, roleSkills } from "./resources.js";
 export { assertRelativePath, atomicWrite, validateChangeName, validateState } from "./storage.js";
 export * from "./types.js";
@@ -60,6 +71,12 @@ const plugin = definePlugin({
       "Explicitly approve a reviewed proposal or plan",
       "<change> <proposal|plan>",
       coordinator.approve.bind(coordinator),
+    );
+    register(
+      "mutate",
+      "Record the mutation-testing decision (run or skip) with a reason",
+      "<change> <run|skip> [--mode changed|full] -- <reason>",
+      coordinator.mutate.bind(coordinator),
     );
     register(
       "build",

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, readdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
-import { type ChangeState, phases, type WorkUnit } from "./types.js";
+import { type ChangeState, type NormalizedChangeState, phases, type WorkUnit } from "./types.js";
 
 export const changeNamePattern = /^[a-z0-9][a-z0-9-]{0,47}$/;
 
@@ -63,7 +63,16 @@ export async function writeState(workspace: string, state: ChangeState): Promise
   );
 }
 
-export async function readState(workspace: string, name: string): Promise<ChangeState> {
+/**
+ * Single normalization point for additively optional fields. Older `schemaVersion: 2` states predate
+ * the mutation fields, so every loaded state gets `mutationRemediationCount: 0` when it is absent.
+ * `mutation` itself stays optional and is never synthesized.
+ */
+function normalizeState(state: ChangeState): NormalizedChangeState {
+  return { ...state, mutationRemediationCount: state.mutationRemediationCount ?? 0 };
+}
+
+export async function readState(workspace: string, name: string): Promise<NormalizedChangeState> {
   const raw = await readFile(join(changeDirectory(workspace, name), "state.json"), "utf8");
   let value: unknown;
   try {
@@ -71,7 +80,7 @@ export async function readState(workspace: string, name: string): Promise<Change
   } catch {
     throw new Error(`Invalid Wayfinder state JSON for ${name}`);
   }
-  return validateState(value, name);
+  return normalizeState(validateState(value, name));
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -80,6 +89,91 @@ const isStrings = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === "string" && item.length > 0);
 const isIso = (value: unknown): value is string =>
   typeof value === "string" && !Number.isNaN(Date.parse(value));
+const isPositiveInt = (value: unknown): value is number =>
+  typeof value === "number" && Number.isInteger(value) && value > 0;
+
+const mutationStacks = ["javascript", "rust", "python", "go", "java", "unknown"] as const;
+const mutationModes = ["changed", "full"] as const;
+
+function validSurvivor(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (
+    typeof value.file !== "string" ||
+    !value.file.length ||
+    typeof value.description !== "string" ||
+    !value.description.length ||
+    typeof value.equivalent !== "boolean" ||
+    typeof value.justification !== "string"
+  ) {
+    return false;
+  }
+  if (value.line !== undefined && !isPositiveInt(value.line)) return false;
+  if (value.equivalent && !value.justification.length) return false;
+  return true;
+}
+
+function validMutation(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  const decision = value.decision;
+  if (decision !== undefined) {
+    if (!isRecord(decision)) return false;
+    if (
+      (decision.decision !== "run" && decision.decision !== "skip") ||
+      !mutationModes.includes(decision.mode as (typeof mutationModes)[number]) ||
+      typeof decision.reason !== "string" ||
+      !decision.reason.trim() ||
+      !isIso(decision.decidedAt) ||
+      !mutationStacks.includes(decision.stack as (typeof mutationStacks)[number]) ||
+      (decision.source !== "recommended" && decision.source !== "manual") ||
+      (decision.tool !== undefined && (typeof decision.tool !== "string" || !decision.tool.length))
+    ) {
+      return false;
+    }
+  }
+  const run = value.run;
+  if (run !== undefined) {
+    if (!isRecord(run)) return false;
+    if (
+      typeof run.tool !== "string" ||
+      !run.tool.length ||
+      !mutationStacks.includes(run.stack as (typeof mutationStacks)[number]) ||
+      !mutationModes.includes(run.mode as (typeof mutationModes)[number]) ||
+      (run.scopeSupport !== undefined &&
+        run.scopeSupport !== "paths" &&
+        run.scopeSupport !== "none") ||
+      (run.concurrencyApplied !== undefined && typeof run.concurrencyApplied !== "boolean") ||
+      !isStrings(run.scope) ||
+      typeof run.command !== "string" ||
+      !Array.isArray(run.survivors) ||
+      !run.survivors.every(validSurvivor) ||
+      !Number.isInteger(run.failingSurvivors) ||
+      (run.failingSurvivors as number) < 0 ||
+      !Number.isInteger(run.equivalentSurvivors) ||
+      (run.equivalentSurvivors as number) < 0 ||
+      (run.mutationScore !== undefined && typeof run.mutationScore !== "number") ||
+      typeof run.summary !== "string" ||
+      !run.summary.length ||
+      !isIso(run.ranAt) ||
+      (run.truncated !== undefined && typeof run.truncated !== "boolean") ||
+      (run.unavailableReason !== undefined &&
+        (typeof run.unavailableReason !== "string" || !run.unavailableReason.length))
+    ) {
+      return false;
+    }
+  }
+  const targeted = value.targeted;
+  if (targeted !== undefined) {
+    if (!isRecord(targeted)) return false;
+    if (
+      !isStrings(targeted.files) ||
+      !isStrings(targeted.requirementIds) ||
+      !isPositiveInt(targeted.attempt)
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function validUnit(value: unknown): value is WorkUnit {
   if (!isRecord(value)) return false;
@@ -93,6 +187,9 @@ function validUnit(value: unknown): value is WorkUnit {
     isStrings(value.requirements) &&
     isStrings(value.paths) &&
     isStrings(value.checks) &&
+    (value.kind === undefined ||
+      value.kind === "implementation" ||
+      value.kind === "test-strengthening") &&
     (value.status === "pending" || value.status === "completed");
   if (!base) return false;
   if (value.status === "pending")
@@ -126,6 +223,8 @@ export function validateState(value: unknown, expectedName?: string): ChangeStat
       verification.summary.length > 0 &&
       isStrings(verification.blockers) &&
       isIso(verification.checkedAt));
+  const mutation = value.mutation;
+  const validMutationBlock = mutation === undefined || validMutation(mutation);
   if (
     value.schemaVersion !== 2 ||
     typeof value.name !== "string" ||
@@ -146,7 +245,12 @@ export function validateState(value: unknown, expectedName?: string): ChangeStat
     !Number.isInteger(value.remediationCount) ||
     (value.remediationCount as number) < 0 ||
     (value.remediationCount as number) > 2 ||
-    !validVerification
+    (value.mutationRemediationCount !== undefined &&
+      (!Number.isInteger(value.mutationRemediationCount) ||
+        (value.mutationRemediationCount as number) < 0 ||
+        (value.mutationRemediationCount as number) > 2)) ||
+    !validVerification ||
+    !validMutationBlock
   ) {
     throw new Error(`Invalid Wayfinder state${expectedName ? ` for ${expectedName}` : ""}`);
   }

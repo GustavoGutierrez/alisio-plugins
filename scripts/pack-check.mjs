@@ -72,6 +72,7 @@ for (const [dir, manifest] of packageDirs) {
         "planner",
         "implementer",
         "verifier",
+        "mutationist",
         "archivist",
       ];
       const expectedSkills = [
@@ -83,6 +84,7 @@ for (const [dir, manifest] of packageDirs) {
         "wayfinder-plan",
         "wayfinder-implement",
         "wayfinder-verify",
+        "wayfinder-mutate",
         "wayfinder-archive",
       ];
       for (const agent of expectedAgents) {

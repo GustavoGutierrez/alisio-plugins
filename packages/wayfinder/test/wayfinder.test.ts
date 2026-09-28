@@ -5,17 +5,25 @@ import type { ChildSessionSpec, PluginAPI } from "@alisio/sdk";
 import { afterEach, describe, expect, it } from "vitest";
 import plugin, {
   assertRelativePath,
+  assertScopePath,
   atomicWrite,
+  boundedSurvivors,
+  buildMutationPlan,
   executionRoles,
+  inspectMutationEnvironment,
+  isTestPath,
   loadRoleInstructions,
+  mutationBounds,
   parseResource,
   phaseProfiles,
   phaseRoles,
   resourcePaths,
   roleSkills,
   validateChangeName,
+  validateMutation,
   validatePlan,
   validateState,
+  validateTargetedVerification,
   validateVerification,
 } from "../src/index.js";
 
@@ -29,7 +37,11 @@ afterEach(async () => {
   await Promise.all(workspaces.splice(0).map((path) => rm(path, { recursive: true, force: true })));
 });
 
-async function harness(outputs: FakeResult[] = [], interactive = false) {
+async function harness(
+  outputs: FakeResult[] = [],
+  interactive = false,
+  answers: Record<string, string> = { approval: "approve" },
+) {
   const workspace = await mkdtemp(join(tmpdir(), "wayfinder-test-"));
   workspaces.push(workspace);
   const commands = new Map<string, Handler>();
@@ -76,7 +88,7 @@ async function harness(outputs: FakeResult[] = [], interactive = false) {
       status() {},
       interactive: () => interactive,
       async askQuestions() {
-        return { approval: "approve" };
+        return answers;
       },
     },
   } as unknown as PluginAPI;
@@ -176,6 +188,94 @@ async function reachImplementation(h: Awaited<ReturnType<typeof harness>>, name 
   await h.run("approve", `${name} plan`);
 }
 
+async function reachVerification(h: Awaited<ReturnType<typeof harness>>, name = "health-check") {
+  await reachImplementation(h, name);
+  await h.run("build", name);
+}
+
+const cleanMutation = JSON.stringify({
+  schemaVersion: 1,
+  tool: "stryker",
+  stack: "javascript",
+  survivors: [],
+  mutationScore: 100,
+  summary: "No survivors",
+});
+
+const survivorMutation = JSON.stringify({
+  schemaVersion: 1,
+  tool: "stryker",
+  stack: "javascript",
+  survivors: [
+    {
+      file: "src/health.ts",
+      description: "String literal not asserted",
+      equivalent: false,
+      justification: "",
+    },
+  ],
+  mutationScore: 80,
+  summary: "One surviving mutant",
+});
+
+function implementationOutput(unitId: string): string {
+  return JSON.stringify({
+    schemaVersion: 1,
+    unitId,
+    summary: "Strengthened assertions",
+    changedPaths: ["src/health.test.ts"],
+    checks: [
+      {
+        command: "pnpm exec stryker run --mutate src/health.ts --concurrency 2 --reporters json",
+        status: "passed",
+        summary: "mutants killed",
+      },
+    ],
+    notes: [],
+  });
+}
+
+const targetedVerification = JSON.stringify({
+  schemaVersion: 1,
+  passed: true,
+  summary: "Targeted requirements still hold",
+  requirements: [{ id: "REQ-001", status: "passed", evidence: ["assertions strengthened"] }],
+  checks: [{ command: "pnpm test", status: "passed", summary: "suite passed" }],
+  blockers: [],
+});
+
+function archiveOutput(completedUnits: string[]): string {
+  return JSON.stringify({
+    schemaVersion: 1,
+    ready: true,
+    artifacts: [
+      "intent.md",
+      "discovery.md",
+      "proposal.md",
+      "specification.md",
+      "design.md",
+      "plan.md",
+      "progress.md",
+      "verification.md",
+    ],
+    completedUnits,
+    requirements: ["REQ-001"],
+    blockers: [],
+    summary: "Complete",
+  });
+}
+
+async function stubJavaScriptProject(h: Awaited<ReturnType<typeof harness>>, withStryker: boolean) {
+  await writeFile(
+    join(h.workspace, "package.json"),
+    JSON.stringify({
+      name: "fixture",
+      devDependencies: withStryker ? { "@stryker-mutator/core": "^8.0.0" } : {},
+    }),
+  );
+  if (withStryker) await writeFile(join(h.workspace, "pnpm-lock.yaml"), "");
+}
+
 describe("canonical package resources", () => {
   it("ships and loads the exact agent and focused skill inventories", async () => {
     const expectedAgents = ["coordinator", ...executionRoles];
@@ -208,6 +308,7 @@ describe("canonical package resources", () => {
       "answer",
       "next",
       "approve",
+      "mutate",
       "build",
       "verify",
       "close",
@@ -230,7 +331,7 @@ describe("canonical package resources", () => {
 });
 
 describe("permission and direct execution boundaries", () => {
-  it("allows writes only for implementer and process only for implementer and verifier", () => {
+  it("allows writes only for implementer and process for implementer, verifier, and mutationist", () => {
     for (const [role, profile] of Object.entries(phaseProfiles)) {
       expect(profile.tools?.deny).toEqual(
         expect.arrayContaining(["task", "delegate", "subagent", "sessions_create"]),
@@ -245,7 +346,7 @@ describe("permission and direct execution boundaries", () => {
         expect(profile.tools?.allow).not.toContain("write_file");
       }
       expect(profile.permission?.process).toBe(
-        role === "implementer" || role === "verifier" ? "allow" : "deny",
+        role === "implementer" || role === "verifier" || role === "mutationist" ? "allow" : "deny",
       );
     }
   });
@@ -296,6 +397,25 @@ describe("validation and persistence gates", () => {
         remediationCount: 0,
       }),
     ).toThrow();
+  });
+
+  it("accepts a legacy state without mutation fields and keeps mutation optional", () => {
+    const timestamp = new Date().toISOString();
+    const state = validateState({
+      schemaVersion: 2,
+      name: "legacy",
+      intent: "intent",
+      phase: "discovery",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      proposalApproved: false,
+      planApproved: false,
+      requirementIds: [],
+      units: [],
+      remediationCount: 0,
+    });
+    expect(state.mutation).toBeUndefined();
+    expect(state.mutationRemediationCount).toBeUndefined();
   });
 
   it("requires complete plan coverage and exact verification coverage", () => {
@@ -381,6 +501,9 @@ describe("complete lifecycle", () => {
     await h.run("approve", "health-check plan");
     await h.run("build", "health-check");
     await h.run("verify", "health-check");
+    await expect(
+      h.run("mutate", "health-check skip -- low-risk additive change"),
+    ).resolves.toContain("advanced to archive");
     await expect(h.run("close", "health-check")).resolves.toContain("atomically archived");
     const archives = await readdir(join(h.workspace, ".alisio/wayfinder/archive"));
     expect(archives).toHaveLength(1);
@@ -444,11 +567,43 @@ describe("complete lifecycle", () => {
     expect(await h.run("status", "bounded")).toContain("Phase: verification");
   });
 
+  it("loads and archives a legacy state that predates the mutation fields", async () => {
+    const h = await harness([...validOutputs]);
+    await h.run("new", "legacy -- Additive compatibility");
+    const stateFile = join(h.workspace, ".alisio/wayfinder/changes/legacy/state.json");
+    const legacy = JSON.parse(await readFile(stateFile, "utf8"));
+    delete legacy.mutationRemediationCount;
+    delete legacy.mutation;
+    await writeFile(stateFile, JSON.stringify(legacy));
+    expect(await h.run("status", "legacy")).toContain("Mutation: decision pending");
+    await h.run("next", "legacy");
+    await h.run("next", "legacy");
+    await h.run("approve", "legacy proposal");
+    await h.run("next", "legacy");
+    await h.run("next", "legacy");
+    await h.run("next", "legacy");
+    await h.run("approve", "legacy plan");
+    await h.run("build", "legacy");
+    await h.run("verify", "legacy");
+    await h.run("mutate", "legacy skip -- legacy state without mutation fields");
+    await expect(h.run("close", "legacy")).resolves.toContain("atomically archived");
+    const archives = await readdir(join(h.workspace, ".alisio/wayfinder/archive"));
+    const archived = JSON.parse(
+      await readFile(
+        join(h.workspace, ".alisio/wayfinder/archive", archives[0] as string, "state.json"),
+        "utf8",
+      ),
+    );
+    expect(archived.mutationRemediationCount).toBe(0);
+    expect(archived.mutation.decision.decision).toBe("skip");
+  });
+
   it("refuses archive when a required artifact is missing", async () => {
     const h = await harness([...validOutputs.slice(0, 7)]);
     await reachImplementation(h, "missing-artifact");
     await h.run("build", "missing-artifact");
     await h.run("verify", "missing-artifact");
+    await h.run("mutate", "missing-artifact skip -- artifact inventory test");
     await rm(join(h.workspace, ".alisio/wayfinder/changes/missing-artifact/design.md"), {
       force: true,
     });
@@ -464,5 +619,472 @@ describe("complete lifecycle", () => {
       '{"schemaVersion":2,"name":"corrupt"}',
     );
     await expect(h.run("status", "corrupt")).rejects.toThrow("Invalid Wayfinder state");
+  });
+});
+
+describe("mutation testing", () => {
+  it("detects JavaScript and non-JavaScript stacks from their own manifests", async () => {
+    const js = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(js);
+    await writeFile(
+      join(js, "package.json"),
+      JSON.stringify({ devDependencies: { "@stryker-mutator/core": "^8.0.0" } }),
+    );
+    await writeFile(join(js, "pnpm-lock.yaml"), "");
+    const jsEnv = await inspectMutationEnvironment(js);
+    expect(jsEnv.stack).toBe("javascript");
+    expect(jsEnv.packageManager).toBe("pnpm");
+    expect(jsEnv.tool?.name).toBe("stryker");
+    const many = Array.from({ length: 25 }, (_, index) => `src/f${index}.ts`);
+    const jsPlan = buildMutationPlan(jsEnv, { mode: "changed", changedPaths: many });
+    expect(jsPlan.available).toBe(true);
+    expect(jsPlan.command).toContain("stryker");
+    expect(jsPlan.command).toContain("--concurrency 2");
+    expect(jsPlan.concurrency).toBe(mutationBounds.concurrency);
+    expect(jsPlan.scopeSupport).toBe("paths");
+    expect(jsPlan.concurrencyApplied).toBe(true);
+    expect(jsPlan.timeoutMs).toBe(mutationBounds.timeoutMs);
+    expect(jsPlan.scope).toHaveLength(mutationBounds.scopeLimit);
+    const full = buildMutationPlan(jsEnv, { mode: "full", changedPaths: many });
+    expect(full.scope).toEqual([]);
+    expect(full.command).not.toContain("--mutate");
+
+    const rust = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(rust);
+    await writeFile(join(rust, "Cargo.toml"), '[dev-dependencies]\ncargo-mutants = "0.6"\n');
+    const rustEnv = await inspectMutationEnvironment(rust);
+    expect(rustEnv.stack).toBe("rust");
+    expect(rustEnv.tool?.name).toBe("cargo-mutants");
+    const rustPlan = buildMutationPlan(rustEnv, { mode: "changed", changedPaths: ["src/lib.rs"] });
+    expect(rustPlan.available).toBe(true);
+    expect(rustPlan.scopeSupport).toBe("paths");
+    expect(rustPlan.concurrencyApplied).toBe(true);
+    expect(rustPlan.command).toContain("cargo mutants");
+    expect(rustPlan.command).toContain("--jobs 2");
+  });
+
+  it("never auto-installs and reports unavailable tooling without blocking", async () => {
+    const root = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(root);
+    await writeFile(join(root, "package.json"), JSON.stringify({ name: "plain" }));
+    const env = await inspectMutationEnvironment(root);
+    expect(env.stack).toBe("javascript");
+    expect(env.tool).toBeUndefined();
+    const plan = buildMutationPlan(env, { mode: "changed", changedPaths: ["src/a.ts"] });
+    expect(plan.available).toBe(false);
+    expect(plan.reason).toContain("already-installed");
+  });
+
+  it("keeps mutation scope paths free of shell metacharacters", () => {
+    expect(() => assertScopePath("src/a.ts; rm -rf /")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath("a/../b")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath("/etc/passwd")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath("src/a$(whoami).ts")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath("-rf.ts")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath("src/-flag.ts")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath(" src/a.ts")).toThrow("Unsafe mutation scope path");
+    expect(() => assertScopePath("src/a.ts ")).toThrow("Unsafe mutation scope path");
+    expect(assertScopePath("src/a-b_c.d/e f.ts")).toBe("src/a-b_c.d/e f.ts");
+  });
+
+  it("requires a justification for equivalent survivors and rejects unsafe paths", () => {
+    expect(() =>
+      validateMutation({
+        schemaVersion: 1,
+        tool: "stryker",
+        stack: "javascript",
+        survivors: [{ file: "src/a.ts", description: "d", equivalent: true, justification: "" }],
+        summary: "s",
+      }),
+    ).toThrow("justification");
+    expect(() =>
+      validateMutation({
+        schemaVersion: 1,
+        tool: "stryker",
+        stack: "javascript",
+        survivors: [{ file: "../escape.ts", description: "d", equivalent: false }],
+        summary: "s",
+      }),
+    ).toThrow();
+  });
+
+  it("enforces exact targeted verification coverage", () => {
+    const raw = {
+      schemaVersion: 1,
+      passed: true,
+      summary: "ok",
+      requirements: [{ id: "REQ-001", status: "passed", evidence: ["e"] }],
+      checks: [{ command: "t", status: "passed", summary: "s" }],
+      blockers: [],
+    };
+    expect(() => validateTargetedVerification(raw, new Set(["REQ-001", "REQ-002"]))).toThrow(
+      "exactly once",
+    );
+    expect(validateTargetedVerification(raw, new Set(["REQ-001"])).requirements).toHaveLength(1);
+    expect(() =>
+      validateTargetedVerification(
+        {
+          ...raw,
+          requirements: [{ id: "REQ-002", status: "passed", evidence: ["e"] }],
+        },
+        new Set(["REQ-001"]),
+      ),
+    ).toThrow("Unknown verification requirement");
+  });
+
+  it("selects the package-manager runner for npm, yarn, and bun", async () => {
+    const cases: Array<[string, string, string]> = [
+      ["package-lock.json", "npm", "npx --no-install stryker"],
+      ["yarn.lock", "yarn", "yarn exec stryker"],
+      ["bun.lockb", "bun", "bunx --no-install stryker"],
+    ];
+    for (const [lockfile, manager, runner] of cases) {
+      const root = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+      workspaces.push(root);
+      await writeFile(
+        join(root, "package.json"),
+        JSON.stringify({ devDependencies: { "@stryker-mutator/core": "^8.0.0" } }),
+      );
+      await writeFile(join(root, lockfile), "");
+      const env = await inspectMutationEnvironment(root);
+      expect(env.packageManager).toBe(manager);
+      const plan = buildMutationPlan(env, { mode: "changed", changedPaths: ["src/a.ts"] });
+      expect(plan.command.startsWith(runner)).toBe(true);
+    }
+  });
+
+  it("detects Python, Go, and Java tools and builds their bounded commands", async () => {
+    const py = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(py);
+    await writeFile(join(py, "pyproject.toml"), '[tool.mutmut]\npaths_to_mutate = "src"\n');
+    const pyEnv = await inspectMutationEnvironment(py);
+    expect(pyEnv.stack).toBe("python");
+    expect(pyEnv.tool?.name).toBe("mutmut");
+    const pyPlan = buildMutationPlan(pyEnv, { mode: "changed", changedPaths: ["src/a.py"] });
+    expect(pyPlan.available).toBe(true);
+    expect(pyPlan.scopeSupport).toBe("paths");
+    expect(pyPlan.concurrencyApplied).toBe(false);
+    expect(pyPlan.command).toBe("mutmut run --paths-to-mutate src/a.py");
+
+    const go = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(go);
+    await writeFile(
+      join(go, "go.mod"),
+      "module example.com/x\nrequire github.com/go-gremlins/gremlins v0.5.0\n",
+    );
+    const goEnv = await inspectMutationEnvironment(go);
+    expect(goEnv.stack).toBe("go");
+    expect(goEnv.tool?.name).toBe("gremlins");
+    const goPlan = buildMutationPlan(goEnv, { mode: "changed", changedPaths: ["pkg/a.go"] });
+    expect(goPlan.available).toBe(true);
+    expect(goPlan.concurrencyApplied).toBe(true);
+    expect(goPlan.command).toBe("gremlins unleash --workers 2 ./pkg/a.go");
+
+    const gom = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(gom);
+    await writeFile(
+      join(gom, "go.mod"),
+      "module example.com/y\nrequire github.com/zimmski/go-mutesting v0.0.0\n",
+    );
+    const gomEnv = await inspectMutationEnvironment(gom);
+    expect(gomEnv.tool?.name).toBe("go-mutesting");
+    const gomPlan = buildMutationPlan(gomEnv, { mode: "changed", changedPaths: ["pkg/a.go"] });
+    expect(gomPlan.concurrencyApplied).toBe(false);
+    expect(gomPlan.command).toBe("go-mutesting ./pkg/a.go");
+
+    const java = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(java);
+    await writeFile(
+      join(java, "pom.xml"),
+      "<project><build><plugins><plugin><groupId>org.pitest</groupId></plugin></plugins></build></project>",
+    );
+    const javaEnv = await inspectMutationEnvironment(java);
+    expect(javaEnv.stack).toBe("java");
+    expect(javaEnv.tool?.name).toBe("pitest");
+    expect(javaEnv.tool?.scopeSupport).toBe("none");
+  });
+
+  it("refuses bounded runs for whole-repository-only tools and allows explicit full mode", async () => {
+    const java = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(java);
+    await writeFile(
+      join(java, "pom.xml"),
+      "<project><build><plugins><plugin><groupId>org.pitest</groupId></plugin></plugins></build></project>",
+    );
+    const javaEnv = await inspectMutationEnvironment(java);
+    const bounded = buildMutationPlan(javaEnv, {
+      mode: "changed",
+      changedPaths: ["src/Main.java"],
+    });
+    expect(bounded.available).toBe(false);
+    expect(bounded.scopeSupport).toBe("none");
+    expect(bounded.args).toEqual([]);
+    expect(bounded.reason).toContain("whole-repository");
+    const full = buildMutationPlan(javaEnv, { mode: "full", changedPaths: [] });
+    expect(full.available).toBe(true);
+    expect(full.scopeSupport).toBe("none");
+    expect(full.command).toContain("pitest");
+
+    const gradle = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(gradle);
+    await writeFile(join(gradle, "build.gradle"), "plugins { id 'info.solidsoft.pitest' }\n");
+    const gradleEnv = await inspectMutationEnvironment(gradle);
+    expect(gradleEnv.tool?.scopeSupport).toBe("none");
+    const gradleBounded = buildMutationPlan(gradleEnv, {
+      mode: "changed",
+      changedPaths: ["src/Main.java"],
+    });
+    expect(gradleBounded.available).toBe(false);
+    expect(gradleBounded.reason).toContain("whole-repository");
+    const gradleFull = buildMutationPlan(gradleEnv, { mode: "full", changedPaths: [] });
+    expect(gradleFull.available).toBe(true);
+    expect(gradleFull.command).toContain("pitest");
+
+    const py = await mkdtemp(join(tmpdir(), "wayfinder-detect-"));
+    workspaces.push(py);
+    await writeFile(join(py, "pyproject.toml"), 'name = "x"\n# cosmic-ray session\n');
+    const crEnv = await inspectMutationEnvironment(py);
+    expect(crEnv.tool?.name).toBe("cosmic-ray");
+    const crBounded = buildMutationPlan(crEnv, { mode: "changed", changedPaths: ["src/a.py"] });
+    expect(crBounded.available).toBe(false);
+    expect(crBounded.reason).toContain("whole-repository");
+  });
+
+  it("truncates the survivor report at the cap", () => {
+    const survivors = Array.from({ length: mutationBounds.survivorLimit + 3 }, (_, index) => ({
+      file: `src/f${index}.ts`,
+      description: "mutant",
+      equivalent: false,
+      justification: "",
+    }));
+    const bounded = boundedSurvivors(survivors);
+    expect(bounded.truncated).toBe(true);
+    expect(bounded.survivors).toHaveLength(mutationBounds.survivorLimit);
+    expect(boundedSurvivors(survivors.slice(0, 2)).truncated).toBe(false);
+  });
+
+  it("classifies test paths for test-strengthening enforcement", () => {
+    expect(isTestPath("src/health.test.ts")).toBe(true);
+    expect(isTestPath("test/health.ts")).toBe(true);
+    expect(isTestPath("src/__tests__/health.ts")).toBe(true);
+    expect(isTestPath("pkg/handler_test.go")).toBe(true);
+    expect(isTestPath("src/HealthSpec.kt")).toBe(true);
+    expect(isTestPath("src/test.ts")).toBe(true);
+    expect(isTestPath("src/tests.ts")).toBe(true);
+    expect(isTestPath("src/spec.rb")).toBe(true);
+    expect(isTestPath("src/health.ts")).toBe(false);
+    expect(isTestPath("src/contest/health.ts")).toBe(false);
+  });
+
+  it("blocks archive until an immutable mutation decision is recorded", async () => {
+    const h = await harness([...validOutputs]);
+    await reachVerification(h, "gate");
+    await expect(h.run("verify", "gate")).resolves.toContain("Mutation testing decision required");
+    expect(await h.run("status", "gate")).toContain("Mutation: decision pending");
+    await expect(h.run("close", "gate")).rejects.toThrow("Cannot close");
+    await expect(h.run("mutate", "gate skip -- low-risk additive change")).resolves.toContain(
+      "advanced to archive",
+    );
+    await expect(h.run("mutate", "gate skip -- again")).rejects.toThrow("immutable");
+    await expect(h.run("close", "gate")).resolves.toContain("atomically archived");
+  });
+
+  it("runs bounded mutation testing and archives when no failing survivors remain", async () => {
+    const h = await harness([...validOutputs.slice(0, 7), cleanMutation, validOutputs[7]]);
+    await stubJavaScriptProject(h, true);
+    await reachVerification(h, "mutate-clean");
+    await expect(h.run("verify", "mutate-clean")).resolves.toContain(
+      "Mutation testing decision required",
+    );
+    await expect(h.run("mutate", "mutate-clean run -- changed behavior")).resolves.toContain(
+      "Next: /wayfinder:verify",
+    );
+    await expect(h.run("verify", "mutate-clean")).resolves.toContain("Mutation testing passed");
+    expect(await h.run("status", "mutate-clean")).toContain("Phase: archive");
+    expect(h.profiles.map(({ agent }) => agent)).toContain("Wayfinder Mutationist");
+    await expect(h.run("close", "mutate-clean")).resolves.toContain("atomically archived");
+  });
+
+  it("advances to archive without blocking when mutation tooling is unavailable", async () => {
+    const h = await harness([...validOutputs.slice(0, 7), validOutputs[7]]);
+    await stubJavaScriptProject(h, false);
+    await reachVerification(h, "mutate-unavailable");
+    await h.run("verify", "mutate-unavailable");
+    await h.run("mutate", "mutate-unavailable run -- attempt anyway");
+    await expect(h.run("verify", "mutate-unavailable")).resolves.toContain(
+      "Mutation testing unavailable",
+    );
+    expect(await h.run("status", "mutate-unavailable")).toContain("Phase: archive");
+    await expect(h.run("close", "mutate-unavailable")).resolves.toContain("atomically archived");
+  });
+
+  it("routes a survivor into a test-strengthening unit and targeted re-verification", async () => {
+    const h = await harness([
+      ...validOutputs.slice(0, 7),
+      survivorMutation,
+      implementationOutput("UNIT-002"),
+      cleanMutation,
+      targetedVerification,
+      archiveOutput(["UNIT-001", "UNIT-002"]),
+    ]);
+    await stubJavaScriptProject(h, true);
+    await reachVerification(h, "mutate-survivor");
+    await h.run("verify", "mutate-survivor");
+    await h.run("mutate", "mutate-survivor run -- cover new branch");
+    await expect(h.run("verify", "mutate-survivor")).resolves.toContain(
+      "test-strengthening unit is ready",
+    );
+    expect(await h.run("status", "mutate-survivor")).toContain("Mutation: run (targeted) (1/2)");
+    const plan = await readFile(
+      join(h.workspace, ".alisio/wayfinder/changes/mutate-survivor/plan.md"),
+      "utf8",
+    );
+    expect(plan).toContain("test-strengthening");
+    await expect(h.run("build", "mutate-survivor")).resolves.toContain("UNIT-002");
+    await expect(h.run("verify", "mutate-survivor")).resolves.toContain(
+      "Targeted mutation and verification passed",
+    );
+    expect(await h.run("status", "mutate-survivor")).toContain("Phase: archive");
+    await expect(h.run("close", "mutate-survivor")).resolves.toContain("atomically archived");
+    const archives = await readdir(join(h.workspace, ".alisio/wayfinder/archive"));
+    const archived = JSON.parse(
+      await readFile(
+        join(h.workspace, ".alisio/wayfinder/archive", archives[0] as string, "state.json"),
+        "utf8",
+      ),
+    );
+    expect(archived.mutation.targeted).toBeUndefined();
+    expect(archived.mutationRemediationCount).toBe(1);
+  });
+
+  it("bounds mutation remediation and stops for human reassessment", async () => {
+    const h = await harness([
+      ...validOutputs.slice(0, 7),
+      survivorMutation,
+      implementationOutput("UNIT-002"),
+      survivorMutation,
+      implementationOutput("UNIT-003"),
+      survivorMutation,
+    ]);
+    await stubJavaScriptProject(h, true);
+    await reachVerification(h, "mutate-budget");
+    await h.run("verify", "mutate-budget");
+    await h.run("mutate", "mutate-budget run -- bounded");
+    await expect(h.run("verify", "mutate-budget")).resolves.toContain(
+      "test-strengthening unit is ready",
+    );
+    await h.run("build", "mutate-budget");
+    await expect(h.run("verify", "mutate-budget")).resolves.toContain(
+      "test-strengthening unit is ready",
+    );
+    await h.run("build", "mutate-budget");
+    await expect(h.run("verify", "mutate-budget")).resolves.toContain(
+      "Mutation remediation limit reached",
+    );
+    const status = await h.run("status", "mutate-budget");
+    expect(status).toContain("Mutation: run (targeted) (2/2)");
+    expect(status).toContain("Phase: verification");
+  });
+
+  it("excludes equivalent survivors from failure", async () => {
+    const equivalentMutation = JSON.stringify({
+      schemaVersion: 1,
+      tool: "stryker",
+      stack: "javascript",
+      survivors: [
+        {
+          file: "src/health.ts",
+          description: "Unreachable defensive branch",
+          equivalent: true,
+          justification: "Unreachable by contract",
+        },
+      ],
+      mutationScore: 95,
+      summary: "One equivalent survivor",
+    });
+    const h = await harness([...validOutputs.slice(0, 7), equivalentMutation, validOutputs[7]]);
+    await stubJavaScriptProject(h, true);
+    await reachVerification(h, "mutate-equivalent");
+    await h.run("verify", "mutate-equivalent");
+    await h.run("mutate", "mutate-equivalent run -- triage");
+    await expect(h.run("verify", "mutate-equivalent")).resolves.toContain("equivalent survivor");
+    expect(await h.run("status", "mutate-equivalent")).toContain("Phase: archive");
+    await expect(h.run("close", "mutate-equivalent")).resolves.toContain("atomically archived");
+  });
+
+  it("persists an interactive mutation decision from the answered question", async () => {
+    const h = await harness([...validOutputs.slice(0, 7), cleanMutation, validOutputs[7]], true, {
+      mutation: "run",
+    });
+    await stubJavaScriptProject(h, true);
+    await reachVerification(h, "interactive");
+    await expect(h.run("verify", "interactive")).resolves.toContain("Mutation testing passed");
+    const state = JSON.parse(
+      await readFile(join(h.workspace, ".alisio/wayfinder/changes/interactive/state.json"), "utf8"),
+    );
+    expect(state.mutation.decision).toMatchObject({
+      decision: "run",
+      mode: "changed",
+      source: "recommended",
+    });
+    await expect(h.run("close", "interactive")).resolves.toContain("atomically archived");
+  });
+
+  it("rejects production edits from a test-strengthening unit and accepts test-only edits", async () => {
+    const productionEdit = JSON.stringify({
+      schemaVersion: 1,
+      unitId: "UNIT-002",
+      summary: "edited production",
+      changedPaths: ["src/health.ts"],
+      checks: [{ command: "pnpm test", status: "passed", summary: "ok" }],
+      notes: [],
+    });
+    const h = await harness([
+      ...validOutputs.slice(0, 7),
+      survivorMutation,
+      productionEdit,
+      implementationOutput("UNIT-002"),
+      cleanMutation,
+      targetedVerification,
+      archiveOutput(["UNIT-001", "UNIT-002"]),
+    ]);
+    await stubJavaScriptProject(h, true);
+    await reachVerification(h, "tests-only");
+    await h.run("verify", "tests-only");
+    await h.run("mutate", "tests-only run -- strengthen");
+    await expect(h.run("verify", "tests-only")).resolves.toContain(
+      "test-strengthening unit is ready",
+    );
+    await expect(h.run("build", "tests-only")).rejects.toThrow("test paths only");
+    expect(await h.run("status", "tests-only")).toContain("Phase: implementation");
+    await expect(h.run("build", "tests-only")).resolves.toContain("UNIT-002");
+    await expect(h.run("verify", "tests-only")).resolves.toContain(
+      "Targeted mutation and verification passed",
+    );
+    await expect(h.run("close", "tests-only")).resolves.toContain("atomically archived");
+  });
+
+  it("advances without blocking when a bounded run is refused by a whole-repo tool", async () => {
+    const h = await harness([...validOutputs.slice(0, 7), validOutputs[7]]);
+    await writeFile(
+      join(h.workspace, "pom.xml"),
+      "<project><build><plugins><plugin><groupId>org.pitest</groupId></plugin></plugins></build></project>",
+    );
+    await reachVerification(h, "java-bounded");
+    await h.run("verify", "java-bounded");
+    await h.run("mutate", "java-bounded run -- bounded attempt");
+    await expect(h.run("verify", "java-bounded")).resolves.toContain(
+      "Mutation testing unavailable",
+    );
+    const state = JSON.parse(
+      await readFile(
+        join(h.workspace, ".alisio/wayfinder/changes/java-bounded/state.json"),
+        "utf8",
+      ),
+    );
+    expect(state.mutation.run.scopeSupport).toBe("none");
+    expect(state.mutation.run.unavailableReason).toContain("whole-repository");
+    expect(await h.run("status", "java-bounded")).toContain("Phase: archive");
+    await expect(h.run("close", "java-bounded")).resolves.toContain("atomically archived");
   });
 });

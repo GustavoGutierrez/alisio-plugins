@@ -5,6 +5,7 @@ import type {
   DesignOutput,
   DiscoveryOutput,
   ImplementationOutput,
+  MutationOutput,
   PlanOutput,
   ProposalOutput,
   SpecificationOutput,
@@ -183,9 +184,10 @@ export function validateImplementation(raw: unknown, expectedUnit: string): Impl
   };
 }
 
-export function validateVerification(
+function validateVerificationCoverage(
   raw: unknown,
   requirementIds: Set<string>,
+  label: string,
 ): VerificationOutput {
   const value = object(raw);
   version(value);
@@ -209,7 +211,7 @@ export function validateVerification(
     new Set(ids).size !== ids.length ||
     [...requirementIds].some((id) => !ids.includes(id))
   ) {
-    throw new Error("Verification must cover every requirement exactly once");
+    throw new Error(`${label} must cover its assigned requirements exactly once`);
   }
   const blockers = strings(value.blockers, "blockers");
   if (passed && (blockers.length || requirements.some(({ status }) => status === "failed"))) {
@@ -223,6 +225,75 @@ export function validateVerification(
     requirements,
     checks: evidence(value.checks, "checks"),
     blockers,
+  };
+}
+
+export function validateVerification(
+  raw: unknown,
+  requirementIds: Set<string>,
+): VerificationOutput {
+  return validateVerificationCoverage(raw, requirementIds, "Verification");
+}
+
+export function validateTargetedVerification(
+  raw: unknown,
+  targetIds: Set<string>,
+): VerificationOutput {
+  if (!targetIds.size)
+    throw new Error("Targeted verification requires at least one requirement id");
+  return validateVerificationCoverage(raw, targetIds, "Targeted verification");
+}
+
+const mutationStacks = new Set(["javascript", "rust", "python", "go", "java", "unknown"]);
+
+export function validateMutation(raw: unknown): MutationOutput {
+  const value = object(raw);
+  version(value);
+  const tool = string(value.tool, "tool");
+  const stack = string(value.stack, "stack");
+  if (!mutationStacks.has(stack)) throw new Error(`Unknown mutation stack: ${stack}`);
+  const survivors = array(value.survivors, "survivors").map((item, index) => {
+    const entry = object(item, `survivors[${index}]`);
+    const file = assertRelativePath(string(entry.file, `survivors[${index}].file`));
+    const description = string(entry.description, `survivors[${index}].description`);
+    const equivalent = boolean(entry.equivalent, `survivors[${index}].equivalent`);
+    let justification = "";
+    if (entry.justification !== undefined) {
+      if (typeof entry.justification !== "string") {
+        throw new Error(`survivors[${index}].justification must be a string`);
+      }
+      justification = entry.justification.trim();
+    }
+    if (equivalent && !justification) {
+      throw new Error(`survivors[${index}] is equivalent and requires a justification`);
+    }
+    let line: number | undefined;
+    if (entry.line !== undefined) {
+      if (typeof entry.line !== "number" || !Number.isInteger(entry.line) || entry.line <= 0) {
+        throw new Error(`survivors[${index}].line must be a positive integer`);
+      }
+      line = entry.line;
+    }
+    return {
+      file,
+      description,
+      equivalent,
+      justification,
+      ...(line !== undefined ? { line } : {}),
+    };
+  });
+  let mutationScore: number | undefined;
+  if (value.mutationScore !== undefined) {
+    if (typeof value.mutationScore !== "number") throw new Error("mutationScore must be a number");
+    mutationScore = value.mutationScore;
+  }
+  return {
+    schemaVersion: 1,
+    tool,
+    stack,
+    survivors,
+    summary: string(value.summary, "summary"),
+    ...(mutationScore !== undefined ? { mutationScore } : {}),
   };
 }
 

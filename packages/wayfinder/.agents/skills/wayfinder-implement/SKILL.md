@@ -14,6 +14,7 @@ Load for exactly one pending unit from an approved plan.
 ## Hard Rules
 
 - Change only what the unit requires.
+- For a `test-strengthening` unit, edit test files only; never change production code.
 - Never edit `.alisio/wayfinder` lifecycle files.
 - Run focused commands and report only successful evidence.
 - Return explicit changed paths; self-report alone is not completion.

@@ -45,9 +45,14 @@ use `/wayfinder:answer <change> -- <clarification>`. Proposal and plan approval 
 /wayfinder:next add-health-check       # plan
 /wayfinder:approve add-health-check plan
 /wayfinder:build add-health-check      # repeat once per pending unit
-/wayfinder:verify add-health-check
+/wayfinder:verify add-health-check     # verification passes, mutation decision required
+/wayfinder:mutate add-health-check run -- cover the new branch
+/wayfinder:verify add-health-check     # runs the bounded mutation check
 /wayfinder:close add-health-check
 ```
+
+Mutation testing is recommended, but the developer decides. Record `run` or `skip` with a reason
+before archive; the decision is immutable per change. Skipping is fine when justified.
 
 Use `/wayfinder:status add-health-check` at any point to recover the next action. If a phase reports
 a critical question, answer it and retry the same phase:
@@ -79,11 +84,13 @@ this direct execution path; agent frontmatter describes the equivalent catalog-f
 | `planner` | Ordered units and complete coverage | Read-only, no process |
 | `implementer` | One approved work unit | Write and process |
 | `verifier` | Independent evidence and checks | Read-only, process allowed |
+| `mutationist` | One bounded mutation run on already-installed tooling | Read-only, process allowed |
 | `archivist` | Archive-readiness inventory | Read-only, no process |
 
 Each agent links one focused skill: `wayfinder-coordinate`, `wayfinder-discover`,
 `wayfinder-propose`, `wayfinder-specify`, `wayfinder-design`, `wayfinder-plan`,
-`wayfinder-implement`, `wayfinder-verify`, or `wayfinder-archive`. Child phases cannot delegate.
+`wayfinder-implement`, `wayfinder-verify`, `wayfinder-mutate`, or `wayfinder-archive`. Child phases
+cannot delegate.
 
 ## How agents communicate
 
@@ -126,9 +133,74 @@ verification, or incomplete archive inventory. Failed verification creates at mo
 remediation units. Implementation reports are context only; the verifier must inspect current files
 and run focused commands independently. Wayfinder does not claim immutable Git provenance.
 
+Passing verification no longer advances straight to archive: it exposes an explicit mutation-testing
+decision gate. There is no implicit skip. In an interactive UI the coordinator asks one concise
+question and persists the answer; headless use returns an actionable blocked status naming
+`/wayfinder:mutate`. Verification that passes without a recorded decision cannot reach archive.
+
 Proposal and plan approval are explicit. In an interactive UI, `next` asks one concise confirmation.
 In headless use, it returns an actionable blocked status and requires `approve`; scope is never
 silently accepted.
+
+## Mutation testing
+
+Mutation testing is recommended, but the developer decides. The decision, mode, tool, stack, and
+reason are persisted per change and are immutable.
+
+| Topic | Behavior |
+| --- | --- |
+| Decision gate | `verify` cannot advance to archive until `/wayfinder:mutate <change> run\|skip -- <reason>` is recorded |
+| `skip` | Verification passed → advance to archive. Verification pending → archive after it passes |
+| `run` | Instructs `/wayfinder:verify`, which runs the bounded mutation check |
+| Tooling | Only tooling already present in the project; never installed, never added as a dependency |
+| Unavailable | Persists `unavailableReason` and advances to archive without blocking |
+| Survivors | Only non-equivalent survivors fail; an equivalent survivor needs a written justification |
+| Failure | Creates one `test-strengthening` unit for the affected requirements and survivor files |
+| Targeted recovery | Re-runs mutation over the prior scope, then re-verifies only the affected requirement ids |
+| Budget | Mutation remediation is separate and bounded to two attempts, then stops for human reassessment |
+
+Bounds: changed-scope cap `20` files, reported-survivor cap `50`, child timeout `600000` ms, and the
+concurrency bound `2` applied only where the tool supports it. Survivor text is never interpolated
+into a command; the mutationist receives an argument list and never edits files.
+
+Scope capability: some tools accept a bounded file scope, others can only mutate the whole
+repository. A bounded (`--mode changed`) decision never silently expands to whole-repo.
+
+| Tool | Bounded scope | Concurrency bound |
+| --- | --- | --- |
+| Stryker (JS/TS) | `--mutate` paths | applied (`--concurrency 2`) |
+| `cargo-mutants` (Rust) | `--file` paths | applied (`--jobs 2`) |
+| `gremlins` (Go) | positional package/path patterns | applied (`--workers 2`) |
+| `go-mutesting` (Go) | positional patterns | not applied |
+| `mutmut` (Python) | `--paths-to-mutate` | not applied |
+| `cosmic-ray` (Python) | whole repository only | not applied |
+| `pitest` (Java) | whole repository only | not applied |
+
+For a whole-repository-only tool, a `changed`-mode run is refused rather than silently expanded;
+re-run with `--mode full` to allow it explicitly. The refusal is non-blocking: the reason is
+persisted and the change advances to archive.
+
+Test-strengthening enforcement: a `test-strengthening` unit is accepted only when every reported
+changed path is a test path (`test/`, `tests/`, or `__tests__/` segments, a bare `test`/`tests`/
+`spec`/`specs` filename, or `.test.`, `.spec.`, `_test.`, `Test.`, `Spec.` filenames). A production
+edit is rejected and the unit stays pending.
+
+This guardrail applies only to the paths the implementing child reports and uses a filename/directory
+heuristic, so a production file placed under a `test`-style directory or named `*Test.*`/`*Spec.*`
+can pass it. The independent verifier still inspects the workspace, so this is a guardrail, not a
+hard sandbox.
+
+Detection uses the project's own manifests and lockfiles:
+
+| Stack | Marker | Already-installed tools |
+| --- | --- | --- |
+| JavaScript/TypeScript | `package.json` | Stryker (`@stryker-mutator/*` or local binary/config) |
+| Rust | `Cargo.toml` | `cargo-mutants` |
+| Python | `pyproject.toml`, `setup.py`, `setup.cfg`, `requirements.txt`, `tox.ini` | `mutmut`, `cosmic-ray` |
+| Go | `go.mod` | `gremlins`, `go-mutesting` |
+| Java | `pom.xml`, `build.gradle`, `build.gradle.kts` | `pitest` |
+
+When nothing is detected, the coordinator recommends and continues without blocking.
 
 ## Commands
 
@@ -139,6 +211,7 @@ silently accepted.
 | `/wayfinder:answer <name> -- <text>` | Append clarification during discovery, proposal, or specification |
 | `/wayfinder:next <name>` | Run exactly one analytical phase, or request a pending approval |
 | `/wayfinder:approve <name> <proposal\|plan>` | Record explicit approval |
+| `/wayfinder:mutate <name> <run\|skip> [--mode changed\|full] -- <reason>` | Record the immutable mutation-testing decision |
 | `/wayfinder:build <name>` | Implement exactly one pending unit |
 | `/wayfinder:verify <name>` | Independently verify every requirement exactly once |
 | `/wayfinder:close <name>` | Validate readiness and move the change to archive |
@@ -162,6 +235,8 @@ Active changes use:
 ├── plan.md
 ├── progress.md
 ├── verification.md
+├── verification-targeted.md   # after mutation remediation
+├── mutation.md                # when a decision or run is recorded
 └── archive-readiness.md
 ```
 
@@ -181,6 +256,10 @@ Recovery rules:
 - Failed verification may create up to two resumable remediation units.
 - After the remediation limit is exhausted, the change remains in verification and requires human
   reassessment rather than another automatic loop.
+- Mutation testing requires an explicit `/wayfinder:mutate` decision before archive.
+- Non-equivalent survivors create a `test-strengthening` unit; strengthen tests only, never change
+  production behavior to satisfy the tool.
+- Mutation remediation has its own budget of two attempts, separate from verification remediation.
 
 ## Requirements and capability boundaries
 
@@ -191,8 +270,8 @@ Recovery rules:
 | Runtime dependencies | Node.js built-ins and `@alisio/sdk` only |
 
 Child capabilities can only narrow the active parent session. The implementer needs parent write and
-process capabilities; the verifier needs process capability. Without them, those phases cannot
-complete.
+process capabilities; the verifier and mutationist need process capability. Without them, those
+phases cannot complete.
 
 ## Standalone behavior
 

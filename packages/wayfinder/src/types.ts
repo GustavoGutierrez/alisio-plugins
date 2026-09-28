@@ -21,6 +21,7 @@ export const executionRoles = [
   "planner",
   "implementer",
   "verifier",
+  "mutationist",
   "archivist",
 ] as const;
 export type ExecutionRole = (typeof executionRoles)[number];
@@ -40,8 +41,67 @@ export interface WorkUnit {
   paths: string[];
   checks: string[];
   status: "pending" | "completed";
+  /** Optional unit intent; absent means a normal implementation unit. */
+  kind?: "implementation" | "test-strengthening";
   changedPaths?: string[];
   evidence?: CommandEvidence[];
+}
+
+export type MutationStack = "javascript" | "rust" | "python" | "go" | "java" | "unknown";
+export type MutationScopeMode = "changed" | "full";
+export type MutationDecisionValue = "run" | "skip";
+/** `paths` can honor a bounded file scope; `none` can only run whole-repository. */
+export type MutationScopeSupport = "paths" | "none";
+/** Whether the coordinator's concurrency bound is actually passed to the tool. */
+export type MutationConcurrency = "applied" | "unsupported";
+
+export interface MutationDecision {
+  decision: MutationDecisionValue;
+  mode: MutationScopeMode;
+  reason: string;
+  decidedAt: string;
+  stack: MutationStack;
+  source: "recommended" | "manual";
+  tool?: string;
+}
+
+export interface MutationSurvivor {
+  file: string;
+  line?: number;
+  description: string;
+  equivalent: boolean;
+  justification: string;
+}
+
+export interface MutationRun {
+  tool: string;
+  stack: MutationStack;
+  mode: MutationScopeMode;
+  /** Optional for additive compatibility; written on every new run. */
+  scopeSupport?: MutationScopeSupport;
+  concurrencyApplied?: boolean;
+  scope: string[];
+  command: string;
+  survivors: MutationSurvivor[];
+  failingSurvivors: number;
+  equivalentSurvivors: number;
+  mutationScore?: number;
+  summary: string;
+  ranAt: string;
+  truncated?: boolean;
+  unavailableReason?: string;
+}
+
+export interface MutationTarget {
+  files: string[];
+  requirementIds: string[];
+  attempt: number;
+}
+
+export interface MutationState {
+  decision?: MutationDecision;
+  run?: MutationRun;
+  targeted?: MutationTarget;
 }
 
 export interface VerificationSummary {
@@ -63,8 +123,17 @@ export interface ChangeState {
   requirementIds: string[];
   units: WorkUnit[];
   remediationCount: number;
+  /** Optional for additive compatibility; absent legacy states normalize to 0 on load. */
+  mutationRemediationCount?: number;
+  mutation?: MutationState;
   verification?: VerificationSummary;
 }
+
+/**
+ * A `ChangeState` produced by `readState`: additively optional fields are normalized, so runtime
+ * logic always reads `mutationRemediationCount` as a number.
+ */
+export type NormalizedChangeState = ChangeState & { mutationRemediationCount: number };
 
 export interface DiscoveryOutput {
   schemaVersion: 1;
@@ -124,6 +193,15 @@ export interface VerificationOutput {
   requirements: Array<{ id: string; status: "passed" | "failed"; evidence: string[] }>;
   checks: CommandEvidence[];
   blockers: string[];
+}
+
+export interface MutationOutput {
+  schemaVersion: 1;
+  tool: string;
+  stack: string;
+  survivors: MutationSurvivor[];
+  mutationScore?: number;
+  summary: string;
 }
 
 export interface ArchiveOutput {
