@@ -7,17 +7,17 @@ export const resourcePaths = {
   skills: "../.agents/skills",
 } as const;
 
-export const roleSkills: Record<ResourceRole, string> = {
-  coordinator: "wayfinder-coordinate",
-  discoverer: "wayfinder-discover",
-  proposer: "wayfinder-propose",
-  specifier: "wayfinder-specify",
-  designer: "wayfinder-design",
-  planner: "wayfinder-plan",
-  implementer: "wayfinder-implement",
-  verifier: "wayfinder-verify",
-  mutationist: "wayfinder-mutate",
-  archivist: "wayfinder-archive",
+export const roleSkills: Record<ResourceRole, string[]> = {
+  coordinator: ["wayfinder-coordinate"],
+  discoverer: ["wayfinder-discover"],
+  proposer: ["wayfinder-propose"],
+  specifier: ["wayfinder-specify"],
+  designer: ["wayfinder-design"],
+  planner: ["wayfinder-plan", "wayfinder-test-design"],
+  implementer: ["wayfinder-implement", "wayfinder-test-design"],
+  verifier: ["wayfinder-verify", "wayfinder-test-design"],
+  mutationist: ["wayfinder-mutate"],
+  archivist: ["wayfinder-archive"],
 };
 
 interface ParsedResource {
@@ -73,9 +73,10 @@ async function load(path: string): Promise<ParsedResource> {
   return parseResource(await readFile(fileURLToPath(url), "utf8"), path);
 }
 
-function validateAgent(resource: ParsedResource, role: ResourceRole, skillName: string): void {
+function validateAgent(resource: ParsedResource, role: ResourceRole, skillNames: string[]): void {
   const front = resource.frontmatter;
   const permission = front.permission;
+  const declaredSkills = Array.isArray(front.skills) ? (front.skills as string[]) : undefined;
   if (
     front.name !== role ||
     typeof front.description !== "string" ||
@@ -89,8 +90,8 @@ function validateAgent(resource: ParsedResource, role: ResourceRole, skillName: 
     !permission ||
     typeof permission !== "object" ||
     Array.isArray(permission) ||
-    !Array.isArray(front.skills) ||
-    !front.skills.includes(skillName)
+    !declaredSkills ||
+    !skillNames.every((skillName) => declaredSkills.includes(skillName))
   ) {
     throw new Error(`Invalid agent resource: ${role}`);
   }
@@ -132,12 +133,17 @@ function validateSkill(resource: ParsedResource, skillName: string): void {
 }
 
 export async function loadRoleInstructions(role: ResourceRole): Promise<string> {
-  const skillName = roleSkills[role];
-  const [agent, skill] = await Promise.all([
+  const skillNames = roleSkills[role];
+  const [agent, ...skills] = await Promise.all([
     load(`../.agents/agents/${role}.md`),
-    load(`../.agents/skills/${skillName}/SKILL.md`),
+    ...skillNames.map((skillName) => load(`../.agents/skills/${skillName}/SKILL.md`)),
   ]);
-  validateAgent(agent, role, skillName);
-  validateSkill(skill, skillName);
-  return `${agent.body}\n\n# Loaded skill: ${skillName}\n\n${skill.body}`;
+  validateAgent(agent, role, skillNames);
+  for (const [index, skill] of skills.entries()) {
+    validateSkill(skill, skillNames[index] as string);
+  }
+  return [
+    agent.body,
+    ...skills.flatMap((skill, index) => [`# Loaded skill: ${skillNames[index]}`, skill.body]),
+  ].join("\n\n");
 }

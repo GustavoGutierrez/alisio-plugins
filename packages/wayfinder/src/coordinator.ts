@@ -20,6 +20,7 @@ import {
   writeArtifact,
   writeState,
 } from "./storage.js";
+import { isTestId, isUiPath } from "./testing-rules.js";
 import type {
   ArchiveOutput,
   ChangeState,
@@ -123,9 +124,9 @@ const schemas = {
     '{ "schemaVersion": 1, "requirements": [{ "id": "REQ-001", "statement": "...", "acceptance": ["..."] }], "criticalQuestions": [] }',
   design:
     '{ "schemaVersion": 1, "summary": "...", "decisions": [{ "topic": "...", "choice": "...", "rationale": "..." }], "paths": ["relative/path"], "risks": [] }',
-  plan: '{ "schemaVersion": 1, "units": [{ "id": "UNIT-001", "title": "...", "goal": "...", "requirements": ["REQ-001"], "paths": ["relative/path"], "checks": ["command or observable check"], "tddExempt": false, "tddExemptReason": "required when tddExempt is true" }] }',
+  plan: '{ "schemaVersion": 1, "units": [{ "id": "UNIT-001", "title": "...", "goal": "...", "requirements": ["REQ-001"], "paths": ["relative/path"], "checks": ["command or observable check"], "tddExempt": false, "tddExemptReason": "required when tddExempt is true", "requiresTests": false }] }',
   implementation:
-    '{ "schemaVersion": 1, "unitId": "UNIT-001", "summary": "...", "changedPaths": ["relative/path"], "checks": [{ "command": "...", "status": "passed", "summary": "..." }], "testFirst": { "failingCommand": "...", "failingEvidenceRef": "...", "passingCommand": "..." }, "notes": [] }',
+    '{ "schemaVersion": 1, "unitId": "UNIT-001", "summary": "...", "changedPaths": ["relative/path"], "checks": [{ "command": "...", "status": "passed", "summary": "..." }], "testFirst": { "failingCommand": "...", "failingEvidenceRef": "...", "passingCommand": "..." }, "testDesign": [{ "scenario": "...", "happy": ["..."], "unhappy": ["..."] }], "testability": { "testIds": ["feature-element-variant"], "accessibleOnlyReason": "optional when no ids are needed" }, "notes": [] }',
   verification:
     '{ "schemaVersion": 1, "passed": true, "summary": "...", "requirements": [{ "id": "REQ-001", "status": "passed", "evidence": ["..."] }], "checks": [{ "command": "...", "status": "passed", "summary": "..." }], "blockers": [] }',
   mutation:
@@ -166,7 +167,7 @@ function renderPlan(units: WorkUnit[]): string {
   return `# Plan\n\n${units
     .map(
       (unit) =>
-        `## ${unit.id}: ${unit.title}\n\n${unit.goal}\n\n${unit.kind === "test-strengthening" ? `- Kind: ${unit.kind}\n` : ""}${unit.tddExempt === true ? `- TDD exempt: ${unit.tddExemptReason}\n` : ""}- Requirements: ${unit.requirements.join(", ")}\n- Paths: ${unit.paths.join(", ")}\n- Checks: ${unit.checks.join("; ")}\n- Status: ${unit.status}`,
+        `## ${unit.id}: ${unit.title}\n\n${unit.goal}\n\n${unit.kind === "test-strengthening" ? `- Kind: ${unit.kind}\n` : ""}${unit.tddExempt === true ? `- TDD exempt: ${unit.tddExemptReason}\n` : ""}${unit.requiresTests === true ? "- Requires tests: yes\n" : ""}- Requirements: ${unit.requirements.join(", ")}\n- Paths: ${unit.paths.join(", ")}\n- Checks: ${unit.checks.join("; ")}\n- Status: ${unit.status}`,
     )
     .join("\n\n")}`;
 }
@@ -659,6 +660,10 @@ export class WayfinderCoordinator {
         );
       }
     }
+    const testProblem = this.testEvidenceProblem(unit, output);
+    if (testProblem) {
+      throw new Error(`${testProblem} Retry /wayfinder:build ${name}.`);
+    }
     unit.status = "completed";
     unit.changedPaths = output.changedPaths;
     unit.evidence = output.checks;
@@ -674,6 +679,52 @@ export class WayfinderCoordinator {
     state.updatedAt = now();
     await writeState(workspace, state);
     return `Completed ${unit.id} for ${name}. Next: ${this.nextAction(state)}`;
+  }
+
+  /**
+   * Report-based test-design and UI-testability guardrail. It inspects only what the child reports,
+   * so it cannot prove a negative test or a fragile selector is absent; the verifier is the backstop.
+   */
+  private testEvidenceProblem(unit: WorkUnit, output: ImplementationOutput): string | undefined {
+    const design = output.testDesign;
+    if (unit.requiresTests === true && !design?.length) {
+      return `Unit ${unit.id} requires tests: provide testDesign with at least one scenario, each with a happy-path and an unhappy-path test.`;
+    }
+    const declaresTests = unit.requiresTests === true || (design?.length ?? 0) > 0;
+    if (declaresTests && !output.changedPaths.some((path) => isTestPath(path))) {
+      return `Unit ${unit.id} declares tests but reports no test file in changedPaths; add the test file(s) covering the scenarios.`;
+    }
+    if (design) {
+      const seen: string[] = [];
+      for (const entry of design) {
+        const scenario = entry.scenario.trim();
+        if (seen.includes(scenario)) {
+          return `Unit ${unit.id} testDesign repeats the scenario "${scenario}"; scenario names must be unique.`;
+        }
+        seen.push(scenario);
+        if (!entry.happy.length) {
+          return `Unit ${unit.id} scenario "${scenario}" has no happy-path test; add at least one positive test.`;
+        }
+        if (!entry.unhappy.length) {
+          return `Unit ${unit.id} scenario "${scenario}" has no unhappy-path test; add at least one negative, error, boundary, or alternative test.`;
+        }
+      }
+    }
+    const uiPaths = output.changedPaths.filter((path) => isUiPath(path) && !isTestPath(path));
+    if (uiPaths.length) {
+      const testability = output.testability;
+      if (!testability) {
+        return `Unit ${unit.id} changes UI paths (${uiPaths.join(", ")}) without testability; provide testIds or a non-blank accessibleOnlyReason.`;
+      }
+      const invalid = testability.testIds.filter((id) => !isTestId(id));
+      if (invalid.length) {
+        return `Unit ${unit.id} declared non-convention test ids: ${invalid.join(", ")}; use feature-element-variant (lowercase segments joined by hyphens).`;
+      }
+      if (!testability.testIds.length && !testability.accessibleOnlyReason) {
+        return `Unit ${unit.id} declares no test ids and no accessibleOnlyReason; add semantic ids or justify accessibility-only queries.`;
+      }
+    }
+    return undefined;
   }
 
   private safeFiles(paths: string[]): string[] {

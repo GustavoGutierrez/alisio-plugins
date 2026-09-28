@@ -86,6 +86,7 @@ for (const [dir, manifest] of packageDirs) {
         "wayfinder-verify",
         "wayfinder-mutate",
         "wayfinder-archive",
+        "wayfinder-test-design",
       ];
       for (const agent of expectedAgents) {
         if (!files.includes(`package/.agents/agents/${agent}.md`))

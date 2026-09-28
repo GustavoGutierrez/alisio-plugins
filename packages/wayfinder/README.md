@@ -91,9 +91,11 @@ this direct execution path; agent frontmatter describes the equivalent catalog-f
 | `mutationist` | One bounded mutation run on already-installed tooling | Read-only, process allowed |
 | `archivist` | Archive-readiness inventory | Read-only, no process |
 
-Each agent links one focused skill: `wayfinder-coordinate`, `wayfinder-discover`,
-`wayfinder-propose`, `wayfinder-specify`, `wayfinder-design`, `wayfinder-plan`,
-`wayfinder-implement`, `wayfinder-verify`, `wayfinder-mutate`, or `wayfinder-archive`. Child phases
+Each agent links one or more focused skills drawn from `wayfinder-coordinate`,
+`wayfinder-discover`, `wayfinder-propose`, `wayfinder-specify`, `wayfinder-design`,
+`wayfinder-plan`, `wayfinder-implement`, `wayfinder-verify`, `wayfinder-mutate`,
+`wayfinder-archive`, and `wayfinder-test-design`. The planner, implementer, and verifier load both
+their phase skill and `wayfinder-test-design`; a role loads every mapped skill in order. Child phases
 cannot delegate.
 
 ## How agents communicate
@@ -103,7 +105,7 @@ communicates through the TypeScript `WayfinderCoordinator` and durable artifacts
 
 ```text
 User command
-  -> WayfinderCoordinator loads one agent and its matching skill
+  -> WayfinderCoordinator loads one agent and all its mapped skills
   -> coordinator creates a fresh, capability-narrowed child session
   -> child returns one phase-specific JSON result
   -> coordinator validates the complete result
@@ -244,6 +246,41 @@ Legacy grandfather policy: a change that reached implementation before this gate
 recorded decision and is intentionally neither blocked nor retroactively gated; it proceeds through
 implementation and verification without test-first enforcement. Every change created by the current
 code must record a decision at plan approval. This policy is pinned by a test so it cannot drift.
+
+## Test design and UI testability
+
+Two methodological rule sets ship in the `wayfinder-test-design` skill, which the planner,
+implementer, and verifier load alongside their own skill:
+
+- **Test case design.** Every functional scenario gets at least one happy-path (positive) test and
+  one unhappy-path (negative, error, boundary, or valid-alternative) test, derived from requirements
+  and use cases (functional black-box), combinable with white-box path coverage.
+- **UI testability.** Query as a user would, in priority order: role/accessible name > label >
+  placeholder > visible text/display value > alt/title > `data-testid` last. Name ids
+  `feature-element-variant` (`login-email-input`); follow the project's existing test attribute and
+  id module; never anchor on implementation classes or deep DOM chains; keep ids out of business
+  logic; accessibility comes first.
+
+Evidence contract:
+
+| Field | Where | Meaning |
+| --- | --- | --- |
+| `requiresTests` | plan unit | Planner marks units that must carry tests |
+| `testDesign` | implementation | `{ scenario, happy[], unhappy[] }` per functional scenario |
+| `testability` | implementation | `{ testIds[], accessibleOnlyReason? }`, required when the unit changes UI paths |
+
+The coordinator rejects a unit, keeping it pending, when a `requiresTests` unit omits `testDesign`,
+when a scenario has no happy or no unhappy test, when scenario names are blank or duplicated, when a
+declaring unit reports no test file, or when a UI change omits `testability`, uses non-convention ids,
+or declares no ids without an `accessibleOnlyReason`.
+
+UI detection is extension-based, but a UI-extension file that is a test path (for example
+`src/App.test.tsx`) is treated as a test, not a UI path; a unit touching both `src/App.tsx` and
+`src/App.test.tsx` still requires `testability`.
+
+Enforcement is report-based and heuristic: a fragile selector, a missing negative test, or a
+misleading scenario name cannot be fully proven from the returned report. The independent verifier
+re-inspects the workspace and the tests, and remains the backstop.
 
 ## Commands
 

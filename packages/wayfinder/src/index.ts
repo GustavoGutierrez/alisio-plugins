@@ -17,6 +17,7 @@ export {
 } from "./mutation.js";
 export { loadRoleInstructions, parseResource, resourcePaths, roleSkills } from "./resources.js";
 export { assertRelativePath, atomicWrite, validateChangeName, validateState } from "./storage.js";
+export { isTestId, isUiPath } from "./testing-rules.js";
 export * from "./types.js";
 export * from "./validation.js";
 

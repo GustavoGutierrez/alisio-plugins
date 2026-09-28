@@ -11,7 +11,9 @@ import plugin, {
   buildMutationPlan,
   executionRoles,
   inspectMutationEnvironment,
+  isTestId,
   isTestPath,
+  isUiPath,
   loadRoleInstructions,
   mutationBounds,
   parseResource,
@@ -291,17 +293,32 @@ async function stubJavaScriptProject(h: Awaited<ReturnType<typeof harness>>, wit
 describe("canonical package resources", () => {
   it("ships and loads the exact agent and focused skill inventories", async () => {
     const expectedAgents = ["coordinator", ...executionRoles];
-    const expectedSkills = expectedAgents.map((role) => roleSkills[role]);
+    const expectedSkills = [...new Set(expectedAgents.flatMap((role) => roleSkills[role]))].sort();
     const root = resolve(import.meta.dirname, "..");
     expect((await readdir(join(root, ".agents/agents"))).sort()).toEqual(
       expectedAgents.map((name) => `${name}.md`).sort(),
     );
-    expect((await readdir(join(root, ".agents/skills"))).sort()).toEqual(expectedSkills.sort());
+    expect((await readdir(join(root, ".agents/skills"))).sort()).toEqual(expectedSkills);
     for (const role of expectedAgents) {
       const loaded = await loadRoleInstructions(role);
-      expect(loaded).toContain(`# Loaded skill: ${roleSkills[role]}`);
+      for (const skill of roleSkills[role]) {
+        expect(loaded).toContain(`# Loaded skill: ${skill}`);
+      }
       expect(loaded.length).toBeGreaterThan(300);
     }
+  });
+
+  it("loads every mapped skill per role in deterministic order", async () => {
+    for (const role of ["implementer", "verifier", "planner"] as const) {
+      const loaded = await loadRoleInstructions(role);
+      const positions = roleSkills[role].map((skill) => loaded.indexOf(`# Loaded skill: ${skill}`));
+      expect(positions.every((position) => position >= 0)).toBe(true);
+      expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+    }
+    expect(roleSkills.implementer).toContain("wayfinder-test-design");
+    expect(roleSkills.verifier).toContain("wayfinder-test-design");
+    expect(roleSkills.planner).toContain("wayfinder-test-design");
+    expect(roleSkills.discoverer).toEqual(["wayfinder-discover"]);
   });
 
   it("rejects malformed restricted frontmatter", () => {
@@ -1359,5 +1376,272 @@ describe("test-first (TDD) gate", () => {
     expect(() => validateState({ ...base, units: [{ ...unit, tddExemptReason: 7 }] })).toThrow(
       "Invalid Wayfinder state",
     );
+  });
+});
+
+describe("test design and UI testability", () => {
+  const planWithTests = (extra: Record<string, unknown> = {}) =>
+    JSON.stringify({
+      schemaVersion: 1,
+      units: [
+        {
+          id: "UNIT-001",
+          title: "Add health",
+          goal: "Expose health",
+          requirements: ["REQ-001"],
+          paths: ["src/health.ts"],
+          checks: ["pnpm test"],
+          requiresTests: true,
+          ...extra,
+        },
+      ],
+    });
+  const implementationWith = (partial: Record<string, unknown>) =>
+    JSON.stringify({
+      schemaVersion: 1,
+      unitId: "UNIT-001",
+      summary: "Implemented",
+      changedPaths: ["src/health.ts"],
+      checks: [{ command: "pnpm test", status: "passed", summary: "ok" }],
+      notes: [],
+      ...partial,
+    });
+  const queueFor = (plan: string, output: string) => [
+    validOutputs[0] as string,
+    validOutputs[1] as string,
+    validOutputs[2] as string,
+    validOutputs[3] as string,
+    plan,
+    output,
+  ];
+
+  it("classifies UI paths and validates test-id naming", () => {
+    const uiExtensions = [
+      ".html",
+      ".htm",
+      ".xhtml",
+      ".jsx",
+      ".tsx",
+      ".vue",
+      ".svelte",
+      ".astro",
+      ".ejs",
+      ".hbs",
+      ".handlebars",
+      ".mustache",
+      ".pug",
+      ".jade",
+      ".twig",
+      ".njk",
+      ".liquid",
+      ".erb",
+      ".haml",
+      ".slim",
+    ];
+    for (const extension of uiExtensions) {
+      expect(isUiPath(`views/Component${extension}`)).toBe(true);
+    }
+    expect(isUiPath("views/Cart.VUE")).toBe(true);
+    expect(isUiPath("src/health.ts")).toBe(false);
+    expect(isUiPath("scripts/build.mjs")).toBe(false);
+    expect(isTestId("cart-checkout-button")).toBe(true);
+    expect(isTestId("login-email-input")).toBe(true);
+    expect(isTestId("login")).toBe(false);
+    expect(isTestId("Login-Email")).toBe(false);
+    expect(isTestId("login_email")).toBe(false);
+  });
+
+  it("rejects a non-boolean requiresTests in a plan", () => {
+    expect(() =>
+      validatePlan(
+        {
+          schemaVersion: 1,
+          units: [
+            {
+              id: "UNIT-001",
+              title: "Add health",
+              goal: "Expose health",
+              requirements: ["REQ-001"],
+              paths: ["src/health.ts"],
+              checks: ["pnpm test"],
+              requiresTests: "yes",
+            },
+          ],
+        },
+        new Set(["REQ-001"]),
+      ),
+    ).toThrow("requiresTests");
+  });
+
+  it("rejects a requiresTests unit when testDesign is missing", async () => {
+    const h = await harness(
+      queueFor(planWithTests(), implementationWith({ changedPaths: ["src/health.test.ts"] })),
+    );
+    await reachImplementation(h, "design-missing");
+    await expect(h.run("build", "design-missing")).rejects.toThrow("requires tests");
+  });
+
+  it("rejects a scenario without a happy test", async () => {
+    const h = await harness(
+      queueFor(
+        planWithTests(),
+        implementationWith({
+          changedPaths: ["src/health.test.ts"],
+          testDesign: [{ scenario: "expose", happy: [], unhappy: ["rejects bad input"] }],
+        }),
+      ),
+    );
+    await reachImplementation(h, "design-happy");
+    await expect(h.run("build", "design-happy")).rejects.toThrow("no happy-path test");
+  });
+
+  it("rejects a scenario without an unhappy test", async () => {
+    const h = await harness(
+      queueFor(
+        planWithTests(),
+        implementationWith({
+          changedPaths: ["src/health.test.ts"],
+          testDesign: [{ scenario: "expose", happy: ["returns 200"], unhappy: [] }],
+        }),
+      ),
+    );
+    await reachImplementation(h, "design-unhappy");
+    await expect(h.run("build", "design-unhappy")).rejects.toThrow("no unhappy-path test");
+  });
+
+  it("rejects duplicate or blank scenario names", async () => {
+    const duplicate = implementationWith({
+      changedPaths: ["src/health.test.ts"],
+      testDesign: [
+        { scenario: "expose", happy: ["a"], unhappy: ["b"] },
+        { scenario: "expose", happy: ["c"], unhappy: ["d"] },
+      ],
+    });
+    const h = await harness(queueFor(planWithTests(), duplicate));
+    await reachImplementation(h, "design-duplicate");
+    await expect(h.run("build", "design-duplicate")).rejects.toThrow("repeats the scenario");
+
+    const blank = implementationWith({
+      changedPaths: ["src/health.test.ts"],
+      testDesign: [{ scenario: "   ", happy: ["a"], unhappy: ["b"] }],
+    });
+    const h2 = await harness(queueFor(planWithTests(), blank));
+    await reachImplementation(h2, "design-blank");
+    await expect(h2.run("build", "design-blank")).rejects.toThrow("must be non-empty");
+  });
+
+  it("accepts a complete happy and unhappy design", async () => {
+    const h = await harness(
+      queueFor(
+        planWithTests(),
+        implementationWith({
+          changedPaths: ["src/health.test.ts"],
+          testDesign: [
+            { scenario: "expose", happy: ["returns 200"], unhappy: ["rejects bad input"] },
+          ],
+        }),
+      ),
+    );
+    await reachImplementation(h, "design-complete");
+    await expect(h.run("build", "design-complete")).resolves.toContain("Completed UNIT-001");
+  });
+
+  it("rejects a UI unit without testability", async () => {
+    const h = await harness(
+      queueFor(validOutputs[4] as string, implementationWith({ changedPaths: ["src/App.tsx"] })),
+    );
+    await reachImplementation(h, "ui-missing");
+    await expect(h.run("build", "ui-missing")).rejects.toThrow("testability");
+  });
+
+  it("rejects non-convention UI test ids", async () => {
+    const h = await harness(
+      queueFor(
+        validOutputs[4] as string,
+        implementationWith({
+          changedPaths: ["src/App.tsx"],
+          testability: { testIds: ["Login", "login_email"] },
+        }),
+      ),
+    );
+    await reachImplementation(h, "ui-bad-id");
+    await expect(h.run("build", "ui-bad-id")).rejects.toThrow("non-convention test ids");
+  });
+
+  it("rejects empty UI test ids without a reason", async () => {
+    const h = await harness(
+      queueFor(
+        validOutputs[4] as string,
+        implementationWith({ changedPaths: ["src/App.tsx"], testability: { testIds: [] } }),
+      ),
+    );
+    await reachImplementation(h, "ui-empty");
+    await expect(h.run("build", "ui-empty")).rejects.toThrow("accessibleOnlyReason");
+  });
+
+  it("accepts an accessible-only reason for a UI unit", async () => {
+    const h = await harness(
+      queueFor(
+        validOutputs[4] as string,
+        implementationWith({
+          changedPaths: ["src/App.tsx"],
+          testability: { testIds: [], accessibleOnlyReason: "Semantic roles only" },
+        }),
+      ),
+    );
+    await reachImplementation(h, "ui-reason");
+    await expect(h.run("build", "ui-reason")).resolves.toContain("Completed UNIT-001");
+  });
+
+  it("accepts convention-matching UI test ids", async () => {
+    const h = await harness(
+      queueFor(
+        validOutputs[4] as string,
+        implementationWith({
+          changedPaths: ["src/App.tsx"],
+          testability: { testIds: ["login-email-input"] },
+        }),
+      ),
+    );
+    await reachImplementation(h, "ui-ids");
+    await expect(h.run("build", "ui-ids")).resolves.toContain("Completed UNIT-001");
+  });
+
+  it("does not apply the testability rule to a non-UI unit", async () => {
+    const h = await harness(
+      queueFor(validOutputs[4] as string, implementationWith({ changedPaths: ["src/health.ts"] })),
+    );
+    await reachImplementation(h, "no-ui");
+    await expect(h.run("build", "no-ui")).resolves.toContain("Completed UNIT-001");
+  });
+
+  it("treats a UI-extension test file as a test path, not a UI path", async () => {
+    const testOnly = await harness(
+      queueFor(
+        validOutputs[4] as string,
+        implementationWith({ changedPaths: ["src/App.test.tsx"] }),
+      ),
+    );
+    await reachImplementation(testOnly, "ui-test-file");
+    const stateFile = join(testOnly.workspace, ".alisio/wayfinder/changes/ui-test-file/state.json");
+    const state = JSON.parse(await readFile(stateFile, "utf8"));
+    state.units[0].kind = "test-strengthening";
+    await writeFile(stateFile, JSON.stringify(state));
+    await expect(testOnly.run("build", "ui-test-file")).resolves.toContain("Completed UNIT-001");
+
+    const mixed = await harness(
+      queueFor(
+        validOutputs[4] as string,
+        implementationWith({ changedPaths: ["src/App.tsx", "src/App.test.tsx"] }),
+      ),
+    );
+    await reachImplementation(mixed, "ui-mixed");
+    await expect(mixed.run("build", "ui-mixed")).rejects.toThrow("testability");
+
+    const real = await harness(
+      queueFor(validOutputs[4] as string, implementationWith({ changedPaths: ["src/App.tsx"] })),
+    );
+    await reachImplementation(real, "ui-real");
+    await expect(real.run("build", "ui-real")).rejects.toThrow("testability");
   });
 });

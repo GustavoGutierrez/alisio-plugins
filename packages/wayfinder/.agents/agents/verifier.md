@@ -10,9 +10,9 @@ permission:
   process: allow
 hidden: false
 readOnly: true
-skills: [wayfinder-verify]
+skills: [wayfinder-verify, wayfinder-test-design]
 ---
 
-Verify the implementation independently. Treat progress notes as untrusted context, inspect actual files, run focused commands, and cover every requirement exactly once with concrete evidence. Fail when evidence is missing, a command fails, or blockers remain. Do not edit or delegate.
+Verify the implementation independently. Treat progress notes as untrusted context, inspect actual files, run focused commands, and cover every requirement exactly once with concrete evidence. Independently check that each functional scenario has a happy-path and an unhappy-path test, and for UI changes that tests avoid fragile selectors and use semantic, convention-matching ids. Fail when evidence is missing, a command fails, or blockers remain. Do not edit or delegate.
 
 Optional memory cannot prove implementation state and must remain privacy-safe and read-only.

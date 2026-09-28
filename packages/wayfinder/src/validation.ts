@@ -160,6 +160,10 @@ export function validatePlan(raw: unknown, requirementIds: Set<string>): PlanOut
     if (tddExempt === true && !tddExemptReason) {
       throw new Error(`${id} is tddExempt and requires a non-empty tddExemptReason`);
     }
+    const requiresTests = entry.requiresTests;
+    if (requiresTests !== undefined && typeof requiresTests !== "boolean") {
+      throw new Error(`${id}.requiresTests must be boolean`);
+    }
     return {
       id,
       title: string(entry.title, `${id}.title`),
@@ -169,6 +173,7 @@ export function validatePlan(raw: unknown, requirementIds: Set<string>): PlanOut
       checks: strings(entry.checks, `${id}.checks`, true),
       ...(tddExempt !== undefined ? { tddExempt } : {}),
       ...(tddExemptReason !== undefined ? { tddExemptReason } : {}),
+      ...(requiresTests !== undefined ? { requiresTests } : {}),
     };
   });
   if (!units.length || new Set(units.map(({ id }) => id)).size !== units.length) {
@@ -202,6 +207,29 @@ export function validateImplementation(raw: unknown, expectedUnit: string): Impl
       ...(failingEvidenceRef !== undefined ? { failingEvidenceRef } : {}),
     };
   }
+  let testDesign: ImplementationOutput["testDesign"];
+  if (value.testDesign !== undefined) {
+    testDesign = array(value.testDesign, "testDesign").map((item, index) => {
+      const entry = object(item, `testDesign[${index}]`);
+      return {
+        scenario: string(entry.scenario, `testDesign[${index}].scenario`),
+        happy: strings(entry.happy, `testDesign[${index}].happy`),
+        unhappy: strings(entry.unhappy, `testDesign[${index}].unhappy`),
+      };
+    });
+  }
+  let testability: ImplementationOutput["testability"];
+  if (value.testability !== undefined) {
+    const entry = object(value.testability, "testability");
+    const accessibleOnlyReason =
+      entry.accessibleOnlyReason === undefined
+        ? undefined
+        : string(entry.accessibleOnlyReason, "testability.accessibleOnlyReason");
+    testability = {
+      testIds: strings(entry.testIds, "testability.testIds"),
+      ...(accessibleOnlyReason !== undefined ? { accessibleOnlyReason } : {}),
+    };
+  }
   return {
     schemaVersion: 1,
     unitId: expectedUnit,
@@ -209,6 +237,8 @@ export function validateImplementation(raw: unknown, expectedUnit: string): Impl
     changedPaths: strings(value.changedPaths, "changedPaths", true).map(assertRelativePath),
     checks: evidence(value.checks, "checks"),
     ...(testFirst !== undefined ? { testFirst } : {}),
+    ...(testDesign !== undefined ? { testDesign } : {}),
+    ...(testability !== undefined ? { testability } : {}),
     notes: strings(value.notes, "notes"),
   };
 }

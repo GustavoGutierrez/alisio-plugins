@@ -206,6 +206,7 @@ function validUnit(value: unknown): value is WorkUnit {
       (typeof value.tddExemptReason === "string" && value.tddExemptReason.trim().length > 0)) &&
     (value.tddExempt !== true ||
       (typeof value.tddExemptReason === "string" && value.tddExemptReason.trim().length > 0)) &&
+    (value.requiresTests === undefined || typeof value.requiresTests === "boolean") &&
     (value.status === "pending" || value.status === "completed");
   if (!base) return false;
   if (value.status === "pending")

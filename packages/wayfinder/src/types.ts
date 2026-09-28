@@ -46,6 +46,8 @@ export interface WorkUnit {
   /** When true, strict TDD does not require test-first evidence; a justification is mandatory. */
   tddExempt?: boolean;
   tddExemptReason?: string;
+  /** When true, the unit must report test-design evidence (happy and unhappy coverage). */
+  requiresTests?: boolean;
   changedPaths?: string[];
   evidence?: CommandEvidence[];
 }
@@ -202,7 +204,22 @@ export interface ImplementationOutput {
     passingCommand: string;
     failingEvidenceRef?: string;
   };
+  testDesign?: TestDesignEntry[];
+  testability?: Testability;
   notes: string[];
+}
+
+/** Positive (happy) and negative (unhappy/alternative) tests observed for one functional scenario. */
+export interface TestDesignEntry {
+  scenario: string;
+  happy: string[];
+  unhappy: string[];
+}
+
+/** UI test-selector evidence: semantic ids, or a reason that only accessibility queries are used. */
+export interface Testability {
+  testIds: string[];
+  accessibleOnlyReason?: string;
 }
 
 export interface VerificationOutput {
