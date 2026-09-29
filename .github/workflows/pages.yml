@@ -38,7 +38,11 @@ jobs:
           cache: pnpm
       - uses: actions/configure-pages@v5
       - run: pnpm install --no-frozen-lockfile
-      # The catalog cache is committed, so the site builds without the network.
+      # Refresh npm publish recency so "Recently published" tracks the latest
+      # releases. Degrades gracefully: the scanner keeps cached values and only
+      # notes a warning when npm metadata is unavailable.
+      - run: pnpm docs:scan
+      # The catalog cache is committed, so the site still builds without the network.
       - run: pnpm docs:build
       - uses: actions/upload-pages-artifact@v3
         with:
