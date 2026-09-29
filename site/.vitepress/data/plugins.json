@@ -36,6 +36,40 @@
       "source": "local"
     },
     {
+      "name": "@alisio/plugin-openai",
+      "slug": "openai",
+      "title": "OpenAI",
+      "pluginId": "openai",
+      "description": "Official OpenAI Responses API provider",
+      "version": "0.1.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-openai#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-openai",
+      "categories": [
+        "model-provider"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "openai",
+        "model-provider"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 1,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-openai",
+      "cover": "/covers/openai.svg",
+      "readme": "Official OpenAI Responses API provider for Alisio (`openai`). Install with `alisio install npm:@alisio/plugin-openai`, then connect using an OpenAI API key or `OPENAI_API_KEY` (a stored key takes precedence).\n\nThis release uses streaming, function tools, stateless continuation, model discovery, usage reporting, cancellation, and `store: false`. The host must choose an active model; availability is account-specific.\n\n## Requirements and authentication\n\nNode.js >= 22.16 and an OpenAI API-billed key are required. OpenCode OAuth, ChatGPT Plus/Pro, Codex, Max, and other subscription credentials are intentionally unsupported in this release. This plugin neither reads nor imports them.\n\n## License\n\nMIT.",
+      "downloadsLastMonth": null,
+      "featured": false,
+      "source": "local"
+    },
+    {
       "name": "@alisio/plugin-opencode",
       "slug": "opencode",
       "title": "OpenCode Console (Zen)",
@@ -100,6 +134,40 @@
       "cover": "/covers/opencode-go.svg",
       "readme": "The OpenCode Go model provider for [Alisio](https://github.com/GustavoGutierrez/alisio).\nDiscover the unauthenticated OpenCode Go catalog and route each model to the protocol OpenCode Go\ndocuments for it.\n\n## What it is\n\nA `model-provider` plugin that registers the `opencode-go` provider with the Alisio host. Model\nreferences use the canonical `opencode-go/` form.\n\n## Installation\n\n```bash\nalisio install npm:@alisio/plugin-opencode-go   # global, per-user\nalisio plugins list                             # confirm it is installed\n```\n\nFor an embedded host, load the package (or its `dist/index.js`) through your plugin host instead.\n\n## Using it: `/connect`\n\n1. Run `alisio`, then `/connect` and choose **OpenCode Go**.\n2. Enter the **API key** (secret, required). It is stored only in the global credentials store\n   (`credentials.json`, mode 0600) — never in the profile or configuration.\n3. Pick a model from the discovered catalog (`https://opencode.ai/zen/go/v1/models`).\n\nThere is no hard-coded default API-key environment variable for this provider: the key is entered\nin `/connect` and kept out of configuration files.\n\n## Features\n\n- Unauthenticated catalog discovery of `opencode-go/` entries.\n- Fail-closed routing from the documented endpoint table: GPT, Grok and Muse through **Responses**;\n  open compatible families through **Chat Completions**; MiniMax and Qwen through\n  **Anthropic Messages**.\n- Unknown catalog entries are hidden rather than guessed.\n- Requests send `user-agent: alisio/` and an opaque, stable `x-opencode-session`\n  conversation ID that never includes a workspace path, prompt or credential.\n\nWhile registered, the provider also appears in `/model` and `alisio doctor`.\n\n## Requirements\n\nNode.js **>= 22.16** and an Alisio host with `@alisio/sdk` `>=0.1.0-alpha.10`.\n\n## License\n\nMIT. Maintained by Gustavo Gutiérrez Mercado. Source:\n<https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-opencode-go> ·\nnpm: <https://www.npmjs.com/package/@alisio/plugin-opencode-go>.",
       "downloadsLastMonth": 987,
+      "featured": false,
+      "source": "local"
+    },
+    {
+      "name": "@alisio/plugin-openrouter",
+      "slug": "openrouter",
+      "title": "OpenRouter",
+      "pluginId": "openrouter",
+      "description": "OpenRouter OpenAI-compatible provider",
+      "version": "0.1.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-openrouter#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-openrouter",
+      "categories": [
+        "model-provider"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "openrouter",
+        "model-provider"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 1,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-openrouter",
+      "cover": "/covers/openrouter.svg",
+      "readme": "OpenRouter model provider for Alisio (`openrouter`). Install with `alisio install npm:@alisio/plugin-openrouter`, then connect with an API key or `OPENROUTER_API_KEY`; a stored key wins over the environment variable.\n\n`openrouter/free` is the documented catalog and provider fallback. Alisio's host must still choose the active model: the SDK has no registration-level default selection. The plugin streams text, tools, usage, safe provider-visible reasoning, and preserves opaque `reasoning_details` for continuation.\n\nIt uses the fixed `https://openrouter.ai/api/v1` endpoint and sends no default attribution headers in v1 to preserve user privacy. Model inventory is an in-memory cache only.\n\n## License\n\nMIT.",
+      "downloadsLastMonth": null,
       "featured": false,
       "source": "local"
     },

@@ -8,6 +8,8 @@ description: "Todos los plugins publicados en este catálogo, en orden A–Z."
 Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portada del catálogo](/es/).
 
 - [DeepSeek](./deepseek) — Dedicated DeepSeek Chat Completions and Responses provider (`model-provider`)
+- [OpenAI](./openai) — Official OpenAI Responses API provider (`model-provider`)
 - [OpenCode Console (Zen)](./opencode) — OpenCode Console gateway for Responses, Chat, and Messages models (`model-provider`)
 - [OpenCode Go](./opencode-go) — OpenCode Go multi-protocol model gateway (`model-provider`)
+- [OpenRouter](./openrouter) — OpenRouter OpenAI-compatible provider (`model-provider`)
 - [Wayfinder](./wayfinder) — Coordinates a durable specification-driven development workflow with bounded child sessions. (`methodology-harness`)

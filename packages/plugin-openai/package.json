@@ -1,0 +1,53 @@
+{
+  "name": "@alisio/plugin-openai",
+  "version": "0.1.0",
+  "description": "Official OpenAI Responses API model provider for Alisio.",
+  "keywords": [
+    "alisio-plugin",
+    "openai",
+    "model-provider"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-openai"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-openai#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "openai": "7.23.0"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.1.0-alpha.11",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

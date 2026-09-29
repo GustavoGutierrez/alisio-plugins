@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="OpenRouter provider cover">
+  <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1f173d"/><stop offset="1" stop-color="#8250b8"/></linearGradient></defs>
+  <rect width="1600" height="900" fill="url(#a)"/><path d="M1060 250h360l-120 200 120 200h-360l120-200z" fill="none" stroke="#f0d6ff" stroke-width="32"/>
+  <text x="120" y="300" fill="#f0d6ff" font-family="system-ui" font-size="30" letter-spacing="8">ALISIO PLUGIN</text><text x="120" y="440" fill="white" font-family="system-ui" font-size="112" font-weight="700">OpenRouter</text><text x="120" y="520" fill="#f2e8fb" font-family="system-ui" font-size="40">OpenAI-compatible provider</text>
+</svg>
