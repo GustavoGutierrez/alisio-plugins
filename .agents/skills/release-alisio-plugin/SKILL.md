@@ -4,7 +4,7 @@ description: "Trigger: changeset, bump plugin, publish plugin, release plugins. 
 license: Apache-2.0
 metadata:
   author: "alisio-contributors"
-  version: "1.1"
+  version: "1.2"
 ---
 
 ## Activation Contract
@@ -22,7 +22,9 @@ Load this skill for versioning, packing, publishing, or release workflow changes
 - Never publish a version that already exists on the registry; bump first.
 - A prerelease version defaults to the `next` dist-tag; pass `--tag` to override. Never promote a
   prerelease to `latest` by accident.
-- Pass `--otp <code>` for accounts with two-factor authentication.
+- Never ask a user to paste a one-time password into chat. When the user asks for publish commands,
+  provide the exact `pnpm publish-one -- <name> --publish` or `pnpm publish-all --publish` command
+  after preflight; the user completes npm web/OTP authorization locally when that command runs.
 - Never commit tokens or credentials. Publish only `@alisio/plugin-*` packages with public access.
 - First release: delete changeset files whose changes are already contained in the shipped version
   before publishing `0.1.0`, so `changeset version` does not double-count them.
@@ -54,6 +56,20 @@ it runs the preflight per package and is dry-run by default. They are not interc
 5. For the whole workspace, preview with `pnpm publish-all`, then publish with
    `pnpm publish-all --publish`.
 6. Record package names, versions, dist-tags, checks, and registry outcome.
+
+## User-controlled npm authorization
+
+After a package has passed preflight and the user asks for the real publish command, give the command
+directly instead of initiating `npm login`, requesting an OTP, or trying to complete the authorization
+on their behalf:
+
+```bash
+pnpm publish-one -- @alisio/plugin-example --publish
+```
+
+The user owns the browser-based npm login or authenticator challenge that npm presents. If npm requires
+an explicit OTP flag in that user's terminal, they may add `--otp <code>` themselves. After the user
+confirms publication, verify the exact version and dist-tag from the registry.
 
 ## Output Contract
 
