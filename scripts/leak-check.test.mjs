@@ -32,7 +32,7 @@ describe("leak-check redaction", () => {
   });
 
   it("still prints an ordinary path finding so it stays actionable", () => {
-    const ordinary = tmpDir + "session-abc";
+    const ordinary = `${tmpDir}session-abc`;
     const findings = scanText(`const p = "${ordinary}";`, "fixture.txt");
     assert.equal(findings.length, 1, "exactly one ordinary path finding");
     assert.equal(findings[0].secret, false, "an ordinary path is not a secret");
@@ -42,7 +42,7 @@ describe("leak-check redaction", () => {
   });
 
   it("redacts a file label that embeds a credential", () => {
-    const ordinary = tmpDir + "session-abc";
+    const ordinary = `${tmpDir}session-abc`;
     const findings = scanText(`const p = "${ordinary}";`, fakeGithubPat + ".txt");
 
     const report = formatFindings(findings).join("\n");
