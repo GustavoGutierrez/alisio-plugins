@@ -19,6 +19,7 @@
  * leak preflight reports credential-shaped findings with a redacted placeholder.
  */
 import { spawnSync } from "node:child_process";
+import { mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
@@ -281,19 +282,31 @@ export function runPackageChecks(pkg) {
  * The single publish command for both scripts. Real publishing requires
  * `dryRun === false`; `--otp` is forwarded for two-factor accounts.
  *
- * RUN FROM THE PACKAGE DIRECTORY, NOT `pnpm --dir`. On pnpm 10.17.1,
- * `pnpm --dir <path> publish <flags>` runs the package's `prepack` lifecycle and
- * then hands a malformed invocation to npm, which exits with `EUSAGE` and the
- * `npm publish <package-spec>` usage text instead of publishing. Setting the
- * working directory and calling `pnpm publish` directly is what actually works.
+ * PACK FIRST, THEN `npm publish <tarball>`. This mirrors the Alisio monorepo's
+ * own publisher and is deliberate on three counts:
+ *   1. the exact artifact the operator reviewed is the one that ships;
+ *   2. publishing a file rather than a directory means the registry upload is
+ *      decoupled from the package's `prepack` lifecycle;
+ *   3. `npm publish` is what drives npm's two-factor approval flow, including
+ *      the browser flow (`auth-type=web`) where npm prints a URL to approve.
+ *      `pnpm publish` does not offer that flow.
+ * Run this in an interactive terminal so npm can prompt or print its URL.
  */
 export function publishPackage(pkg, { dryRun, tag, otp }) {
-  const args = ["publish", "--access", "public", "--no-git-checks", "--tag", tag];
-  if (otp) args.push("--otp", otp);
-  if (dryRun) args.push("--dry-run");
-  runStep(`${dryRun ? "dry-run publish" : "publish"} ${pkg.name}@${pkg.version}`, "pnpm", args, {
-    cwd: pkg.dir,
-  });
+  const temp = mkdtempSync(join(tmpdir(), "alisio-publish-"));
+  try {
+    runStep(`pack ${pkg.name}`, "pnpm", ["pack", "--pack-destination", temp], { cwd: pkg.dir });
+    const tarball = readdirSync(temp).find((file) => file.endsWith(".tgz"));
+    if (!tarball) throw new Error(`pnpm pack produced no tarball for ${pkg.name}`);
+    const args = ["publish", join(temp, tarball), "--access", "public", "--tag", tag];
+    if (otp) args.push("--otp", otp);
+    if (dryRun) args.push("--dry-run");
+    runStep(`${dryRun ? "dry-run publish" : "publish"} ${pkg.name}@${pkg.version}`, "npm", args, {
+      cwd: pkg.dir,
+    });
+  } finally {
+    rmSync(temp, { recursive: true, force: true });
+  }
 }
 
 /**
