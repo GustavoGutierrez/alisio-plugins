@@ -358,6 +358,10 @@ describe("canonical package resources", () => {
     });
     for (const role of Object.values(phaseRoles)) expect(roleSkills[role]).toBeDefined();
   });
+
+  it("declares the methodology-harness catalog category", () => {
+    expect(plugin.categories).toEqual(["methodology-harness"]);
+  });
 });
 
 describe("permission and direct execution boundaries", () => {

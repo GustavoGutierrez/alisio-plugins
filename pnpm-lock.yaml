@@ -27,8 +27,8 @@ importers:
   packages/wayfinder:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.1.0-alpha.9
-        version: 0.1.0-alpha.9
+        specifier: 0.1.0-alpha.10
+        version: 0.1.0-alpha.10
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -38,8 +38,8 @@ importers:
 
 packages:
 
-  '@alisio/sdk@0.1.0-alpha.9':
-    resolution: {integrity: sha512-mgnBOmTgSwAEc7tKoOUEAgihN3xB0cToRfV+CaFCMzSsFR8fSayClg2FDvOqOfNFds4WaSDEwl8CpTi5g75Mmw==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.1.0-alpha.9.tgz}
+  '@alisio/sdk@0.1.0-alpha.10':
+    resolution: {integrity: sha512-k6z8oZ3DFIOAIgCHJvxvzBRWeljSlwSh+ZpJcyICAMu6xsHMnUfsY7UWp/EoKwBb3hxgScS2O658RFzU08lzgQ==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.1.0-alpha.10.tgz}
     engines: {node: '>=22.16'}
 
   '@biomejs/biome@2.5.14':
@@ -743,7 +743,7 @@ packages:
 
 snapshots:
 
-  '@alisio/sdk@0.1.0-alpha.9': {}
+  '@alisio/sdk@0.1.0-alpha.10': {}
 
   '@biomejs/biome@2.5.14':
     optionalDependencies:

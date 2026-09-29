@@ -76,7 +76,7 @@ The host validates and enforces this contract:
 | `apiVersion` | yes | Exactly `1`. |
 | `setup(api)` | yes | A function; may be async. Registers everything. |
 | `name`, `description` | no | Non-empty human-friendly catalog text used by `/plugins`. |
-| `categories` | no | Optional `model-provider`; the host also derives that category from provider registrations. |
+| `categories` | no | Optional catalog categories: `model-provider` or `methodology-harness`. The host validates the value strictly (see below) and also derives `model-provider` from provider registrations. |
 | `extensions` | no | Declarative extension providers, registered at priority `0` before `setup` runs. |
 | `dispose()` | no | Releases resources when Alisio closes. |
 
@@ -88,6 +88,20 @@ What the host guarantees:
   call returns an unregister function; the host reverses all of them on failure and then awaits
   `dispose()` before rethrowing.
 - **Everything a plugin registers is removed automatically when it unloads.**
+
+### Catalog categories and host compatibility
+
+`categories` is one of the few fields the host validates against a closed set (the SDK's
+`PluginCategory`). Validation is strict: a host that does not know a declared value **fails the load**
+with a contract error instead of ignoring the unknown value. The known values are `model-provider`
+(the original value) and `methodology-harness` (`@alisio/sdk` `0.1.0-alpha.10` / `@alisio/core`
+`0.1.0-alpha.15` and newer).
+
+A plugin cannot express a host-version dependency. Plugins depend on `@alisio/sdk` only, never on
+`@alisio/core`, and the SDK peer range is not a host version the host enforces. So declaring a
+category that a newer SDK introduced fails the load on older hosts, and no manifest field prevents
+it. Document the minimum Alisio runtime in your README and give the upgrade command
+(`npm install -g @alisio/alisio-code@<version>`, or `pnpm add -g` / `bun add -g`).
 
 ## Capability surface
 
@@ -215,7 +229,7 @@ validation happens at load, surfaced by `alisio plugins doctor`.
 
 ## SDK version pinning
 
-The published `@alisio/sdk` is **`0.1.0-alpha.9`** as of this writing. Verify the current version
+The published `@alisio/sdk` is **`0.1.0-alpha.10`** as of this writing. Verify the current version
 before you pin:
 
 ```bash
@@ -227,8 +241,8 @@ Prefer a range this repository actually uses:
 
 ```json
 {
-  "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.9 <0.2.0" },
-  "devDependencies": { "@alisio/sdk": "0.1.0-alpha.9" }
+  "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0" },
+  "devDependencies": { "@alisio/sdk": "0.1.0-alpha.10" }
 }
 ```
 
@@ -247,7 +261,7 @@ Prefer a range this repository actually uses:
 Where the upstream docs and the source disagree, this guide follows the source:
 
 1. **SDK pin example is stale.** The upstream docs show `^0.1.0-alpha.16`; the published version is
-   `0.1.0-alpha.9` (check with `npm view @alisio/sdk version`).
+   `0.1.0-alpha.10` (check with `npm view @alisio/sdk version`).
 2. **`extensions.register` covers more than the API table says.** The `PluginAPI` table lists
    `(mascot, startup-screen)`, but the SDK's typed `ExtensionPoints` map also includes `websearch`,
    and the extension points table documents it. Follow the SDK type.

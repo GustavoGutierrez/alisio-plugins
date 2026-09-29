@@ -76,7 +76,7 @@ El host valida y hace cumplir este contrato:
 | `apiVersion` | sí | Exactamente `1`. |
 | `setup(api)` | sí | Una función; puede ser asíncrona. Registra todo. |
 | `name`, `description` | no | Texto de catálogo no vacío y legible usado por `/plugins`. |
-| `categories` | no | `model-provider` opcional; el host también deriva esa categoría de los registros de proveedores. |
+| `categories` | no | Categorías de catálogo opcionales: `model-provider` o `methodology-harness`. El host valida el valor de forma estricta (ver abajo) y también deriva `model-provider` de los registros de proveedores. |
 | `extensions` | no | Proveedores de extensión declarativos, registrados con prioridad `0` antes de que se ejecute `setup`. |
 | `dispose()` | no | Libera recursos cuando Alisio se cierra. |
 
@@ -89,6 +89,21 @@ Lo que el host garantiza:
   `register`/`on` devuelve una función para desregistrar; el host revierte todas al fallar y después
   espera a `dispose()` antes de relanzar el error.
 - **Todo lo que un plugin registra se elimina automáticamente cuando se descarga.**
+
+### Categorías de catálogo y compatibilidad con el host
+
+`categories` es uno de los pocos campos que el host valida contra un conjunto cerrado (el
+`PluginCategory` del SDK). La validación es estricta: un host que no conoce un valor declarado
+**hace fallar la carga** con un error de contrato en lugar de ignorar el valor desconocido. Los
+valores conocidos son `model-provider` (el valor original) y `methodology-harness` (`@alisio/sdk`
+`0.1.0-alpha.10` / `@alisio/core` `0.1.0-alpha.15` y posteriores).
+
+Un plugin no puede expresar una dependencia de la versión del host. Los plugins dependen solo de
+`@alisio/sdk`, nunca de `@alisio/core`, y el rango peer del SDK no es una versión del host que este
+haga cumplir. Por eso, declarar una categoría introducida en un SDK más nuevo hace fallar la carga en
+hosts antiguos, y ningún campo del manifiesto lo evita. Documenta el runtime mínimo de Alisio en tu
+README y da el comando de actualización
+(`npm install -g @alisio/alisio-code@<versión>`, o `pnpm add -g` / `bun add -g`).
 
 ## Superficie de capacidades
 
@@ -219,7 +234,7 @@ la validación ocurre al cargar y se muestra con `alisio plugins doctor`.
 
 ## Fijación de la versión del SDK
 
-El `@alisio/sdk` publicado es **`0.1.0-alpha.9`** al momento de escribir esto. Verifica la versión
+El `@alisio/sdk` publicado es **`0.1.0-alpha.10`** al momento de escribir esto. Verifica la versión
 actual antes de fijarla:
 
 ```bash
@@ -231,8 +246,8 @@ delante de lo publicado. Prefiere un rango que este repositorio sí usa:
 
 ```json
 {
-  "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.9 <0.2.0" },
-  "devDependencies": { "@alisio/sdk": "0.1.0-alpha.9" }
+  "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0" },
+  "devDependencies": { "@alisio/sdk": "0.1.0-alpha.10" }
 }
 ```
 
@@ -252,7 +267,7 @@ delante de lo publicado. Prefiere un rango que este repositorio sí usa:
 Cuando la documentación upstream y el código discrepan, esta guía sigue al código:
 
 1. **El ejemplo de fijación del SDK está desactualizado.** La documentación upstream muestra
-   `^0.1.0-alpha.16`; la versión publicada es `0.1.0-alpha.9` (compruébalo con
+   `^0.1.0-alpha.16`; la versión publicada es `0.1.0-alpha.10` (compruébalo con
    `npm view @alisio/sdk version`).
 2. **`extensions.register` cubre más de lo que dice la tabla de la API.** La tabla de `PluginAPI`
    lista `(mascot, startup-screen)`, pero el mapa tipado `ExtensionPoints` del SDK también incluye

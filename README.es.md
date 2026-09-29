@@ -10,15 +10,12 @@ instala por separado y se versiona por separado; nada de esto es un framework qu
 
 **Instalar un plugin en Alisio**
 
-`@alisio/plugin-wayfinder` aún no está publicado en npm. Cuando se publique, la instalación global
-será:
-
 ```bash
 alisio install npm:@alisio/plugin-wayfinder   # global, por usuario
 alisio plugins list                           # confirma que quedó instalado
 ```
 
-Mientras tanto, compila el paquete y cárgalo desde una ruta local:
+Para desarrollo local, compila el paquete y cárgalo desde una ruta:
 
 ```bash
 pnpm --dir packages/wayfinder build
@@ -77,9 +74,13 @@ La superficie completa de capacidades, los límites duros y los errores más fre
 
 ## Paquetes
 
-| Paquete | Propósito |
-| --- | --- |
-| [`@alisio/plugin-wayfinder`](packages/wayfinder#readme) | Coordina un flujo de desarrollo guiado por especificaciones y duradero con sesiones hijas acotadas. |
+| Paquete | Categoría | Propósito |
+| --- | --- | --- |
+| [`@alisio/plugin-wayfinder`](packages/wayfinder#readme) | `methodology-harness` | Coordina un flujo de desarrollo guiado por especificaciones y duradero con sesiones hijas acotadas. |
+
+`methodology-harness` es una categoría de catálogo estricta que valida el host. Requiere un runtime de
+Alisio que incluya `@alisio/core` `0.1.0-alpha.15` o posterior; un plugin no puede declarar esa
+dependencia por sí mismo, así que cada paquete documenta su runtime mínimo (ver el README de Wayfinder).
 
 ## Convenciones de paquete
 

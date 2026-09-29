@@ -366,8 +366,29 @@ Recovery rules:
 | Requirement | Value |
 | --- | --- |
 | Node.js | `>=22.16` |
-| Alisio SDK peer | `>=0.1.0-alpha.9 <0.2.0` |
+| Minimum Alisio runtime | `@alisio/alisio-code` `0.1.0-alpha.17` or newer (carries `@alisio/core` `0.1.0-alpha.15`) |
+| Alisio SDK peer | `>=0.1.0-alpha.10 <0.2.0` |
+| Catalog category | `methodology-harness` |
 | Runtime dependencies | Node.js built-ins and `@alisio/sdk` only |
+
+Wayfinder declares the `methodology-harness` catalog category, so Alisio files it with the other
+methodology plugins instead of the model providers.
+
+Category validation is strict. Alisio validates `categories` against a closed set, so a host that
+does not know `methodology-harness` **rejects the plugin at load** with a contract error rather than
+ignoring the unknown value. That value exists from `@alisio/core` `0.1.0-alpha.15` (and `@alisio/sdk`
+`0.1.0-alpha.10`) onward, so this release requires an Alisio host that carries core `0.1.0-alpha.15`
+or newer.
+
+A plugin cannot express a host-version dependency: plugins depend on `@alisio/sdk` only, never on
+`@alisio/core`, so the host cannot enforce the minimum for you. Upgrade the CLI before installing:
+
+```bash
+npm install -g @alisio/alisio-code@0.1.0-alpha.17   # or: pnpm add -g / bun add -g
+```
+
+`@alisio/alisio-code` `0.1.0-alpha.17` pins `@alisio/core` `0.1.0-alpha.15` and `@alisio/sdk`
+`0.1.0-alpha.10`; newer `@alisio/alisio-code` releases with core `0.1.0-alpha.15` or newer work too.
 
 Child capabilities can only narrow the active parent session. The implementer needs parent write and
 process capabilities; the verifier and mutationist need process capability. Without them, those

@@ -26,6 +26,7 @@ const plugin = definePlugin({
   name: "Wayfinder",
   description:
     "Coordinates a durable specification-driven development workflow with bounded child sessions.",
+  categories: ["methodology-harness"],
   version: VERSION,
   apiVersion: 1,
   setup(api: PluginAPI) {

@@ -10,14 +10,12 @@ and is versioned on its own; nothing here is a framework you must adopt.
 
 **Install a plugin into Alisio**
 
-`@alisio/plugin-wayfinder` is not published to npm yet. Once it is released, the global install is:
-
 ```bash
 alisio install npm:@alisio/plugin-wayfinder   # global, per-user
 alisio plugins list                           # confirm it is installed
 ```
 
-Until then, build the package and load it from a local path:
+For local development, build the package and load it from a path instead:
 
 ```bash
 pnpm --dir packages/wayfinder build
@@ -75,9 +73,13 @@ The full capability surface, the hard limits and the sharpest failure modes live
 
 ## Packages
 
-| Package | Purpose |
-| --- | --- |
-| [`@alisio/plugin-wayfinder`](packages/wayfinder#readme) | Coordinates a durable specification-driven development workflow with bounded child sessions. |
+| Package | Category | Purpose |
+| --- | --- | --- |
+| [`@alisio/plugin-wayfinder`](packages/wayfinder#readme) | `methodology-harness` | Coordinates a durable specification-driven development workflow with bounded child sessions. |
+
+`methodology-harness` is a strict, host-validated catalog category. It requires an Alisio runtime
+that carries `@alisio/core` `0.1.0-alpha.15` or newer; a plugin cannot declare that dependency itself,
+so each package documents its own minimum runtime (see the Wayfinder README).
 
 ## Package conventions
 
