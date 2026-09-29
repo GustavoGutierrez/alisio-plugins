@@ -46,6 +46,18 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
 
+  packages/plugin-literature-research:
+    devDependencies:
+      '@alisio/sdk':
+        specifier: 0.1.0-alpha.11
+        version: 0.1.0-alpha.11
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: 5.0.1
+        version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
+
   packages/plugin-openai:
     dependencies:
       openai:
@@ -91,6 +103,18 @@ importers:
       openai:
         specifier: 7.23.0
         version: 7.23.0
+    devDependencies:
+      '@alisio/sdk':
+        specifier: 0.1.0-alpha.11
+        version: 0.1.0-alpha.11
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: 5.0.1
+        version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
+
+  packages/plugin-web-search:
     devDependencies:
       '@alisio/sdk':
         specifier: 0.1.0-alpha.11
