@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Telemetry</title>
+  <desc id="desc">A dashboard with a token-usage chart, tool-call bars, and a local database cylinder feeding an opt-in export arrow.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#0d1c31"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0.02"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="120" y="110" width="940" height="520" rx="32" fill="#0b1a2e" stroke="#1e3a5f" stroke-width="6"/>
+  <rect x="170" y="160" width="250" height="22" rx="11" fill="#94a3b8" opacity="0.55"/>
+  <rect x="170" y="196" width="150" height="22" rx="11" fill="#38bdf8" opacity="0.75"/>
+  <path d="M180 540 L320 470 L460 500 L600 370 L740 410 L880 300 L1020 340" fill="none" stroke="url(#accent)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M180 540 L320 470 L460 500 L600 370 L740 410 L880 300 L1020 340 L1020 560 L180 560 Z" fill="url(#area)"/>
+  <g fill="#1b2f4d" stroke="#2b4a76" stroke-width="4">
+    <rect x="170" y="250" width="70" height="290" rx="10"/>
+    <rect x="270" y="320" width="70" height="220" rx="10"/>
+    <rect x="370" y="290" width="70" height="250" rx="10"/>
+    <rect x="470" y="380" width="70" height="160" rx="10"/>
+    <rect x="570" y="300" width="70" height="240" rx="10"/>
+  </g>
+  <g fill="#38bdf8" opacity="0.85">
+    <rect x="170" y="470" width="70" height="70" rx="10"/>
+    <rect x="270" y="470" width="70" height="70" rx="10"/>
+    <rect x="370" y="470" width="70" height="70" rx="10"/>
+    <rect x="470" y="470" width="70" height="70" rx="10"/>
+    <rect x="570" y="470" width="70" height="70" rx="10"/>
+  </g>
+  <g transform="translate(1140 150)">
+    <ellipse cx="160" cy="70" rx="150" ry="46" fill="#132a45" stroke="#2b4a76" stroke-width="6"/>
+    <path d="M10 70v300c0 25 67 46 150 46s150-21 150-46V70" fill="#0f2138" stroke="#2b4a76" stroke-width="6"/>
+    <path d="M10 170c0 25 67 46 150 46s150-21 150-46M10 270c0 25 67 46 150 46s150-21 150-46" fill="none" stroke="#2b4a76" stroke-width="6"/>
+    <ellipse cx="160" cy="70" rx="118" ry="30" fill="none" stroke="#22d3ee" stroke-width="6" opacity="0.8"/>
+  </g>
+  <path d="M1080 420h140" stroke="#475569" stroke-width="12" stroke-linecap="round" stroke-dasharray="4 24"/>
+  <path d="M1330 420h150" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M1478 388l52 32-52 32z" fill="#6366f1"/>
+  <g transform="translate(1150 560)">
+    <path d="M20 46a42 42 0 0 1 84 0" fill="none" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>
+    <rect x="0" y="44" width="124" height="70" rx="16" fill="#0f2138" stroke="url(#accent)" stroke-width="12"/>
+    <circle cx="62" cy="82" r="10" fill="#22d3ee"/>
+  </g>
+  <text x="800" y="790" fill="#f8fafc" font-family="sans-serif" font-size="82" font-weight="700" text-anchor="middle">TELEMETRY</text>
+  <text x="800" y="850" fill="#94a3b8" font-family="sans-serif" font-size="30" text-anchor="middle">local-first agent observability, opt-in OTLP export</text>
+</svg>

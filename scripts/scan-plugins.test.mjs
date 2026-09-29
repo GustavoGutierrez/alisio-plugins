@@ -346,6 +346,7 @@ test("localPackages discovers every publishable package", () => {
     "@alisio/plugin-opencode-go",
     "@alisio/plugin-context7",
     "@alisio/plugin-atlassian",
+    "@alisio/plugin-telemetry",
   ])
     assert.ok(names.includes(name), `missing ${name}`);
 });
