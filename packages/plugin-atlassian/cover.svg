@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Atlassian Tools</title>
+  <desc id="desc">A task board of cards connected to a documentation page through a guarded link, representing read-first Jira and Confluence access.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a1324"/>
+      <stop offset="1" stop-color="#111f38"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="120" y="150" width="620" height="520" rx="32" fill="#0f1d33" stroke="#1e3a5f" stroke-width="6"/>
+  <rect x="170" y="215" width="160" height="24" rx="12" fill="#38bdf8" opacity="0.8"/>
+  <rect x="390" y="215" width="160" height="24" rx="12" fill="#64748b" opacity="0.7"/>
+  <rect x="610" y="215" width="90" height="24" rx="12" fill="#64748b" opacity="0.7"/>
+  <rect x="170" y="285" width="160" height="120" rx="16" fill="#1b2f4d" stroke="#2b4a76" stroke-width="4"/>
+  <rect x="170" y="430" width="160" height="150" rx="16" fill="#1b2f4d" stroke="#2b4a76" stroke-width="4"/>
+  <rect x="390" y="285" width="160" height="90" rx="16" fill="#1b2f4d" stroke="#2b4a76" stroke-width="4"/>
+  <rect x="390" y="400" width="160" height="180" rx="16" fill="#1b2f4d" stroke="#2b4a76" stroke-width="4"/>
+  <rect x="610" y="285" width="90" height="150" rx="16" fill="#1b2f4d" stroke="#2b4a76" stroke-width="4"/>
+  <circle cx="250" cy="575" r="18" fill="#38bdf8"/>
+  <circle cx="470" cy="530" r="18" fill="#60a5fa"/>
+  <path d="M740 430h140" stroke="#475569" stroke-width="12" stroke-linecap="round" stroke-dasharray="4 26"/>
+  <path d="M960 250h420a28 28 0 0 1 28 28v344a28 28 0 0 1-28 28H960a28 28 0 0 1-28-28V278a28 28 0 0 1 28-28z" fill="#0f1d33" stroke="#1e3a5f" stroke-width="6"/>
+  <path d="M1005 330h330M1005 395h280M1005 460h330M1005 525h210M1005 590h260" stroke="#38bdf8" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+  <g transform="translate(880 600)">
+    <path d="M0 26a46 46 0 0 1 92 0v10H0z" fill="none" stroke="url(#accent)" stroke-width="12" stroke-linecap="round"/>
+    <rect x="16" y="34" width="60" height="52" rx="12" fill="#0f1d33" stroke="url(#accent)" stroke-width="12"/>
+    <circle cx="46" cy="58" r="7" fill="#38bdf8"/>
+  </g>
+  <text x="800" y="810" fill="#f8fafc" font-family="sans-serif" font-size="84" font-weight="700" text-anchor="middle">ATLASSIAN TOOLS</text>
+  <text x="800" y="862" fill="#94a3b8" font-family="sans-serif" font-size="30" text-anchor="middle">read-first Jira and Confluence access</text>
+</svg>

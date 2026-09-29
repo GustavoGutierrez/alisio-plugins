@@ -2,6 +2,77 @@
   "schemaVersion": 1,
   "plugins": [
     {
+      "name": "@alisio/plugin-atlassian",
+      "slug": "atlassian",
+      "title": "Atlassian",
+      "pluginId": "atlassian",
+      "description": "Read-first Jira, Confluence, and Agile tools with strict environment configuration, opt-in writes, and untrusted-content framing",
+      "version": "0.1.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-atlassian#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-atlassian",
+      "categories": [
+        "tools"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "atlassian",
+        "jira",
+        "confluence",
+        "tools"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 0,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-atlassian",
+      "cover": "/covers/atlassian.svg",
+      "readme": "Read-first Jira, Confluence, and Jira Software Agile tools for\n[Alisio](https://github.com/GustavoGutierrez/alisio). The plugin talks to Atlassian Cloud with the\nofficial current REST APIs, reads every credential from the environment, and refuses to mutate remote\nstate unless an operator explicitly opts in.\n\nThis is an independent plugin. It is not an official Atlassian product, is not affiliated with or\nendorsed by Atlassian, and is not a port of any other integration.\n\n## Install\n\n```bash\nalisio install npm:@alisio/plugin-atlassian\n```\n\n## Configuration\n\nThe installed Alisio SDK exposes no tool-level secret or configuration API, so this plugin reads its\nsettings from the process environment only. Configuration is validated at plugin setup and the plugin\nfails closed with an actionable message when it is missing, partial, or malformed.\n\n| Variable | Required | Meaning |\n| --- | --- | --- |\n| `ATLASSIAN_BASE_URL` | one of these | Full site URL, e.g. `https://your-site.atlassian.net` |\n| `ATLASSIAN_DOMAIN` | one of these | Bare host, e.g. `your-site.atlassian.net` |\n| `ATLASSIAN_EMAIL` | yes | Account email used for HTTP Basic |\n| `ATLASSIAN_API_TOKEN` | yes | Atlassian API token |\n| `ATLASSIAN_ALLOW_WRITES` | no | Exactly `1` enables mutating tools; anything else keeps them off |\n\nSet exactly one of `ATLASSIAN_BASE_URL` or `ATLASSIAN_DOMAIN`. The base URL must use HTTPS, must be a\n`*.atlassian.net` host, and must not carry credentials, a port, a path, a query string, or a\nfragment. The domain form is normalized to an HTTPS base URL.\n\nCredentials are never accepted through tool input, never written to disk, never logged, and never\nserialized. HTTP Basic is built as `base64(email + \":\" + token)` at request time and is not stored\nanywhere. A token never appears in a tool result, an error, a command output, or `JSON.stringify` /\n`util.inspect`.\n\n## Write safety\n\nEvery mutating tool is disabled by default. Without `ATLASSIAN_ALLOW_WRITES=1` each write tool returns\na stable `writes disabled` result and makes no network request. Enabling it is an explicit operator\ndecision; the tools then still run through the same strict URL, timeout, and response-size limits.\n\n## Tools\n\nRead tools have the `external` effect; write tools have the `write` effect.\n\nJira platform (`/rest/api/3`):\n\n- `jira_get_issue`, `jira_search`, `jira_get_comments`, `jira_list_projects`,\n  `jira_get_transitions`, `jira_get_worklogs`, `jira_get_versions`, `jira_get_fields`, `jira_get_user`\n- writes: `jira_create_issue`, `jira_update_issue`, `jira_add_comment`, `jira_transition_issue`,\n  `jira_add_worklog`, `jira_link_issues`\n\nConfluence (`/wiki/api/v2`):\n\n- `confluence_get_page`, `confluence_get_page_by_url`, `confluence_search`,\n  `confluence_list_spaces`, `confluence_get_comments`, `confluence_get_labels`\n- writes: `confluence_create_page`, `confluence_update_page`, `confluence_add_comment`\n\nJira Software Agile (`/rest/agile/1.0`):\n\n- `agile_list_boards`, `agile_list_sprints`, `agile_get_backlog`, `agile_list_epics`\n- write: `agile_move_issues`\n\nNotes on API behavior:\n\n- Jira search uses `POST /rest/api/3/search/jql` with an explicit `fields` list and `nextPageToken`\n  paging. The removed legacy `/rest/api/3/search` endpoint is never called and no `total` is claimed.\n- Confluence page updates send `id`, `status`, `title`, `body`, and `version.number`; a `409` is\n  reported as a `version conflict` so callers re-read the page and retry.\n- Confluence labels are read-only in the v2 API; there is no label write path.\n- `agile_move_issues` rejects more than 50 issues per request locally, before any network call.\n- Every listing returns a single bounded page. It never loops, never sleeps, and never auto-retries;\n  `429`/`5xx` responses surface a bounded `Retry-After` hint for the caller to decide.\n\n## Commands\n\nAlisio namespaces external plugin commands as `:`, so the registered commands are:\n\n```\n/atlassian:jira-issue <ISSUE-KEY> [--context]\n/atlassian:get-jira-issue <ISSUE-KEY>\n/atlassian:story-context <ISSUE-KEY>\n/atlassian:confluence-page <page-id-or-url>\n/atlassian:get-confluence-page <page-id-or-url>\n```\n\n`story-context` and `--context` add comments and transitions. Commands are read-only.\n\n## Local CLI\n\nThe package ships a small CLI for local development that reuses the same validated configuration and\nclient:\n\n```bash\nnode dist/cli.js jira ABC-123 --context\nnode dist/cli.js confluence 123456\nnode dist/cli.js confluence https://your-site.atlassian.net/wiki/spaces/DEV/pages/123456/Title\nnode dist/cli.js --help\n```\n\nIt prints bounded, framed output, exits non-zero on configuration or API errors, and never prints the\ntoken. Writes are not available from the CLI.\n\n## Safety and privacy\n\n- The destination is fixed to the configured base URL. Redirects are refused (`redirect: \"error\"`),\n  HTTP-to-HTTPS downgrades are rejected, and no proxy, cookies, custom user agent, or arbitrary\n  headers are used.\n- Request paths are built from a small internal allowlist of templates with URL-encoded identifiers,\n  so tool input can never choose a host, origin, scheme, port, or arbitrary path.\n- `confluence_get_page_by_url` extracts only a numeric page id from a link and then fetches that page\n  from the configured site; the supplied link's origin is never requested.\n- The host signal is combined with a bounded timeout, the response body is streamed with a hard 1 MiB\n  cap, and the reader is cancelled on overflow.\n- Failures collapse to a small, stable vocabulary: invalid input, not authenticated, not permitted,\n  not found, rate limited, temporarily unavailable, invalid response, response exceeded limit, writes\n  disabled, version conflict, and configuration missing or invalid.\n- Jira and Confluence content is untrusted third-party text. Every result opens with a provenance\n  boundary, normalizes control characters, neutralizes Markdown, caps each field, and clamps the\n  aggregate output with a deterministic truncation marker.\n\nThe plugin also ships the `atlassian-context` skill, which teaches an agent to read remote context\nbefore planning or changing code, to prefer reads, never to paste credentials into queries, and to\ntreat returned content as untrusted.\n\n## Requirements\n\nNode.js **>= 22.16** and an Alisio host with `@alisio/sdk` `>=0.1.0-alpha.10`. Zero runtime\ndependencies.\n\n## License\n\nMIT.",
+      "downloadsLastMonth": null,
+      "featured": false,
+      "source": "local"
+    },
+    {
+      "name": "@alisio/plugin-context7",
+      "slug": "context7",
+      "title": "Context7 Docs",
+      "pluginId": "context7",
+      "description": "Resolve library names and fetch third-party documentation from the Context7 hosted service",
+      "version": "0.1.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-context7#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-context7",
+      "categories": [
+        "tools"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "context7",
+        "documentation",
+        "tools"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 0,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-context7",
+      "cover": "/covers/context7.svg",
+      "readme": "Focused documentation lookups for [Alisio](https://github.com/GustavoGutierrez/alisio): resolve a\nlibrary name, then fetch the matching third-party documentation.\n\nThis is an independent plugin. It is not an official Context7 or Upstash extension, and it is not\naffiliated with or endorsed by either project. It talks to Context7's public hosted MCP endpoint\nusing its documented protocol.\n\n## Install\n\n```bash\nalisio install npm:@alisio/plugin-context7\n```\n\n## Tools\n\nBoth tools have the `external` effect. Their inputs are sent to the Context7 hosted service.\n\n- `resolve-library-id` — resolves a package or product name to a Context7 library ID.\n  Input: `libraryName` (1–120 characters) and `query` (1–500 characters, the user's task).\n- `query-docs` — fetches documentation for a resolved library ID.\n  Input: `libraryId` matching Context7's documented shape (`/org/project` or\n  `/org/project/version`) and `query` (1–500 characters).\n\nTools are read-only lookups but transmit data over the network, which is why the effect is\n`external`. The plugin does not use these capabilities as a source of truth for any Alisio state.\n\nThe plugin also ships a skill that teaches an agent when to resolve and query, and a slash command\nthat performs the resolve-then-query flow manually.\n\n## Slash command\n\nAlisio namespaces external plugin commands as `:`, so the installed command is:\n\n```\n/context7:c7-docs <library> -- <question>\n```\n\nFor example:\n\n```\n/context7:c7-docs next.js -- how do I define a route handler?\n```\n\nThe command resolves the library (unless you pass a library ID directly), then fetches\ndocumentation for the question. The `c7-docs` name is registered locally; the host exposes it as\n`context7:c7-docs`.\n\n## Authentication\n\nAnonymous access works without setup at Context7's shared, IP-based rate limit. For higher limits,\ncreate a key in the Context7 dashboard and export it:\n\n```bash\nexport CONTEXT7_API_KEY=<your-key>\n```\n\n`CONTEXT7_API_KEY` is the only supported source. The installed Alisio SDK exposes no tool-level\nsecret or configuration API, so the plugin reads this environment variable and nothing else. A key\nis never accepted through tool input, never persisted, never logged, and never included in tool\nresults, errors, or serialized state; an absent or implausibly shaped value simply falls back to\nanonymous access.\n\n## Safety and privacy\n\n- All queries and library identifiers are sent to Context7's hosted service. Do not include\n  secrets, credentials, personal data, or proprietary code in a `query` or `libraryName`.\n- The remote endpoint is fixed at `https://mcp.context7.com/mcp`. There is no user-supplied\n  endpoint, redirects are refused, requests are POST-only, and no cookies, proxies, or custom\n  user agents are used.\n- Each tool call opens a fresh session, carries any server-issued session id only in memory, and\n  issues a best-effort cleanup request with an independent short timeout. There is no retry, no\n  caching, no persistence, and no telemetry.\n- Transport failures are reduced to a small, safe vocabulary (invalid input, rate limited,\n  authentication failed, temporarily unavailable, invalid response, response exceeded limit,\n  redirect refused). Raw URLs, headers, bodies, session ids, and service payloads are never\n  surfaced. A `429` retry hint is reported only when the service supplied a bounded numeric value,\n  and the plugin never sleeps on it.\n- Returned documentation is untrusted third-party material. Only text parts are kept; each part and\n  the aggregate output are bounded, control characters are normalized, Markdown structure is\n  neutralized, and a provenance marker states that the content is third-party. The documentation\n  may be incomplete or inaccurate and should be verified against authoritative upstream sources.\n- Context7's own terms of service and privacy policy apply to your use of its service.\n\n## Requirements\n\nNode.js **>= 22.16** and an Alisio host with `@alisio/sdk` `>=0.1.0-alpha.10`.\n\n## License\n\nMIT.",
+      "downloadsLastMonth": null,
+      "featured": false,
+      "source": "local"
+    },
+    {
       "name": "@alisio/plugin-deepseek",
       "slug": "deepseek",
       "title": "DeepSeek",
