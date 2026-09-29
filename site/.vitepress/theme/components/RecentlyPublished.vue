@@ -5,7 +5,7 @@ import { plugins } from "../data";
 import { usePluginLinks } from "../paths";
 
 const props = withDefaults(defineProps<{ limit?: number; title?: string | null }>(), {
-  limit: 4,
+  limit: 3,
   title: null,
 });
 
