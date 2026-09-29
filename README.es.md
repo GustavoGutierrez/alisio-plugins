@@ -30,7 +30,7 @@ pnpm install
 pnpm check          # lint, tipos, tests, build y pack check
 ```
 
-Después lee [docs/es/developing-plugins.md](./docs/es/developing-plugins.md): es la referencia de
+Después lee [site/es/developing-plugins.md](./site/es/developing-plugins.md): es la referencia de
 autoría completa para este repositorio. El contrato canónico upstream está en la
 [documentación de plugins de Alisio](https://gustavogutierrez.github.io/alisio/es/plugins).
 
@@ -40,8 +40,9 @@ autoría completa para este repositorio. El contrato canónico upstream está en
 | --- | --- |
 | `packages/` | Un paquete publicable `@alisio/plugin-*` por directorio. |
 | `diagrams/` | Fuentes Mermaid `.mmd`, un directorio por objetivo de diagrama. |
-| `docs/` | Guías del repositorio (`docs/developing-plugins.md`). |
-| `scripts/` | Herramientas del repositorio: renderizador de diagramas, pack check, ayudas de publicación. |
+| `site/` | Sitio del catálogo en VitePress y guías del repositorio (`site/developing-plugins.md`); ejecuta `pnpm docs:dev`. |
+| `registry/` | Registros de plugins de terceros para el catálogo (`registry/plugins.json`). |
+| `scripts/` | Herramientas del repositorio: renderizador de diagramas, escaneo del catálogo, pack check, ayudas de publicación. |
 | `.agents/skills/` | Skills del proyecto que guían a las personas contribuyentes y a los agentes. |
 | `assets/` | SVG generados para los documentos a nivel de repositorio (no es un paquete). |
 
@@ -70,7 +71,7 @@ la prueba de humo del resultado instalado.
 | Aportar skills y plantillas de prompt. | Hacer que sus definiciones de agentes aparezcan en el catálogo de subagentes integrado en el mismo arranque. |
 
 La superficie completa de capacidades, los límites duros y los errores más frecuentes están en
-[docs/es/developing-plugins.md](./docs/es/developing-plugins.md).
+[site/es/developing-plugins.md](./site/es/developing-plugins.md).
 
 ## Paquetes
 
@@ -128,7 +129,7 @@ cosas. Los dist-tags por defecto son `latest`, y `next` para versiones de prelan
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — cómo añadir un plugin, las comprobaciones y las expectativas de PR.
 - [SECURITY.md](./SECURITY.md) — el modelo de código confiable y cómo reportar una vulnerabilidad.
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) — el Contributor Covenant y el contacto de aplicación.
-- [docs/es/developing-plugins.md](./docs/es/developing-plugins.md) — la guía de autoría de plugins.
+- [site/es/developing-plugins.md](./site/es/developing-plugins.md) — la guía de autoría de plugins.
 - [Documentación upstream de plugins de Alisio](https://gustavogutierrez.github.io/alisio/es/plugins) —
   la referencia canónica del SDK y de `PluginAPI`.
 

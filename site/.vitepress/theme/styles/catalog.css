@@ -1,0 +1,750 @@
+/* Cards, filters, badges and covers for the plugin catalog. */
+
+/* The catalog landing uses the wide home container; detail pages keep prose width. */
+.catalog-intro {
+  max-width: 720px;
+  margin: 0 auto 32px;
+  text-align: center;
+  color: var(--vp-c-text-2);
+}
+
+.catalog-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  font-size: 14px;
+}
+
+.catalog-section {
+  margin-top: 48px;
+}
+
+.catalog-section h2 {
+  margin-top: 0;
+}
+
+/* Covers: one aspect ratio everywhere, cropped rather than distorted. */
+.plugin-cover,
+.plugin-card__cover img,
+.detail-cover img {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--alisio-cover-ratio);
+  object-fit: cover;
+  background: var(--vp-c-bg-alt);
+}
+
+.detail-cover {
+  margin: 24px 0;
+  border: 1px solid var(--alisio-card-border);
+  border-radius: var(--alisio-card-radius);
+  overflow: hidden;
+}
+
+/* Catalog grid. */
+.plugin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.plugin-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--alisio-card-border);
+  border-radius: var(--alisio-card-radius);
+  background: var(--alisio-card-bg);
+  overflow: hidden;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+/* Brand-gradient accent on hover, clipped by the card radius (decorative). */
+.plugin-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 1;
+  height: 3px;
+  background-image: var(--alisio-gradient-brand);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.plugin-card:hover,
+.plugin-card:focus-within {
+  border-color: var(--vp-c-brand-2);
+  background: var(--alisio-card-bg-hover);
+}
+
+.plugin-card:hover::before,
+.plugin-card:focus-within::before {
+  opacity: 1;
+}
+
+.plugin-card__cover {
+  display: block;
+}
+
+.plugin-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 18px;
+}
+
+.plugin-card__title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.plugin-card__title a {
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+}
+
+.plugin-card__title a:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.plugin-card__package {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  word-break: break-all;
+}
+
+.plugin-card__description {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.plugin-card__footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plugin-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.plugin-card__links a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.plugin-card__links a:hover {
+  text-decoration: underline;
+}
+
+/* Badges. */
+.plugin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.plugin-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--alisio-badge-bg);
+  color: var(--alisio-badge-fg);
+  box-shadow: inset 0 0 0 1px var(--alisio-badge-ring);
+  font-size: 12px;
+  line-height: 18px;
+  text-decoration: none;
+}
+
+/* One colour pair per catalog category, taken from the Alisio scale with the
+ * functional colours for the semantic categories. Every label clears 4.5:1 in
+ * both themes; the measured ratios live in the theme report. */
+.plugin-badge--model-provider {
+  background: var(--alisio-category-model-provider-bg);
+  color: var(--alisio-category-model-provider-fg);
+}
+
+.plugin-badge--methodology-harness {
+  background: var(--alisio-category-methodology-harness-bg);
+  color: var(--alisio-category-methodology-harness-fg);
+}
+
+.plugin-badge--memory {
+  background: var(--alisio-category-memory-bg);
+  color: var(--alisio-category-memory-fg);
+}
+
+.plugin-badge--subagents {
+  background: var(--alisio-category-subagents-bg);
+  color: var(--alisio-category-subagents-fg);
+}
+
+.plugin-badge--search {
+  background: var(--alisio-category-search-bg);
+  color: var(--alisio-category-search-fg);
+}
+
+.plugin-badge--tools {
+  background: var(--alisio-category-tools-bg);
+  color: var(--alisio-category-tools-fg);
+}
+
+.plugin-badge--security {
+  background: var(--alisio-category-security-bg);
+  color: var(--alisio-category-security-fg);
+}
+
+.plugin-badge--analytics {
+  background: var(--alisio-category-analytics-bg);
+  color: var(--alisio-category-analytics-fg);
+}
+
+.plugin-badge--mcp {
+  background: var(--alisio-category-mcp-bg);
+  color: var(--alisio-category-mcp-fg);
+}
+
+.plugin-badge--storage {
+  background: var(--alisio-category-storage-bg);
+  color: var(--alisio-category-storage-fg);
+}
+
+.plugin-badge--ui {
+  background: var(--alisio-category-ui-bg);
+  color: var(--alisio-category-ui-fg);
+}
+
+/* The featured badge carries the official brand gradient. */
+.plugin-badge--featured {
+  background-color: var(--alisio-blue);
+  background-image: var(--alisio-gradient-brand);
+  color: var(--alisio-deep-navy);
+}
+
+.plugin-badge--source {
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
+}
+
+/* Author and recency line. */
+.plugin-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+.plugin-meta time {
+  white-space: nowrap;
+}
+
+/* Controls: one contained panel. The previous full border read as two
+ * full-width rules around the filters, so the panel is now a tinted fill with
+ * a single inset ring as its edge; the heading rule above it is gone too. */
+.catalog-controls {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 8px;
+  padding: 16px;
+  border: 0;
+  border-radius: var(--alisio-card-radius);
+  background: var(--vp-c-bg-soft);
+  box-shadow: inset 0 0 0 1px var(--alisio-border);
+}
+
+@media (min-width: 720px) {
+  .catalog-controls {
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: end;
+  }
+
+  .catalog-controls__actions {
+    grid-column: 1 / -1;
+  }
+}
+
+.catalog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.catalog-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+}
+
+.catalog-field input,
+.catalog-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  font-size: 14px;
+}
+
+.catalog-field input:focus-visible,
+.catalog-field select:focus-visible,
+.catalog-actions button:focus-visible,
+.install__tab:focus-visible,
+.plugin-card a:focus-visible,
+.catalog-field input:focus,
+.catalog-field select:focus {
+  outline: 2px solid var(--alisio-focus-ring);
+  outline-offset: 2px;
+}
+
+.catalog-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.catalog-actions button {
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: var(--alisio-blue);
+  background-image: var(--alisio-gradient-brand);
+  color: var(--alisio-deep-navy);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.catalog-actions button:hover {
+  filter: brightness(0.96);
+}
+
+.catalog-actions button.secondary {
+  background-color: transparent;
+  background-image: none;
+  border-color: var(--vp-c-border);
+  color: var(--vp-c-brand-1);
+}
+
+.catalog-count {
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+  margin: 8px 0 0;
+}
+
+.catalog-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--vp-c-text-2);
+  border: 1px dashed var(--vp-c-divider);
+  border-radius: var(--alisio-card-radius);
+}
+
+/* Pagination: a calm, centred control strip below the grid. */
+.catalog-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.catalog-pagination__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.catalog-pagination__step:hover:not(:disabled) {
+  border-color: var(--vp-c-brand-2);
+  color: var(--vp-c-brand-1);
+}
+
+.catalog-pagination__step:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.catalog-pagination__step:focus-visible {
+  outline: 2px solid var(--alisio-focus-ring);
+  outline-offset: 2px;
+}
+
+.catalog-pagination__status {
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Recently published. */
+.recent-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Recently published: the cover is a wide 16:9 banner across the top of the
+ * card. At the old 96px thumbnail the full card artwork collapsed into an
+ * unreadable square; the banner keeps the declared cover ratio and shows the
+ * artwork at a recognisable size. */
+.recent-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1px solid var(--alisio-card-border);
+  border-radius: var(--alisio-card-radius);
+  background: var(--vp-c-bg-soft);
+  overflow: hidden;
+}
+
+.recent-item__cover {
+  display: block;
+  flex: none;
+  align-self: stretch;
+}
+
+.recent-item__cover img {
+  width: 100%;
+  aspect-ratio: var(--alisio-cover-ratio);
+  object-fit: cover;
+}
+
+.recent-item__body {
+  min-width: 0;
+  padding: 14px 16px 16px;
+}
+
+.recent-item__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.recent-item__title a {
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+}
+
+.recent-item__title a:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.recent-item__description {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+  line-height: 1.45;
+}
+
+/* Install command widget. */
+.install {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background: var(--vp-c-bg);
+  overflow: hidden;
+}
+
+.install__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 6px 6px 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+}
+
+.install__tab {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: var(--vp-c-text-2);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.install__tab[aria-selected="true"] {
+  background: var(--vp-c-bg);
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+/* One contained line: the command shrinks and scrolls, the copy button sits
+ * flush at the right. The previous row reserved a fixed-width "Copied" slot
+ * after the button, which left a dead gap and pushed the button off the edge
+ * on narrow cards. */
+.install__row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.install__command {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: var(--vp-c-bg-alt);
+  font-family: var(--vp-font-family-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre;
+  scrollbar-width: thin;
+}
+
+.install__copy {
+  flex: 0 0 auto;
+  min-width: 5.5em;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: var(--alisio-blue);
+  background-image: var(--alisio-gradient-brand);
+  color: var(--alisio-deep-navy);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.install__copy:hover {
+  filter: brightness(0.96);
+}
+
+/* Detail page metadata. */
+.detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.plugin-meta-table {
+  width: 100%;
+  margin: 24px 0;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.plugin-meta-table th,
+.plugin-meta-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  text-align: left;
+  vertical-align: top;
+}
+
+.plugin-meta-table th {
+  width: 34%;
+  color: var(--vp-c-text-2);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.plugin-meta-table td {
+  word-break: break-word;
+}
+
+.detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+.detail-links a {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.plugin-security {
+  margin: 20px 0;
+  padding: 12px 16px;
+  border-left: 4px solid var(--alisio-warning);
+  border-radius: 4px;
+  background: var(--alisio-warning-soft);
+  font-size: 14px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* Landing headings: VitePress draws a full-width `border-top` above every
+ * `h2`, which on this page stacks a line above each section title. Scope the
+ * reset to the landing (`catalog-page`) so normal doc pages keep the default
+ * treatment, and re-establish hierarchy with spacing plus the short
+ * official-gradient rule used by the catalog sections. */
+.catalog-page .vp-doc h2 {
+  margin-top: 56px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Section headings get a short official-gradient rule (decorative accent). */
+.catalog-page .vp-doc h2::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 3px;
+  margin-top: 10px;
+  border-radius: 3px;
+  background-image: var(--alisio-gradient-deep);
+}
+
+.dark .catalog-page .vp-doc h2::after {
+  background-image: var(--alisio-gradient-brand);
+}
+
+/* Catalog sections already space themselves; keep their titles tight. */
+.catalog-page .catalog-section > h2 {
+  margin-top: 0;
+}
+
+/* Landing hero: featured panel over `background-box.jpg`. The dark scrim keeps
+ * the gradient title and the light copy legible in both themes; see the theme
+ * report for the measured ratios. Decorative image, no text sits on the raw
+ * artwork. */
+.catalog-page .VPHero {
+  position: relative;
+  background-color: var(--alisio-deep-navy);
+  background-image: var(--alisio-panel-overlay), url("/assets/background-box.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  /* No border: the dark panel already delimits the hero, and the rule read as
+   * another full-width separator above the feature cards. */
+  border-bottom: 0;
+}
+
+/* Give the feature cards clear separation below the hero panel. `items` ships
+ * a -8px margin that collapses out of `VPFeatures` and pulls the whole block
+ * up; zero it on the landing and space the block with a real margin. */
+.catalog-page .VPFeatures {
+  margin-top: 56px;
+}
+
+.catalog-page .VPFeatures .items {
+  margin-top: 0;
+}
+
+/* On narrow screens the hero stacks the artwork above the copy, so a vertical
+ * scrim keeps the top open for the mark and darkens the text band below. */
+@media (max-width: 959px) {
+  .catalog-page .VPHero {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(2, 14, 28, 0.3) 0%,
+        rgba(2, 14, 28, 0.42) 32%,
+        rgba(2, 14, 28, 0.82) 44%,
+        rgba(2, 14, 28, 0.9) 58%,
+        rgba(2, 14, 28, 0.92) 100%
+      ),
+      url("/assets/background-box.jpg");
+  }
+}
+
+.catalog-page .VPHero .text {
+  color: var(--alisio-panel-text);
+}
+
+.catalog-page .VPHero .tagline {
+  color: var(--alisio-panel-text-muted);
+}
+
+/* The landing hero is a dark panel in both themes, so the home nav keeps its
+ * own surface at the top of the page instead of floating transparently over
+ * the artwork with dark label text. */
+.VPNavBar.home.top {
+  background-color: var(--vp-c-bg);
+}
+
+/* Site footer over `footer-background.jpg`, same gradient scrim treatment. No
+ * border-top: the dark panel fill already separates the footer from the page,
+ * and dropping the rule keeps the landing down to the rules the design wants. */
+.VPFooter.VPFooter {
+  background-color: var(--alisio-deep-navy);
+  background-image: var(--alisio-footer-overlay), url("/assets/footer-background.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-top: 0;
+}
+
+.VPFooter.VPFooter .message,
+.VPFooter.VPFooter .copyright {
+  color: var(--alisio-panel-text-muted);
+}
+
+.VPFooter.VPFooter a {
+  color: var(--alisio-panel-text-muted);
+}
+
+.VPFooter.VPFooter a:hover {
+  color: var(--alisio-panel-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plugin-card {
+    transition: none;
+  }
+
+  .plugin-card::before {
+    transition: none;
+  }
+}

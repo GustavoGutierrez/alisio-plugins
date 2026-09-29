@@ -64,4 +64,4 @@ Return packages and versions, dist-tag used, changesets applied, exact checks, p
 
 - `../../../AGENTS.md`
 - `scripts/lib/release.mjs`, `scripts/bump-one.mjs`, `scripts/publish-one.mjs`, `scripts/publish-all.mjs`
-- `docs/developing-plugins.md` and `docs/es/developing-plugins.md`
+- `site/developing-plugins.md` and `site/es/developing-plugins.md`

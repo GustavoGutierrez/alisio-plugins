@@ -4,6 +4,8 @@ coverage/
 *.tgz
 .DS_Store
 .alisio/wayfinder/
+site/.vitepress/cache/
+site/.vitepress/dist/
 
 # Credentials and local machine state (never committed).
 .npmrc

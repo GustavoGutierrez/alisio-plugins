@@ -30,7 +30,7 @@ pnpm install
 pnpm check          # lint, types, tests, build, pack check
 ```
 
-Then read [docs/developing-plugins.md](./docs/developing-plugins.md) — it is the full authoring
+Then read [site/developing-plugins.md](./site/developing-plugins.md) — it is the full authoring
 reference for this repository. The canonical upstream contract lives in the
 [Alisio plugin docs](https://gustavogutierrez.github.io/alisio/plugins).
 
@@ -40,8 +40,9 @@ reference for this repository. The canonical upstream contract lives in the
 | --- | --- |
 | `packages/` | One publishable `@alisio/plugin-*` package per directory. |
 | `diagrams/` | Mermaid `.mmd` sources, one directory per diagram target. |
-| `docs/` | Repository guides (`docs/developing-plugins.md`). |
-| `scripts/` | Repository tooling: diagram renderer, pack check, publish helpers. |
+| `site/` | VitePress catalog site and repository guides (`site/developing-plugins.md`); run `pnpm docs:dev`. |
+| `registry/` | Third-party registrations for the plugin catalog (`registry/plugins.json`). |
+| `scripts/` | Repository tooling: diagram renderer, catalog scan, pack check, publish helpers. |
 | `.agents/skills/` | Project skills that guide contributors and agents. |
 | `assets/` | Generated SVGs for repository-level documents (not a package). |
 
@@ -69,7 +70,7 @@ smoke-testing the installed result.
 | Contribute skills and prompt templates. | Make its agent definitions appear in the built-in subagents catalog in the same boot. |
 
 The full capability surface, the hard limits and the sharpest failure modes live in
-[docs/developing-plugins.md](./docs/developing-plugins.md).
+[site/developing-plugins.md](./site/developing-plugins.md).
 
 ## Packages
 
@@ -124,7 +125,7 @@ Changesets-native, tag-creating flow used by CI; `pnpm publish-all` is the expli
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — how to add a plugin, the checks, and PR expectations.
 - [SECURITY.md](./SECURITY.md) — the trusted-code model and how to report a vulnerability.
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) — the Contributor Covenant and enforcement contact.
-- [docs/developing-plugins.md](./docs/developing-plugins.md) — the plugin authoring guide.
+- [site/developing-plugins.md](./site/developing-plugins.md) — the plugin authoring guide.
 - [Upstream Alisio plugin docs](https://gustavogutierrez.github.io/alisio/plugins) — the canonical SDK
   and `PluginAPI` reference.
 

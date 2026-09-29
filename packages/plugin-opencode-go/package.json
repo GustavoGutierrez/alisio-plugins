@@ -30,7 +30,8 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "cover.svg"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

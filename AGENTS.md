@@ -24,7 +24,7 @@
 ## Language policy
 
 - **Bilingual, kept in sync (English + Spanish):** repo-level user-facing docs — `README.md` /
-  `README.es.md` and everything under `docs/` / `docs/es/`. Each pair links to its mirror, states
+  `README.es.md` and everything under `site/` / `site/es/`. Each pair links to its mirror, states
   that the two must be updated together, and is updated in the same change. Spanish is neutral and
   professional.
 - **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this file, all source,

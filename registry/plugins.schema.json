@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GustavoGutierrez/alisio-plugins/registry/plugins.schema.json",
+  "title": "Alisio plugins catalog registry",
+  "description": "Third-party registrations for the Alisio plugins catalog. Local packages under packages/* are discovered automatically and must not be listed here unless they need an override.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "plugins"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "plugins": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/plugin" }
+    }
+  },
+  "$defs": {
+    "plugin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package"],
+      "properties": {
+        "package": {
+          "description": "npm package name. The only required field.",
+          "type": "string",
+          "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$"
+        },
+        "title": {
+          "description": "Optional display name override (defaults to the package name).",
+          "type": "string",
+          "minLength": 1
+        },
+        "npmUrl": {
+          "description": "Optional npm page override (defaults to the canonical package URL).",
+          "type": "string",
+          "format": "uri"
+        },
+        "repository": {
+          "description": "Optional repository override when the packument is wrong or missing.",
+          "type": "string",
+          "format": "uri"
+        },
+        "homepage": {
+          "description": "Optional homepage override when the packument is wrong or missing.",
+          "type": "string",
+          "format": "uri"
+        },
+        "cover": {
+          "description": "Optional cover override. A leading slash means a file already committed under site/public (for example /covers/acme.png). Any other value is a path inside the package (for example cover.svg or assets/cover.png).",
+          "type": "string",
+          "minLength": 1
+        },
+        "categories": {
+          "description": "Optional category override. Values outside the Alisio category set are ignored.",
+          "type": "array",
+          "items": {
+            "enum": [
+              "model-provider",
+              "methodology-harness",
+              "memory",
+              "subagents",
+              "search",
+              "tools",
+              "security",
+              "analytics",
+              "mcp",
+              "storage",
+              "ui"
+            ]
+          }
+        },
+        "featured": {
+          "description": "Optional flag that promotes the plugin in catalog surfaces.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

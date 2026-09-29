@@ -2,7 +2,7 @@
 
 Thanks for contributing. This repository publishes independent `@alisio/plugin-*` packages, so a
 change is reviewed as a package, not as a monolith. The authoring reference is
-[docs/developing-plugins.md](./docs/developing-plugins.md).
+[site/developing-plugins.md](./site/developing-plugins.md).
 
 ## Quick path
 
@@ -47,7 +47,7 @@ no AI tooling in the author or committer fields.
 ## Language policy
 
 - **Bilingual, kept in sync (English + Spanish):** `README.md` / `README.es.md`, and
-  `docs/` / `docs/es/`. Each pair links to its mirror and the two are updated in the same change.
+  `site/` / `site/es/`. Each pair links to its mirror and the two are updated in the same change.
   Spanish is neutral and professional.
 - **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `AGENTS.md`, all source,
   all package READMEs, all code comments, and every diagram label.
@@ -58,7 +58,7 @@ no AI tooling in the author or committer fields.
   scenario.
 - Strict TDD is an optional, explicitly recorded decision, not a default.
 - Update the README of a package when its behaviour, commands, or options change.
-- Update `docs/developing-plugins.md` **and** `docs/es/developing-plugins.md` together when the
+- Update `site/developing-plugins.md` **and** `site/es/developing-plugins.md` together when the
   authoring contract changes.
 - Use Changesets for versions: run `pnpm changeset`, describe the public change, and include it in
   the pull request.

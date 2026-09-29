@@ -29,7 +29,11 @@
     "leak:check": "node scripts/leak-check.mjs",
     "diagrams": "node scripts/render-diagrams.mjs --all",
     "diagrams:check": "node scripts/render-diagrams.mjs --all --check",
-    "check": "pnpm lint && pnpm leak:check && pnpm typecheck && pnpm test && pnpm build && pnpm pack:check",
+    "docs:dev": "vitepress dev site",
+    "docs:scan": "node scripts/scan-plugins.mjs",
+    "docs:check": "node scripts/docs-check.mjs",
+    "docs:build": "vitepress build site",
+    "check": "pnpm lint && pnpm leak:check && pnpm typecheck && pnpm test && pnpm build && pnpm pack:check && pnpm docs:check && pnpm docs:build",
     "changeset": "changeset",
     "version": "changeset version && node scripts/sync-versions.mjs",
     "release:changesets": "pnpm check && changeset publish",
@@ -43,6 +47,8 @@
     "@changesets/cli": "3.0.3",
     "@types/node": "26.6.2",
     "typescript": "7.0.2",
-    "vitest": "5.0.1"
+    "vitepress": "1.6.4",
+    "vitest": "5.0.1",
+    "vue": "3.5.43"
   }
 }

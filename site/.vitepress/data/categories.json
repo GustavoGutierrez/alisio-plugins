@@ -1,0 +1,15 @@
+{
+  "categories": [
+    "model-provider",
+    "methodology-harness",
+    "memory",
+    "subagents",
+    "search",
+    "tools",
+    "security",
+    "analytics",
+    "mcp",
+    "storage",
+    "ui"
+  ]
+}

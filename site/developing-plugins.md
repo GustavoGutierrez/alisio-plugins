@@ -2,12 +2,11 @@
 
 [Español](./es/developing-plugins.md) · English
 
-This guide covers **authoring plugins for this repository**: package shape, the plugin contract, the
-capability surface, the hard limits, packaging, and how to install and smoke-test a build. The
-canonical upstream reference for the SDK and `PluginAPI` is the
-[Alisio plugin docs](https://gustavogutierrez.github.io/alisio/plugins) (Spanish:
-[`/es/plugins`](https://gustavogutierrez.github.io/alisio/es/plugins)); link to it rather than
-duplicating the full reference here.
+This guide covers first-party packages in this monorepo **and** independent plugins published from
+another repository. Choose the path first; the plugin contract and safety limits apply to both. The
+canonical upstream reference for the SDK and `PluginAPI` is the Alisio plugin documentation. This
+catalog guide focuses on the packaging, publication and listing workflow rather than duplicating the
+complete API reference.
 
 Everything in this guide was checked against the upstream source
 (`docs/plugins.md`, `packages/sdk/src/index.ts`, `packages/core/src/plugins/host.ts`,
@@ -15,18 +14,130 @@ Everything in this guide was checked against the upstream source
 documentation and the source disagree, this guide follows the source and calls it out as a
 **documentation caveat**.
 
-- [Quick path](#quick-path)
+- [Choose your path](#choose-your-path)
+- [Third-party quick path](#third-party-quick-path)
+- [Catalog inclusion](#catalog-inclusion)
+- [First-party quick path](#first-party-quick-path)
 - [The contract](#the-contract)
 - [Capability surface](#capability-surface)
 - [Hard limits: how far plugins reach](#hard-limits-how-far-plugins-reach)
 - [The most likely mistakes](#the-most-likely-mistakes)
-- [Packaging and publishing](#packaging-and-publishing)
+- [Package shape and publishing](#package-shape-and-publishing)
 - [Installing and smoke-testing](#installing-and-smoke-testing)
 - [SDK version pinning](#sdk-version-pinning)
 - [Testing in this repository](#testing-in-this-repository)
 - [Documentation caveats](#documentation-caveats)
 
-## Quick path
+## Choose your path
+
+| You are building… | Work here? | Release and catalog behavior |
+| --- | --- | --- |
+| An official, first-party `@alisio/plugin-*` package | Yes — create `packages/<name>/`. | The workspace checks, Changesets, release tooling, and automatic local catalog discovery apply. |
+| An independent plugin owned by your team | No — use your own repository and publish it to npm. | You choose your tooling and release process. It is installable after npm publication; catalog listing requires maintainer review and a registry pull request. |
+
+**Universal ecosystem recommendations** are marked below. Rules described as **first-party only**
+are enforced by this repository's workspace tooling and must not be copied as claims about every
+external plugin.
+
+## Third-party quick path
+
+Use this path when your package belongs in another repository. It does not require a fork of this
+monorepo.
+
+1. Create an ESM Node package and implement the default `definePlugin(...)` export described in
+   [the contract](#the-contract).
+2. Build JavaScript and declarations into `dist`, test the built package, and inspect the tarball.
+3. Publish the package to npm, then install its published version with Alisio and run `plugins doctor`.
+4. If you want a listing here, follow [Catalog inclusion](#catalog-inclusion). npm publication alone
+   does **not** add a package to this catalog.
+
+### External package baseline
+
+These are the compatible, recommended defaults for an independently published plugin. The host
+requires the `alisio-plugin` keyword to recognize an npm package; the other entries are ecosystem
+or quality recommendations, except where your own package policy makes them mandatory.
+
+| Concern | Recommended external-package baseline |
+| --- | --- |
+| Name | Prefer `@your-scope/alisio-plugin-<name>`. `@alisio/plugin-*` is reserved for first-party packages; the catalog registry can list any valid npm package name. |
+| Metadata | Provide `description`, `license`, `repository`, `homepage`, and `bugs` so users and catalog maintainers can assess the package. |
+| Host SDK | Put `@alisio/sdk` in both `peerDependencies` and `devDependencies`; do not import `@alisio/core` or another plugin. |
+| Runtime and modules | Use ESM (`"type": "module"`), target Node `>=22.16`, and expose `./dist/index.js` plus `./dist/index.d.ts`. |
+| Published contents | Include `dist`, a concise `README.md` with install/use instructions, an MIT `LICENSE` (or clearly declared alternative), and every resource or cover the plugin registers. |
+| Quality | Keep unit tests; cover a happy path and an error/boundary path for each functional scenario. |
+| Trust and data | Plugins run in-process, not in a sandbox. Validate untrusted names, paths, and child-session output; persist durable data atomically; avoid credentials and machine-specific paths in source and the tarball. Optional built-in integrations should fail open and remain capability-narrowed. |
+
+Start from this manifest shape and adapt versions, scripts, and the package manager to your own
+repository:
+
+```json
+{
+  "name": "@your-scope/alisio-plugin-example",
+  "version": "0.1.0",
+  "description": "A concise description of the plugin.",
+  "keywords": ["alisio-plugin"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/OWNER/REPOSITORY.git" },
+  "homepage": "https://github.com/OWNER/REPOSITORY#readme",
+  "bugs": { "url": "https://github.com/OWNER/REPOSITORY/issues" },
+  "type": "module",
+  "engines": { "node": ">=22.16" },
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md", "LICENSE", "cover.svg"],
+  "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0" },
+  "devDependencies": { "@alisio/sdk": "0.1.0-alpha.10" }
+}
+```
+
+### Third-party release checklist
+
+- [ ] `npm pack --dry-run` shows `dist/index.js`, `dist/index.d.ts`, `README.md`, `LICENSE`, and registered resources.
+- [ ] Your repository's lint, type, test, and build checks pass; scan the packed tarball for credentials and local paths.
+- [ ] The published package has the `alisio-plugin` keyword and an entry Alisio can resolve.
+- [ ] Publish with your authorized npm workflow; this monorepo's Changesets and `publish-*` scripts are **first-party only**.
+- [ ] Verify the registry result: `npm view <package> version`.
+- [ ] Verify the consumer path: `alisio install npm:<package>@<version>`, then `alisio plugins doctor`.
+- [ ] If applicable, verify configured credentials stay in Alisio/the environment rather than the package, and document the minimum compatible Alisio runtime.
+
+## Catalog inclusion
+
+This catalog is **not npm discovery**. Local packages under `packages/*` are discovered automatically;
+an external package appears only after a maintainer accepts a pull request to this repository that
+adds it to [`registry/plugins.json`](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/registry/plugins.json).
+There is no separate issue form or automated submission endpoint in this repository.
+
+After publishing, open a pull request against
+[`GustavoGutierrez/alisio-plugins`](https://github.com/GustavoGutierrez/alisio-plugins) that edits
+`registry/plugins.json` and includes the requested review information below. Maintainers run the
+scanner and commit its generated cache/pages; do not hand-edit generated catalog files.
+
+The registry schema requires **only** `package`. Its optional fields are `title`, `npmUrl`,
+`repository`, `homepage`, `cover`, `categories`, and `featured` — exactly as defined in
+[`registry/plugins.schema.json`](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/registry/plugins.schema.json).
+
+```json
+{
+  "package": "@your-scope/alisio-plugin-example",
+  "categories": ["tools"],
+  "cover": "cover.svg"
+}
+```
+
+| Maintainer review information | How it is used or verified |
+| --- | --- |
+| npm package name and published version; install command | `package` is the sole required registry field. The catalog derives `alisio install npm:<package>` and reads the latest npm version. Include the version you tested in the pull request. |
+| Repository URL, homepage, bugs URL, description, and license | The scanner reads npm metadata; registry `repository` and `homepage` can override missing/incorrect packument values. `bugs`, description, and license have no registry override. |
+| Category and capabilities | `categories` is an optional registry override. Use only: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`. Explain actual capabilities in the PR; capabilities are not a schema field. |
+| Peer SDK range, Node compatibility, tests and validation evidence | These are maintainer review evidence, not registry fields. Include your `@alisio/sdk` peer range, `engines.node`, commands/results, and the exact published version installed with Alisio. |
+| Security and integration details | Explain network/process/write behavior, credential handling, durable-data behavior, optional integrations, and any resources. The scanner never imports or executes third-party code. |
+| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. |
+
+`npmUrl`, `title`, and `featured` are optional presentation overrides, not evidence substitutes.
+The scanner fetches npm metadata and, only to find a cover, reads the published tarball without
+executing it. A maintainer can reject or defer a registry change when the package, metadata, safety,
+or validation evidence is insufficient.
+
+## First-party quick path
 
 ```bash
 corepack enable
@@ -35,8 +146,9 @@ pnpm check                 # lint, types, tests, build, pack check
 pnpm diagrams:check        # committed SVGs are newer than their sources
 ```
 
-Then scaffold under `packages/<name>/` following the conventions in the root
-[README](../README.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+This is the **first-party-only** path. Scaffold under `packages/<name>/` following the conventions in the root
+[README](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/README.md) and
+[CONTRIBUTING.md](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/CONTRIBUTING.md).
 
 ## The contract
 
@@ -165,11 +277,11 @@ This is the section to read before loading code you did not write.
 | A hook appears to run twice / state is duplicated | `setup` is called once per activation; re-registering on reload is expected. Everything is unregistered on unload. | Register idempotently or rely on the unload cleanup. |
 | Diagram check fails on CI with no changes | `diagrams:check` compares mtimes, not hashes; a fresh checkout can make all files share a timestamp. | It is a local authoring aid, not a CI gate. Re-render with `pnpm diagrams`. |
 
-## Packaging and publishing
+## Package shape and publishing
 
 | Requirement | Detail |
 | --- | --- |
-| Package name | `@alisio/plugin-*`. |
+| Package name | **First-party only:** `@alisio/plugin-*`. For an external package, use a distinct npm name (for example `@your-scope/alisio-plugin-*`); the host and registry do not require that pattern. |
 | Keyword | `alisio-plugin` is **required**; a package without it is rejected, so a typo cannot load an unrelated package. |
 | Module format | ESM. Published plugins **must ship JavaScript** (plus declarations). |
 | Entry resolution | `exports["."]` (`import`, then `node`, then `default`), then `main`, then `./index.js`. |
@@ -177,19 +289,19 @@ This is the section to read before loading code you did not write.
 | `alisio-plugin.json` | Required when a plugin is a **directory given as a path**: `{ "apiVersion": 1, "entry": "./index.js" }`, and the entry must stay inside the directory. Optional for an npm package (a package may ship one too). |
 | Dependencies | Node built-ins and `@alisio/sdk` only. `@alisio/sdk` stays in **both** `peerDependencies` and `devDependencies`. Never import another plugin or `@alisio/core`. |
 | Shipped files | `dist` JavaScript and declarations, README, MIT `LICENSE`, and every registered resource (e.g. `.agents`, `assets`). |
-| Versioning here | Changesets. Bump one package with `pnpm bump-one -- <name> <patch\|minor\|major> --summary "<text>"`, or run `pnpm changeset` then `pnpm run version` (which also runs `scripts/sync-versions.mjs`). `pnpm publish-one -- <name>` and `pnpm publish-all` are dry runs; add `--publish` for an intentional publish. |
+| Versioning here | **First-party only:** Changesets. Bump one package with `pnpm bump-one -- <name> <patch\|minor\|major> --summary "<text>"`, or run `pnpm changeset` then `pnpm run version` (which also runs `scripts/sync-versions.mjs`). `pnpm publish-one -- <name>` and `pnpm publish-all` are dry runs; add `--publish` for an intentional publish. |
 
-No version is published without explicit authorization and npm authentication. This repository stores
-no secret; see [SECURITY.md](../SECURITY.md).
+No first-party version is published without explicit authorization and npm authentication. This repository stores
+no secret; see [SECURITY.md](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/SECURITY.md).
 
-The publish tooling runs a preflight per package: npm authentication (`npm login` or `NPM_TOKEN`), a
+The **first-party** publish tooling runs a preflight per package: npm authentication (`npm login` or `NPM_TOKEN`), a
 clean committed tree, matching `package.json`/`src/version.ts`, a packed tarball free of local machine
 paths and credentials (`pnpm pack:check`, which runs the leak scanner over each tarball), and a version
 not already on the registry. Dist-tags default to `latest`, or `next` for prerelease versions.
 `pnpm release:changesets` is the Changesets-native, tag-creating flow used by CI; `pnpm publish-all`
 is the explicit, preflighted flow.
 
-Published packages carry no machine-specific paths and no credentials. The same guarantee is enforced
+First-party published packages carry no machine-specific paths and no credentials. The same guarantee is enforced
 on every pull request by `pnpm check`: `leak:check` scans every tracked file and `pack:check` scans
 each packed tarball, so both surfaces are covered before a merge.
 
