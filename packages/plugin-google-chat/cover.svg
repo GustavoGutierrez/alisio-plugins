@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Google Chat Tools</title>
+  <desc id="desc">A rounded chat bubble with a small reply tail above the Google Chat Tools title, representing read-first Google Chat access with send, edit, and delete.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a1324"/>
+      <stop offset="1" stop-color="#111f38"/>
+    </linearGradient>
+    <linearGradient id="bubble" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34a853"/>
+      <stop offset="0.5" stop-color="#4285f4"/>
+      <stop offset="1" stop-color="#1a73e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <g transform="translate(610 168)">
+    <rect x="0" y="0" width="380" height="290" rx="70" fill="url(#bubble)"/>
+    <path d="M96 290 L96 372 L188 290 Z" fill="url(#bubble)"/>
+    <circle cx="120" cy="145" r="22" fill="#f8fafc"/>
+    <circle cx="190" cy="145" r="22" fill="#f8fafc"/>
+    <circle cx="260" cy="145" r="22" fill="#f8fafc"/>
+  </g>
+  <text x="800" y="730" fill="#f8fafc" font-family="sans-serif" font-size="84" font-weight="700" text-anchor="middle">GOOGLE CHAT TOOLS</text>
+  <text x="800" y="792" fill="#94a3b8" font-family="sans-serif" font-size="30" text-anchor="middle">read-first spaces, messages and threads</text>
+</svg>

@@ -1,0 +1,54 @@
+{
+  "name": "@alisio/plugin-google-chat",
+  "version": "0.1.0",
+  "description": "Google Chat tools for Alisio with two independent, fail-closed authentication modes, read-first defaults, and untrusted-content framing.",
+  "keywords": [
+    "alisio-plugin",
+    "google-chat",
+    "chat",
+    "tools",
+    "webhook",
+    "oauth"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-google-chat"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-google-chat#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    ".agents",
+    "README.md",
+    "LICENSE",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.1.0-alpha.11",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

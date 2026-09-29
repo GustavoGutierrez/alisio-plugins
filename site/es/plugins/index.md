@@ -10,6 +10,7 @@ Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portad
 - [Atlassian](./atlassian) — Read-first Jira, Confluence, and Agile tools with strict environment configuration, opt-in writes, and untrusted-content framing (`tools`)
 - [Context7 Docs](./context7) — Resolve library names and fetch third-party documentation from the Context7 hosted service (`tools`)
 - [DeepSeek](./deepseek) — Dedicated DeepSeek Chat Completions and Responses provider (`model-provider`)
+- [Google Chat](./google-chat) — Google Chat tools with a send-only webhook mode and a full OAuth user mode, read-first defaults, and untrusted-content framing (`tools`)
 - [Literature Research](./literature-research) — Safe scholarly metadata and abstract research (`search`, `tools`)
 - [OpenAI](./openai) — Official OpenAI Responses API provider (`model-provider`)
 - [OpenCode Console (Zen)](./opencode) — OpenCode Console gateway for Responses, Chat, and Messages models (`model-provider`)
