@@ -8,6 +8,7 @@ description: "Todos los plugins publicados en este catálogo, en orden A–Z."
 Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portada del catálogo](/es/).
 
 - [Atlassian](./atlassian) — Read-first Jira, Confluence, and Agile tools with strict environment configuration, opt-in writes, and untrusted-content framing (`tools`)
+- [Brave Search](./brave-search) — Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback (`search`, `tools`)
 - [Context7 Docs](./context7) — Resolve library names and fetch third-party documentation from the Context7 hosted service (`tools`)
 - [DeepSeek](./deepseek) — Dedicated DeepSeek Chat Completions and Responses provider (`model-provider`)
 - [Google Chat](./google-chat) — Google Chat tools with a send-only webhook mode and a full OAuth user mode, read-first defaults, and untrusted-content framing (`tools`)

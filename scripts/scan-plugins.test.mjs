@@ -348,6 +348,7 @@ test("localPackages discovers every publishable package", () => {
     "@alisio/plugin-atlassian",
     "@alisio/plugin-telemetry",
     "@alisio/plugin-google-chat",
+    "@alisio/plugin-brave-search",
   ])
     assert.ok(names.includes(name), `missing ${name}`);
 });

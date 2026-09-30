@@ -1,0 +1,54 @@
+{
+  "name": "@alisio/plugin-brave-search",
+  "version": "0.1.0",
+  "description": "Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback.",
+  "keywords": [
+    "alisio-plugin",
+    "brave-search",
+    "search",
+    "llm-context",
+    "grounding",
+    "tools"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-brave-search"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-brave-search#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    ".agents",
+    "README.md",
+    "LICENSE",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.1.0-alpha.11",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

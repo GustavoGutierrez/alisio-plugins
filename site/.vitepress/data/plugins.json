@@ -38,6 +38,44 @@
       "source": "local"
     },
     {
+      "name": "@alisio/plugin-brave-search",
+      "slug": "brave-search",
+      "title": "Brave Search",
+      "pluginId": "brave-search",
+      "description": "Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback",
+      "version": "0.1.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-brave-search#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-brave-search",
+      "categories": [
+        "search",
+        "tools"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "brave-search",
+        "search",
+        "llm-context",
+        "grounding",
+        "tools"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 0,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-brave-search",
+      "cover": "/covers/brave-search.svg",
+      "readme": "Brave Search for coding agents in [Alisio](https://github.com/GustavoGutierrez/alisio). The main\ntool calls Brave's **LLM Context** endpoint, which returns pre-extracted page content (text, code\nblocks, tables, documentation) sized to a token budget, so a model can ground an answer from one\ncall instead of reading human-oriented result pages.\n\nThis is an independent plugin. It is not an official Brave product and is not affiliated with or\nendorsed by Brave Software.\n\n**When to pick this plugin.** `@alisio/plugin-web-search` is provider-neutral: it routes one generic\n`web_search` across several providers, and its Brave route returns titles and snippets only. Pick\nthis plugin when you have a Brave Search API key and want Brave-specific, LLM-context-first\ngrounding with token budgets, relevance thresholds, and Goggles. Both plugins can be installed\ntogether.\n\n## Install\n\n```bash\nalisio install npm:@alisio/plugin-brave-search\n```\n\n## Configure the API key\n\nCreate a key in the [Brave Search API dashboard](https://api-dashboard.search.brave.com). The LLM\nContext and Web Search endpoints need an active subscription that includes them. Then use **one**\nof these, in order of precedence:\n\n1. `BRAVE_SEARCH_API_KEY` environment variable.\n2. `BRAVE_API_KEY` environment variable, the same name Brave's official MCP server\n   (`@brave/brave-search-mcp-server`) uses, so an existing setup works with no changes.\n3. A key stored for your user with `/brave-search:set-key `.\n\n```bash\n# bash / zsh (add to ~/.bashrc or ~/.zshrc)\nexport BRAVE_SEARCH_API_KEY='your-key'\n```\n\n```fish\n# fish\nset -Ux BRAVE_SEARCH_API_KEY 'your-key'\n```\n\n```powershell\n# PowerShell (current user, persistent; open a new terminal afterwards)\n[Environment]::SetEnvironmentVariable('BRAVE_SEARCH_API_KEY', 'your-key', 'User')\n```\n\nEnvironment variables are read by the running process, so restart Alisio after changing them. A key\nsaved with `set-key` applies immediately. It is written atomically with mode `0600` (parent `0700`)\nto `configHome/brave-search/api-key`, where `configHome` is `ALISIO_CONFIG_HOME`, else\n`$XDG_CONFIG_HOME/alisio`, else `~/.config/alisio`. The command argument may be kept in your\nsession history, so prefer an environment variable on shared machines.\n\nThe key is never accepted through tool input, never logged or echoed, and is redacted from every\nmessage. A missing or malformed key never crashes the plugin: tools return setup instructions and\nmake no network call.\n\n## Commands\n\n```\n/brave-search:status          # which key sources are set and which one is active (value hidden)\n/brave-search:set-key <key>   # store a key for this user (0600 file)\n/brave-search:clear-key       # delete the stored key file\n```\n\n## Tools\n\nBoth tools have the `external` effect: the query is sent to `https://api.search.brave.com`.\n\n- `brave_llm_context` — `POST /res/v1/llm/context`. Input: `query` (required, max 400 characters\n  and 50 words), `maxTokens` (1024–32768, default 4096), `count` (1–50), `maxUrls` (1–50),\n  `threshold` (`strict`, `balanced`, `lenient`, `disabled`), `freshness`, `country`, `searchLang`,\n  and `goggles` (an https Goggle URL or inline rules). Output: numbered sources with title, URL,\n  date when known, and the extracted content fenced between explicit external-content markers.\n- `brave_web_search` — `GET /res/v1/web/search`. Input: `query`, `count` (1–20, default 8),\n  `offset` (0–9), `freshness`, `country`, `searchLang`. Output: a compact list of titles, URLs,\n  ages, and descriptions. Use it to find pages; use `brave_llm_context` to read them.\n\nOut-of-range numbers are clamped to the documented range; other invalid input is rejected before any\nnetwork call. `freshness` accepts `pd`, `pw`, `pm`, `py`, or `YYYY-MM-DDtoYYYY-MM-DD`.\n\n### Writing good queries\n\nTool descriptions and the bundled `brave-llm-context` skill teach the agent to rewrite requests\ninstead of forwarding the user's sentence:\n\n```\n\"ERR_REQUIRE_ESM\" vite 8 build\nnext.js 16 route handlers site:nextjs.org\nstripe webhook \"No signatures found matching the expected signature\" -php\n```\n\n## Safety and limits\n\n- One fixed origin, no redirects, no cookies, no retries. A 30-second timeout combines with the host\n  cancellation signal, and response bodies are capped at 4 MiB.\n- Failures use a closed vocabulary with actionable hints: missing API key, authentication failed\n  (401), not permitted (403, usually a plan that excludes the endpoint), request rejected (400/422),\n  rate limited (429, with a retry hint from `Retry-After` or Brave's `X-RateLimit-Reset`), timed out,\n  temporarily unavailable, invalid response, response exceeded limit. Raw response bodies are never\n  shown.\n- Remote content is untrusted: control characters are stripped, URLs must be `http(s)` without\n  credentials, fields and output are bounded (about 5 characters per requested token), forged\n  boundary markers are neutralized, and every result starts with a provenance notice.\n- Brave's terms of service and privacy policy apply to your use of the API.\n\n## Requirements\n\nNode.js **>= 22.16** and an Alisio host with `@alisio/sdk` `>=0.1.0-alpha.10`. Zero runtime\ndependencies.\n\n## License\n\nMIT.",
+      "downloadsLastMonth": null,
+      "featured": false,
+      "source": "local"
+    },
+    {
       "name": "@alisio/plugin-context7",
       "slug": "context7",
       "title": "Context7 Docs",
