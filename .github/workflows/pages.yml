@@ -41,6 +41,10 @@ jobs:
       # Refresh npm publish recency so "Recently published" tracks the latest
       # releases. Degrades gracefully: the scanner keeps cached values and only
       # notes a warning when npm metadata is unavailable.
+      # Build first: the scanner reads each plugin's id and categories from its
+      # built `dist/index.js`, and falls back to `package.json` (which has no
+      # categories) when the entry is missing, emptying the category filter.
+      - run: pnpm build
       - run: pnpm docs:scan
       # The catalog cache is committed, so the site still builds without the network.
       - run: pnpm docs:build
