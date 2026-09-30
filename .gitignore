@@ -19,3 +19,5 @@ site/.vitepress/dist/
 *.pfx
 .pnpm-store/
 *.log
+
+.atl/*
