@@ -321,9 +321,9 @@ describe("configuration", () => {
   it("resolves the token file from overrides and the config home", () => {
     const config = loadConfig({
       ...oauthEnv,
-      GOOGLE_CHAT_TOKEN_FILE: "/tmp/gchat-token.json",
+      GOOGLE_CHAT_TOKEN_FILE: "/custom/tokens/gchat-token.json",
     });
-    expect(config.oauth?.tokenFile).toBe("/tmp/gchat-token.json");
+    expect(config.oauth?.tokenFile).toBe("/custom/tokens/gchat-token.json");
     const fromHome = loadConfig({ ...oauthEnv, ALISIO_CONFIG_HOME: "/custom/config" });
     expect(fromHome.oauth?.tokenFile).toBe(join("/custom/config", "google-chat", "token.json"));
   });
