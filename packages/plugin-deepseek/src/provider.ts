@@ -31,17 +31,6 @@ export interface DeepSeekConfig {
   contextWindow?: number;
 }
 
-/** A tool call is usable only when it is named and its arguments parse as JSON. */
-const isCompleteCall = (c: ToolCall) => {
-  if (!c.id || !c.name) return false;
-  try {
-    JSON.parse(c.arguments);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 const dataUrl = (a: Attachment) => `data:${a.mimeType};base64,${a.data}`;
 export class DeepSeekProvider implements ModelProvider {
   readonly id: string;
@@ -225,10 +214,11 @@ export class DeepSeekProvider implements ModelProvider {
     }
     if (finish !== "stop" && finish !== "tool_calls" && finish !== "length")
       throw new Error(`Provider response incomplete: ${finish ?? "stream ended"}`);
-    const streamed = [...calls.entries()].sort(([a], [b]) => a - b).map(([, c]) => c);
-    // On truncation the last call is typically cut mid-arguments: never hand a half call to core.
-    const completed = finish === "length" ? streamed.filter(isCompleteCall) : streamed;
-    if (completed.some((c) => !c.id || !c.name)) throw new Error("Incomplete tool call");
+    const completed = [...calls.entries()].sort(([a], [b]) => a - b).map(([, c]) => c);
+    // A length cut is reported as `truncated`; the host discards the cut calls, so they are passed
+    // through exactly as received (never repaired).
+    if (finish !== "length" && completed.some((c) => !c.id || !c.name))
+      throw new Error("Incomplete tool call");
     yield {
       type: "completed",
       message: {
@@ -321,7 +311,7 @@ export class DeepSeekProvider implements ModelProvider {
           message: {
             role: "assistant",
             text,
-            calls: calls.filter(isCompleteCall),
+            calls,
             providerData: r.output,
             truncated: true,
           },

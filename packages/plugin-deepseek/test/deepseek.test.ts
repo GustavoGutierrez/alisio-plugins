@@ -499,7 +499,7 @@ describe("DeepSeek truncation", () => {
     });
   });
 
-  it("chat: length after a half tool call drops it and keeps complete ones", async () => {
+  it("chat: length after a half tool call passes calls through as received", async () => {
     const toolChunk = (index: number, id: string, args: string, finish: string | null) => ({
       choices: [
         {
@@ -519,13 +519,16 @@ describe("DeepSeek truncation", () => {
       type: "completed",
       message: {
         role: "assistant",
-        calls: [{ id: "c1", name: "echo", arguments: '{"ok":true}' }],
+        calls: [
+          { id: "c1", name: "echo", arguments: '{"ok":true}' },
+          { id: "c2", name: "echo", arguments: '{"code":"print(' },
+        ],
         truncated: true,
       },
     });
   });
 
-  it("chat: a malformed tool call without truncation still fails", async () => {
+  it("chat: an incomplete tool call with any other finish reason still throws", async () => {
     const provider = deepseek(
       chatClient([
         {
@@ -554,7 +557,7 @@ describe("DeepSeek truncation", () => {
     });
   });
 
-  it("responses: incomplete with a partial function call drops it", async () => {
+  it("responses: incomplete with a partial function call passes it through", async () => {
     const provider = deepseek(
       responsesClient([
         incomplete([
@@ -566,7 +569,11 @@ describe("DeepSeek truncation", () => {
     );
     expect((await collect(provider, "fixture")).at(-1)).toMatchObject({
       type: "completed",
-      message: { text: "calling", calls: [], truncated: true },
+      message: {
+        text: "calling",
+        calls: [{ id: "c1", name: "echo", arguments: '{"x":' }],
+        truncated: true,
+      },
     });
   });
 });
