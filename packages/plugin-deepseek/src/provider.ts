@@ -31,6 +31,17 @@ export interface DeepSeekConfig {
   contextWindow?: number;
 }
 
+/** A tool call is usable only when it is named and its arguments parse as JSON. */
+const isCompleteCall = (c: ToolCall) => {
+  if (!c.id || !c.name) return false;
+  try {
+    JSON.parse(c.arguments);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const dataUrl = (a: Attachment) => `data:${a.mimeType};base64,${a.data}`;
 export class DeepSeekProvider implements ModelProvider {
   readonly id: string;
@@ -51,7 +62,10 @@ export class DeepSeekProvider implements ModelProvider {
       new OpenAI({
         baseURL: config.baseURL,
         apiKey: key,
-        maxRetries: 0,
+        // The SDK retries only the request phase (before the response body streams), honouring
+        // Retry-After with exponential backoff on 408/409/429/5xx and connection errors.
+        // Failures after the first token are never replayed.
+        maxRetries: 2,
         timeout: 120_000,
         ...(config.auth === "none" ? { defaultHeaders: { Authorization: null } } : {}),
       });
@@ -211,12 +225,10 @@ export class DeepSeekProvider implements ModelProvider {
     }
     if (finish !== "stop" && finish !== "tool_calls" && finish !== "length")
       throw new Error(`Provider response incomplete: ${finish ?? "stream ended"}`);
-    const completed = [...calls.entries()].sort(([a], [b]) => a - b).map(([, c]) => c);
+    const streamed = [...calls.entries()].sort(([a], [b]) => a - b).map(([, c]) => c);
+    // On truncation the last call is typically cut mid-arguments: never hand a half call to core.
+    const completed = finish === "length" ? streamed.filter(isCompleteCall) : streamed;
     if (completed.some((c) => !c.id || !c.name)) throw new Error("Incomplete tool call");
-    if (finish === "length" && !text.trim())
-      throw new Error(
-        "Provider response cut off by max output tokens before any usable content; raise limits.maxOutputTokens (/settings → Agent max output tokens)",
-      );
     yield {
       type: "completed",
       message: {
@@ -304,14 +316,15 @@ export class DeepSeekProvider implements ModelProvider {
           .filter((x) => x.type === "output_text")
           .map((x) => x.text)
           .join("");
-        if (!text.trim())
-          throw new Error(
-            "Provider response cut off by max output tokens before any usable content; raise limits.maxOutputTokens (/settings → Agent max output tokens)",
-          );
-        if (calls.some((c) => !c.id || !c.name)) throw new Error("Incomplete tool call");
         yield {
           type: "completed",
-          message: { role: "assistant", text, calls, providerData: r.output, truncated: true },
+          message: {
+            role: "assistant",
+            text,
+            calls: calls.filter(isCompleteCall),
+            providerData: r.output,
+            truncated: true,
+          },
           ...(r.usage
             ? {
                 usage: {

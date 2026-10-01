@@ -486,11 +486,60 @@ describe("DeepSeek truncation", () => {
     });
   });
 
-  it("chat and responses keep throwing on length with nothing usable", async () => {
+  it("chat and responses complete truncated instead of throwing when nothing is usable", async () => {
     const chat = deepseek(chatClient([{ ...chatChunk("", "length") }]));
-    await expect(collect(chat, "fixture")).rejects.toThrow(/max output tokens/);
+    expect((await collect(chat, "fixture")).at(-1)).toMatchObject({
+      type: "completed",
+      message: { role: "assistant", text: "", calls: [], truncated: true },
+    });
     const responses = deepseek(responsesClient([incomplete([])]), "responses");
-    await expect(collect(responses, "fixture")).rejects.toThrow(/max output tokens/);
+    expect((await collect(responses, "fixture")).at(-1)).toMatchObject({
+      type: "completed",
+      message: { role: "assistant", text: "", calls: [], truncated: true },
+    });
+  });
+
+  it("chat: length after a half tool call drops it and keeps complete ones", async () => {
+    const toolChunk = (index: number, id: string, args: string, finish: string | null) => ({
+      choices: [
+        {
+          index: 0,
+          delta: { tool_calls: [{ index, id, function: { name: "echo", arguments: args } }] },
+          finish_reason: finish,
+        },
+      ],
+    });
+    const provider = deepseek(
+      chatClient([
+        toolChunk(0, "c1", '{"ok":true}', null),
+        toolChunk(1, "c2", '{"code":"print(', "length"),
+      ]),
+    );
+    expect((await collect(provider, "fixture")).at(-1)).toMatchObject({
+      type: "completed",
+      message: {
+        role: "assistant",
+        calls: [{ id: "c1", name: "echo", arguments: '{"ok":true}' }],
+        truncated: true,
+      },
+    });
+  });
+
+  it("chat: a malformed tool call without truncation still fails", async () => {
+    const provider = deepseek(
+      chatClient([
+        {
+          choices: [
+            {
+              index: 0,
+              delta: { tool_calls: [{ index: 0, function: { arguments: "{}" } }] },
+              finish_reason: "tool_calls",
+            },
+          ],
+        },
+      ]),
+    );
+    await expect(collect(provider, "fixture")).rejects.toThrow(/Incomplete tool call/);
   });
 
   it("responses: incomplete after partial text completes truncated", async () => {
@@ -505,16 +554,67 @@ describe("DeepSeek truncation", () => {
     });
   });
 
-  it("responses: incomplete with a partial function call throws", async () => {
+  it("responses: incomplete with a partial function call drops it", async () => {
     const provider = deepseek(
       responsesClient([
         incomplete([
           ...message("calling"),
-          { type: "function_call", call_id: "c1", arguments: '{"x":' },
+          { type: "function_call", call_id: "c1", name: "echo", arguments: '{"x":' },
         ]),
       ]),
       "responses",
     );
-    await expect(collect(provider, "fixture")).rejects.toThrow(/Incomplete tool call/);
+    expect((await collect(provider, "fixture")).at(-1)).toMatchObject({
+      type: "completed",
+      message: { text: "calling", calls: [], truncated: true },
+    });
+  });
+});
+
+describe("DeepSeek retries before the first token", () => {
+  const chatConfig = (port: number) => ({
+    baseURL: `http://127.0.0.1:${port}`,
+    apiKey: "fake-deepseek-key",
+    apiKeyEnv: "UNUSED",
+    model: "deepseek-flash",
+    apiMode: "chat" as const,
+    auth: "bearer" as const,
+    tokenParameter: "max_tokens" as const,
+    streamUsage: true,
+  });
+  const okStream = () =>
+    sse([
+      { choices: [{ index: 0, delta: { content: "ok" }, finish_reason: null }] },
+      { choices: [{ index: 0, delta: {}, finish_reason: "stop" }] },
+    ]);
+
+  it("retries transient 503 responses and then streams", async () => {
+    let calls = 0;
+    const server = await serve(() =>
+      ++calls < 3 ? new Response("busy", { status: 503 }) : okStream(),
+    );
+    try {
+      const events = await collect(new DeepSeekProvider(chatConfig(server.port)), "deepseek-flash");
+      expect(calls).toBe(3);
+      expect(events.at(-1)).toMatchObject({ type: "completed", message: { text: "ok" } });
+    } finally {
+      await server.close();
+    }
+  });
+
+  it("does not retry authentication failures", async () => {
+    let calls = 0;
+    const server = await serve(() => {
+      calls++;
+      return new Response("nope", { status: 401 });
+    });
+    try {
+      await expect(
+        collect(new DeepSeekProvider(chatConfig(server.port)), "deepseek-flash"),
+      ).rejects.toThrow();
+      expect(calls).toBe(1);
+    } finally {
+      await server.close();
+    }
   });
 });
