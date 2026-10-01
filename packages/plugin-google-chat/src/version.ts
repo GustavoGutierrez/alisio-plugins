@@ -1,2 +1,2 @@
-/** Package version, kept in sync with `package.json` by the release tooling. */
+// Updated by scripts/sync-versions.mjs.
 export const VERSION = "0.1.0";
