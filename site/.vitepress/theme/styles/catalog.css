@@ -416,64 +416,201 @@
 /* Recently published. */
 .recent-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 16px;
   margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
 
-/* Recently published: the cover is a wide 16:9 banner across the top of the
- * card. At the old 96px thumbnail the full card artwork collapsed into an
- * unreadable square; the banner keeps the declared cover ratio and shows the
- * artwork at a recognisable size. */
-.recent-item {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
+/* Recently published: flip cards. The front shows only the cover with a blurred footer
+ * (name + version/age); hover, keyboard focus or a tap rotates the card to the full detail. */
+.recent-list > .recent-card {
+  min-width: 0;
+  margin: 0; /* beats VitePress's `.vp-doc li + li` spacing */
+}
+
+.recent-card {
+  aspect-ratio: var(--alisio-cover-ratio);
+  margin: 0;
+  list-style: none;
+  perspective: 1200px;
+}
+
+.recent-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.recent-card:hover .recent-card__inner,
+.recent-card:focus-within .recent-card__inner,
+.recent-card.is-flipped .recent-card__inner {
+  transform: rotateY(180deg);
+}
+
+.recent-card__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   border: 1px solid var(--alisio-card-border);
   border-radius: var(--alisio-card-radius);
-  background: var(--vp-c-bg-soft);
-  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.recent-item__cover {
+.recent-card__front {
   display: block;
-  flex: none;
-  align-self: stretch;
+  background: var(--vp-c-bg-soft);
+  cursor: pointer;
 }
 
-.recent-item__cover img {
+.recent-card__front img {
+  display: block;
   width: 100%;
-  aspect-ratio: var(--alisio-cover-ratio);
+  height: 100%;
   object-fit: cover;
 }
 
-.recent-item__body {
-  min-width: 0;
-  padding: 14px 16px 16px;
+.recent-card__footer {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  color: #fff;
+  background: rgba(10, 12, 18, 0.45);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.recent-item__title {
-  margin: 0;
+.recent-card__name,
+.recent-card__meta,
+.recent-card__title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.recent-card__name {
   font-size: 16px;
+  font-weight: 600;
   line-height: 1.3;
 }
 
-.recent-item__title a {
+.recent-card__meta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.recent-card__meta .plugin-time,
+.recent-card__meta time {
+  color: inherit;
+}
+
+.recent-card__back {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--vp-c-bg-soft);
+  transform: rotateY(180deg);
+}
+
+/* `.recent-card` prefixes beat VitePress's `.vp-doc h3` / `.vp-doc p` margins and line heights. */
+.recent-card .recent-card__title {
+  position: static; /* lets the stretched link cover the whole face */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 16px;
+  line-height: 1.3;
+  letter-spacing: normal;
+}
+
+.recent-card__title a {
   color: var(--vp-c-text-1);
   text-decoration: none;
 }
 
-.recent-item__title a:hover {
+.recent-card__title a:hover {
   color: var(--vp-c-brand-1);
 }
 
-.recent-item__description {
-  margin: 4px 0 0;
+/* Stretched link: the whole back face is one tap target for the detail page. */
+.recent-card__title a::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.recent-card .recent-card__description {
+  display: -webkit-box;
+  flex: 0 1 auto;
+  min-height: 2.9em; /* never collapse to zero inside the fixed-height face */
+  margin: 0;
+  overflow: hidden;
   font-size: 13px;
-  color: var(--vp-c-text-2);
   line-height: 1.45;
+  color: var(--vp-c-text-2);
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* One row of badges at most; whatever does not fit is clipped rather than wrapping. */
+.recent-card__back .plugin-badges {
+  flex-wrap: nowrap;
+  margin-top: auto;
+  overflow: hidden;
+}
+
+.recent-card__back .plugin-badge {
+  flex: none;
+}
+
+.recent-card__back .plugin-meta {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+/* Reduced motion: swap faces with a fade instead of rotating. */
+@media (prefers-reduced-motion: reduce) {
+  .recent-card__inner {
+    transform-style: flat;
+    transition: none;
+  }
+
+  .recent-card:hover .recent-card__inner,
+  .recent-card:focus-within .recent-card__inner,
+  .recent-card.is-flipped .recent-card__inner {
+    transform: none;
+  }
+
+  .recent-card__face {
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+    transition: opacity 0.2s;
+  }
+
+  .recent-card__back {
+    transform: none;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .recent-card:hover .recent-card__back,
+  .recent-card:focus-within .recent-card__back,
+  .recent-card.is-flipped .recent-card__back {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 /* Install command widget. */
