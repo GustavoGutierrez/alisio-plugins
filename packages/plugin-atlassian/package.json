@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-atlassian",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read-first Jira and Confluence Cloud tools for Alisio with strict environment configuration, opt-in writes, and untrusted-content framing.",
   "keywords": [
     "alisio-plugin",

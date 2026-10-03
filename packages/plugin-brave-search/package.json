@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-brave-search",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback.",
   "keywords": [
     "alisio-plugin",

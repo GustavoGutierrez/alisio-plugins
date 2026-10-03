@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-openrouter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenRouter OpenAI-compatible model provider for Alisio.",
   "keywords": [
     "alisio-plugin",
