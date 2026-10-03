@@ -48,6 +48,12 @@ reference for this repository. The canonical upstream contract lives in the
 
 ## How plugins work
 
+![Plugin architecture: trusted sources, contract validation, the api boundary, capability registries and the effect gate](./assets/plugin-architecture.svg)
+
+`plugin-architecture.svg` is the static view: which sources may load a plugin, what the host
+validates before any plugin code runs, where the `api` boundary between host and plugin sits, and how
+a model tool call reaches the effect gate that decides whether it runs.
+
 ![Plugin runtime lifecycle: resolution, validation, activation, registration, rollback and teardown](./assets/plugin-runtime-lifecycle.svg)
 
 `plugin-runtime-lifecycle.svg` follows one plugin from a trusted source through contract validation

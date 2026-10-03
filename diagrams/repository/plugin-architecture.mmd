@@ -1,0 +1,51 @@
+flowchart TD
+  %% 1. Which sources may load code
+  subgraph SRC["1 - Trusted sources"]
+    direction LR
+    S1["--plugin path or package"]
+    S2["global config plugins array"]
+    S3["config-home plugins directory"]
+    S4["trusted project plugins"]
+  end
+
+  L1["Loader: resolve the file or directory entry,<br/>or the npm package upward from node_modules,<br/>then the global roots.<br/>The alisio-plugin keyword is required."]
+  L2{"Contract valid?<br/>id regex, strict semver,<br/>apiVersion 1, setup is a function"}
+
+  S1 --> L1
+  S2 --> L1
+  S3 --> L1
+  S4 --> L1
+  L1 --> L2
+  L2 -->|"no"| R1["Plugin rejected:<br/>duplicate id, bad version,<br/>unknown category, missing setup"]
+  L2 -->|"yes"| A1["Activation order:<br/>built-ins first, then external plugins.<br/>--read-only skips external plugins."]
+
+  A1 --> SETUP["Host calls setup on the plugin default export,<br/>once per activation"]
+
+  %% 2. What a plugin package contains
+  subgraph PKG["Plugin package: ESM shipped from dist, Node 22.16 or newer, @alisio/sdk as peer and dev"]
+    direction TB
+    PD["default export = definePlugin with<br/>id, version, apiVersion and setup"]
+    PT["Tool body: validate input, do the work,<br/>return textResult"]
+    PR["Packaged resources:<br/>skills, prompts, .agents"]
+  end
+
+  PD -.->|"supplies setup"| SETUP
+
+  SETUP -->|"registers through the api namespaces"| REG
+  SETUP -->|"throws"| TEARDOWN
+
+  %% 3. Host side
+  subgraph HOST["Alisio host: same process, full user privileges, no sandbox"]
+    direction TB
+    REG["Capability registries, scoped per plugin id:<br/>tools, commands, events, context, resources,<br/>state, storage, compaction, session hooks,<br/>model, models, providers, sessions, ui, extensions"]
+    NS["External plugins are namespaced:<br/>tools become p_hash_name,<br/>commands become plugin.id:name,<br/>internal effect is downgraded to external"]
+    GATE["Run dispatch: the model calls a tool,<br/>then the effect gate applies.<br/>read is always allowed;<br/>write, process and external are gated by policy."]
+    CHILD["Child sessions: separate persisted conversation,<br/>fresh context, permissions only narrow"]
+    TEARDOWN["Teardown: roll back every registration<br/>and call dispose"]
+  end
+
+  REG --> NS
+  REG --> GATE
+  REG --> CHILD
+  GATE --> LIVE["Plugin is live:<br/>its tools, commands and context serve the run"]
+  LIVE -->|"Alisio closes or reloads"| TEARDOWN

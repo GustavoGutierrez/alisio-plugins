@@ -48,6 +48,12 @@ autoría completa para este repositorio. El contrato canónico upstream está en
 
 ## Cómo funcionan los plugins
 
+![Arquitectura de un plugin: fuentes confiables, validación del contrato, la frontera api, los registros de capacidades y el effect gate](./assets/plugin-architecture.svg)
+
+`plugin-architecture.svg` es la vista estática: qué fuentes pueden cargar un plugin, qué valida el
+host antes de ejecutar código de plugin, dónde queda la frontera `api` entre host y plugin, y cómo
+la llamada a una herramienta del modelo llega al effect gate que decide si se ejecuta.
+
 ![Ciclo de vida de un plugin en tiempo de ejecución: resolución, validación, activación, registro, rollback y desmontaje](./assets/plugin-runtime-lifecycle.svg)
 
 `plugin-runtime-lifecycle.svg` sigue a un plugin desde una fuente confiable, pasando por la

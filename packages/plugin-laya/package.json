@@ -1,0 +1,52 @@
+{
+  "name": "@alisio/plugin-laya",
+  "version": "0.1.0",
+  "description": "Local Laya decision provider for Alisio: fast select, boolean and ordinal decisions from a managed, isolated Laya server, with explicit-consent setup and no data leaving the machine.",
+  "keywords": [
+    "alisio-plugin",
+    "laya",
+    "decisions",
+    "decision-intelligence",
+    "local"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-laya"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-laya#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.3.0 <0.7.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.3.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}
