@@ -69,7 +69,7 @@ export function readJson(path) {
 }
 
 /**
- * The eleven Alisio categories, read from the shared committed list so the
+ * The twelve Alisio categories, read from the shared committed list so the
  * scanner and the site UI cannot drift apart.
  */
 const CATEGORIES_PATH = join(REPO_ROOT, "site", ".vitepress", "data", "categories.json");
@@ -112,7 +112,7 @@ export function githubRepoParts(repositoryUrl) {
   return match ? { owner: match[1], repo: match[2] } : null;
 }
 
-/** The eleven known categories present in `values`, preserving order. */
+/** The twelve known categories present in `values`, preserving order. */
 export function knownCategories(values) {
   if (!Array.isArray(values)) return [];
   return PLUGIN_CATEGORIES.filter((category) => values.includes(category));

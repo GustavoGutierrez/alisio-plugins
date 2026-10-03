@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Laya Decisions</title>
+  <desc id="desc">A local chip emitting three decision paths: a select fork, a yes/no toggle and an ordinal scale, representing fast local decisions without an LLM call.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#14203a"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <g transform="translate(300 190)">
+    <rect x="0" y="60" width="300" height="300" rx="46" fill="url(#chip)"/>
+    <rect x="60" y="120" width="180" height="180" rx="22" fill="#0b1020" opacity="0.85"/>
+    <g stroke="#f59e0b" stroke-width="10" stroke-linecap="round">
+      <path d="M40 130 H0 M40 210 H0 M40 290 H0"/>
+      <path d="M260 130 H300 M260 210 H300 M260 290 H300"/>
+    </g>
+    <circle cx="150" cy="210" r="34" fill="#fde68a"/>
+  </g>
+  <g transform="translate(700 190)" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 210 H120 M120 210 L220 90 H470 M120 210 H470 M120 210 L220 330 H470"/>
+    <circle cx="500" cy="90" r="26" fill="#22d3ee" stroke="none"/>
+    <circle cx="500" cy="210" r="26" fill="#34d399" stroke="none"/>
+    <circle cx="500" cy="330" r="26" fill="#a78bfa" stroke="none"/>
+  </g>
+  <g transform="translate(1260 175)">
+    <rect x="0" y="0" width="80" height="30" rx="15" fill="#22d3ee"/>
+    <rect x="0" y="120" width="80" height="30" rx="15" fill="#34d399"/>
+    <rect x="0" y="240" width="80" height="30" rx="15" fill="#a78bfa"/>
+  </g>
+  <text x="800" y="730" fill="#f8fafc" font-family="sans-serif" font-size="84" font-weight="700" text-anchor="middle">LAYA DECISIONS</text>
+  <text x="800" y="792" fill="#94a3b8" font-family="sans-serif" font-size="30" text-anchor="middle">fast local select, boolean and ordinal decisions</text>
+</svg>

@@ -228,6 +228,11 @@
   color: var(--alisio-category-mcp-fg);
 }
 
+.plugin-badge--decisions {
+  background: var(--alisio-category-decisions-bg);
+  color: var(--alisio-category-decisions-fg);
+}
+
 .plugin-badge--storage {
   background: var(--alisio-category-storage-bg);
   color: var(--alisio-category-storage-fg);

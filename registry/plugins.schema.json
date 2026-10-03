@@ -64,7 +64,8 @@
               "analytics",
               "mcp",
               "storage",
-              "ui"
+              "ui",
+              "decisions"
             ]
           }
         },

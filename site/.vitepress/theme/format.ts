@@ -12,6 +12,7 @@ const CATEGORY_LABELS: Record<string, { en: string; es: string }> = {
   mcp: { en: "MCP", es: "MCP" },
   storage: { en: "Storage", es: "Almacenamiento" },
   ui: { en: "UI", es: "Interfaz" },
+  decisions: { en: "Decisions", es: "Decisiones" },
 };
 
 /** Human label for a category id, falling back to the id itself. */

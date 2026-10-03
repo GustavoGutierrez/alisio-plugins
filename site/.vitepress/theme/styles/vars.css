@@ -111,7 +111,7 @@
     rgba(2, 14, 28, 0.46) 100%
   );
 
-  /* Category badge colours (11 catalog categories + source). Each pair keeps
+  /* Category badge colours (12 catalog categories + source). Each pair keeps
    * its label at or above 4.5:1; values come from the Alisio scale, with the
    * functional colours reserved for the semantic categories. */
   --alisio-category-model-provider-fg: #06345f;
@@ -136,6 +136,8 @@
   --alisio-category-storage-bg: #075a92;
   --alisio-category-ui-fg: #06345f;
   --alisio-category-ui-bg: #effcff;
+  --alisio-category-decisions-fg: #03263f;
+  --alisio-category-decisions-bg: #b6f0fc;
 
   /* Catalog tokens. */
   --alisio-card-radius: 12px;
@@ -251,6 +253,8 @@
   --alisio-category-storage-bg: #075a92;
   --alisio-category-ui-fg: #031c36;
   --alisio-category-ui-bg: #d8f7fe;
+  --alisio-category-decisions-fg: #b6f0fc;
+  --alisio-category-decisions-bg: #0a456e;
 
   /* VitePress mapping: dark. */
   --vp-c-brand-1: var(--alisio-link);

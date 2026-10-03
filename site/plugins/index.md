@@ -12,6 +12,7 @@ Install any plugin with `alisio install npm:<package>`. See the [catalog home](/
 - [Context7 Docs](./context7) — Resolve library names and fetch third-party documentation from the Context7 hosted service (`tools`)
 - [DeepSeek](./deepseek) — Dedicated DeepSeek Chat Completions and Responses provider (`model-provider`)
 - [Google Chat](./google-chat) — Google Chat tools with a send-only webhook mode and a full OAuth user mode, read-first defaults, and untrusted-content framing (`tools`)
+- [Laya](./laya) — Local Laya decision provider: fast select, boolean and ordinal decisions from a managed, isolated server with consent-based setup (`decisions`)
 - [Literature Research](./literature-research) — Safe scholarly metadata and abstract research (`search`, `tools`)
 - [OpenAI](./openai) — Official OpenAI Responses API provider (`model-provider`)
 - [OpenCode Console (Zen)](./opencode) — OpenCode Console gateway for Responses, Chat, and Messages models (`model-provider`)

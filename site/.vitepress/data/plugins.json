@@ -182,6 +182,42 @@
       "source": "local"
     },
     {
+      "name": "@alisio/plugin-laya",
+      "slug": "laya",
+      "title": "Laya",
+      "pluginId": "laya",
+      "description": "Local Laya decision provider: fast select, boolean and ordinal decisions from a managed, isolated server with consent-based setup",
+      "version": "0.1.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-laya#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-laya",
+      "categories": [
+        "decisions"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "laya",
+        "decisions",
+        "decision-intelligence",
+        "local"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 0,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-laya",
+      "cover": "/covers/laya.svg",
+      "readme": "A local [Laya](https://github.com/NandhaKishorM/laya) decision provider for\n[Alisio](https://github.com/GustavoGutierrez/alisio). Features that ask Alisio for a\n`select`, `boolean` or `ordinal` decision get an answer from a small model running on your\nmachine, without an LLM generation call and without sending the data anywhere.\n\nThis is an independent plugin. It is not affiliated with the Laya project. **Laya is optional:\nAlisio works without it**, and every feature keeps its own fallback when no provider answers.\n\n## Requirements\n\n- Alisio core `>=0.3.0` (the plugin only registers its commands on older cores).\n- Python 3.10 or newer (64-bit) with the `venv` module (on Debian or Ubuntu: `apt install python3-venv`).\n- Disk: about 1.7 GB for the CPU install with the default `multilingual` checkpoint, about 6 GB with\n  CUDA wheels.\n- Memory: peak resident memory of the server measured at about 2.3 GB with `multilingual` and about 2.8 GB\n  with `english` (CPU, one checkpoint loaded); plan for 3 GB free.\n- Network only during `/laya:setup`. Afterwards the server runs offline.\n\n## Install\n\n```bash\nalisio install npm:@alisio/plugin-laya\n```\n\nThen, inside Alisio:\n\n1. `/laya:setup` — shows exactly what will be downloaded and where from, and asks for explicit\n   consent before anything is fetched or written. It starts a background job and returns at once.\n2. `/laya:status` — follow progress, then check the provider. `/laya:cancel` aborts a running setup.\n3. Activate the provider in your Alisio configuration: `decisions.provider = \"laya\"`.\n\nInstalling the package alone downloads nothing and starts nothing.\n\n## Commands\n\n| Command | What it does |\n| --- | --- |\n| `/laya:setup [--device auto\\|cpu\\|cuda\\|mps] [--model multilingual\\|english\\|typed-decisions\\|auto] [--yes] [--repair] [--uninstall]` | Installs (or repairs, or removes) the managed runtime. Without an interactive UI it refuses unless `--yes` is passed. |\n| `/laya:status` | Host support, setup job, installed pins, effective config with its source, server state, restarts, last error, observed latency. |\n| `/laya:cancel` | Cancels a running setup job; the previous runtime stays untouched. |\n\n## Configuration\n\n| Key | Values | Default |\n| --- | --- | --- |\n| `device` | `auto`, `cpu`, `cuda`, `mps` | `auto` |\n| `model` | `multilingual`, `english`, `typed-decisions`, `auto` | `multilingual` |\n| `preload` | `true`, `false` | `true` |\n\nPrecedence, highest first: `ALISIO_LAYA_DEVICE` / `ALISIO_LAYA_MODEL` / `ALISIO_LAYA_PRELOAD`\nenvironment variables, the plugin options in your Alisio configuration\n(`pluginOverrides.laya.options`, user level only), `config.json` in the plugin config directory\n(written by `/laya:setup --device ... --model ...`), then the defaults. `ALISIO_LAYA_PYTHON` selects\nthe interpreter used by setup; `ALISIO_LAYA_HOME` moves the runtime directory.\n\n`preload: true` starts the server and warms the model when Alisio activates the provider, so the first\ndecisions are not lost to a cold start. Set it to `false` to save memory; the server then starts on the\nfirst decision, which falls back while it warms up.\n\n## How it behaves\n\n- The server is bound to `127.0.0.1` on a free port, protected by a random per-start token, and runs\n  with a minimal environment. It stops when the provider is deactivated and when Alisio closes.\n- Cold start takes seconds. Until the model is warm, decisions fall back to the feature's default\n  immediately instead of waiting.\n- Quality is modest and uneven. On 375 labelled dashboard decisions (half Spanish), `multilingual` was right\n  62 % of the time: about 90 % for the dashboard purpose, but close to chance for yes/no toggles and for\n  choosing a column. Treat answers as hints that the feature can override, not as facts.\n- Laya's confidence is **not calibrated**: treat it as a weak signal and do not make sensitive\n  decisions depend on it. Alisio's confidence threshold is a heuristic filter.\n- On a slow CPU, requests with many decisions can exceed Alisio's 1500 ms decision timeout; use\n  smaller packs or raise `decisions.timeoutMs`. Measured on a busy CPU with 4 threads: about 0.3 s for one\n  decision and about 2 s (p95 3 s) for a request of seven with `multilingual`; `english` is about three times slower.\n\n## Privacy and security\n\n- Decisions never leave your machine. After setup there is no network use beyond loopback.\n- Setup is the only network phase. It contacts PyPI, PyPI's file host, the PyTorch wheel index (CPU\n  installs) and Hugging Face, and pins the Laya version, the model revision and the SHA-256 of every\n  model file.\n- A subprocess is not a sandbox: the server runs with your user's privileges. The controls reduce\n  exposure; they do not contain a compromised dependency.\n- Nothing is written to your workspace. Files live only in the plugin's own config, state and cache\n  directories. Secrets are never stored by this plugin.\n\n## Troubleshooting\n\n- `/laya:status` says the runtime is outdated: run `/laya:setup --repair`.\n- Setup fails at \"creating environment\": install the Python `venv` module (see Requirements).\n- The server keeps failing: `/laya:status` shows the last error; `/laya:setup --repair` rebuilds it.\n- Remove everything with `/laya:setup --uninstall`.\n\n## License\n\nMIT",
+      "downloadsLastMonth": null,
+      "featured": false,
+      "source": "local"
+    },
+    {
       "name": "@alisio/plugin-literature-research",
       "slug": "literature-research",
       "title": "Literature Research",
