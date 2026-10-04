@@ -19,5 +19,6 @@ Install any plugin with `alisio install npm:<package>`. See the [catalog home](/
 - [OpenCode Go](./opencode-go) — OpenCode Go multi-protocol model gateway (`model-provider`)
 - [OpenRouter](./openrouter) — OpenRouter OpenAI-compatible provider (`model-provider`)
 - [Telemetry](./telemetry) — Privacy-first local agent observability with a SQLite source of truth, bounded read-only query tools, and opt-in OpenTelemetry-aligned OTLP export (`analytics`)
+- [Thesis Studio](./thesis) — Plans, researches, drafts and typesets university theses with verified evidence and deterministic quality gates. (`methodology-harness`)
 - [Wayfinder](./wayfinder) — Coordinates a durable specification-driven development workflow with bounded child sessions. (`methodology-harness`)
 - [Web Search](./web-search) — Provider-neutral external web search and opt-in fetch tools (`search`, `tools`)

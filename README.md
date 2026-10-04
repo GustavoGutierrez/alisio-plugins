@@ -83,6 +83,7 @@ The full capability surface, the hard limits and the sharpest failure modes live
 | Package | Category | Purpose |
 | --- | --- | --- |
 | [`@alisio/plugin-wayfinder`](packages/wayfinder#readme) | `methodology-harness` | Coordinates a durable specification-driven development workflow with bounded child sessions. |
+| [`@alisio/plugin-thesis`](packages/plugin-thesis#readme) | `methodology-harness` | Plans, researches, drafts and typesets university theses with verified evidence and deterministic quality gates. |
 
 `methodology-harness` is a strict, host-validated catalog category. It requires an Alisio runtime
 that carries `@alisio/core` `0.1.0-alpha.15` or newer; a plugin cannot declare that dependency itself,

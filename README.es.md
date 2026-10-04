@@ -84,6 +84,7 @@ La superficie completa de capacidades, los límites duros y los errores más fre
 | Paquete | Categoría | Propósito |
 | --- | --- | --- |
 | [`@alisio/plugin-wayfinder`](packages/wayfinder#readme) | `methodology-harness` | Coordina un flujo de desarrollo guiado por especificaciones y duradero con sesiones hijas acotadas. |
+| [`@alisio/plugin-thesis`](packages/plugin-thesis#readme) | `methodology-harness` | Planifica, investiga, redacta y compone tesis universitarias con evidencia verificada y compuertas de calidad deterministas. |
 
 `methodology-harness` es una categoría de catálogo estricta que valida el host. Requiere un runtime de
 Alisio que incluya `@alisio/core` `0.1.0-alpha.15` o posterior; un plugin no puede declarar esa
