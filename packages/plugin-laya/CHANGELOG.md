@@ -1,5 +1,11 @@
 # @alisio/plugin-laya
 
+## 0.1.2
+
+### Patch Changes
+
+- Recommend the Yes pre-selection when asking the host to activate Laya (core 0.4.3 or newer; older cores ignore it) and correct the documentation with measured disk sizes, activation flow and troubleshooting.
+
 ## 0.1.1
 
 ### Patch Changes
