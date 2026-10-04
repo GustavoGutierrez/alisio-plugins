@@ -442,7 +442,9 @@ function frontmatter(fields) {
 
 /** Markdown for a single plugin detail page. */
 export function renderDetailPage(entry, locale = "en") {
-  const readme = entry.readme ? stripLeadingHeading(entry.readme) : "";
+  // A package may ship a Spanish README (`readmeEs`); the Spanish page prefers it.
+  const source = locale === "es" && entry.readmeEs ? entry.readmeEs : entry.readme;
+  const readme = source ? stripLeadingHeading(source) : "";
   const fallback =
     locale === "es"
       ? `## README\n\nEste plugin no publica un README. Consulta la [p\u00e1gina del paquete en npm](${entry.npmUrl}).`
@@ -480,8 +482,8 @@ function oneLine(value) {
 }
 
 /** Read a local package's README. */
-export function readPackageReadme(dir) {
-  const path = join(dir, "README.md");
+export function readPackageReadme(dir, file = "README.md") {
+  const path = join(dir, file);
   return existsSync(path) ? readFileSync(path, "utf8") : null;
 }
 

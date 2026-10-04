@@ -189,6 +189,13 @@ async function checkLocalSync(entries, registryByPackage) {
     });
     if (hash(expectedReadme) !== hash(cached.readme ?? null))
       problem(CACHE_PATH, 0, `${name}: cached README is stale; run \`pnpm docs:scan\``);
+    const expectedReadmeEs = prepareReadme(readPackageReadme(dir, "README.es.md"), {
+      repository: expected.repository,
+      directory,
+      npmUrl: `https://www.npmjs.com/package/${name}`,
+    });
+    if (hash(expectedReadmeEs) !== hash(cached.readmeEs ?? null))
+      problem(CACHE_PATH, 0, `${name}: cached Spanish README is stale; run \`pnpm docs:scan\``);
   }
 }
 

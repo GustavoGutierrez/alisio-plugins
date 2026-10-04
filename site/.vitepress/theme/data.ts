@@ -24,6 +24,7 @@ export interface PluginEntry {
   installName: string;
   cover: string;
   readme: string | null;
+  readmeEs?: string | null;
   downloadsLastMonth: number | null;
   featured: boolean;
   source: "local" | "third-party";

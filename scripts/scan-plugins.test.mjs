@@ -220,6 +220,20 @@ test("renderDetailPage emits localized frontmatter and the component tag", () =>
   assert.ok(es.includes("no publica un README"));
 });
 
+test("renderDetailPage prefers readmeEs on the Spanish page only", () => {
+  const entry = {
+    slug: "thesis",
+    title: "Thesis",
+    description: "A plugin",
+    npmUrl: "https://www.npmjs.com/package/@alisio/plugin-thesis",
+    readme: "## Usage\n\nHello",
+    readmeEs: "## Uso\n\nHola",
+  };
+  assert.ok(renderDetailPage(entry, "es").includes("## Uso"));
+  assert.ok(!renderDetailPage(entry, "es").includes("## Usage"));
+  assert.ok(renderDetailPage(entry, "en").includes("## Usage"));
+});
+
 test("renderIndexPage lists plugins A-Z with relative links", () => {
   const entries = [
     { slug: "zeta", title: "Zeta", description: "Z", categories: ["tools"] },
@@ -359,7 +373,9 @@ test("the committed covers use the documented 16:9 viewBox", () => {
   for (const dir of dirs) {
     const cover = resolveCoverFile(dir, {});
     assert.ok(cover, `no cover for ${dir}`);
-    assert.ok(cover.endsWith("cover.svg"));
+    // A raster cover (webp) is allowed; only SVG covers carry the documented viewBox.
+    assert.ok(/cover\.(svg|webp)$/.test(cover), `unexpected cover ${cover}`);
+    if (!cover.endsWith(".svg")) continue;
     const svg = readFileSync(cover, "utf8").slice(0, 400);
     assert.ok(svg.includes('viewBox="0 0 1600 900"'), `wrong viewBox in ${cover}`);
     assert.ok(svg.includes('width="1600"') && svg.includes('height="900"'));

@@ -237,6 +237,12 @@ export function fromCache(cached, registryEntry) {
   };
 }
 
+/** `{ readmeEs }` when the package ships a README.es.md, otherwise nothing. */
+function optionalSpanishReadme(dir, options) {
+  const readmeEs = prepareReadme(readPackageReadme(dir, "README.es.md"), options);
+  return readmeEs ? { readmeEs } : {};
+}
+
 /** Build the entry for one local package. Only optional npm metadata needs the network. */
 async function localEntry(dir, manifest, previousByName, registryEntry, options) {
   const name = manifest.name;
@@ -300,6 +306,7 @@ async function localEntry(dir, manifest, previousByName, registryEntry, options)
     installName: name,
     cover,
     readme: prepareReadme(readPackageReadme(dir), { repository, directory, npmUrl }),
+    ...optionalSpanishReadme(dir, { repository, directory, npmUrl }),
     downloadsLastMonth,
     featured: registryEntry?.featured ?? false,
     source: "local",
