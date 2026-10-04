@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.5555/pre.2022.003",
+    "type": "posted-content",
+    "title": ["Language Models for Citation Checking"],
+    "author": [{ "given": "Ivan", "family": "Petrov" }],
+    "issued": { "date-parts": [[2022]] }
+  }
+}

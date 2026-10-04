@@ -1,0 +1,98 @@
+/*
+ * Thesis layout, structure only (CSS Paged Media for Paged.js). Every value that depends on a
+ * presentation profile (paper, margins, fonts, headings, captions, page numbers) is generated
+ * from the profile by src/render/html/css.ts and follows this file in the document.
+ */
+
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; overflow-wrap: break-word; }
+a { color: #0b4f8a; }
+a.cite-link, a.xref { color: inherit; text-decoration: none; }
+.unresolved { color: #b00020; }
+.math-error { color: #b00020; }
+
+/* Page areas: cover (no folio), front matter, body (references and annexes included). */
+.cover { page: cover; break-after: page; }
+.cover-centered { text-align: center; text-align-last: center; }
+.cover-left { text-align: left; text-align-last: left; }
+.cv-group { margin: 0; }
+.cv-gap { margin-top: 3cm; }
+.cover p { margin: 0 0 0.6em; text-indent: 0; }
+.cv-institution { font-weight: bold; font-size: 1.15em; }
+.cv-title { text-align: inherit; text-align-last: inherit; font-size: 1.7em; font-weight: bold; margin: 0 0 0.6em; line-height: 1.25; text-indent: 0; }
+.cv-subtitle { font-size: 1.2em; }
+.cv-author { font-weight: bold; font-size: 1.1em; }
+.front { page: front; }
+.body { page: body; break-before: page; }
+.front-part { break-before: page; }
+.front-part p, .references p { text-indent: 0; }
+
+/* Headings keep the profile's sizes; numbers are static (computed by the emitter). */
+h1, h2, h3, h4 { break-after: avoid; margin-left: 0; margin-right: 0; text-indent: 0; }
+.hnum { margin-right: 0.6em; }
+.runin-p { text-indent: 0; }
+.runin { font-weight: bold; margin-right: 0.3em; }
+
+/* Floats, captions and tables. */
+figure.float { margin-left: 0; margin-right: 0; break-inside: avoid; text-align: center; text-align-last: center; text-indent: 0; }
+figure.float img { max-width: 100%; height: auto; }
+figcaption.cap { text-align: center; text-align-last: center; font-size: 0.9em; line-height: 1.3; margin: 0; }
+figure.cap-top figcaption.cap, figure.cap-bottom figcaption.cap { text-indent: 0; }
+figcaption.cap-bold .cap-label { font-weight: bold; }
+figcaption.cap-italic .cap-label { font-style: italic; }
+.cap-source { white-space: normal; }
+.source { text-align: left; text-align-last: left; font-size: 0.9em; margin-top: 0.4em; text-indent: 0; }
+.float-body { margin: 0.5em 0; }
+.table-float table, .plain-table table { margin: 0 auto; border-collapse: collapse; font-size: 0.9em; line-height: 1.3; text-indent: 0; border-top: 0.8pt solid currentColor; border-bottom: 0.8pt solid currentColor; }
+table thead th { border-bottom: 0.5pt solid currentColor; font-weight: bold; }
+table th, table td { padding: 4pt 6pt; text-align: left; text-align-last: left; vertical-align: top; }
+table .al-center { text-align: center; text-align-last: center; }
+table .al-right { text-align: right; text-align-last: right; }
+.plain-table { margin: 0.8em 0; }
+
+/* Equations: formulas are typeset on the server with KaTeX. */
+.eq { margin: 0.9em 0; text-indent: 0; text-align: center; text-align-last: center; }
+.eq.numbered { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 1em; }
+.eq.numbered .eq-body { text-align: center; }
+.eq .katex-display { margin: 0; }
+.katex { font-size: 1.05em; text-indent: 0; }
+
+/* Diagrams: Mermaid renders the hidden source into the output container. */
+.diagram { margin: 0 auto; }
+.diagram svg { width: 100%; height: auto; max-width: none !important; }
+
+pre { background: #f5f5f5; padding: 8pt; border-radius: 2pt; font-size: 0.85em; white-space: pre-wrap; text-indent: 0; break-inside: avoid; }
+blockquote { margin: 0 0 0.9em 1cm; }
+blockquote p { text-indent: 0; }
+ul, ol { margin: 0 0 0.9em; padding-left: 1.5em; }
+li > p { text-indent: 0; margin: 0; }
+.keywords { margin-top: 0.6em; }
+
+/* Footnotes (Paged.js float: footnote). */
+.fn { float: footnote; text-indent: 0; text-align: left; }
+.fn::footnote-call { content: counter(footnote); font-size: 70%; line-height: 0; vertical-align: super; }
+.fn::footnote-marker { content: counter(footnote) ". "; }
+/* The runtime numbers calls and notes (data-fn) after pagination. */
+[data-footnote-call][data-fn]::after { content: attr(data-fn) !important; }
+[data-footnote-marker][data-fn]::marker { content: attr(data-fn) ". " !important; }
+
+/* Table of contents and lists: leaders and page numbers come from target-counter. */
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-list li { margin: 0 0 0.35em; text-indent: 0; }
+.toc-list a { display: flex; align-items: baseline; color: inherit; text-decoration: none; }
+.toc-list a::after { flex: none; margin-left: 0.3em; }
+.toc-dots { flex: 1 1 1em; min-width: 1em; margin: 0 0.2em; border-bottom: 1.2pt dotted currentColor; transform: translateY(-0.2em); }
+.toc-text { flex: 0 1 auto; }
+.toc-num { margin-right: 0.6em; }
+.toc-page-label { text-align: right; text-align-last: right; font-weight: bold; text-indent: 0; margin: 0; }
+.toc-l2 { padding-left: 1.4em; }
+.toc-l3 { padding-left: 2.8em; }
+.toc-l4 { padding-left: 4.2em; }
+
+/* References. */
+.bibliography { list-style: none; padding: 0; margin: 0; }
+.bibliography .ref { margin: 0 0 1em; padding-left: 2em; text-indent: -2em; text-align: left; text-align-last: left; overflow-wrap: anywhere; }
+.bibliography.numeric .ref-label { display: inline-block; min-width: 2.4em; }
+
+/* Paged.js marks every page; the running header is hidden on the page where a chapter starts. */
+.pagedjs_page[data-chapter-start] .pagedjs_margin-top-right { visibility: hidden; }

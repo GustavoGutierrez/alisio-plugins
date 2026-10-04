@@ -1,0 +1,61 @@
+# Ley 30 de 1992 — public higher education service (university autonomy).
+# Effect on the resolver (spec §11.3): national law sets no thesis format; institution,
+# faculty and program rules govern presentation, citation style and degree requirements.
+rules:
+  - ruleId: CO.LEY30.1992.AUTONOMY.28
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-30-1992, version: "1992" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: institutional_authority
+      values:
+        scope: [statutes, academic_programs, degree_requirements]
+        effect: institution_rules_govern_thesis_requirements
+        quote: "reconoce a las universidades el derecho a darse y modificar sus estatutos, … crear, organizar y desarrollar sus programas académicos, … otorgar los títulos correspondientes"
+    source:
+      reference: "Ley 30 de 1992, art. 28"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=253"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY30.1992.AUTONOMY.29
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-30-1992, version: "1992" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: institutional_authority
+      values:
+        scope: [academic_programs, formative_activities, student_regime]
+        effect: institution_rules_govern_thesis_requirements
+        appliesTo: [instituciones_universitarias, escuelas_tecnologicas, instituciones_tecnicas_profesionales]
+        quote: "c. Crear, desarrollar sus programas académicos, lo mismo que expedir los correspondientes títulos; d. Definir y organizar sus labores formativas, académicas…; f. Adoptar el régimen de alumnos y docentes"
+    source:
+      reference: "Ley 30 de 1992, art. 29 lit. c, d, f"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=253"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY30.1992.STUDENT_REGULATIONS.109
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-30-1992, version: "1992" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: institutional_authority
+      values:
+        scope: [student_regulations]
+        effect: ask_for_reglamento_estudiantil_and_program_thesis_guidelines
+        quote: "deberán tener un reglamento estudiantil que regule al menos … régimen disciplinario y demás aspectos académicos."
+    source:
+      reference: "Ley 30 de 1992, art. 109"
+      url: "http://www.secretariasenado.gov.co/senado/basedoc/ley_0030_1992.html"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

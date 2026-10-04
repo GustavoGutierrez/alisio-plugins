@@ -1,0 +1,13 @@
+{
+  "id": "https://openalex.org/W1001",
+  "doi": "https://doi.org/10.5555/sae.2021.014",
+  "display_name": "Automated Verification of Bibliographic References in Academic Writing",
+  "publication_year": 2021,
+  "type": "article",
+  "language": "en",
+  "authorships": [{ "author": { "display_name": "Ana Rojas" } }],
+  "primary_location": {
+    "source": { "display_name": "Journal of Scholarly Tools", "type": "journal" }
+  },
+  "is_retracted": false
+}

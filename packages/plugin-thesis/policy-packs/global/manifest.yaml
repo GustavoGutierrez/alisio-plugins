@@ -1,0 +1,54 @@
+# Global policy pack manifest. Manifest format: spec §11.1.1.
+packId: global
+scope: global
+version: "2026.10.04"
+lastChecked: "2026-10-04"
+files:
+  - academic-integrity.yaml
+  - evidence-quality.yaml
+  - academic-writing.yaml
+  - reporting-guidelines.yaml
+  - work-types.yaml
+  - objective-verbs.yaml
+defaults:
+  citationStyle: apa-7          # spec §11.3 fallback when no rule sets one; user confirms in round 2
+  presentationStandard: generic
+requirementKinds:               # closed vocabulary, documented in P0.6-results.md §5
+  - institutional_authority
+  - paper
+  - page_margins
+  - font
+  - line_spacing
+  - text_alignment
+  - pagination
+  - front_matter_order
+  - required_section
+  - heading_format
+  - caption_position
+  - citation_style
+  - reference_format
+  - length_limit
+  - ethics_trigger
+  - risk_classification
+  - consent_requirement
+  - data_protection
+  - quotation_rule
+  - attribution_rule
+  - integrity_rule
+  - ai_declaration
+  - source_quality
+  - evidence_minimum
+  - reporting_guideline
+  - objective_verbs
+  - official_domain_allowlist
+appliesWhenKeys:                # all keys must match (AND); a list value means any-of
+  - country
+  - language
+  - workType
+  - approach
+  - studyDesign                 # proposed brief field
+  - domain                      # brief.domain.primary (or any secondary)
+  - presentationStandard
+  - citationStyle
+  - ethicsTrigger               # questionnaire answer = yes
+  - aiUse                       # assisted when brief.aiUse.assisted is true

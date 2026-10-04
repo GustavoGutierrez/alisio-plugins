@@ -1,0 +1,4 @@
+packId: global
+scope: global
+version: "0.0.0-fixture"
+description: Synthetic global pack used only by resolver tests.

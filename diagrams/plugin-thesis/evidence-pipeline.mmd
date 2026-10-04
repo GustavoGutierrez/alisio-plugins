@@ -1,0 +1,11 @@
+%% Evidence verification pipeline: from search plan to citation checks.
+%% Sources live at diagrams/plugin-thesis/ and render to packages/plugin-thesis/assets/.
+flowchart TD
+    Plan["Search plan<br/>librarian child agent"] --> Sources["OpenAlex, Crossref, arXiv<br/>plus optional web tools"]
+    Sources --> Verify["Code verification<br/>DOI resolves, title similarity,<br/>retraction status, official domains"]
+    Verify --> Rejected[("Rejected<br/>evidence/rejected.jsonl")]
+    Verify --> Appraise["Appraisal<br/>evidence auditor child agent"]
+    Appraise --> Library[("Evidence library<br/>evidence/library.jsonl")]
+    Appraise --> Rejected
+    Library --> Keys["Citation keys and<br/>references.bib"]
+    Keys --> Cit{"CIT and CLM checks<br/>keys exist, evidence is citable,<br/>claims traced"}

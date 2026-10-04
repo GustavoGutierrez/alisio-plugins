@@ -1,0 +1,90 @@
+# Allowlist used by research/verify.ts (spec §8.4) to grant VERIFIED_PRIMARY.
+# Matching is host-suffix based and offline: a URL host matches an entry when it equals the
+# entry or ends with "." + entry. Reachability is NOT a verification criterion: on 2026-10-04
+# several hosts below (funcionpublica.gov.co, suin-juriscol.gov.co, sic.gov.co) served an
+# incomplete TLS chain and failed Node 22 fetch with UNABLE_TO_VERIFY_LEAF_SIGNATURE.
+rules:
+  - ruleId: CO.DOMAINS.OFFICIAL.PRIMARY.01
+    level: RECOMMENDATION
+    authority: { organization: alisio-plugin-thesis }
+    document: { id: CO-OFFICIAL-DOMAINS, version: "2026-10-04" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: official_domain_allowlist
+      values:
+        tier: primary
+        hostSuffixes:
+          - gov.co                      # Colombian State second-level domain (all public entities)
+        explicitHosts:                  # members of gov.co listed for traceability (reachable 2026-10-04)
+          - funcionpublica.gov.co       # Gestor Normativo (consolidated laws)
+          - suin-juriscol.gov.co        # Ministry of Justice consolidated legal information system
+          - secretariasenado.gov.co     # Senate consolidated legal base (HTTP only; HTTPS timed out)
+          - corteconstitucional.gov.co
+          - consejodeestado.gov.co
+          - cortesuprema.gov.co
+          - minciencias.gov.co
+          - mineducacion.gov.co
+          - minsalud.gov.co
+          - derechodeautor.gov.co
+          - sic.gov.co
+          - dane.gov.co
+          - datos.gov.co                # open data portal (datasets)
+          - dnp.gov.co
+          - banrep.gov.co
+          - invima.gov.co
+          - ins.gov.co
+          - ideam.gov.co
+          - igac.gov.co
+          - cna.gov.co
+          - icfes.gov.co
+        otherHosts:
+          - comunidadandina.org         # Andean Community: official source of Decisión 351
+        allowedTypes: [law, standard, report, dataset]
+    source:
+      reference: "MinTIC Resolución 2715 de 2011 (keeps .gov.co for State entities; the .gob.co transition was not carried out); MinTIC 2025 notice on the gov.co/mil.co/edu.co/org.co operator for public entities. Host list checked by HTTP request for this pack."
+      url: "https://normograma.crcom.gov.co/crc/compilacion/docs/resolucion_mintic_2715_2011.htm"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.DOMAINS.STANDARDS_BODY.01
+    level: RECOMMENDATION
+    authority: { organization: alisio-plugin-thesis }
+    document: { id: CO-OFFICIAL-DOMAINS, version: "2026-10-04" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: official_domain_allowlist
+      values:
+        tier: primary
+        explicitHosts: [icontec.org]    # national standards body; returned 403 to curl on 2026-10-04 (bot protection)
+        allowedTypes: [standard]
+    source:
+      reference: "ICONTEC is the Colombian national standardization body (publisher of NTC standards)."
+      url: "https://www.icontec.org/"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.DOMAINS.INDEXING.01
+    level: RECOMMENDATION
+    authority: { organization: alisio-plugin-thesis }
+    document: { id: CO-OFFICIAL-DOMAINS, version: "2026-10-04" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: official_domain_allowlist
+      values:
+        tier: indexing                  # NEVER grants VERIFIED_PRIMARY; discovery/metadata only
+        explicitHosts:
+          - scielo.org.co               # SciELO Colombia (HTTP 200; HTTPS refused on 2026-10-04)
+          - publindex.minciencias.gov.co  # journal indexing service; overrides the gov.co primary match
+          - scienti.minciencias.gov.co    # CvLAC/GrupLAC researcher registries; overrides the gov.co primary match
+        note: "Articles found here are peer-reviewed candidates that still need Crossref/OpenAlex verification (VERIFIED_PEER_REVIEWED), not primary sources."
+    source:
+      reference: "Classification decision for this pack: indexing services list publications they do not author."
+      url: "https://scielo.org/"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []

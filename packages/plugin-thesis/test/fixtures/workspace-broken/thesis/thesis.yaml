@@ -1,0 +1,6 @@
+schemaVersion: 1
+language: not_a_language
+workType: undergraduate_thesis
+year: 2026
+institution: { country: MX }
+titel: misspelled key

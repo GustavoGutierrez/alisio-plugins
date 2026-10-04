@@ -1,0 +1,245 @@
+# Objective verbs per language (check DSN-002, spec §9.2). Bloom's taxonomy describes learning
+# objectives; its use for research objectives is a methodology-teaching convention, so the check
+# warns and never blocks.
+rules:
+- ruleId: GLOBAL.OBJECTIVES.VERBS.ES
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: Universidad Central de Venezuela (Vitae); Universidad de los Andes (LEO)
+  document:
+    id: OBJECTIVE-VERBS-ES
+    version: '2016'
+  status: active
+  appliesWhen:
+    language: es
+  requirement:
+    kind: objective_verbs
+    values:
+      appliesTo: specific_objectives
+      form: infinitive
+      maxVerbsPerObjective: 1
+      severity: warning
+      avoid:
+      - conocer
+      - saber
+      - estudiar
+      ambiguous:
+      - comprender
+      - entender
+      - explicitar
+      qualitativeDowngrade:
+        verbs:
+        - comprender
+        - entender
+        severity: info
+      recommendedByLevel:
+        recordar:
+        - definir
+        - listar
+        - nombrar
+        - recordar
+        - rotular
+        comprender:
+        - clasificar
+        - comparar
+        - contrastar
+        - explicar
+        - expresar
+        - identificar
+        - interpretar
+        - traducir
+        aplicar:
+        - aplicar
+        - calcular
+        - construir
+        - demostrar
+        - desarrollar
+        - experimentar
+        - resolver
+        - utilizar
+        analizar:
+        - analizar
+        - categorizar
+        - distinguir
+        - examinar
+        - inferir
+        - asociar
+        evaluar:
+        - evaluar
+        - juzgar
+        - criticar
+        - justificar
+        - medir
+        - probar
+        - argumentar
+        crear:
+        - combinar
+        - componer
+        - crear
+        - diseñar
+        - establecer
+        - formular
+        - implementar
+      quote: 'se deben evitar verbos genéricos como: conocer, saber, estudiar; o que resulten de poca claridad como:
+        comprender, explicar, explicitar, los cuales podrían ser usados según el modelo epistemológico adoptado.'
+  source:
+    reference: Cardozo, Romano, Ortunio, Guevara & Romano (2016). Elaboración de los objetivos en la investigación.
+      Vitae (UCV) 65; verb groups also from Uniandes LEO '¿Cómo plantear objetivos?'
+    url: https://vitae.ucv.ve/index_pdf.php?module=articulo_pdf&n=5300&rv=122
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.OBJECTIVES.VERBS.EN
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: Cornell CTI; UConn CETL; Caltech CTLO; CSUN; USGS
+  document:
+    id: OBJECTIVE-VERBS-EN
+    version: '2026-10-04'
+  status: active
+  appliesWhen:
+    language: en
+  requirement:
+    kind: objective_verbs
+    values:
+      appliesTo: specific_objectives
+      form: base_verb
+      maxVerbsPerObjective: 1
+      severity: warning
+      avoid:
+      - understand
+      - know
+      - learn
+      - appreciate
+      - comprehend
+      - realize
+      - be aware of
+      - become aware of
+      - be familiar with
+      - become familiar with
+      qualitativeDowngrade:
+        verbs:
+        - understand
+        severity: info
+      recommendedByLevel:
+        remember:
+        - recognize
+        - recall
+        - identify
+        - list
+        - define
+        understand:
+        - interpret
+        - exemplify
+        - classify
+        - summarize
+        - infer
+        - compare
+        - explain
+        - describe
+        apply:
+        - execute
+        - implement
+        analyze:
+        - differentiate
+        - organize
+        - attribute
+        - analyze
+        evaluate:
+        - check
+        - critique
+        create:
+        - generate
+        - plan
+        - produce
+      quote: 'Avoid verbs that are unclear and cannot be observed and measured easily, for example: appreciate,
+        become aware of, become familiar with, know, learn, and understand.'
+  source:
+    reference: 'Anderson & Krathwohl (2001) cognitive processes via Iowa State CELT handout; avoid list: Cornell,
+      UConn, Caltech, CSUN, USGS (each verb in at least two)'
+    url: https://teaching.cornell.edu/setting-learning-outcomes
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.OBJECTIVES.VERBS.PT
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: UNIPAMPA; UECE
+  document:
+    id: OBJECTIVE-VERBS-PT
+    version: '2026-10-04'
+  status: active
+  appliesWhen:
+    language: pt
+  requirement:
+    kind: objective_verbs
+    values:
+      appliesTo: specific_objectives
+      form: infinitive
+      maxVerbsPerObjective: 1
+      severity: warning
+      avoid:
+      - conhecer
+      - compreender
+      - entender
+      - apreciar
+      - aprender
+      qualitativeDowngrade:
+        verbs:
+        - compreender
+        - entender
+        severity: info
+      recommendedByLevel:
+        lembrar:
+        - apontar
+        - definir
+        - nomear
+        - registrar
+        - relatar
+        entender:
+        - descrever
+        - discutir
+        - esclarecer
+        - explicar
+        - expressar
+        - identificar
+        - localizar
+        - traduzir
+        aplicar:
+        - aplicar
+        - demonstrar
+        - empregar
+        - ilustrar
+        - interpretar
+        - usar
+        analisar:
+        - analisar
+        - classificar
+        - comparar
+        - distinguir
+        - investigar
+        avaliar:
+        - avaliar
+        - escolher
+        - julgar
+        - selecionar
+        - validar
+        criar:
+        - articular
+        - compor
+        - constituir
+        - esquematizar
+      quote: Na formulação de objetivos específicos devemos evitar o emprego de verbos que se prestem a muitas interpretações.
+  source:
+    reference: UNIPAMPA 'Verbos de objetivos' (Pelegrini, citing Silva & Menezes 2001); UECE PPCCLIS 'Verbos para
+      a elaboração dos objetivos'; level names per Ferraz & Belhot (2010)
+    url: https://www.uece.br/ppcclis/wp-content/uploads/sites/91/2021/09/verbos_para_trabalhos_academicos.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []

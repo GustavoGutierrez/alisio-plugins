@@ -1,0 +1,6 @@
+ruleId: TEST.WRITING.PERSON
+level: STYLE_GUIDE
+status: active
+requirement: { kind: x-writing-person, values: { allowFirstPersonPlural: false } }
+source: { reference: "Synthetic writing guide" }
+verification: { lastChecked: "2026-10-04", basis: secondary_source }

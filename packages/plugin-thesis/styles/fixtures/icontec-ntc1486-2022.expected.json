@@ -1,0 +1,25 @@
+{
+  "bibliography": {
+    "book": "GARCÍA TORRES, María. Metodología de la investigación aplicada. Bogotá: Editorial Ejemplo, 2019. ISBN 978-3-16-148410-0.",
+    "chapter": "ROJAS, Carlos; DÍAZ MORA, Elena y SILVA, Pedro. Evidencia verificada en proyectos de grado. En: Análisis y diseño de sistemas de información. Editorial Ejemplo, 2020. Pp. 56-89.",
+    "dataset": "DANE. Censo nacional de población y vivienda. Conjunto de datos. DANE, 2018. [consultado el 4 de octubre de 2026]. Disponible en: https://www.dane.gov.co/censo",
+    "journal": "PÉREZ RUIZ, Ana y GÓMEZ, Luis. Verificación automática de referencias bibliográficas. En: Revista de Ingeniería Académica. 2021, vol. 12, no. 3, p. 45-67. ISSN 1234-5679. Doi: 10.1234/example.2021.001.",
+    "law": "CONGRESO DE LA REPÚBLICA DE COLOMBIA. Ley Estatutaria 1581 de 2012. Ley. 2012. [consultado el 4 de octubre de 2026]. Disponible en: https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "standard": "INSTITUTO COLOMBIANO DE NORMAS TÉCNICAS Y CERTIFICACIÓN. NTC 1486: Presentación de trabajos de investigación. Norma técnica. ICONTEC, 2022.",
+    "thesis": "LÓPEZ URIBE, Pablo Andrés. Diseño de un sistema de verificación de fuentes. Tesis. Universidad Ejemplo, 2024.",
+    "webpage": "MINTIC. Guía de datos abiertos. 2023. [consultado el 4 de octubre de 2026]. Disponible en: https://www.mintic.gov.co/guia-datos-abiertos"
+  },
+  "citations": {
+    "book": "GARCÍA TORRES, María. Metodología de la investigación aplicada. Bogotá: Editorial Ejemplo, 2019. ISBN 978-3-16-148410-0, p. 12.",
+    "chapter": "ROJAS, Carlos; DÍAZ MORA, Elena y SILVA, Pedro. Evidencia verificada en proyectos de grado. En: Análisis y diseño de sistemas de información. Editorial Ejemplo, 2020. p. 12.",
+    "dataset": "DANE. Censo nacional de población y vivienda. Conjunto de datos. DANE, 2018. [consultado el 4 de octubre de 2026]. Disponible en: https://www.dane.gov.co/censo, p. 12.",
+    "journal": "PÉREZ RUIZ, Ana y GÓMEZ, Luis. Verificación automática de referencias bibliográficas. En: Revista de Ingeniería Académica, 2021, vol. 12, no. 3, p. 12.",
+    "law": "CONGRESO DE LA REPÚBLICA DE COLOMBIA. Ley Estatutaria 1581 de 2012. Ley. 2012. [consultado el 4 de octubre de 2026]. Disponible en: https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981, p. 12.",
+    "standard": "INSTITUTO COLOMBIANO DE NORMAS TÉCNICAS Y CERTIFICACIÓN. NTC 1486: Presentación de trabajos de investigación. Norma técnica. ICONTEC, 2022, p. 12.",
+    "thesis": "LÓPEZ URIBE, Pablo Andrés. Diseño de un sistema de verificación de fuentes. Tesis. Universidad Ejemplo, 2024, p. 12.",
+    "webpage": "MINTIC. Guía de datos abiertos. 2023. [consultado el 4 de octubre de 2026]. Disponible en: https://www.mintic.gov.co/guia-datos-abiertos, p. 12."
+  },
+  "lang": "es",
+  "styleId": "icontec-ntc1486-2022",
+  "version": 1
+}

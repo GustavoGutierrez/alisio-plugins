@@ -1,0 +1,195 @@
+# Required sections and evidence minimums per work type (spec §11.1). Recommendations, not law;
+# institution/program rules override them. `monograph` has no sourced evidence minimum (open question).
+rules:
+- ruleId: GLOBAL.WORKTYPE.SECTIONS.CORE.01
+  level: RECOMMENDATION
+  authority:
+    organization: alisio-plugin-thesis (synthesis)
+  document:
+    id: LATAM-THESIS-SECTIONS
+    version: '2026-10-04'
+  status: active
+  appliesWhen: {}
+  requirement:
+    kind: required_section
+    values:
+      sections:
+      - resumen
+      - abstract
+      - palabras_clave
+      - introduccion
+      - planteamiento_del_problema
+      - objetivos
+      - marco_teorico
+      - metodologia
+      - resultados
+      - discusion
+      - conclusiones
+      - referencias
+      optional:
+      - justificacion
+      - hipotesis
+      - recomendaciones
+      - anexos
+      - glosario
+      - dedicatoria
+      - agradecimientos
+      notes:
+        abstract: Required at graduate level in all sources; undergraduate per institution.
+        discusion: May be folded into results or the body text in humanities guides.
+        justificacion: Separate section in many guides; folded into the introduction in others.
+  source:
+    reference: 'Consensus across: UdeA ''Estructura y normas para la presentación de trabajos de grado'' (2010);
+      Universidad de Chile ''Pauta de presentación de tesis'' (2015); Udelar CAP ''Guía para presentación de tesis
+      de posgrado''; UNAM Posgrado Salud Animal manual; Universitat de València doctoral rules'
+    url: https://repositorio.uchile.cl/pdf/Pauta_de_presentacion_de_tesis_2015.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.WORKTYPE.DOCTORAL.ORIGINALITY.01
+  level: RECOMMENDATION
+  authority:
+    organization: alisio-plugin-thesis (synthesis)
+  document:
+    id: DOCTORAL-ORIGINALITY
+    version: '2026-10-04'
+  status: active
+  appliesWhen:
+    workType: doctoral_dissertation
+  requirement:
+    kind: required_section
+    values:
+      requires:
+      - original_contribution_statement
+      - state_of_the_art_positioning
+      note: Original contribution is a regulatory requirement in every source checked; 'estado del arte' is implied
+        but no regulation names it as a mandatory heading.
+      quote: La tesis en el programa de doctorado será un aporte original al estado actual de la ciencia o de la
+        disciplina correspondiente.
+  source:
+    reference: Universidad de Antioquia, Acuerdo Superior 432 de 2014, art. 37; also UNAM RGEP art. 42; Spain RD
+      99/2011 art. 13
+    url: https://www.boe.es/buscar/act.php?id=BOE-A-2011-2541
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.WORKTYPE.EVIDENCE.UNDERGRADUATE.UNDERGRADUATE_THESIS
+  level: RECOMMENDATION
+  authority:
+    organization: Hernández Sampieri et al.
+  document:
+    id: SAMPIERI-METODOLOGIA-CAP4
+    version: unverified-edition
+  status: active
+  appliesWhen:
+    workType: undergraduate_thesis
+  requirement:
+    kind: evidence_minimum
+    values:
+      scope: theoretical_framework
+      minCitable: 25
+      typicalMax: 35
+      severity: warning
+      overridable: true
+      label: tesis de licenciatura
+      note: Observed ranges in analysed theses, explicitly 'not standards'. No per-section minimum is sourced.
+  source:
+    reference: 'Hernández Sampieri R. et al., Metodología de la investigación, cap. 4 ''Desarrollo de la perspectiva
+      teórica'' (edition not verified; likely 5th, 2010): ''no son de ninguna manera estándares'''
+    url: https://www.corteidh.or.cr/tablas/marco.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.WORKTYPE.EVIDENCE.UNDERGRADUATE.DEGREE_PROJECT
+  level: RECOMMENDATION
+  authority:
+    organization: Hernández Sampieri et al.
+  document:
+    id: SAMPIERI-METODOLOGIA-CAP4
+    version: unverified-edition
+  status: active
+  appliesWhen:
+    workType: degree_project
+  requirement:
+    kind: evidence_minimum
+    values:
+      scope: theoretical_framework
+      minCitable: 25
+      typicalMax: 35
+      severity: warning
+      overridable: true
+      label: tesis de licenciatura
+      note: Observed ranges in analysed theses, explicitly 'not standards'. No per-section minimum is sourced.
+  source:
+    reference: 'Hernández Sampieri R. et al., Metodología de la investigación, cap. 4 ''Desarrollo de la perspectiva
+      teórica'' (edition not verified; likely 5th, 2010): ''no son de ninguna manera estándares'''
+    url: https://www.corteidh.or.cr/tablas/marco.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.WORKTYPE.EVIDENCE.MASTER.MASTER_THESIS
+  level: RECOMMENDATION
+  authority:
+    organization: Hernández Sampieri et al.
+  document:
+    id: SAMPIERI-METODOLOGIA-CAP4
+    version: unverified-edition
+  status: active
+  appliesWhen:
+    workType: master_thesis
+  requirement:
+    kind: evidence_minimum
+    values:
+      scope: theoretical_framework
+      minCitable: 30
+      typicalMax: 40
+      severity: warning
+      overridable: true
+      label: tesis de maestría
+      note: Observed ranges in analysed theses, explicitly 'not standards'. No per-section minimum is sourced.
+  source:
+    reference: 'Hernández Sampieri R. et al., Metodología de la investigación, cap. 4 ''Desarrollo de la perspectiva
+      teórica'' (edition not verified; likely 5th, 2010): ''no son de ninguna manera estándares'''
+    url: https://www.corteidh.or.cr/tablas/marco.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.WORKTYPE.EVIDENCE.DOCTORAL.DOCTORAL_DISSERTATION
+  level: RECOMMENDATION
+  authority:
+    organization: Hernández Sampieri et al.
+  document:
+    id: SAMPIERI-METODOLOGIA-CAP4
+    version: unverified-edition
+  status: active
+  appliesWhen:
+    workType: doctoral_dissertation
+  requirement:
+    kind: evidence_minimum
+    values:
+      scope: theoretical_framework
+      minCitable: 65
+      typicalMax: 120
+      severity: warning
+      overridable: true
+      label: disertación doctoral
+      note: Observed ranges in analysed theses, explicitly 'not standards'. No per-section minimum is sourced.
+  source:
+    reference: 'Hernández Sampieri R. et al., Metodología de la investigación, cap. 4 ''Desarrollo de la perspectiva
+      teórica'' (edition not verified; likely 5th, 2010): ''no son de ninguna manera estándares'''
+    url: https://www.corteidh.or.cr/tablas/marco.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []

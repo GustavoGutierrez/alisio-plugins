@@ -1,0 +1,21 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.5555/ret.2020.007",
+    "type": "journal-article",
+    "title": ["A Neural Approach to Reference Matching"],
+    "author": [{ "given": "Diego", "family": "Salazar" }],
+    "issued": { "date-parts": [[2020, 3]] },
+    "container-title": ["Journal of Scholarly Tools"],
+    "publisher": "Example Scholarly Press",
+    "updated-by": [
+      {
+        "type": "retraction",
+        "DOI": "10.5555/ret.2021.001",
+        "label": "Retraction",
+        "source": "publisher"
+      }
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+# Global academic-integrity rules. Country packs add binding law (e.g. CO copyright and
+# Minciencias integrity policy). ICMJE recommendations target journal manuscripts; they are
+# adopted here as RECOMMENDATION-level defaults for theses.
+rules:
+  - ruleId: GLOBAL.ICMJE.2026.AI.DISCLOSURE.01
+    level: RECOMMENDATION
+    authority: { organization: International Committee of Medical Journal Editors (ICMJE) }
+    document: { id: ICMJE-RECOMMENDATIONS, version: "2026-01" }
+    status: active
+    appliesWhen: { aiUse: assisted }
+    requirement:
+      kind: ai_declaration
+      values:
+        required: true
+        placement:
+          writing_assistance: acknowledgments
+          data_collection_analysis_or_figures: methods
+        content: [tools_used, how_they_were_used]
+        quote: "Authors who use such technology should describe … how they used it. For example, if AI was used for writing assistance, describe this in the acknowledgment section … If AI was used for data collection, analysis, or figure generation, authors should describe this use in the methods"
+    source:
+      reference: "ICMJE Recommendations (updated January 2026), Section II.A.4 Artificial Intelligence (AI)–Assisted Technology"
+      url: "https://www.icmje.org/icmje-recommendations.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: GLOBAL.ICMJE.2026.AI.AUTHORSHIP.01
+    level: RECOMMENDATION
+    authority: { organization: International Committee of Medical Journal Editors (ICMJE) }
+    document: { id: ICMJE-RECOMMENDATIONS, version: "2026-01" }
+    status: active
+    appliesWhen: {}
+    requirement:
+      kind: integrity_rule
+      values:
+        principle: ai_is_not_an_author
+        prohibited: [ai_listed_as_author, ai_cited_as_author]
+        humanResponsibility: [review_and_edit_ai_output, no_plagiarism_in_ai_text_or_images, attribute_all_quoted_material]
+        quote: "Authors should not list AI and AI-assisted technologies as an author or co-author, nor cite AI as an author. Authors should be able to assert that there is no plagiarism in their paper, including in text and images produced by the AI."
+    source:
+      reference: "ICMJE Recommendations (updated January 2026), Section II.A.4"
+      url: "https://www.icmje.org/icmje-recommendations.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

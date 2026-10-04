@@ -1,0 +1,25 @@
+# Ley 1915 de 2018 modifies Ley 23 de 1982 (arts. 10, 11, 12, 27, 29 via Ley 44/1993, related
+# rights), adds exceptions (art. 16), technological measures and orphan works, and repeals Ley 23
+# arts. 58–71 and 243. It does NOT amend Ley 23 arts. 30–32 (quotation and moral rights).
+rules:
+  - ruleId: CO.LEY1915.2018.EXCEPTIONS.16
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1915-2018, version: "2018" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: quotation_rule
+      values:
+        permission: not_required
+        limit: brief_extracts_reprography_for_teaching_or_exams
+        mustName: [author, source]
+        preserves: "CO.CAN.D351.1993.QUOTATION.22A"
+        note: "Marginal for a thesis; does not widen the quotation right of Ley 23 art. 31. Art. 16 expressly preserves the limitations of Decisión Andina 351."
+        quote: "reproducción por medios reprográficos para la enseñanza o para la realización de exámenes … breves extractos de obras lícitamente publicadas … siempre que se incluya el nombre del autor y la fuente."
+    source:
+      reference: "Ley 1915 de 2018, art. 16 lit. e"
+      url: "http://www.secretariasenado.gov.co/senado/basedoc/ley_1915_2018.html"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

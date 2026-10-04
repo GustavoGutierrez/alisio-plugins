@@ -1,0 +1,11 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "data": { "url": "errores.csv" },
+  "mark": "bar",
+  "encoding": {
+    "x": { "field": "tipo", "type": "nominal", "title": "Tipo de fuente" },
+    "xOffset": { "field": "metodo" },
+    "y": { "field": "errores", "type": "quantitative", "title": "Errores (%)" },
+    "color": { "field": "metodo", "type": "nominal", "title": "Método" }
+  }
+}

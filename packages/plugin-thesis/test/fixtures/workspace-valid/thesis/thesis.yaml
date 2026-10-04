@@ -1,0 +1,17 @@
+schemaVersion: 1
+language: en
+secondaryAbstractLanguage: null
+searchLanguages: [en]
+workType: undergraduate_thesis
+title: A synthetic fixture thesis
+authors:
+  - { name: Ada Example, id: null }
+advisors: []
+institution: { name: Example University, faculty: null, program: null, city: null, country: MX }
+year: 2026
+domain: { primary: computer_science, secondary: [] }
+approach: design_science
+citationStyle: apa-7
+presentation: { standard: generic, paper: a4, fontProfile: serif, palette: okabe-ito, diagramTheme: neutral }
+targets: { pages: 60, words: null }
+aiUse: { assisted: true, declaration: auto }

@@ -1,0 +1,64 @@
+# Resolución 0314 de 2018 (Colciencias, now Minciencias) adopts the Política de Ética de la
+# Investigación, Bioética e Integridad Científica. It is a public-policy framework: it creates no
+# article-level duties for students. Rules here are therefore level REGULATION with
+# kind integrity_rule and are used as rationale for integrity checks in every discipline.
+rules:
+  - ruleId: CO.MINCIENCIAS.R0314.2018.SCOPE.01
+    level: REGULATION
+    authority: { organization: Minciencias (formerly Colciencias) }
+    document: { id: RES-0314-2018, version: "2018" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: integrity_rule
+      values:
+        principle: ethics_and_integrity_apply_to_all_disciplines
+        checks: [plagiarism, citation_quotation, authorship]
+        quote: "Establecer que los procesos de ciencia, tecnología e innovación desarrollados en Colombia se realicen conforme con principios y lineamientos éticos, bioéticos y de integridad científica, en todas las áreas del conocimiento"
+    source:
+      reference: "Resolución 0314 de 2018, art. 1 (adopts the policy); policy text §7.2"
+      url: "https://minciencias.gov.co/sites/default/files/upload/reglamentacion/resolucion_0314-2018.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINCIENCIAS.R0314.2018.MISCONDUCT.01
+    level: REGULATION
+    authority: { organization: Minciencias (formerly Colciencias) }
+    document: { id: RES-0314-2018, version: "2018" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: integrity_rule
+      values:
+        principle: avoid_serious_misconduct
+        misconduct: [plagiarism, fraud_fabrication, falsification, data_withholding, undeclared_conflict_of_interest, missing_informed_consent]
+        checks: [plagiarism, conflict_of_interest_declaration, data_retention, consent_evidence]
+        quote: "las faltas consideradas más graves son: (a) el plagio, (b) el fraude, (c) la falsificación, (d) la retención de datos, (e) el conflicto de interés no declarado y (f) la ausencia de consentimiento informado."
+        note: "The policy text presents this list as an international consensus, not as a Colombian prohibition."
+    source:
+      reference: "Política de Ética de la Investigación, Bioética e Integridad Científica, §5.3"
+      url: "https://minciencias.gov.co/sites/default/files/pdf_poltica.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINCIENCIAS.R0314.2018.MISCONDUCT.02
+    level: REGULATION
+    authority: { organization: Minciencias (formerly Colciencias) }
+    document: { id: RES-0314-2018, version: "2018" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: integrity_rule
+      values:
+        principle: authorship_and_confidentiality
+        misconduct: [omitted_author, abusive_authorship, confidentiality_breach, experimental_data_not_kept, inadequate_student_supervision]
+        checks: [authorship, data_retention]
+        quote: "(a) la no inclusión de un autor en una publicación, (b) la firma abusiva de un autor, (c) la transgresión de la confidencialidad, (d) la no conservación de datos experimentales, (e) la inadecuada supervisión de estudiantes"
+    source:
+      reference: "Política de Ética de la Investigación, Bioética e Integridad Científica, §5.3"
+      url: "https://minciencias.gov.co/sites/default/files/pdf_poltica.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

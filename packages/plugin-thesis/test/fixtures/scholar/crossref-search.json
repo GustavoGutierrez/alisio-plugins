@@ -1,0 +1,26 @@
+{
+  "status": "ok",
+  "message-type": "work-list",
+  "message": {
+    "total-results": 2,
+    "items": [
+      {
+        "DOI": "10.5555/sae.2021.014",
+        "type": "journal-article",
+        "title": ["Automated Verification of Bibliographic References in Academic Writing"],
+        "author": [{ "given": "Ana", "family": "Rojas" }],
+        "issued": { "date-parts": [[2021]] },
+        "container-title": ["Journal of Scholarly Tools"],
+        "publisher": "Example Scholarly Press"
+      },
+      {
+        "DOI": "10.5555/book.2018.001",
+        "type": "book",
+        "title": ["Research Methods for Software Engineering"],
+        "author": [{ "given": "Carla", "family": "Vega" }],
+        "issued": { "date-parts": [[2018]] },
+        "publisher": "Example University Press"
+      }
+    ]
+  }
+}

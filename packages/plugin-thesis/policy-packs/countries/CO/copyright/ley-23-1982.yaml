@@ -1,0 +1,64 @@
+# Ley 23 de 1982 (copyright). Arts. 30–32 carry no modification notes in the Gestor Normativo
+# (checked 2026-10-04) and are not amended by Ley 1915 de 2018.
+rules:
+  - ruleId: CO.LEY23.1982.QUOTATION.31
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-23-1982, version: "1982" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: quotation_rule
+      values:
+        permission: not_required
+        limit: only_necessary_passages_no_substantial_disguised_reproduction
+        mustName: [author, title]
+        checks: [excessive_or_contiguous_quoting, quotation_without_author_and_title]
+        quote: "Es permitido citar a un autor transcribiendo los pasajes necesarios, siempre que éstos no sean tantos y seguidos que razonadamente puedan considerarse como una reproducción simulada y sustancial … En cada cita deberá mencionarse el nombre del autor de la obra citada y el título de dicha obra."
+    source:
+      reference: "Ley 23 de 1982, art. 31"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=3431"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY23.1982.TEACHING_ILLUSTRATION.32
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-23-1982, version: "1982" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: quotation_rule
+      values:
+        permission: not_required
+        limit: illustration_in_works_for_teaching_within_purpose
+        mustName: [author, title]
+        note: "A thesis is not clearly a work 'destinada a la enseñanza'; art. 31 is the default rule for theses."
+        quote: "Es permitido utilizar obras … a título de ilustración en obras destinadas a la enseñanza … dentro de los límites justificados por el fin propuesto … con la obligación de mencionar el nombre del autor y el título"
+    source:
+      reference: "Ley 23 de 1982, art. 32"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=3431"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY23.1982.MORAL_RIGHTS.30
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-23-1982, version: "1982" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: attribution_rule
+      values:
+        rights: [attribution, integrity]
+        waivable: false
+        checks: [reused_figure_table_or_code_without_credit, adaptation_not_marked]
+        quote: "A. Reivindicar en todo tiempo la paternidad de su obra … B. A oponerse a toda deformación, mutilación u otra modificación de la obra … Parágrafo 1. Los derechos anteriores no pueden ser renunciados ni cedidos."
+    source:
+      reference: "Ley 23 de 1982, art. 30 lit. A, B and par. 1"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=3431"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

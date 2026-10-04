@@ -1,0 +1,392 @@
+# Reporting guidelines (EQUATOR Network library). A matching rule becomes a checklist the
+# methodologist and reviewer use; it is not a format rule. `studyDesign` is a proposed brief
+# field (see P0.6-results.md open questions); `approach` values follow spec §4.2.
+rules:
+- ruleId: GLOBAL.RG.PRISMA.2020
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: PRISMA Group
+  document:
+    id: PRISMA
+    version: '2020'
+  status: active
+  appliesWhen:
+    approach: systematic_review
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: PRISMA 2020
+      items: 27
+      extras:
+      - abstract checklist
+      - flow diagram
+      doi: 10.1136/bmj.n71
+      scope: Systematic reviews with or without meta-analysis
+  source:
+    reference: Page MJ et al. The PRISMA 2020 statement. BMJ 2021;372:n71
+    url: https://www.equator-network.org/reporting-guidelines/prisma/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - PRISMA 2009
+- ruleId: GLOBAL.RG.PRISMA_S.2021
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: PRISMA Group
+  document:
+    id: PRISMA-S
+    version: '2021'
+  status: active
+  appliesWhen:
+    approach: systematic_review
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: PRISMA-S
+      items: 16
+      doi: 10.1186/s13643-020-01542-z
+      scope: Reporting of the literature search
+      section: methods.search
+  source:
+    reference: Rethlefsen ML et al. PRISMA-S. Syst Rev 2021;10:39
+    url: https://www.prisma-statement.org/prisma-search
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.RG.PRISMA_SCR.2018
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: PRISMA Group
+  document:
+    id: PRISMA-ScR
+    version: '2018'
+  status: active
+  appliesWhen:
+    approach: systematic_review
+    studyDesign: scoping_review
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: PRISMA-ScR
+      items: 20
+      optionalItems: 2
+      scope: Scoping reviews and evidence maps
+      note: Update in progress (registered 2024-04-02 on EQUATOR); statement DOI not verified.
+  source:
+    reference: Tricco AC et al. PRISMA-ScR. Ann Intern Med 2018
+    url: https://www.equator-network.org/reporting-guidelines/prisma-scr/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.RG.CONSORT.2025
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: CONSORT Group
+  document:
+    id: CONSORT
+    version: '2025'
+  status: active
+  appliesWhen:
+    approach: quantitative
+    studyDesign: randomized_trial
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: CONSORT 2025
+      items: 30
+      extras:
+      - participant flow diagram
+      doi: 10.1136/bmj-2024-081123
+      scope: Reports of randomised trials
+      stage: report
+  source:
+    reference: Hopewell S et al. CONSORT 2025 statement. BMJ 2025;389:e081123 (published 2025-04-14; EQUATOR lists
+      vol. 388)
+    url: https://www.equator-network.org/reporting-guidelines/consort/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - CONSORT 2010
+- ruleId: GLOBAL.RG.SPIRIT.2025
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: SPIRIT Group
+  document:
+    id: SPIRIT
+    version: '2025'
+  status: active
+  appliesWhen:
+    approach: quantitative
+    studyDesign: randomized_trial
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: SPIRIT 2025
+      items: 34
+      extras:
+      - schedule of enrolment, interventions and assessments
+      doi: 10.1136/bmj-2024-081477
+      scope: Protocols of randomised trials
+      stage: proposal
+  source:
+    reference: SPIRIT 2025 statement. BMJ 2025 (published 2025-04-28)
+    url: https://www.equator-network.org/reporting-guidelines/spirit-2013-statement-defining-standard-protocol-items-for-clinical-trials/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - SPIRIT 2013
+- ruleId: GLOBAL.RG.STROBE.2007
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: STROBE Initiative
+  document:
+    id: STROBE
+    version: '2007'
+  status: active
+  appliesWhen:
+    approach: quantitative
+    studyDesign: observational
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: STROBE
+      items: 22
+      designs:
+      - cohort
+      - case_control
+      - cross_sectional
+      note: No full replacement as of 2026-10-04; extensions such as STROBE-Equity (2025) exist. Statement DOI not
+        verified.
+  source:
+    reference: von Elm E et al. The STROBE statement. PLoS Med 2007;4(10):e296
+    url: https://www.equator-network.org/reporting-guidelines/strobe/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.RG.SRQR.2014
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: SRQR authors
+  document:
+    id: SRQR
+    version: '2014'
+  status: active
+  appliesWhen:
+    approach: qualitative
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: SRQR
+      items: 21
+      doi: 10.1097/ACM.0000000000000388
+      scope: Qualitative research, all traditions (default for qualitative)
+  source:
+    reference: O'Brien BC et al. Standards for Reporting Qualitative Research. Acad Med 2014;89(9):1245-1251
+    url: https://www.equator-network.org/reporting-guidelines/srqr/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.RG.COREQ.2007
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: COREQ authors
+  document:
+    id: COREQ
+    version: '2007'
+  status: active
+  appliesWhen:
+    approach: qualitative
+    studyDesign: interviews_or_focus_groups
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: COREQ
+      items: 32
+      doi: 10.1093/intqhc/mzm042
+      scope: Qualitative research using interviews and focus groups
+  source:
+    reference: Tong A, Sainsbury P, Craig J. COREQ. Int J Qual Health Care 2007;19(6):349-357
+    url: https://www.equator-network.org/reporting-guidelines/coreq/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.RG.CHEERS.2022
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: ISPOR CHEERS Task Force
+  document:
+    id: CHEERS
+    version: '2022'
+  status: active
+  appliesWhen:
+    studyDesign: health_economic_evaluation
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: CHEERS 2022
+      items: 28
+      doi: 10.1136/bmj-2021-067975
+      scope: Health economic evaluations
+  source:
+    reference: Husereau D et al. CHEERS 2022 statement. BMJ 2022;376:e067975
+    url: https://www.equator-network.org/reporting-guidelines/cheers/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - CHEERS 2013
+- ruleId: GLOBAL.RG.STARD.2015
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: STARD Group
+  document:
+    id: STARD
+    version: '2015'
+  status: active
+  appliesWhen:
+    studyDesign: diagnostic_accuracy
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: STARD 2015
+      items: 30
+      extras:
+      - flow diagram
+      doi: 10.1136/bmj.h5527
+      scope: Diagnostic accuracy studies
+      extension:
+        guideline: STARD-AI
+        items: 40
+        doi: 10.1038/s41591-025-03953-8
+        when: index test is AI-based
+  source:
+    reference: Bossuyt PM et al. STARD 2015. BMJ 2015;351:h5527
+    url: https://www.equator-network.org/reporting-guidelines/stard/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - STARD 2003
+- ruleId: GLOBAL.RG.ARRIVE.2020
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: NC3Rs
+  document:
+    id: ARRIVE
+    version: '2.0'
+  status: active
+  appliesWhen:
+    ethicsTrigger: animals
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: ARRIVE 2.0
+      items: 21
+      essential: 10
+      recommended: 11
+      doi: 10.1371/journal.pbio.3000410
+      scope: In vivo animal research
+  source:
+    reference: Percie du Sert N et al. The ARRIVE guidelines 2.0. PLoS Biol 2020;18(7):e3000410
+    url: https://www.equator-network.org/reporting-guidelines/improving-bioscience-research-reporting-the-arrive-guidelines-for-reporting-animal-research/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - ARRIVE 2010
+- ruleId: GLOBAL.RG.TRIPOD_AI.2024
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: TRIPOD Group
+  document:
+    id: TRIPOD+AI
+    version: '2024'
+  status: active
+  appliesWhen:
+    studyDesign: prediction_model
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: TRIPOD+AI
+      items: 27
+      doi: 10.1136/bmj-2023-078378
+      scope: Development or validation of clinical prediction models (regression or machine learning)
+  source:
+    reference: Collins GS et al. TRIPOD+AI statement. BMJ 2024;385:e078378
+    url: https://www.equator-network.org/reporting-guidelines/tripod-statement/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes:
+  - TRIPOD 2015
+- ruleId: GLOBAL.RG.CARE.2013
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: CARE Group
+  document:
+    id: CARE
+    version: '2013'
+  status: active
+  appliesWhen:
+    studyDesign: case_report
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: CARE
+      items: 13
+      doi: 10.7453/gahmj.2013.008
+      scope: Clinical case reports
+  source:
+    reference: Gagnier JJ et al. The CARE guidelines. Glob Adv Health Med 2013
+    url: https://www.equator-network.org/reporting-guidelines/care/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []
+- ruleId: GLOBAL.RG.SQUIRE.2015
+  level: METHODOLOGY_GUIDELINE
+  authority:
+    organization: SQUIRE authors
+  document:
+    id: SQUIRE
+    version: '2.0'
+  status: active
+  appliesWhen:
+    studyDesign: quality_improvement
+  requirement:
+    kind: reporting_guideline
+    values:
+      guideline: SQUIRE 2.0
+      items: 18
+      doi: 10.1136/bmjqs-2015-004411
+      scope: Healthcare quality-improvement reports
+      note: SQuIRE 3.0 in development
+  source:
+    reference: Ogrinc G et al. SQUIRE 2.0. BMJ Qual Saf 2016;25:986-992
+    url: https://www.equator-network.org/reporting-guidelines/squire/
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []

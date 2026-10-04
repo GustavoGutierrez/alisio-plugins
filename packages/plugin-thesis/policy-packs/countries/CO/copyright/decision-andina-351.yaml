@@ -1,0 +1,61 @@
+# Decisión 351 de 1993 de la Comunidad Andina — Régimen Común sobre Derecho de Autor y Derechos
+# Conexos. Supranational law of direct application in Colombia.
+rules:
+  - ruleId: CO.CAN.D351.1993.QUOTATION.22A
+    level: LAW
+    authority: { organization: Comisión del Acuerdo de Cartagena (Comunidad Andina) }
+    document: { id: DECISION-351, version: "1993" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: quotation_rule
+      values:
+        permission: not_required
+        onlyFrom: published_works
+        limit: fair_practice_and_extent_justified_by_purpose
+        mustName: [author, source]
+        quote: "Citar en una obra, otras obras publicadas, siempre que se indique la fuente y el nombre del autor, a condición que tales citas se hagan conforme a los usos honrados y en la medida justificada por el fin que se persiga"
+    source:
+      reference: "Decisión Andina 351 de 1993, art. 22 lit. a"
+      url: "https://www.comunidadandina.org/StaticFiles/DocOf/DEC351.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.CAN.D351.1993.THREE_STEP_TEST.21
+    level: LAW
+    authority: { organization: Comisión del Acuerdo de Cartagena (Comunidad Andina) }
+    document: { id: DECISION-351, version: "1993" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: quotation_rule
+      values:
+        limit: no_conflict_with_normal_exploitation_no_unjustified_prejudice
+        checks: [whole_work_reproduced_as_quote]
+        quote: "se circunscribirán a aquellos casos que no atenten contra la normal explotación de las obras o no causen perjuicio injustificado a los legítimos intereses del titular"
+    source:
+      reference: "Decisión Andina 351 de 1993, art. 21"
+      url: "https://www.comunidadandina.org/StaticFiles/DocOf/DEC351.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.CAN.D351.1993.MORAL_RIGHTS.11
+    level: LAW
+    authority: { organization: Comisión del Acuerdo de Cartagena (Comunidad Andina) }
+    document: { id: DECISION-351, version: "1993" }
+    status: active
+    appliesWhen: { country: CO }
+    requirement:
+      kind: attribution_rule
+      values:
+        rights: [attribution, integrity]
+        waivable: false
+        quote: "El autor tiene el derecho inalienable, inembargable, imprescriptible e irrenunciable de: … b) Reivindicar la paternidad de la obra en cualquier momento; y, c) Oponerse a toda deformación, mutilación o modificación"
+    source:
+      reference: "Decisión Andina 351 de 1993, art. 11 lit. b, c"
+      url: "https://www.comunidadandina.org/StaticFiles/DocOf/DEC351.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

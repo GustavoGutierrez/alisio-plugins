@@ -1,0 +1,14 @@
+# IEEE-flavoured thesis layout: compact spacing, captions below figures and above tables.
+id: ieee
+description: Compact layout with captions below figures and above tables.
+extends: generic
+margins: { top: 2.5cm, bottom: 2.5cm, inside: 2.5cm, outside: 2.5cm }
+font: { size: 11 }
+lineSpacing: 1.15
+paragraph: { indent: 0cm, spacing: 0.9em, justify: true }
+headings:
+  - { level: 1, size: 16, weight: bold, case: none, numbering: "1", align: left, spaceBefore: 1.6em, spaceAfter: 1em, newPage: true }
+  - { level: 2, size: 13, weight: bold, case: none, numbering: "1.1", align: left, spaceBefore: 1.3em, spaceAfter: 0.7em, newPage: false }
+  - { level: 3, size: 11, weight: bold, case: none, numbering: "1.1.1", align: left, spaceBefore: 1.1em, spaceAfter: 0.6em, newPage: false }
+  - { level: 4, size: 11, weight: bold, case: none, numbering: "1.1.1.1", align: left, spaceBefore: 1em, spaceAfter: 0.5em, newPage: false }
+header: chapter

@@ -1,0 +1,13 @@
+{
+  "id": "https://openalex.org/W2002",
+  "doi": "https://doi.org/10.5555/ret.2020.007",
+  "display_name": "A Neural Approach to Reference Matching",
+  "publication_year": 2020,
+  "type": "article",
+  "language": "en",
+  "authorships": [{ "author": { "display_name": "Diego Salazar" } }],
+  "primary_location": {
+    "source": { "display_name": "Journal of Scholarly Tools", "type": "journal" }
+  },
+  "is_retracted": true
+}

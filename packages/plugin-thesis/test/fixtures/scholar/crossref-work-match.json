@@ -1,0 +1,31 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.5555/sae.2021.014",
+    "type": "journal-article",
+    "title": ["Automated Verification of Bibliographic References in Academic Writing"],
+    "author": [
+      {
+        "given": "Ana",
+        "family": "Rojas",
+        "ORCID": "https://orcid.org/0000-0002-1825-0097",
+        "sequence": "first"
+      },
+      { "given": "Luis", "family": "Mendoza", "sequence": "additional" }
+    ],
+    "issued": { "date-parts": [[2021, 6, 14]] },
+    "container-title": ["Journal of Scholarly Tools"],
+    "publisher": "Example Scholarly Press",
+    "volume": "12",
+    "issue": "3",
+    "page": "211-230",
+    "ISSN": ["2345-6789"],
+    "language": "en",
+    "URL": "https://doi.org/10.5555/sae.2021.014",
+    "license": [
+      { "URL": "https://creativecommons.org/licenses/by/4.0/", "content-version": "vor" }
+    ],
+    "abstract": "<jats:p>We study how <jats:italic>reference checking</jats:italic> can be automated &amp; audited.\u0001</jats:p>"
+  }
+}

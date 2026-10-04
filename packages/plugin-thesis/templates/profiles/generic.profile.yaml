@@ -1,0 +1,20 @@
+# Generic thesis layout: roman preliminaries, arabic body, chapter-numbered floats.
+id: generic
+description: Neutral layout with roman preliminaries and chapter-numbered figures and tables.
+margins: { top: 2.5cm, bottom: 2.5cm, inside: 3cm, outside: 2.5cm }
+binding: left
+font: { size: 12 }
+lineSpacing: 1.5
+paragraph: { indent: 1.25cm, spacing: 0.9em, justify: true }
+headings:
+  - { level: 1, size: 17, weight: bold, case: none, numbering: "1", align: left, spaceBefore: 1.6em, spaceAfter: 1em, newPage: true }
+  - { level: 2, size: 14, weight: bold, case: none, numbering: "1.1", align: left, spaceBefore: 1.4em, spaceAfter: 0.8em, newPage: false }
+  - { level: 3, size: 12, weight: bold, case: none, numbering: "1.1.1", align: left, spaceBefore: 1.2em, spaceAfter: 0.7em, newPage: false }
+  - { level: 4, size: 12, weight: bold, case: none, numbering: "1.1.1.1", align: left, spaceBefore: 1.1em, spaceAfter: 0.6em, newPage: false }
+captions: { figurePosition: bottom, tablePosition: top, labelStyle: plain, separator: ". ", sourceBelow: false, numbering: chapter }
+pageNumbers: { front: roman, body: arabic, position: center, continuous: false }
+frontMatter: [dedication, acknowledgments, ai-declaration, abstract, toc]
+footnotes: { size: 10 }
+toc: { depth: 3 }
+header: chapter
+annexNumbering: "A.1.1"

@@ -1,0 +1,28 @@
+rules:
+  - ruleId: TEST.GLOBAL.CITATION.DEFAULT
+    level: RECOMMENDATION
+    status: active
+    requirement: { kind: citation_style, values: { id: apa-7 } }
+    source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+  - ruleId: TEST.GLOBAL.AI.DECLARATION
+    level: RECOMMENDATION
+    status: active
+    requirement: { kind: ai_declaration, values: { required: true } }
+    source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+  - ruleId: TEST.GLOBAL.REPORTING.PRISMA
+    level: METHODOLOGY_GUIDELINE
+    status: active
+    appliesWhen: { approach: systematic_review }
+    requirement: { kind: reporting_guideline, values: { guideline: PRISMA } }
+    source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+  - ruleId: TEST.GLOBAL.ETHICS.PARTICIPANTS
+    level: METHODOLOGY_GUIDELINE
+    status: active
+    requirement:
+      kind: ethics_trigger
+      values: { trigger: human_participants, requirement: "Record informed consent for every participant." }
+    source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }

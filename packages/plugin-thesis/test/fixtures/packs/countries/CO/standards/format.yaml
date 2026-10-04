@@ -1,0 +1,38 @@
+- ruleId: TEST.CO.STANDARD.CITATION
+  level: TECHNICAL_STANDARD
+  status: active
+  appliesWhen: { country: CO }
+  requirement: { kind: citation_style, values: { id: icontec-ntc1486-2022 } }
+  source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+  verification: { lastChecked: "2026-10-04", basis: secondary_source }
+- ruleId: TEST.CO.STANDARD.MARGINS
+  level: TECHNICAL_STANDARD
+  status: active
+  appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+  requirement: { kind: page_margins, values: { top: 3, left: 4, bottom: 3, right: 2 } }
+  source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+  verification: { lastChecked: "2026-10-04", basis: secondary_source }
+- ruleId: TEST.CO.PRIVACY.PERSONAL
+  level: LAW
+  status: active
+  appliesWhen: { country: CO }
+  requirement:
+    kind: ethics_trigger
+    values: { trigger: identifiable_personal_data, requirement: "Add a data-handling section and obtain consent." }
+  source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+  verification: { lastChecked: "2026-10-04", basis: official_text }
+- ruleId: TEST.CO.HEALTH.RISK
+  level: REGULATION
+  status: active
+  appliesWhen: { country: CO, domain: health }
+  requirement:
+    kind: ethics_trigger
+    values: { trigger: risk_above_minimal, requirement: "Classify the research risk level." }
+  source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+  verification: { lastChecked: "2026-10-04", basis: official_text }
+- ruleId: TEST.CO.OLD.RULE
+  level: TECHNICAL_STANDARD
+  status: superseded
+  requirement: { kind: page_margins, values: { top: 1 } }
+  source: { reference: "Synthetic fixture rule", retrievedAt: "2026-10-04" }
+  verification: { lastChecked: "2026-10-04", basis: secondary_source }

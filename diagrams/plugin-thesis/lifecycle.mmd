@@ -1,0 +1,21 @@
+%% Thesis lifecycle: phases, human gates and the per-section loop.
+%% Sources live at diagrams/plugin-thesis/ and render to packages/plugin-thesis/assets/.
+flowchart TB
+    subgraph Setup["Setup"]
+        direction LR
+        Intake["Intake"] --> Design["Design"] --> GateAB{{"Human A, B"}} --> Outline["Outline"] --> GateO{{"Human OUTLINE"}}
+    end
+
+    subgraph Loop["Per-section loop (repeat for each section)"]
+        direction LR
+        Research["Research"] --> Validate{{"You validate<br/>the dossier"}} --> Draft["Draft<br/>writer, editor,<br/>diff guard"] --> Approve{{"You approve<br/>the section"}} --> Partial["Partial PDF"]
+        Validate -. "revise" .-> Research
+        Approve -. "revise" .-> Draft
+    end
+
+    subgraph Close["Closing"]
+        direction LR
+        Review["Review"] --> Finalize["Finalize<br/>G9, G10"] --> GateC{{"Human C"}} --> Pdfa["PDF/A and<br/>submission"]
+    end
+
+    Setup --> Loop --> Close

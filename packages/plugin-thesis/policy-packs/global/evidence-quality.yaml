@@ -1,0 +1,81 @@
+# Global evidence-quality rules (feed research/verify.ts and the CIT/EVD checks, spec §8.4, §9.2).
+rules:
+  - ruleId: GLOBAL.ICMJE.2026.EVIDENCE.RETRACTED.01
+    level: RECOMMENDATION
+    authority: { organization: International Committee of Medical Journal Editors (ICMJE) }
+    document: { id: ICMJE-RECOMMENDATIONS, version: "2026-01" }
+    status: active
+    appliesWhen: {}
+    requirement:
+      kind: source_quality
+      values:
+        rule: no_retracted_references
+        exceptWhen: referring_to_the_retraction
+        quote: "Authors are responsible for checking that none of the references cite retracted articles except in the context of referring to the retraction."
+    source:
+      reference: "ICMJE Recommendations (updated January 2026), Section IV.A.3.g.i References — General Considerations"
+      url: "https://www.icmje.org/icmje-recommendations.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: GLOBAL.ICMJE.2026.EVIDENCE.VERIFY.01
+    level: RECOMMENDATION
+    authority: { organization: International Committee of Medical Journal Editors (ICMJE) }
+    document: { id: ICMJE-RECOMMENDATIONS, version: "2026-01" }
+    status: active
+    appliesWhen: {}
+    requirement:
+      kind: source_quality
+      values:
+        rule: verify_references_against_bibliographic_or_original_source
+        claimSupport: reference_must_support_associated_statement
+        quote: "Authors are responsible for citing references accurately and should be able to attest that the references cited support the associated statement. To minimize bibliographic citation errors, references should be verified using either a bibliographic source, such as PubMed, or original sources."
+    source:
+      reference: "ICMJE Recommendations (updated January 2026), Section IV.A.3.g.i"
+      url: "https://www.icmje.org/icmje-recommendations.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: GLOBAL.ICMJE.2026.EVIDENCE.PREFERENCES.01
+    level: RECOMMENDATION
+    authority: { organization: International Committee of Medical Journal Editors (ICMJE) }
+    document: { id: ICMJE-RECOMMENDATIONS, version: "2026-01" }
+    status: active
+    appliesWhen: {}
+    requirement:
+      kind: source_quality
+      values:
+        prefer: [original_research_over_reviews_when_possible, published_articles_over_abstracts]
+        avoid: [predatory_or_pseudo_journals, personal_communications_unless_essential]
+        label: { preprint: must_be_identified_as_preprint, accepted_unpublished: "in press" }
+        notAcceptableAsPrimarySource: [ai_generated_material]
+        datasets: cite_persistent_identifier
+        quote: "Authors should provide direct references to original research sources whenever possible. References should be made to published articles rather than to abstracts whenever possible. … Authors should avoid citing articles from predatory or pseudo-journals. When preprints are cited, the citation should clearly indicate that the reference is a preprint … Referencing AI-generated material as the primary source is not acceptable."
+    source:
+      reference: "ICMJE Recommendations (updated January 2026), Section IV.A.3.g.i"
+      url: "https://www.icmje.org/icmje-recommendations.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: GLOBAL.EVIDENCE.RECENCY.01
+    level: RECOMMENDATION
+    authority: { organization: "Arias, F. G. (2017), e-Ciencias de la Información 7(1)" }
+    document: { id: ARIAS-2017-OBSOLESCENCIA, version: "2017" }
+    status: active
+    appliesWhen: {}
+    requirement:
+      kind: source_quality
+      values:
+        rule: no_default_recency_quota
+        severity: info
+        note: "No thesis regulation found that requires a share of references from the last N years; quotas exist only in individual journals' author instructions. Institutions may add one as an override."
+        quote: "El Índice de Price no es una regla que establece 5 años de vigencia de la literatura científica … no debe ser asumido como una norma para elaborar proyectos e informes de investigación, tesis o trabajos de grado."
+    source:
+      reference: "Arias, F. G. (2017). Obsolescencia de las referencias citadas: un mito académico persistente en la investigación universitaria venezolana. e-Ciencias de la Información 7(1). DOI 10.15517/eci.v7i1.26075"
+      url: "https://www.scielo.sa.cr/pdf/eci/v7n1/1659-4142-eci-7-01-00078.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

@@ -1,0 +1,25 @@
+{
+  "bibliography": {
+    "book": "[1] M. García Torres, Metodología de la investigación aplicada. Bogotá: Editorial Ejemplo, 2019.",
+    "chapter": "[1] C. Rojas, E. Díaz Mora, y P. Silva, «Evidencia verificada en proyectos de grado», en Análisis y diseño de sistemas de información, Editorial Ejemplo, 2020, pp. 56-89.",
+    "dataset": "[1] DANE, «Censo nacional de población y vivienda». Accedido: 4 de octubre de 2026. [En línea]. Disponible en: https://www.dane.gov.co/censo",
+    "journal": "[1] A. Pérez Ruiz y L. Gómez, «Verificación automática de referencias bibliográficas», Revista de Ingeniería Académica, vol. 12, n.º 3, pp. 45-67, 2021, doi: 10.1234/example.2021.001.",
+    "law": "[1] Congreso de la República de Colombia, «Ley Estatutaria 1581 de 2012». Accedido: 4 de octubre de 2026. [En línea]. Disponible en: https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "standard": "[1] Instituto Colombiano de Normas Técnicas y Certificación, «NTC 1486: Presentación de trabajos de investigación». ICONTEC, 2022.",
+    "thesis": "[1] P. A. López Uribe, «Diseño de un sistema de verificación de fuentes», Tesis, Universidad Ejemplo, 2024.",
+    "webpage": "[1] MinTIC, «Guía de datos abiertos». Accedido: 4 de octubre de 2026. [En línea]. Disponible en: https://www.mintic.gov.co/guia-datos-abiertos"
+  },
+  "citations": {
+    "book": "[1, p. 12]",
+    "chapter": "[1, p. 12]",
+    "dataset": "[1, p. 12]",
+    "journal": "[1, p. 12]",
+    "law": "[1, p. 12]",
+    "standard": "[1, p. 12]",
+    "thesis": "[1, p. 12]",
+    "webpage": "[1, p. 12]"
+  },
+  "lang": "es",
+  "styleId": "ieee",
+  "version": 1
+}

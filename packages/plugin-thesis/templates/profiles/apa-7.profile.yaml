@@ -1,0 +1,15 @@
+# APA 7 student-paper style: double spacing, 1 in margins, captions above with the note below.
+id: apa-7
+description: APA 7 layout with double spacing, one inch margins and notes below floats.
+extends: generic
+margins: { top: 2.54cm, bottom: 2.54cm, inside: 2.54cm, outside: 2.54cm }
+lineSpacing: 2
+paragraph: { indent: 1.27cm, spacing: 0.65em, justify: false }
+headings:
+  - { level: 1, size: 12, weight: bold, case: none, numbering: "1", align: center, spaceBefore: 1.4em, spaceAfter: 1em, newPage: true }
+  - { level: 2, size: 12, weight: bold, case: none, numbering: "1.1", align: left, spaceBefore: 1.2em, spaceAfter: 0.8em, newPage: false }
+  - { level: 3, size: 12, weight: bold, case: none, numbering: "1.1.1", align: left, spaceBefore: 1.2em, spaceAfter: 0.7em, newPage: false }
+  - { level: 4, size: 12, weight: bold, case: none, numbering: "1.1.1.1", align: left, spaceBefore: 1.1em, spaceAfter: 0.6em, newPage: false }
+captions: { figurePosition: top, tablePosition: top, sourceBelow: true }
+pageNumbers: { position: right }
+header: none

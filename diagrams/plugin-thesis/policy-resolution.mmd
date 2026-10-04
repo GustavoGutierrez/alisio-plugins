@@ -1,0 +1,10 @@
+%% Policy resolution: from rule packs to the compliance profile.
+%% Sources live at diagrams/plugin-thesis/ and render to packages/plugin-thesis/assets/.
+flowchart TD
+    Shipped["Shipped packs<br/>global, CO"] --> Resolver
+    Workspace["Workspace packs<br/>thesis/policy-packs/<br/>international, country, institution,<br/>faculty, program, writing"] --> Resolver
+    Simple["Simple overrides<br/>thesis/policy/*.yaml"] --> Resolver
+    Resolver{"Resolver<br/>precedence by level and scope<br/>replace only with overrides: true"} --> Profile[("Compliance profile<br/>compliance-profile.json<br/>every value keeps its ruleId trail")]
+    Profile --> Interview["Interview defaults"]
+    Profile --> Templates["Templates and styles"]
+    Profile --> Checks["Deterministic checks"]

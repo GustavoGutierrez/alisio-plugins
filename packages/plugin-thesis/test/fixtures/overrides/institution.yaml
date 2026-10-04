@@ -1,0 +1,18 @@
+- ruleId: TEST.INST.CITATION
+  level: INSTITUTIONAL_RULE
+  status: active
+  requirement: { kind: citation_style, values: { id: icontec-ntc1486-2022 } }
+  source: { reference: "Synthetic institution regulation, art. 1" }
+  verification: { lastChecked: "2026-10-04", basis: official_text }
+- ruleId: TEST.INST.PRESENTATION
+  level: INSTITUTIONAL_RULE
+  status: active
+  requirement: { kind: presentation_standard, values: { id: icontec-ntc1486-2022 } }
+  source: { reference: "Synthetic institution regulation, art. 2" }
+  verification: { lastChecked: "2026-10-04", basis: official_text }
+- ruleId: TEST.INST.MARGINS
+  level: INSTITUTIONAL_RULE
+  status: active
+  requirement: { kind: page_margins, values: { top: 2.5, left: 3, bottom: 2.5, right: 2.5 } }
+  source: { reference: "Synthetic institution regulation, art. 3" }
+  verification: { lastChecked: "2026-10-04", basis: official_text }

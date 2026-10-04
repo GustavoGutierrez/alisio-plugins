@@ -1,0 +1,188 @@
+# NTC 1486:2022 (8th update) "Documentación. Presentación de trabajos académicos y referencias
+# bibliográficas" — ICONTEC. The standard text is paid; every rule below comes from Colombian
+# institutional guides that explicitly cite the 2022 edition, so basis is secondary_source.
+# A rule is encoded only when at least two of these guides agree:
+#   G1 Institución Universitaria Pascual Bravo, Biblioteca, "Citación y presentación de referencias
+#      bibliográficas NTC 1486:2022" (2024-12) — https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf
+#   G2 Universidad Santo Tomás Villavicencio, CRAI, "Modelo Icontec NTC:1486:2022" (Word template,
+#      2024-04) — https://www.ustavillavicencio.edu.co/aa/crai/images/crai-usta/Autoarchivo/Modelos/Plantilla_NTC_1486-2022.doc  (values marked "template" come from page setup/styles, not prose)
+#   G3 Universidad EAFIT, Biblioteca, "Plantilla IEEE para la elaboración de trabajos escritos"
+#      (2023-03; layout per NTC 1486:2022, citations per IEEE) — https://repository.eafit.edu.co/items/ad77f0a3-17f6-4235-968d-25a80ec9d8cd
+# Not encoded (single source or disagreement; see P0.6-results.md): font family, body line
+# spacing, spacing between references, level-2 heading case, abstract length, keyword format,
+# reference list heading, página de aceptación, binding margin, citation system (footnotes,
+# Ibíd., Op. cit.), reference formats per type, reference list ordering.
+# Applies only when the resolved presentation standard is ICONTEC; Colombia never auto-enables it
+# (spec §11.3).
+rules:
+  - ruleId: CO.NTC1486.2022.FORMAT.PAPER.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: paper
+      values: { size: letter, widthMm: 215.9, heightMm: 279.4 }
+    source:
+      reference: "G2 and G3 templates (page size 12240x15840 twips = letter); no guide states the paper size in prose"
+      url: "https://www.ustavillavicencio.edu.co/aa/crai/images/crai-usta/Autoarchivo/Modelos/Plantilla_NTC_1486-2022.doc"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.FORMAT.MARGIN.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: page_margins
+      values: { topCm: 2, bottomCm: 2, leftCm: 2, rightCm: 2 }
+    source:
+      reference: "G1 ('Superior: 2 cm … Izquierdo: 2 cm … Derecho: 2 cm'; bottom not stated); G3 ('Márgenes: 2 cm en todos los lados'); G2 template (2.0 cm all sides)"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.FORMAT.FONT.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: font
+      values: { bodySizePt: 12 }   # family disputed: Arial (G1 'se recomienda', G2) vs Times New Roman (G3)
+    source:
+      reference: "G1 ('se recomienda Arial en tamaño de letra 12'); G2 template (12 pt); G3 ('Tamaño de la fuente: 12')"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.FORMAT.ALIGNMENT.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: text_alignment
+      values: { body: justified }
+    source:
+      reference: "G3 ('El texto o contenido debe escribirse justificado'); G2 template (Normal style justified)"
+      url: "https://repository.eafit.edu.co/items/ad77f0a3-17f6-4235-968d-25a80ec9d8cd"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.FORMAT.PAGINATION.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: pagination
+      values:
+        style: arabic_consecutive          # no roman numerals for preliminaries
+        countedNotNumbered: [cubierta, portada]
+        position: bottom_center
+        tocPageColumnLabel: "pág."
+    source:
+      reference: "G1 ('consecutiva en números arábigos, excepto la cubierta y la portada, las cuales se cuentan, pero no se enumeran'; 'centrado en el margen inferior'); G3 (same wording for the portada; centered footer in template; 'pág.' column)"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.STRUCTURE.FRONT_MATTER.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: front_matter_order
+      values:
+        order:
+          - { id: cubierta, required: false }          # G1 (only when printed), G2
+          - { id: portada, required: true }            # G1, G2, G3
+          - { id: dedicatoria, required: false }       # G1, G2
+          - { id: agradecimientos, required: false }   # G1, G2, G3
+          - { id: contenido, required: true }          # G1, G2, G3
+          - { id: listas_especiales, required: false, items: [tablas, figuras, anexos] }  # G2, G3
+          - { id: glosario, required: false }          # G1, G2
+          - { id: resumen, required: true, withKeywords: true }  # G1, G2, G3
+    source:
+      reference: "G1 (preliminaries a–i, then resumen); G2 template order; G3 template order"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.STRUCTURE.BODY.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: required_section
+      values:
+        body: [introduccion, capitulos, conclusiones, recomendaciones]
+        backMatter:
+          - { id: referencias, required: true }
+          - { id: anexos, required: false, numbering: letters }   # "Anexo A, B…" (G3); listed by G1, G2
+    source:
+      reference: "G1 ('Debe incluir': Introducción, Capítulos, Conclusiones, Recomendaciones, … Bibliografía, … Anexos); G2 template; G3 template"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.FORMAT.HEADINGS.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: heading_format
+      values:
+        numbering: decimal
+        maxNumberedLevels: 4
+        levels:
+          - { level: 1, case: upper, align: center, trailingPeriod: false, newPage: true }
+          - { level: 2, align: left, trailingPeriod: false }      # case disputed: upper (G1, G3) vs sentence (G2)
+          - { level: 3, case: sentence, align: left, runIn: true, endsWith: "." }
+          - { level: 4, case: sentence, align: left, runIn: true, endsWith: "." }
+        chapterWordShown: false
+    source:
+      reference: "G1 ('hasta el cuarto'; level 1 'mayúscula, centrado … No debe llevar punto final'; level 3+ 'mayúscula inicial y punto seguido'; chapter on 'hoja independiente'); G3 (level 1 'centrados, en mayúscula sostenida', new page; level 3 'mayúscula inicial y punto seguido. El texto debe continuar en el mismo renglón'); G2 template (level 3 run-in)"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []
+
+  - ruleId: CO.NTC1486.2022.FORMAT.CAPTIONS.01
+    level: TECHNICAL_STANDARD
+    authority: { organization: ICONTEC }
+    document: { id: NTC-1486, version: "2022" }
+    status: active
+    appliesWhen: { presentationStandard: icontec-ntc1486-2022 }
+    requirement:
+      kind: caption_position
+      values:
+        table: { position: above, label: "Tabla", numberFormat: "Tabla 1." }
+        figure: { position: above, label: "Figura", numberFormat: "Figura 1." }   # G3 (IEEE-driven) puts "Fig." below
+        sourceLine: { position: below, required: true }   # label disputed: "Fuente." (G2) / "Fuente:" (G3) / "Nombre de la fuente:" (G1)
+    source:
+      reference: "G1 (slide 20: 'Figura 1.' and 'Tabla 1.' above, source below); G2 template ('Figura 1.' and 'Tabla 1.' above, 'Fuente.' below); G3 ('Tabla 1.' above; source required for tables and figures)"
+      url: "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }
+    supersedes: []

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="note" version="1.0" default-locale="es-ES" demote-non-dropping-particle="never">
+  <!--
+    PROVISIONAL. Written for @alisio/plugin-thesis from one public university library guide of
+    NTC 1486:2022 (Institucion Universitaria Pascual Bravo, "Citacion y presentacion de referencias
+    bibliograficas NTC 1486:2022", 2024). Only that guide documents the citation and reference
+    format of the 2022 edition: confirm the result with your program, or replace this style with a
+    program-approved one in thesis/styles/. Datasets have no source and are rendered like other
+    documents. Corporate authors are kept as written (the guide capitalizes them inconsistently).
+    System: numbered footnotes at the foot of the page (a note per citation), "Ibid." for the
+    immediately preceding work, "Op. cit." for a work cited earlier, and an alphabetical list.
+  -->
+  <info>
+    <title>ICONTEC NTC 1486:2022 (provisional)</title>
+    <title-short>NTC 1486:2022</title-short>
+    <id>https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-thesis/styles/icontec-ntc1486-2022</id>
+    <link href="https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf" rel="documentation"/>
+    <link href="https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-thesis" rel="documentation"/>
+    <author>
+      <name>Alisio plugin-thesis contributors</name>
+    </author>
+    <category citation-format="note"/>
+    <category field="generic-base"/>
+    <summary>Provisional ICONTEC NTC 1486:2022 style: numbered footnotes and an alphabetical reference list. Source: Institucion Universitaria Pascual Bravo library guide (2024-12), the only 2022-edition guide found that documents the citation format.</summary>
+    <updated>2026-10-04T00:00:00+00:00</updated>
+    <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+  </info>
+
+  <locale xml:lang="es">
+    <terms>
+      <term name="accessed">consultado el</term>
+      <term name="available at">Disponible en</term>
+      <term name="in">En</term>
+      <term name="et-al">et al.</term>
+      <term name="and">y</term>
+      <term name="editor" form="short">
+        <single>coord.</single>
+        <multiple>coords.</multiple>
+      </term>
+      <term name="page" form="short">
+        <single>p.</single>
+        <multiple>pp.</multiple>
+      </term>
+      <term name="volume" form="short">
+        <single>vol.</single>
+        <multiple>vols.</multiple>
+      </term>
+      <term name="issue" form="short">
+        <single>no.</single>
+        <multiple>nos.</multiple>
+      </term>
+      <term name="edition" form="short">ed.</term>
+    </terms>
+  </locale>
+
+  <!-- Authors: SURNAME in capitals, given name after a comma; ";" and "y" between two or three; "et al." beyond three. -->
+  <macro name="author">
+    <names variable="author">
+      <name and="text" delimiter="; " delimiter-precedes-last="never" name-as-sort-order="all" sort-separator=", " et-al-min="4" et-al-use-first="1" initialize="false">
+        <name-part name="family" text-case="uppercase"/>
+      </name>
+      <et-al font-style="italic"/>
+      <substitute>
+        <names variable="editor"/>
+        <text macro="title"/>
+      </substitute>
+    </names>
+  </macro>
+  <macro name="author-short">
+    <names variable="author">
+      <name form="short" and="text" delimiter="; " delimiter-precedes-last="never" et-al-min="3" et-al-use-first="1">
+        <name-part name="family" text-case="uppercase"/>
+      </name>
+      <et-al font-style="italic"/>
+      <substitute>
+        <text macro="title"/>
+      </substitute>
+    </names>
+  </macro>
+  <macro name="editor">
+    <names variable="editor">
+      <name and="text" delimiter="; " delimiter-precedes-last="never" name-as-sort-order="all" sort-separator=", " et-al-min="4" et-al-use-first="1" initialize="false">
+        <name-part name="family" text-case="uppercase"/>
+      </name>
+      <label form="short" prefix=", "/>
+    </names>
+  </macro>
+  <macro name="title">
+    <text variable="title"/>
+  </macro>
+  <macro name="year">
+    <date variable="issued">
+      <date-part name="year"/>
+    </date>
+  </macro>
+  <macro name="year-sort">
+    <date variable="issued">
+      <date-part name="year"/>
+    </date>
+  </macro>
+  <macro name="publication">
+    <!-- Place: Publisher, Year. The place is omitted when the record has none. -->
+    <group delimiter=", ">
+      <group delimiter=": ">
+        <text variable="publisher-place"/>
+        <text variable="publisher"/>
+      </group>
+      <text macro="year"/>
+    </group>
+  </macro>
+  <macro name="pages-total">
+    <group delimiter=" ">
+      <text variable="number-of-pages"/>
+      <text value="p."/>
+    </group>
+  </macro>
+  <macro name="edition">
+    <group delimiter=" ">
+      <text variable="edition"/>
+      <text term="edition" form="short"/>
+    </group>
+  </macro>
+  <macro name="journal-locators">
+    <!-- 2023, vol. 54, no. 212, p. 105-127 -->
+    <group delimiter=", ">
+      <text macro="year"/>
+      <group delimiter=" ">
+        <label variable="volume" form="short"/>
+        <text variable="volume"/>
+      </group>
+      <group delimiter=" ">
+        <label variable="issue" form="short"/>
+        <text variable="issue"/>
+      </group>
+      <group delimiter=" ">
+        <text value="p."/>
+        <text variable="page"/>
+      </group>
+    </group>
+  </macro>
+  <macro name="identifiers">
+    <group delimiter=". ">
+      <group delimiter=" ">
+        <text value="ISBN"/>
+        <text variable="ISBN"/>
+      </group>
+      <group delimiter=" ">
+        <text value="ISSN"/>
+        <text variable="ISSN"/>
+      </group>
+      <group delimiter=": ">
+        <text value="Doi"/>
+        <text variable="DOI"/>
+      </group>
+    </group>
+  </macro>
+  <macro name="access">
+    <!-- [consultado el 10 de febrero de 2021]. Disponible en: URL -->
+    <group delimiter=". ">
+      <choose>
+        <if variable="accessed">
+          <group prefix="[" suffix="]" delimiter=" ">
+            <text term="accessed"/>
+            <date variable="accessed" form="text"/>
+          </group>
+        </if>
+      </choose>
+      <choose>
+        <if variable="URL">
+          <group delimiter=": ">
+            <text term="available at"/>
+            <text variable="URL"/>
+          </group>
+        </if>
+      </choose>
+    </group>
+  </macro>
+  <macro name="genre">
+    <text variable="genre"/>
+  </macro>
+
+  <!-- Reference body by type (G1 examples: libro, capitulo, articulo, tesis, norma, ley, sitio web). -->
+  <macro name="reference">
+    <choose>
+      <if type="article-journal article-magazine article-newspaper" match="any">
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <group delimiter=". ">
+            <group delimiter=": ">
+              <text term="in"/>
+              <text variable="container-title"/>
+            </group>
+            <text macro="journal-locators"/>
+          </group>
+          <text macro="identifiers"/>
+          <text macro="access"/>
+        </group>
+      </if>
+      <else-if type="chapter paper-conference entry-encyclopedia" match="any">
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <group delimiter=": ">
+            <text term="in"/>
+            <group delimiter=". ">
+              <text macro="editor"/>
+              <text variable="container-title"/>
+            </group>
+          </group>
+          <text macro="publication"/>
+          <group delimiter=" ">
+            <text value="Pp."/>
+            <text variable="page"/>
+          </group>
+          <text macro="identifiers"/>
+          <text macro="access"/>
+        </group>
+      </else-if>
+      <else-if type="book" match="any">
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <text macro="edition"/>
+          <text macro="publication"/>
+          <text macro="pages-total"/>
+          <text macro="identifiers"/>
+          <text macro="access"/>
+        </group>
+      </else-if>
+      <else-if type="thesis" match="any">
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <text macro="genre"/>
+          <text macro="publication"/>
+          <text macro="access"/>
+        </group>
+      </else-if>
+      <else-if type="report" match="any">
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <group delimiter=" ">
+            <text variable="genre"/>
+            <text variable="number"/>
+          </group>
+          <text macro="publication"/>
+          <text macro="pages-total"/>
+          <text macro="access"/>
+        </group>
+      </else-if>
+      <else-if type="webpage post post-weblog" match="any">
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <text macro="genre"/>
+          <text macro="publication"/>
+          <text macro="access"/>
+        </group>
+      </else-if>
+      <else>
+        <!-- Laws, standards, datasets and other documents: author, title, kind, publisher and year. -->
+        <group delimiter=". ">
+          <text macro="author"/>
+          <text macro="title"/>
+          <text macro="genre"/>
+          <text macro="publication"/>
+          <text macro="identifiers"/>
+          <text macro="access"/>
+        </group>
+      </else>
+    </choose>
+  </macro>
+
+  <macro name="locator">
+    <group delimiter=" ">
+      <label variable="locator" form="short"/>
+      <text variable="locator"/>
+    </group>
+  </macro>
+
+  <citation et-al-min="4" et-al-use-first="1" disambiguate-add-year-suffix="false">
+    <layout delimiter="; " suffix=".">
+      <choose>
+        <if position="ibid-with-locator">
+          <group delimiter=", ">
+            <text value="Ibid."/>
+            <text macro="locator"/>
+          </group>
+        </if>
+        <else-if position="ibid">
+          <text value="Ibid"/>
+        </else-if>
+        <else-if position="subsequent">
+          <group delimiter=", ">
+            <text macro="author-short"/>
+            <text value="Op. cit."/>
+            <text macro="locator"/>
+          </group>
+        </else-if>
+        <else-if type="article-journal article-magazine article-newspaper" match="any">
+          <!-- First note of an article: the locator replaces the page range. -->
+          <group delimiter=". ">
+            <text macro="author"/>
+            <text macro="title"/>
+            <group delimiter=", ">
+              <group delimiter=": ">
+                <text term="in"/>
+                <text variable="container-title"/>
+              </group>
+              <text macro="year"/>
+              <group delimiter=" ">
+                <label variable="volume" form="short"/>
+                <text variable="volume"/>
+              </group>
+              <group delimiter=" ">
+                <label variable="issue" form="short"/>
+                <text variable="issue"/>
+              </group>
+              <choose>
+                <if variable="locator">
+                  <text macro="locator"/>
+                </if>
+                <else>
+                  <group delimiter=" ">
+                    <text value="p."/>
+                    <text variable="page"/>
+                  </group>
+                </else>
+              </choose>
+            </group>
+          </group>
+        </else-if>
+        <else-if type="chapter paper-conference entry-encyclopedia" match="any">
+          <!-- First note of a chapter: the locator replaces the page range. -->
+          <group delimiter=". ">
+            <text macro="author"/>
+            <text macro="title"/>
+            <group delimiter=": ">
+              <text term="in"/>
+              <group delimiter=". ">
+                <text macro="editor"/>
+                <text variable="container-title"/>
+              </group>
+            </group>
+            <text macro="publication"/>
+            <choose>
+              <if variable="locator">
+                <text macro="locator"/>
+              </if>
+              <else>
+                <group delimiter=" ">
+                  <text value="Pp."/>
+                  <text variable="page"/>
+                </group>
+              </else>
+            </choose>
+          </group>
+        </else-if>
+        <else>
+          <group delimiter=", ">
+            <text macro="reference"/>
+            <text macro="locator"/>
+          </group>
+        </else>
+      </choose>
+    </layout>
+  </citation>
+
+  <bibliography hanging-indent="false" et-al-min="4" et-al-use-first="1" entry-spacing="1" line-spacing="1">
+    <sort>
+      <key macro="author"/>
+      <key macro="title"/>
+      <key macro="year-sort" sort="descending"/>
+    </sort>
+    <layout>
+      <choose>
+        <if variable="URL">
+          <text macro="reference"/>
+        </if>
+        <else>
+          <text macro="reference" suffix="."/>
+        </else>
+      </choose>
+    </layout>
+  </bibliography>
+</style>

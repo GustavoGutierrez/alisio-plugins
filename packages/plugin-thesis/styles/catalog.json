@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "styles": [
+    {
+      "id": "apa-7",
+      "title": "APA Style 7th edition",
+      "file": "apa.csl",
+      "provisional": false,
+      "citationFormat": "author-date",
+      "source": {
+        "url": "https://github.com/citation-style-language/styles/blob/master/apa.csl",
+        "license": "CC-BY-SA-3.0",
+        "retrieved": "2026-10-04"
+      }
+    },
+    {
+      "id": "ieee",
+      "title": "IEEE",
+      "file": "ieee.csl",
+      "provisional": false,
+      "citationFormat": "numeric",
+      "source": {
+        "url": "https://github.com/citation-style-language/styles/blob/master/ieee.csl",
+        "license": "CC-BY-SA-3.0",
+        "retrieved": "2026-10-04"
+      }
+    },
+    {
+      "id": "icontec-ntc1486-2022",
+      "title": "ICONTEC NTC 1486:2022 (provisional)",
+      "file": "icontec-ntc1486-2022.csl",
+      "provisional": true,
+      "citationFormat": "note",
+      "fallbackTypes": ["dataset"],
+      "source": {
+        "url": "https://pascualbravo.edu.co/wp-content/uploads/2024/12/ICONTEC.pdf",
+        "license": "CC-BY-SA-3.0",
+        "retrieved": "2026-10-04",
+        "basis": "secondary_source"
+      }
+    }
+  ]
+}

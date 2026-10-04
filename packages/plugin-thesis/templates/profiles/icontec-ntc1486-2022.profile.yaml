@@ -1,0 +1,36 @@
+# ICONTEC NTC 1486:2022 layout. Every value below comes from the policy rules in
+# policy-packs/countries/CO/academic-standards/ntc-1486-2022.yaml (basis: secondary_source):
+#   CO.NTC1486.2022.FORMAT.PAPER.01        letter paper (the brief decides; not set here)
+#   CO.NTC1486.2022.FORMAT.MARGIN.01       2 cm on every side
+#   CO.NTC1486.2022.FORMAT.FONT.01         12 pt (family disputed: asked in the interview)
+#   CO.NTC1486.2022.FORMAT.ALIGNMENT.01    justified body
+#   CO.NTC1486.2022.FORMAT.PAGINATION.01   arabic numbers throughout, bottom centre; the cover and
+#                                          title page are counted but not printed; "pag." column in
+#                                          the table of contents
+#   CO.NTC1486.2022.STRUCTURE.FRONT_MATTER.01  portada, dedicatoria, agradecimientos, contenido,
+#                                          listas, resumen
+#   CO.NTC1486.2022.FORMAT.HEADINGS.01     decimal numbering to level 4, level 1 uppercase centred
+#                                          on a new page, levels 3 and 4 run in with a final period
+#   CO.NTC1486.2022.FORMAT.CAPTIONS.01     table and figure captions above, source line below;
+#                                          numbered consecutively ("Tabla 1.")
+# Disputed values (font family, body line spacing, level-2 heading case) come from the brief
+# (presentation.bodyFont, presentation.lineSpacing) or an institution rule; the defaults below only
+# apply until then.
+id: icontec-ntc1486-2022
+description: ICONTEC NTC 1486:2022 layout from secondary sources; provisional.
+extends: generic
+margins: { top: 2cm, bottom: 2cm, inside: 2cm, outside: 2cm }
+font: { size: 12 }
+lineSpacing: 1.5
+paragraph: { indent: 0cm, spacing: 1em, justify: true }
+headings:
+  - { level: 1, size: 12, weight: bold, case: upper, numbering: "1", align: center, spaceBefore: 1em, spaceAfter: 1.2em, newPage: true }
+  - { level: 2, size: 12, weight: bold, case: none, numbering: "1.1", align: left, spaceBefore: 1.2em, spaceAfter: 0.8em, newPage: false }
+  - { level: 3, size: 12, weight: bold, case: none, numbering: "1.1.1", align: left, spaceBefore: 1.1em, spaceAfter: 0.7em, newPage: false, runIn: true, endsWith: "." }
+  - { level: 4, size: 12, weight: bold, case: none, numbering: "1.1.1.1", align: left, spaceBefore: 1em, spaceAfter: 0.6em, newPage: false, runIn: true, endsWith: "." }
+captions: { figurePosition: top, tablePosition: top, sourceBelow: true, numbering: continuous }
+pageNumbers: { front: arabic, body: arabic, position: center, continuous: true }
+frontMatter: [dedication, acknowledgments, toc, abstract]
+toc: { depth: 4, pageLabel: { value: true, ruleId: CO.NTC1486.2022.FORMAT.PAGINATION.01 } }
+header: none
+ruleId: CO.NTC1486.2022.FORMAT.MARGIN.01

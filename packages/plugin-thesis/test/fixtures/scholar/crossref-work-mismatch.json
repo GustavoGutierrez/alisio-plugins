@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.5555/soil.2015.099",
+    "type": "journal-article",
+    "title": ["Soil Moisture Dynamics in Andean Wetlands"],
+    "author": [{ "given": "Marta", "family": "Quispe" }],
+    "issued": { "date-parts": [[2015]] },
+    "container-title": ["Andean Hydrology Letters"],
+    "publisher": "Example Scholarly Press",
+    "URL": "https://doi.org/10.5555/soil.2015.099"
+  }
+}

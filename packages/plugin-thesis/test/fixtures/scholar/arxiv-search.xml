@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <title>ArXiv Query</title>
+  <entry>
+    <id>http://arxiv.org/abs/2203.01234v2</id>
+    <published>2022-03-02T10:00:00Z</published>
+    <title>Language Models for Citation Checking</title>
+    <summary>We test whether language models can flag unsupported citations &amp; fabricated references.</summary>
+    <author><name>Ivan Petrov</name></author>
+    <author><name>Mei Tanaka</name></author>
+    <arxiv:doi>10.5555/pre.2022.003</arxiv:doi>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2301.00077v1</id>
+    <published>2023-01-01T08:30:00Z</published>
+    <title>Evidence Graphs for
+      Thesis Writing</title>
+    <summary>An evidence graph links claims to sources.</summary>
+    <author><name>Sofia Ramos</name></author>
+  </entry>
+</feed>

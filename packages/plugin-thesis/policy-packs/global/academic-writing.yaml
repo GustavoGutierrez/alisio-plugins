@@ -1,0 +1,70 @@
+# Global writing conventions. Writing-guide overrides (level STYLE_GUIDE) come from
+# thesis/policy/writing-*.yaml (spec §11.1).
+rules:
+- ruleId: GLOBAL.WRITING.ABSTRACT.01
+  level: RECOMMENDATION
+  authority:
+    organization: alisio-plugin-thesis (synthesis)
+  document:
+    id: ABSTRACT-CONVENTIONS
+    version: '2026-10-04'
+  status: active
+  appliesWhen: {}
+  requirement:
+    kind: length_limit
+    values:
+      section: abstract
+      maxWords: 250
+      keywords:
+        min: 3
+        max: 5
+      perLanguage: true
+      severity: warning
+      overridable: true
+      observedRange:
+        maxWords:
+        - 240
+        - 500
+        keywordsMax:
+        - 5
+        - 7
+      note: 250 words is the most frequent limit (UdeA, Universidad de Chile doctorate); Udelar allows 300-500 for
+        doctorates; Colef 240; UNAL template 12 lines.
+  source:
+    reference: UdeA trabajos de grado (resumen 'máximo de 250 palabras'); Universidad de Chile Doctorado Ciencias
+      Silvoagropecuarias ('no más de 250 palabras … Palabras clave (3 a 5 palabras)'); Udelar ('entre tres y cinco
+      palabras clave')
+    url: https://uchile.cl/postgrados/doctorados/programas-interfacultades/doctorado-ciencias-silvoagropecuarias-y-veterinarias/formacion-e-investigacion/trabajo-de-tesis
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: secondary_source
+  supersedes: []
+- ruleId: GLOBAL.WRITING.PERSONAL_COMMUNICATION.01
+  level: RECOMMENDATION
+  authority:
+    organization: International Committee of Medical Journal Editors (ICMJE)
+  document:
+    id: ICMJE-RECOMMENDATIONS
+    version: 2026-01
+  status: active
+  appliesWhen: {}
+  requirement:
+    kind: source_quality
+    values:
+      rule: personal_communication_only_if_essential
+      inText:
+      - name
+      - date
+      inReferenceList: false
+      quote: Avoid citing a “personal communication” unless it provides essential information not available from
+        a public source, in which case the name of the person and date of communication should be cited in parentheses
+        in the text.
+  source:
+    reference: ICMJE Recommendations (updated January 2026), Section IV.A.3.g.i
+    url: https://www.icmje.org/icmje-recommendations.pdf
+    retrievedAt: '2026-10-04'
+  verification:
+    lastChecked: '2026-10-04'
+    basis: official_text
+  supersedes: []

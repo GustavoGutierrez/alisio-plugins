@@ -1,0 +1,21 @@
+schemaVersion: 1
+language: es-CO
+secondaryAbstractLanguage: en
+searchLanguages: [es, en]
+workType: undergraduate_thesis
+title: Verificación automática de evidencia bibliográfica en trabajos de grado
+subtitle: Un flujo reproducible de evidencia y generación de documentos
+authors:
+  - { name: Ana Ejemplo Rojas, id: null }
+advisors:
+  - { name: Luis Ejemplo Gómez, role: advisor }
+institution: { name: Universidad Ejemplo, faculty: Facultad de Ingeniería, program: Ingeniería de Sistemas, city: Bogotá, country: CO }
+year: 2026
+domain: { primary: computer_science, secondary: [] }
+approach: design_science
+studyDesign: null
+citationStyle: apa-7
+presentation: { standard: generic, paper: letter, fontProfile: serif, palette: okabe-ito, diagramTheme: neutral }
+targets: { pages: 60, words: null }
+aiUse: { assisted: true, declaration: auto }
+policy: { packs: auto }

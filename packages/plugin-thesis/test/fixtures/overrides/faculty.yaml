@@ -1,0 +1,7 @@
+rules:
+  - ruleId: TEST.FAC.CITATION
+    level: INSTITUTIONAL_RULE
+    status: active
+    requirement: { kind: citation_style, values: { id: ieee } }
+    source: { reference: "Synthetic faculty guide" }
+    verification: { lastChecked: "2026-10-04", basis: secondary_source }

@@ -1,0 +1,15 @@
+%% Thesis Studio architecture: from entry points to output adapters.
+%% Sources live at diagrams/plugin-thesis/ and render to packages/plugin-thesis/assets/.
+flowchart TD
+    Entry["Entry points<br/>/thesis:* commands, thesis_* tools,<br/>alisio-thesis CLI"] --> Coord["ThesisCoordinator (TypeScript)<br/>deterministic workflow authority"]
+    Coord --> Agents["Read-only child agents (8 roles)<br/>coordinator, methodologist, librarian, evidence auditor,<br/>architect, writer, editor, reviewer"]
+    Agents --> Json["Validated JSON envelopes<br/>(untrusted until code accepts them)"]
+    Json --> Coord
+    Coord --> Files[("Workspace artifacts<br/>thesis/ and .alisio/thesis/state.json<br/>only code writes files")]
+    Files --> Checks{"Deterministic checks<br/>G0 to G10"}
+    Checks --> Doc["ThesisDocument<br/>neutral document model"]
+    Doc --> Port["Renderer port"]
+    Port --> Typst["typst-pdf<br/>PDF and PDF/A"]
+    Port --> Chrome["chrome-pdf<br/>fallback"]
+    Port --> Html["html-preview"]
+    Port -.-> Docx["docx<br/>future adapter"]

@@ -1,0 +1,197 @@
+# Ley Estatutaria 1581 de 2012 (personal data protection; authority: SIC) and its regulation,
+# Decreto 1377 de 2013, now compiled in Decreto 1074 de 2015 (DUR Comercio), Libro 2, Parte 2,
+# Título 2, Capítulo 25. Rules cite the current DUR article and the original 1377 article.
+# Ethics triggers: identifiable_personal_data, sensitive_data, minors (see P0.6-results.md).
+rules:
+  - ruleId: CO.LEY1581.2012.TRIGGER.PERSONAL_DATA
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: identifiable_personal_data
+        definition: "Dato personal: Cualquier información vinculada o que pueda asociarse a una o varias personas naturales determinadas o determinables"
+        requires:
+          - CO.LEY1581.2012.CONSENT.04C
+          - CO.LEY1581.2012.INFORM.12
+          - CO.LEY1581.2012.SECURITY.04G
+          - CO.LEY1581.2012.PUBLICATION.04F
+          - CO.D1074.2015.AUTHORIZATION_PROOF.2_2_2_25_2_5
+        thesisSection: data_handling   # method chapter subsection or annex describing purpose, consent, storage, access, anonymization
+    source:
+      reference: "Ley 1581 de 2012, art. 3 lit. c"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY1581.2012.CONSENT.04C
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: consent_requirement
+      values:
+        timing: prior_to_collection
+        qualities: [prior, express, informed]
+        validForms: [written, oral, unequivocal_conduct]
+        silenceIsConsent: false
+        evidenceRequired: true
+        quote: "El Tratamiento sólo puede ejercerse con el consentimiento, previo, expreso e informado del Titular."
+        note: "Art. 10 lit. d waives authorization only where a law authorizes processing for historical, statistical or scientific purposes; it is not a blanket research exemption."
+    source:
+      reference: "Ley 1581 de 2012, arts. 4 lit. c, 9, 10 lit. d; Decreto 1074 de 2015, art. 2.2.2.25.2.4 (Decreto 1377 de 2013, art. 7)"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY1581.2012.INFORM.12
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: consent_requirement
+      values:
+        informationSheetElements:
+          - processing_and_purpose
+          - optional_answers_for_sensitive_or_minors_data
+          - data_subject_rights
+          - controller_identification_and_contact
+        evidenceRequired: true
+        quote: "deberá informarle de manera clara y expresa lo siguiente: a) El Tratamiento … y la finalidad del mismo; b) El carácter facultativo de la respuesta a las preguntas … sobre datos sensibles o sobre los datos de las niñas, niños y adolescentes; c) Los derechos…; d) La identificación…"
+    source:
+      reference: "Ley 1581 de 2012, art. 12 and parágrafo"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY1581.2012.SECURITY.04G
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: data_protection
+      values:
+        measures: [technical, human, administrative]
+        describeIn: data_handling
+        confidentialityDuty: all_team_members_including_after_study
+        quote: "se deberá manejar con las medidas técnicas, humanas y administrativas que sean necesarias para otorgar seguridad a los registros evitando su adulteración, pérdida, consulta, uso o acceso no autorizado"
+    source:
+      reference: "Ley 1581 de 2012, art. 4 lit. g, h"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY1581.2012.PUBLICATION.04F
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: data_protection
+      values:
+        publication: no_identifiable_personal_data_in_thesis_repository_or_open_dataset_unless_access_controlled
+        checks: [anonymize_before_publication]
+        quote: "Los datos personales, salvo la información pública, no podrán estar disponibles en Internet u otros medios de divulgación o comunicación masiva, salvo que el acceso sea técnicamente controlable"
+    source:
+      reference: "Ley 1581 de 2012, art. 4 lit. f"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY1581.2012.TRIGGER.SENSITIVE_DATA
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: sensitive_data }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: sensitive_data
+        categories: [racial_or_ethnic_origin, political_orientation, religious_or_philosophical_beliefs, union_or_social_organization_membership, human_rights_organization_membership, political_party_interests_or_opposition_rights, health, sex_life, biometric]
+        default: processing_prohibited
+        allowedWhen: [explicit_authorization, scientific_purpose_with_identity_suppression]
+        requires:
+          - CO.D1074.2015.SENSITIVE.2_2_2_25_2_3
+          - CO.LEY1581.2012.CONSENT.04C
+        quote: "Se prohíbe el Tratamiento de datos sensibles, excepto cuando: a) El Titular haya dado su autorización explícita … e) El Tratamiento tenga una finalidad histórica, estadística o científica. En este evento deberán adoptarse las medidas conducentes a la supresión de identidad de los Titulares."
+    source:
+      reference: "Ley 1581 de 2012, arts. 5 and 6 lit. a, e"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.D1074.2015.SENSITIVE.2_2_2_25_2_3
+    level: REGULATION
+    authority: { organization: Presidencia de la República de Colombia }
+    document: { id: DECRETO-1074-2015, version: "2015" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: sensitive_data }
+    requirement:
+      kind: consent_requirement
+      values:
+        mustInform: [authorization_of_sensitive_data_is_optional, which_items_are_sensitive]
+        participationConditionedOnSensitiveData: false
+        quote: "1. Informar al titular que por tratarse de datos sensibles no está obligado a autorizar su Tratamiento. … Ninguna actividad podrá condicionarse a que el Titular suministre datos personales sensibles."
+    source:
+      reference: "Decreto 1074 de 2015, art. 2.2.2.25.2.3 (Decreto 1377 de 2013, art. 6)"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=76608"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.D1074.2015.AUTHORIZATION_PROOF.2_2_2_25_2_5
+    level: REGULATION
+    authority: { organization: Presidencia de la República de Colombia }
+    document: { id: DECRETO-1074-2015, version: "2015" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: consent_requirement
+      values:
+        evidenceRequired: true
+        evidenceExamples: [signed_forms, recordings, logs]
+        quote: "Los Responsables deberán conservar prueba de la autorización otorgada por los Titulares de datos personales"
+    source:
+      reference: "Decreto 1074 de 2015, art. 2.2.2.25.2.5 (Decreto 1377 de 2013, art. 8)"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=76608"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.LEY1581.2012.TRIGGER.MINORS
+    level: LAW
+    authority: { organization: Congreso de la República de Colombia }
+    document: { id: LEY-1581-2012, version: "2012" }
+    status: active
+    appliesWhen: { country: CO, ethicsTrigger: minors }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: minors
+        default: processing_proscribed_except_public_data
+        allowedWhen: [best_interest_of_child, fundamental_rights_respected, legal_representative_authorizes_after_child_is_heard]
+        quote: "Queda proscrito el Tratamiento de datos personales de niños, niñas y adolescentes, salvo aquellos datos que sean de naturaleza pública."
+        note: "Sentencia C-748 de 2011 conditioned art. 7; the conditioned wording was not verified (open question)."
+    source:
+      reference: "Ley 1581 de 2012, art. 7; Decreto 1074 de 2015, art. 2.2.2.25.2.9 (Decreto 1377 de 2013, art. 12)"
+      url: "https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []

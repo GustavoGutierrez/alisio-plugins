@@ -1,0 +1,5 @@
+packId: CO
+scope: country
+version: "0.0.0-fixture"
+extends: global
+description: Synthetic country pack that mimics the shape of the real one.

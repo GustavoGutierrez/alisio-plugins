@@ -1,0 +1,71 @@
+{
+  "name": "@alisio/plugin-thesis",
+  "version": "0.0.0",
+  "description": "Plans, researches, drafts and typesets university theses with verified evidence, deterministic quality gates and fast Typst PDF builds in the language you choose.",
+  "keywords": [
+    "alisio-plugin",
+    "thesis",
+    "academic-writing",
+    "research"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-thesis"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-thesis#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "alisio-thesis": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    ".agents",
+    "templates",
+    "styles",
+    "policy-packs",
+    "typst-packages",
+    "assets",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "cover.webp"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "d3-dsv": "3.0.1",
+    "markdown-it": "15.0.2",
+    "markdown-it-footnote": "4.0.0",
+    "vega": "6.4.0",
+    "vega-interpreter": "2.3.2",
+    "vega-lite": "6.4.3",
+    "yaml": "2.9.1"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.3.0 <0.7.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.3.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

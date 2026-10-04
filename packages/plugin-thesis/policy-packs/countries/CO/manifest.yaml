@@ -1,0 +1,42 @@
+# Colombia (CO) policy pack manifest. Manifest format: spec §11.1.1.
+packId: CO
+scope: country
+country: CO
+version: "2026.10.04"
+lastChecked: "2026-10-04"
+extends: global
+languages: [es]
+files:
+  - higher-education/ley-30-1992.yaml
+  - academic-standards/ntc-1486-2022.yaml
+  - research-integrity/minciencias-res-0314-2018.yaml
+  - copyright/ley-23-1982.yaml
+  - copyright/ley-1915-2018.yaml
+  - copyright/decision-andina-351.yaml
+  - privacy/ley-1581-2012.yaml
+  - domains/health/resolucion-8430-1993.yaml
+  - official-domains.yaml
+defaults:
+  # Colombia never auto-enables ICONTEC (spec §11.3): no national rule imposes a presentation
+  # standard or citation style; Ley 30 de 1992 arts. 28–29 leave it to the institution.
+  presentationStandard: null
+  citationStyle: null
+  askInRound2: [citationStyle, presentationStandard, institution]
+availableStandards: [icontec-ntc1486-2022]
+ethicsTriggers:          # questionnaire ids answered yes/no (spec §11.4); `minors` is proposed here
+  - human_participants
+  - identifiable_personal_data
+  - sensitive_data
+  - intervention
+  - risk_above_minimal
+  - biological_samples
+  - animals
+  - communities
+  - clinical_research
+  - minors
+  - additional_institutional_rules
+domains:
+  health: domains/health/
+watchList:
+  - id: minsalud-draft-replacing-res-8430-titles-I-II
+    note: "Draft resolution in second public consultation (reported 2026-07-30); would repeal Res. 8430 Títulos I–II. Re-check before each release."

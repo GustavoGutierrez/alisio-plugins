@@ -1,0 +1,31 @@
+# Labels used by the thesis template. Keep every key present in every language file.
+figure: Figure
+table: Table
+equation: Equation
+section: Section
+chapter: Chapter
+annex: Annex
+annexes: Annexes
+contents: Contents
+list_of_figures: List of figures
+list_of_tables: List of tables
+abstract: Abstract
+keywords: Keywords
+references: References
+dedication: Dedication
+acknowledgments: Acknowledgments
+ai_declaration: AI-use declaration
+advisor: Advisor
+program: Program
+faculty: Faculty
+page_abbr: p.
+work_undergraduate_thesis: Undergraduate thesis
+work_degree_project: Degree project
+work_monograph: Monograph
+work_master_thesis: Master's thesis
+work_doctoral_dissertation: Doctoral dissertation
+evidence_law: Law
+evidence_standard: Standard
+evidence_dataset: Dataset
+evidence_thesis: Thesis
+evidence_preprint: Preprint

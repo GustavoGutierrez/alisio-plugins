@@ -1,0 +1,25 @@
+{
+  "bibliography": {
+    "book": "García Torres, M. (2019). Metodología de la investigación aplicada. Editorial Ejemplo.",
+    "chapter": "Rojas, C., Díaz Mora, E., & Silva, P. (2020). Evidencia verificada en proyectos de grado. En Análisis y diseño de sistemas de información (pp. 56-89). Editorial Ejemplo.",
+    "dataset": "DANE. (2018). Censo nacional de población y vivienda [Conjunto de datos]. DANE. https://www.dane.gov.co/censo",
+    "journal": "Pérez Ruiz, A., & Gómez, L. (2021). Verificación automática de referencias bibliográficas. Revista de Ingeniería Académica, 12(3), 45-67. https://doi.org/10.1234/example.2021.001",
+    "law": "Congreso de la República de Colombia. (2012). Ley Estatutaria 1581 de 2012 [Ley]. https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981",
+    "standard": "Instituto Colombiano de Normas Técnicas y Certificación. (2022). NTC 1486: Presentación de trabajos de investigación [Norma técnica]. ICONTEC.",
+    "thesis": "López Uribe, P. A. (2024). Diseño de un sistema de verificación de fuentes [Tesis]. Universidad Ejemplo.",
+    "webpage": "MinTIC. (2023). Guía de datos abiertos. https://www.mintic.gov.co/guia-datos-abiertos"
+  },
+  "citations": {
+    "book": "(García Torres, 2019, p. 12)",
+    "chapter": "(Rojas et al., 2020, p. 12)",
+    "dataset": "(DANE, 2018, p. 12)",
+    "journal": "(Pérez Ruiz & Gómez, 2021, p. 12)",
+    "law": "(Congreso de la República de Colombia, 2012, p. 12)",
+    "standard": "(Instituto Colombiano de Normas Técnicas y Certificación, 2022, p. 12)",
+    "thesis": "(López Uribe, 2024, p. 12)",
+    "webpage": "(MinTIC, 2023, p. 12)"
+  },
+  "lang": "es",
+  "styleId": "apa-7",
+  "version": 1
+}

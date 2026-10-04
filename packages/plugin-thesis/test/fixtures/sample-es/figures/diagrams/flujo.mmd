@@ -1,0 +1,6 @@
+flowchart LR
+  A[Buscar fuentes] --> B[Verificar]
+  B --> C{Citable?}
+  C -- Sí --> D[Redactar]
+  C -- No --> E[Descartar]
+  D --> F[Generar PDF]

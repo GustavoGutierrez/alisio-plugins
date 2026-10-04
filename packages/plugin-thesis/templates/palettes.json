@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "palettes": {
+    "okabe-ito": {
+      "kind": "categorical",
+      "description": "Color-blind safe default (Okabe and Ito). Yellow is excluded for lines.",
+      "colors": [
+        "#000000",
+        "#E69F00",
+        "#56B4E9",
+        "#009E73",
+        "#F0E442",
+        "#0072B2",
+        "#D55E00",
+        "#CC79A7"
+      ],
+      "excludeForLines": ["#F0E442"]
+    },
+    "tol-bright": {
+      "kind": "categorical",
+      "description": "Paul Tol bright qualitative scheme, color-blind safe.",
+      "colors": ["#4477AA", "#EE6677", "#228833", "#CCBB44", "#66CCEE", "#AA3377", "#BBBBBB"]
+    },
+    "tol-muted": {
+      "kind": "categorical",
+      "description": "Paul Tol muted qualitative scheme, for many categories.",
+      "colors": [
+        "#CC6677",
+        "#332288",
+        "#DDCC77",
+        "#117733",
+        "#88CCEE",
+        "#882255",
+        "#44AA99",
+        "#999933",
+        "#AA4499",
+        "#DDDDDD"
+      ]
+    },
+    "tol-high-contrast": {
+      "kind": "categorical",
+      "description": "Paul Tol high-contrast scheme, grayscale-print safe, at most three series.",
+      "colors": ["#004488", "#DDAA33", "#BB5566"],
+      "maxSeries": 3
+    },
+    "viridis": {
+      "kind": "sequential",
+      "description": "Perceptually uniform sequential scale.",
+      "colors": ["#440154", "#3B528B", "#21918C", "#5EC962", "#FDE725"]
+    },
+    "cividis": {
+      "kind": "sequential",
+      "description": "Color-blind optimized sequential scale.",
+      "colors": ["#00204D", "#414D6B", "#7C7B78", "#BCAF6F", "#FFEA46"]
+    }
+  }
+}

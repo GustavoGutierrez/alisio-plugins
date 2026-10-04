@@ -27,8 +27,10 @@
   `README.es.md` and everything under `site/` / `site/es/`. Each pair links to its mirror, states
   that the two must be updated together, and is updated in the same change. Spanish is neutral and
   professional.
+- **Bilingual package READMEs (exception, owner-approved):** `packages/plugin-thesis/README.md` /
+  `README.es.md`, under the same pairing rules as the repo-level docs.
 - **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this file, all source,
-  all package READMEs, all code comments, and every diagram label.
+  all other package READMEs, all code comments, and every diagram label.
 
 ## Required checks
 

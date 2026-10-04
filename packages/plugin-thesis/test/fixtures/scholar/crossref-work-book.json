@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message": {
+    "DOI": "10.5555/book.2018.001",
+    "type": "book",
+    "title": ["Research Methods for Software Engineering"],
+    "author": [{ "given": "Carla", "family": "Vega" }],
+    "issued": { "date-parts": [[2018]] },
+    "publisher": "Example University Press",
+    "ISBN": ["978-1-4028-9462-6"]
+  }
+}

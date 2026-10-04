@@ -1,0 +1,219 @@
+# Resolución 8430 de 1993 (MinSalud) — scientific, technical and administrative norms for
+# health research. In force with no recorded modifications (SuperSalud compilation, 2026-10-04).
+# Scope (art. 1): "la actividad investigativa en salud". Many universities apply it by analogy to
+# research with people in other fields; that is institutional practice, so rules here apply only
+# when domain is health unless an institutional rule extends them.
+# WATCH: a MinSalud draft resolution (second public consultation, reported 2026-07-30) would repeal
+# Títulos I and II and reportedly reduce the risk categories to two. Not issued as of 2026-10-04.
+rules:
+  - ruleId: CO.MINSALUD.R8430.1993.ETHICS_COMMITTEE.02
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: human_participants }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: human_participants
+        requires:
+          - CO.MINSALUD.R8430.1993.RISK_CLASSIFICATION.11
+          - CO.MINSALUD.R8430.1993.APPROVALS.06G
+          - CO.MINSALUD.R8430.1993.CONSENT.14_16
+        evidence: ethics_committee_approval_in_annexes
+        quote: "Las instituciones que vayan a realizar investigación en humanos, deberán tener un Comité de Etica en Investigación"
+    source:
+      reference: "Resolución 8430 de 1993, art. 2"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.APPROVALS.06G
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: human_participants }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: human_participants
+        approvals: [researcher_institution_legal_representative, research_site_institution, participant_informed_consent, ethics_committee]
+        mustStateRisks: true
+        quote: "autorización: del representante legal de la institución investigadora y de la institución donde se realice la investigación; el Consentimiento Informado de los participantes; y la aprobación del proyecto por parte del Comité de Etica"
+    source:
+      reference: "Resolución 8430 de 1993, art. 6 lit. d, e, g"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.RISK_CLASSIFICATION.11
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: human_participants }
+    requirement:
+      kind: risk_classification
+      values:
+        categories:
+          - id: sin_riesgo
+            definition: "técnicas y métodos de investigación documental restrospectivos y aquellos en los que no se realiza ninguna intervención o modificación intencionada de las variables biológicas, fisiológicas, sicológicas o sociales"
+            condition: "interviews and questionnaires qualify only when participants are not identified and sensitive aspects of conduct are not addressed"
+          - id: riesgo_minimo
+            definition: "estudios prospectivos que emplean el registro de datos a través de procedimientos comunes … pruebas sicológicas a grupos o individuos en los que no se manipulará la conducta del sujeto"
+          - id: riesgo_mayor_que_el_minimo
+            definition: "aquellas en que las probabilidades de afectar al sujeto son significativas"
+            examples: [radiology, new_drugs_or_devices, surgery, invasive_procedures, random_allocation, placebo_control]
+        escalateWhen: [identifiable_personal_data, sensitive_data]
+        aboveMinimalTrigger: risk_above_minimal
+    source:
+      reference: "Resolución 8430 de 1993, art. 11 lit. a, b, c"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.CONSENT.14_16
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: human_participants }
+    requirement:
+      kind: consent_requirement
+      values:
+        form: written
+        elements: [justification_and_objectives, procedures, expected_risks, expected_benefits, alternative_procedures, right_to_ask_questions, right_to_withdraw, confidentiality, new_information_commitment, treatment_and_compensation, additional_costs]
+        validity: [drafted_by_principal_investigator, reviewed_by_ethics_committee, two_witnesses_named, signed_by_subject_and_two_witnesses, made_in_duplicate]
+        waiverDecidedBy: ethics_committee
+        waivers:
+          riesgo_minimo: committee_may_allow_non_written_consent
+          sin_riesgo: committee_may_waive_consent
+        dependentParticipants: consent_obtained_by_independent_team_member
+        quote: "En el caso de investigaciones con riesgo mínimo, el Comité … podrá autorizar que el Consentimiento Informado se obtenga sin formularse por escrito y tratándose de investigaciones sin riesgo, podrá dispensar al investigador de la obtención del mismo."
+    source:
+      reference: "Resolución 8430 de 1993, arts. 14, 15 lit. a–k, 16 and parágrafos 1–2"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.PRIVACY.08
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: identifiable_personal_data }
+    requirement:
+      kind: data_protection
+      values:
+        identification: only_when_results_require_and_subject_authorizes
+        default: pseudonymize
+        quote: "se protegerá la privacidad del individuo, sujeto de investigación, identificándolo solo cuando los resultados lo requieran y éste lo autorice."
+    source:
+      reference: "Resolución 8430 de 1993, art. 8"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.COMMUNITIES.17_18
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: communities }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: communities
+        approvals: [community_health_authorities, community_civil_authorities, individual_informed_consent]
+        quote: "el investigador principal deberá obtener la aprobación de las autoridades de salud y de otras autoridades civiles de la comunidad a estudiar, además de obtener la carta de Consentimiento Informado de los individuos"
+    source:
+      reference: "Resolución 8430 de 1993, arts. 17–18"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.MINORS.23_26
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: minors }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: minors
+        requires: [prior_similar_studies_in_adults_and_immature_animals_unless_age_specific_condition, consent_of_parent_or_legal_representative, capacity_certification_by_neurologist_psychiatrist_or_psychologist, child_assent_when_capacity_allows]
+        quote: "aquella que se realice en menores de edad o en discapacitados físicos y mentales, deberá satisfacer plenamente todas las exigencias que se establecen en este capítulo."
+        note: "Arts. 27–32 were not read in full (open question)."
+    source:
+      reference: "Resolución 8430 de 1993, arts. 23–26"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.BIOLOGICAL.47
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: biological_samples }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: biological_samples
+        appliesTo: [human_organs, tissues, derivatives, products, cadavers]
+        quote: "comprende la que incluye la utilización de órganos, tejidos y sus derivados, productos y cadáveres de seres humanos"
+    source:
+      reference: "Resolución 8430 de 1993, art. 47 (Título II, Capítulo VI)"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.CLINICAL.49
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: clinical_research }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: clinical_research
+        appliesTo: [new_prophylactic_diagnostic_therapeutic_or_rehabilitation_resources]
+        requires: [ethics_committee_approval, CO.MINSALUD.R8430.1993.CONSENT.14_16]
+        quote: "Cuando se realice investigación en seres humanos, sobre nuevos recursos profilácticos, de diagnóstico, terapéuticos y de rehabilitación … deberá … satisfacer lo contemplado en este título."
+    source:
+      reference: "Resolución 8430 de 1993, arts. 49–50 (Título III)"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
+
+  - ruleId: CO.MINSALUD.R8430.1993.ANIMALS.87_89
+    level: REGULATION
+    authority: { organization: Ministerio de Salud de Colombia }
+    document: { id: RES-8430-1993, version: "1993" }
+    status: active
+    appliesWhen: { country: CO, domain: health, ethicsTrigger: animals }
+    requirement:
+      kind: ethics_trigger
+      values:
+        trigger: animals
+        requires: [comply_with_ley_84_de_1989, prefer_alternatives_models_simulation_in_vitro, justify_contribution_to_knowledge, minimum_number_of_animals, apply_3rs_replacement_reduction_refinement]
+        quote: "se sigue el principio de Russell Burch '3R', remplazo, reducción y refinamiento."
+        note: "Scope follows art. 1 (health research). Outside health, Ley 84 de 1989 and institutional animal-ethics rules apply; not encoded here (open question)."
+    source:
+      reference: "Resolución 8430 de 1993, arts. 87–89 (Título V)"
+      url: "https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/DE/DIJ/RESOLUCION-8430-DE-1993.PDF"
+      retrievedAt: "2026-10-04"
+    verification: { lastChecked: "2026-10-04", basis: official_text }
+    supersedes: []
