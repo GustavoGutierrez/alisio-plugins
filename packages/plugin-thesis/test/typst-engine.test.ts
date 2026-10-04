@@ -50,7 +50,7 @@ describe("pins (spec 16.1)", () => {
     expect(cacheRoot("/host", {})).toBe("/host");
     expect(cacheRoot(undefined, { ALISIO_CACHE_HOME: "/a", XDG_CACHE_HOME: "/x" })).toBe("/a");
     expect(cacheRoot(undefined, { XDG_CACHE_HOME: "/x" })).toBe(join("/x", "alisio"));
-    expect(cacheRoot(undefined, {}, () => "/home/u")).toBe(join("/home/u", ".cache", "alisio"));
+    expect(cacheRoot(undefined, {}, () => "/h/u")).toBe(join("/h/u", ".cache", "alisio"));
     expect(typstInstallDir("/c", "0.15.1")).toBe(join("/c", "thesis", "typst", "0.15.1"));
   });
 });
@@ -128,7 +128,7 @@ describe("running Typst safely", () => {
     const args = compileArgs({
       binary: "typst",
       buildDir: "/b",
-      packageCache: "/tmp/c",
+      packageCache: "/cache/c",
       packagePath: "/pkg/typst-packages",
       input: "main.typ",
       output: "thesis.pdf",
@@ -143,7 +143,7 @@ describe("running Typst safely", () => {
       "--package-path",
       "/pkg/typst-packages",
       "--package-cache-path",
-      "/tmp/c",
+      "/cache/c",
       "--diagnostic-format",
       "short",
       "--font-path",

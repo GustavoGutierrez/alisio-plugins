@@ -265,18 +265,18 @@ describe("network blocking and launch flags", () => {
     expect(isRequestAllowed("not a url", dir)).toBe(false);
   });
   it("launches Chrome headless with a temp profile, pipe transport and no extensions", () => {
-    expect(chromeArgs("/tmp/p", "pipe", false)).toEqual(
+    expect(chromeArgs("/scratch/p", "pipe", false)).toEqual(
       expect.arrayContaining([
         "--headless=new",
         "--remote-debugging-pipe",
-        "--user-data-dir=/tmp/p",
+        "--user-data-dir=/scratch/p",
         "--no-first-run",
         "--no-default-browser-check",
         "--disable-extensions",
       ]),
     );
-    expect(chromeArgs("/tmp/p", "pipe", false)).not.toContain("--no-sandbox");
-    expect(chromeArgs("/tmp/p", "websocket", true)).toEqual(
+    expect(chromeArgs("/scratch/p", "pipe", false)).not.toContain("--no-sandbox");
+    expect(chromeArgs("/scratch/p", "websocket", true)).toEqual(
       expect.arrayContaining(["--remote-debugging-port=0", "--no-sandbox"]),
     );
   });
