@@ -156,6 +156,128 @@ describe("SetupJobs", () => {
     await jobs.whenIdle();
   });
 
+  describe("cross-process ownership", () => {
+    const base = {
+      version: 1,
+      kind: "install",
+      state: "running",
+      startedAt: "2026-10-03T00:00:00.000Z",
+      updatedAt: "2026-10-03T00:00:01.000Z",
+      step: { n: 2, total: 6, name: "installing packages" },
+    };
+    const write = (extra: Record<string, unknown>) =>
+      writeFile(join(dir, "current.json"), JSON.stringify({ ...base, ...extra }));
+    const raw = () => readFile(join(dir, "current.json"), "utf8");
+    const probe = (alive: boolean, token?: string) => ({
+      alive: vi.fn(() => alive),
+      startToken: vi.fn(() => token),
+    });
+
+    it("stores the owner pid and start token in the running record", async () => {
+      const gate = deferred();
+      const jobs = new SetupJobs({ dir, pid: 4242, probe: probe(true, "tok") });
+      jobs.start("install", () => gate.promise);
+      await jobs.flush();
+      const record = await stored();
+      expect(record.pid).toBe(4242);
+      expect(record.ownerStart).toBe("tok");
+      gate.resolve();
+      await jobs.whenIdle();
+    });
+
+    it("leaves a running record owned by a live other process untouched", async () => {
+      await write({ pid: 4242 });
+      const before = await raw();
+      const jobs = new SetupJobs({ dir, pid: 1, probe: probe(true) });
+      await jobs.load();
+      await jobs.flush();
+      expect(jobs.current()?.state).toBe("running");
+      expect(jobs.ownedElsewhere()).toBe(true);
+      expect(await raw()).toBe(before);
+      expect(jobs.start("repair", async () => {})).toBe("busy");
+      expect(jobs.cancel()).toBe("other_process");
+      expect(await raw()).toBe(before);
+    });
+
+    it("marks a record whose owner is provably dead as interrupted", async () => {
+      await write({ pid: 4242 });
+      const jobs = new SetupJobs({ dir, pid: 1, probe: probe(false) });
+      await jobs.load();
+      expect(jobs.current()?.state).toBe("interrupted");
+      expect(jobs.ownedElsewhere()).toBe(false);
+      expect((await stored()).state).toBe("interrupted");
+    });
+
+    it("treats a reused pid (different start token) as a dead owner", async () => {
+      await write({ pid: 4242, ownerStart: "old" });
+      const jobs = new SetupJobs({ dir, pid: 1, probe: probe(true, "new") });
+      await jobs.load();
+      expect(jobs.current()?.state).toBe("interrupted");
+    });
+
+    it("keeps the record running when the start token matches or is unavailable", async () => {
+      await write({ pid: 4242, ownerStart: "same" });
+      const a = new SetupJobs({ dir, pid: 1, probe: probe(true, "same") });
+      await a.load();
+      expect(a.current()?.state).toBe("running");
+      const b = new SetupJobs({ dir, pid: 1, probe: probe(true, undefined) });
+      await b.load();
+      expect(b.current()?.state).toBe("running");
+    });
+
+    it("keeps legacy records without a pid on the previous behavior", async () => {
+      await write({});
+      const p = probe(true);
+      const jobs = new SetupJobs({ dir, pid: 1, probe: p });
+      await jobs.load();
+      expect(jobs.current()?.state).toBe("interrupted");
+      expect(p.alive).not.toHaveBeenCalled();
+    });
+
+    it("default probe: ESRCH is dead, EPERM is alive", async () => {
+      const kill = vi.spyOn(process, "kill");
+      try {
+        kill.mockImplementation(() => {
+          throw Object.assign(new Error("x"), { code: "EPERM" });
+        });
+        await write({ pid: 999999 });
+        const alive = new SetupJobs({ dir, pid: 1 });
+        await alive.load();
+        expect(alive.current()?.state).toBe("running");
+        kill.mockImplementation(() => {
+          throw Object.assign(new Error("x"), { code: "ESRCH" });
+        });
+        const dead = new SetupJobs({ dir, pid: 1 });
+        await dead.load();
+        expect(dead.current()?.state).toBe("interrupted");
+      } finally {
+        kill.mockRestore();
+      }
+    });
+
+    it("refresh re-reads a foreign record and picks up its completion", async () => {
+      await write({ pid: 4242 });
+      const jobs = new SetupJobs({ dir, pid: 1, probe: probe(true) });
+      await jobs.load();
+      await write({ pid: 4242, state: "succeeded" });
+      await jobs.refresh();
+      expect(jobs.current()?.state).toBe("succeeded");
+      expect(jobs.ownedElsewhere()).toBe(false);
+    });
+
+    it("records the activation outcome on a finished job", async () => {
+      const jobs = new SetupJobs({ dir, now: () => new Date("2026-10-03T01:00:00Z") });
+      jobs.start("install", async () => {});
+      await jobs.whenIdle();
+      jobs.setActivation({ status: "declined" });
+      await jobs.flush();
+      expect((await stored()).activation).toEqual({
+        status: "declined",
+        at: "2026-10-03T01:00:00.000Z",
+      });
+    });
+  });
+
   it("ignores a malformed record", async () => {
     await writeFile(join(dir, "current.json"), "{broken");
     const jobs = new SetupJobs({ dir });
