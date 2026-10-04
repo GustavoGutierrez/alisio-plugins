@@ -107,11 +107,11 @@ describe("plugin metadata", () => {
 });
 
 describe("setup wiring", () => {
-  it("registers three commands and the provider, and nothing else", async () => {
+  it("registers four commands and the provider, and nothing else", async () => {
     const host = fakeHost();
     const laya = createLayaPlugin({ env: env(), home: dir, exitHook: false });
     await laya.setup(host.api);
-    expect([...host.commands.keys()].sort()).toEqual(["cancel", "setup", "status"]);
+    expect([...host.commands.keys()].sort()).toEqual(["activate", "cancel", "setup", "status"]);
     expect(host.providers).toHaveLength(1);
     expect(host.providers[0]).toMatchObject({ id: "laya", name: "Laya" });
     await laya.dispose?.();

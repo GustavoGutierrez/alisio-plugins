@@ -872,3 +872,20 @@ not on a busy CPU.
 
 The catalog category `decisions` was added to `categories.json`, the registry schema, `format.ts` labels, badge
 colours and the EN/ES developer docs; the Laya card is classified `decisions`.
+
+## 17. 0.1.1 note (2026-10-03)
+
+Two changes, no new SDK or core requirement (peer range unchanged, `>=0.3.0 <0.7.0`).
+
+1. **Live setup jobs are never marked `interrupted` by another process.** The job record now carries the owner `pid`
+   and, on Linux, a process start token that guards against pid reuse (additive fields; records without a pid keep the
+   old behavior). `load()` marks a `running` record `interrupted` only when the owner is provably dead (`ESRCH`; `EPERM`
+   counts as alive). A live foreign owner leaves the record untouched; `/laya:status` reports it as running in another
+   Alisio process (read-only) and `/laya:cancel` says it can only be cancelled from the process that started it.
+   No cross-process cancel was implemented.
+2. **Automatic activation after setup.** Core 0.4.2 adds the optional `api.decisions.activate(providerId)`. The plugin
+   feature-detects it with a local structural type, calls it once when an install or repair job succeeds, and stores
+   `activation: { status, at }` (plus the active provider id for `other_provider_active`) in the job record. The host
+   asks for confirmation and persists the global config; the plugin never writes the user's `config.json`.
+   `/laya:activate` repeats the call on demand; `/laya:status` gives a next step per outcome, and cores without the
+   member keep the manual `decisions.provider = "laya"` instruction.

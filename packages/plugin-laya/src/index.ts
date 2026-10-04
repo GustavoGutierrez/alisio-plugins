@@ -2,12 +2,12 @@
  * `@alisio/plugin-laya` — a local Laya decision provider.
  *
  * Registers a `DecisionProvider` (id `laya`) backed by a managed, isolated Laya server, plus the
- * `/laya:setup`, `/laya:status` and `/laya:cancel` commands. The provider is inert until the core
+ * `/laya:setup`, `/laya:status`, `/laya:activate` and `/laya:cancel` commands. The provider is inert until the core
  * activates it (`decisions.provider = "laya"`): no process, no network, no writes outside the
  * plugin's own directories. Laya is optional; Alisio works without it.
  */
 import { definePlugin, type Plugin, type PluginAPI } from "@alisio/sdk";
-import { type CommandDeps, createCommandHandlers } from "./commands.js";
+import { type ActivationResult, type CommandDeps, createCommandHandlers } from "./commands.js";
 import { createLayaProvider } from "./provider.js";
 import { LayaRuntime, type RuntimeDeps } from "./runtime.js";
 import { VERSION } from "./version.js";
@@ -21,6 +21,14 @@ export * from "./provider.js";
 export * from "./runtime.js";
 export * from "./transport/http.js";
 export { VERSION } from "./version.js";
+
+/**
+ * Optional host member (core 0.4.2+). The published SDK typings do not carry it yet, so it is
+ * detected structurally and never required.
+ */
+interface DecisionsWithActivate {
+  activate?: (providerId: string) => Promise<ActivationResult>;
+}
 
 export interface CreateLayaPluginOptions {
   env?: Readonly<Record<string, string | undefined>>;
@@ -82,6 +90,13 @@ export function createLayaPlugin(options: CreateLayaPluginOptions = {}): Plugin 
           options: api.options !== undefined,
           registered: () => registered,
           activeProviderId: () => api.decisions?.activeProvider()?.id ?? null,
+          ...(typeof (api.decisions as DecisionsWithActivate | undefined)?.activate === "function"
+            ? {
+                activate: (id: string) =>
+                  (api.decisions as DecisionsWithActivate).activate?.(id) ??
+                  Promise.resolve({ status: "unavailable" as const }),
+              }
+            : {}),
         },
         ...(options.runner ? { runner: options.runner } : {}),
         ...(options.discover ? { discover: options.discover } : {}),
@@ -96,6 +111,9 @@ export function createLayaPlugin(options: CreateLayaPluginOptions = {}): Plugin 
         }),
         api.commands.register("status", (args) => handlers.status(args), {
           description: "Show the Laya provider, runtime and setup status",
+        }),
+        api.commands.register("activate", () => handlers.activate(), {
+          description: "Make Laya the active decision provider (the host asks you to confirm)",
         }),
         api.commands.register("cancel", () => handlers.cancel(), {
           description: "Cancel a running Laya setup job",

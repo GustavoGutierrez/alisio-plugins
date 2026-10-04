@@ -29,7 +29,10 @@ Then, inside Alisio:
 1. `/laya:setup` — shows exactly what will be downloaded and where from, and asks for explicit
    consent before anything is fetched or written. It starts a background job and returns at once.
 2. `/laya:status` — follow progress, then check the provider. `/laya:cancel` aborts a running setup.
-3. Activate the provider in your Alisio configuration: `decisions.provider = "laya"`.
+3. Activation: on Alisio core 0.4.2 or newer a successful setup asks you once to confirm and then makes Laya the
+   active provider (it never overrides a different provider you configured; run `/laya:activate` to retry
+   after declining). On older cores, or to switch manually, set `decisions.provider = "laya"` in the global
+   Alisio configuration. The plugin itself never edits your `config.json`.
 
 Installing the package alone downloads nothing and starts nothing.
 
@@ -39,7 +42,10 @@ Installing the package alone downloads nothing and starts nothing.
 | --- | --- |
 | `/laya:setup [--device auto\|cpu\|cuda\|mps] [--model multilingual\|english\|typed-decisions\|auto] [--yes] [--repair] [--uninstall]` | Installs (or repairs, or removes) the managed runtime. Without an interactive UI it refuses unless `--yes` is passed. |
 | `/laya:status` | Host support, setup job, installed pins, effective config with its source, server state, restarts, last error, observed latency. |
+| `/laya:activate` | Retries making Laya the active decision provider (the host asks for confirmation; needs core 0.4.2 or newer). |
 | `/laya:cancel` | Cancels a running setup job; the previous runtime stays untouched. |
+
+A setup job started by another Alisio process is shown as running there and is left untouched; it can only be cancelled from the process that started it.
 
 ## Configuration
 

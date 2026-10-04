@@ -20,6 +20,7 @@ import { assertContained } from "./paths.js";
 import { buildChildEnv } from "./runtime/env.js";
 import { layaServe, venvBinDir } from "./runtime/install-state.js";
 import { buildPlan, formatConsentText, runInstall, uninstallRuntime } from "./runtime/installer.js";
+import type { ActivationStatus } from "./runtime/jobs.js";
 import { digestsEnv, type ModelName } from "./runtime/manifest.js";
 import { discoverPython } from "./runtime/python.js";
 import { nodeRunner, type Runner } from "./runtime/runner.js";
@@ -34,12 +35,21 @@ export interface CommandUi {
   status(key: string, text: string | undefined, detail?: string): void;
 }
 
+/** Outcome of the optional `api.decisions.activate` host member (core 0.4.2+). */
+export interface ActivationResult {
+  status: ActivationStatus;
+  active?: string;
+  message?: string;
+}
+
 export interface HostSupport {
   decisions: boolean;
   paths: boolean;
   options: boolean;
   registered: () => boolean;
   activeProviderId: () => string | null;
+  /** Present only when the host offers `api.decisions.activate`; older cores omit it. */
+  activate?: (providerId: string) => Promise<ActivationResult>;
 }
 
 export interface CommandDeps {
@@ -151,6 +161,43 @@ export interface CommandHandlers {
   setup(args: string): Promise<string>;
   status(args?: string): Promise<string>;
   cancel(args?: string): Promise<string>;
+  activate(args?: string): Promise<string>;
+}
+
+const MANUAL_ACTIVATION =
+  'Set decisions.provider = "laya" in the global Alisio configuration to activate it';
+
+const KNOWN_ACTIVATION: readonly string[] = [
+  "activated",
+  "already_active",
+  "other_provider_active",
+  "declined",
+  "needs_confirmation",
+  "disabled",
+  "unavailable",
+];
+
+/** The user-facing explanation and next step for one activation outcome. */
+export function activationText(
+  status: ActivationStatus | undefined,
+  active?: string | null,
+): string {
+  switch (status) {
+    case "activated":
+      return "Laya is now the active decision provider";
+    case "already_active":
+      return "nothing to do; Laya is already the active decision provider";
+    case "other_provider_active":
+      return `another decision provider is active${active ? ` (${active})` : ""} and was left unchanged; to switch to Laya set decisions.provider = "laya" in the global Alisio configuration`;
+    case "declined":
+      return 'activation was declined; run /laya:activate to try again, or set decisions.provider = "laya" in the global Alisio configuration';
+    case "needs_confirmation":
+      return 'activation needs your confirmation, which could not be asked here; run /laya:activate from an interactive session, or set decisions.provider = "laya" in the global Alisio configuration';
+    case "disabled":
+      return "decision providers are disabled in this Alisio configuration, so Laya was not activated";
+    default:
+      return `${MANUAL_ACTIVATION}`;
+  }
 }
 
 export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
@@ -168,7 +215,9 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
   function jobLine(): string {
     const job = runtime.jobs.current();
     if (!job) return "setup: no job has run";
-    const parts = [`setup: ${job.kind} ${job.state}`];
+    const parts = [
+      `setup: ${job.kind} ${job.state}${runtime.jobs.ownedElsewhere() ? " in another Alisio process" : ""}`,
+    ];
     if (job.step) parts.push(`step ${job.step.n}/${job.step.total} (${job.step.name})`);
     if (job.state === "running") {
       parts.push(
@@ -181,6 +230,7 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
   }
 
   async function status(): Promise<string> {
+    await runtime.jobs.refresh();
     const lines: string[] = ["Laya decision provider"];
     const { host } = deps;
     const yn = (v: boolean) => (v ? "yes" : "no");
@@ -232,13 +282,21 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
 
     const job = runtime.jobs.current();
     let next: string;
-    if (job?.state === "running") next = "setup is running; /laya:cancel aborts it";
+    const activation = job?.activation?.status;
+    if (job?.state === "running" && runtime.jobs.ownedElsewhere())
+      next = "setup is running in another Alisio process; wait for it to finish";
+    else if (job?.state === "running") next = "setup is running; /laya:cancel aborts it";
     else if (installed.kind !== "installed") next = "run /laya:setup";
     else if (snap.state === "failed" || snap.state === "backoff")
       next = "run /laya:setup --repair if it keeps failing";
-    else if (!runtime.isActive)
-      next = 'set decisions.provider = "laya" in the Alisio configuration';
-    else next = "nothing; Laya is active";
+    else if (runtime.isActive)
+      next =
+        activation === "activated" || activation === "already_active"
+          ? activationText(activation)
+          : "nothing; Laya is active";
+    else if (activation && activation !== "activated" && activation !== "already_active")
+      next = activationText(activation, host.activeProviderId() ?? job?.activation?.active);
+    else next = 'set decisions.provider = "laya" in the Alisio configuration';
     lines.push(`next step: ${next}`);
     return lines.join("\n");
   }
@@ -295,10 +353,42 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
     });
   }
 
+  /** Ask the host to activate Laya; never throws, never writes config here. */
+  async function tryActivate(): Promise<ActivationResult | null> {
+    const activate = deps.host.activate;
+    if (!activate) return null;
+    try {
+      const result = await activate("laya");
+      const known = result && KNOWN_ACTIVATION.includes(result.status);
+      return known
+        ? {
+            status: result.status,
+            ...(typeof result.active === "string" ? { active: result.active } : {}),
+          }
+        : { status: "unavailable" };
+    } catch {
+      return { status: "unavailable" };
+    }
+  }
+
+  async function activate(): Promise<string> {
+    await runtime.jobs.refresh();
+    if (runtime.installed.kind !== "installed") {
+      return "Laya is not installed yet: run /laya:setup first.";
+    }
+    const result = await tryActivate();
+    if (!result)
+      return `This Alisio core cannot activate providers automatically. ${MANUAL_ACTIVATION}.`;
+    runtime.jobs.setActivation(result);
+    const text = activationText(result.status, result.active);
+    return `${text.charAt(0).toUpperCase()}${text.slice(1)}.`;
+  }
+
   async function setup(args: string): Promise<string> {
     const parsed = parseSetupArgs(args);
     if (!parsed.ok) return parsed.error;
     const { flags } = parsed;
+    await runtime.jobs.refresh();
     if (runtime.jobs.current()?.state === "running") {
       return `Setup is already running.\n${jobLine()}\nCancel it with /laya:cancel.`;
     }
@@ -393,6 +483,8 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
       await persistFlags(flags);
       await runtime.reloadConfig();
       await runtime.refresh();
+      const activation = await tryActivate();
+      if (activation) runtime.jobs.setActivation(activation);
       return `installed laya ${record.laya}`;
     });
     ui.status("laya", outcome === "started" ? "setup starting" : undefined);
@@ -413,10 +505,15 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
   }
 
   async function cancel(): Promise<string> {
-    return runtime.jobs.cancel() === "cancelled"
+    await runtime.jobs.refresh();
+    const outcome = runtime.jobs.cancel();
+    if (outcome === "other_process") {
+      return "Setup is running in another Alisio process; it can only be cancelled from the process that started it.";
+    }
+    return outcome === "cancelled"
       ? "Cancelling setup; the previous runtime, if any, stays untouched."
       : "No setup job is running.";
   }
 
-  return { setup, status, cancel };
+  return { setup, status, cancel, activate };
 }

@@ -444,3 +444,214 @@ describe("/laya:status", () => {
     expect(out).not.toMatch(/Bearer|[0-9a-f]{64}/);
   });
 });
+
+type ActivateResult = {
+  status:
+    | "activated"
+    | "already_active"
+    | "other_provider_active"
+    | "declined"
+    | "needs_confirmation"
+    | "disabled"
+    | "unavailable";
+  active?: string;
+};
+
+function hostWith(
+  activate?: (id: string) => Promise<ActivateResult>,
+  active: string | null = null,
+) {
+  return {
+    decisions: true,
+    paths: true,
+    options: true,
+    activeProviderId: () => active,
+    registered: () => true,
+    ...(activate ? { activate } : {}),
+  };
+}
+
+describe("activation after setup", () => {
+  const cases: Array<[ActivateResult, RegExp]> = [
+    [{ status: "activated" }, /Laya is now the active decision provider/],
+    [{ status: "already_active" }, /nothing to do/i],
+    [
+      { status: "other_provider_active", active: "builtin" },
+      /builtin.*decisions\.provider = "laya"/s,
+    ],
+    [{ status: "declined" }, /\/laya:activate.*decisions\.provider = "laya"/s],
+    [{ status: "needs_confirmation" }, /\/laya:activate.*decisions\.provider = "laya"/s],
+    [{ status: "disabled" }, /disabled/i],
+    [{ status: "unavailable" }, /decisions\.provider = "laya"/],
+  ];
+
+  it.each(cases)(
+    "%j is stored in the job record and explained by /laya:status",
+    async (result, text) => {
+      const activate = vi.fn(async () => result);
+      const { handlers, runtime } = await setup({ host: hostWith(activate) });
+      await installRuntime();
+      await runtime.refresh();
+      await handlers.setup("");
+      await runtime.jobs.whenIdle();
+      expect(activate).toHaveBeenCalledOnce();
+      expect(activate).toHaveBeenCalledWith("laya");
+      const stored = JSON.parse(
+        await readFile(
+          join(dir, "state", "plugins", "laya", "runtime", "jobs", "current.json"),
+          "utf8",
+        ),
+      );
+      expect(stored.activation.status).toBe(result.status);
+      expect(typeof stored.activation.at).toBe("string");
+      if (result.status === "activated" || result.status === "already_active") {
+        await runtime.activate();
+      }
+      const out = await handlers.status();
+      expect(out).toMatch(text);
+      expect(await handlers.status()).toMatch(text);
+      expect(activate).toHaveBeenCalledOnce();
+    },
+  );
+
+  it("does not call activate when setup fails or is cancelled", async () => {
+    const activate = vi.fn(async () => ({ status: "activated" as const }));
+    const { handlers, runtime, install } = await setup({ host: hostWith(activate) });
+    install.mockRejectedValueOnce(new InstallFailure("pip_failed", "installing packages", "boom"));
+    await handlers.setup("");
+    await runtime.jobs.whenIdle();
+    expect(runtime.jobs.current()?.state).toBe("failed");
+    expect(activate).not.toHaveBeenCalled();
+    expect(runtime.jobs.current()?.activation).toBeUndefined();
+  });
+
+  it("activates after a successful repair but not after an uninstall", async () => {
+    const activate = vi.fn(async () => ({ status: "activated" as const }));
+    const { handlers, runtime } = await setup({ host: hostWith(activate) });
+    await installRuntime();
+    await handlers.setup("--repair");
+    await runtime.jobs.whenIdle();
+    expect(runtime.jobs.current()?.kind).toBe("repair");
+    expect(activate).toHaveBeenCalledOnce();
+    await handlers.setup("--uninstall --yes");
+    await runtime.jobs.whenIdle();
+    expect(activate).toHaveBeenCalledOnce();
+  });
+
+  it("treats a throwing activate as unavailable and keeps the install succeeded", async () => {
+    const activate = vi.fn(async () => {
+      throw new Error("host exploded: secret-token");
+    });
+    const { handlers, runtime } = await setup({ host: hostWith(activate as never) });
+    await handlers.setup("");
+    await runtime.jobs.whenIdle();
+    expect(runtime.jobs.current()?.state).toBe("succeeded");
+    expect(runtime.jobs.current()?.activation?.status).toBe("unavailable");
+    expect(JSON.stringify(runtime.jobs.current())).not.toContain("secret-token");
+  });
+
+  it("on a core without activate, setup succeeds and status keeps the manual instruction", async () => {
+    const { handlers, runtime } = await setup({ host: hostWith() });
+    await installRuntime();
+    await runtime.refresh();
+    await handlers.setup("");
+    await runtime.jobs.whenIdle();
+    expect(runtime.jobs.current()?.state).toBe("succeeded");
+    expect(runtime.jobs.current()?.activation).toBeUndefined();
+    expect(await handlers.status()).toContain('decisions.provider = "laya"');
+  });
+
+  it("never writes the user's config.json when activating", async () => {
+    const activate = vi.fn(async () => ({ status: "activated" as const }));
+    const { handlers, runtime } = await setup({ host: hostWith(activate) });
+    await handlers.setup("");
+    await runtime.jobs.whenIdle();
+    await expect(readFile(runtime.paths.configFile, "utf8")).rejects.toThrow();
+  });
+});
+
+describe("/laya:activate", () => {
+  it("retries the activation on demand and records the outcome", async () => {
+    const activate = vi
+      .fn<(id: string) => Promise<ActivateResult>>()
+      .mockResolvedValueOnce({ status: "declined" })
+      .mockResolvedValueOnce({ status: "activated" });
+    const { handlers, runtime } = await setup({ host: hostWith(activate) });
+    await installRuntime();
+    await runtime.refresh();
+    await handlers.setup("");
+    await runtime.jobs.whenIdle();
+    expect(runtime.jobs.current()?.activation?.status).toBe("declined");
+    expect(await handlers.activate()).toMatch(/now the active decision provider/);
+    expect(activate).toHaveBeenCalledTimes(2);
+    expect(runtime.jobs.current()?.activation?.status).toBe("activated");
+    activate.mockResolvedValueOnce({ status: "already_active" });
+    expect(await handlers.activate()).toMatch(/already/i);
+  });
+
+  it("explains each non-activated status", async () => {
+    for (const [result, text] of [
+      [{ status: "needs_confirmation" }, /confirm/i],
+      [{ status: "other_provider_active", active: "builtin" }, /builtin/],
+      [{ status: "disabled" }, /disabled/i],
+      [{ status: "unavailable" }, /decisions\.provider/],
+    ] as Array<[ActivateResult, RegExp]>) {
+      const { handlers, runtime } = await setup({ host: hostWith(async () => result) });
+      await installRuntime();
+      await runtime.refresh();
+      expect(await handlers.activate()).toMatch(text);
+    }
+  });
+
+  it("falls back to the manual instruction when the core has no activate", async () => {
+    const { handlers, runtime } = await setup({ host: hostWith() });
+    await installRuntime();
+    await runtime.refresh();
+    expect(await handlers.activate()).toContain('decisions.provider = "laya"');
+  });
+
+  it("asks for setup first when Laya is not installed, without calling the host", async () => {
+    const activate = vi.fn(async () => ({ status: "activated" as const }));
+    const { handlers } = await setup({ host: hostWith(activate) });
+    expect(await handlers.activate()).toContain("/laya:setup");
+    expect(activate).not.toHaveBeenCalled();
+  });
+});
+
+describe("a setup job owned by another Alisio process", () => {
+  async function foreignJob() {
+    const jobs = join(dir, "state", "plugins", "laya", "runtime", "jobs");
+    await mkdir(jobs, { recursive: true });
+    const file = join(jobs, "current.json");
+    await writeFile(
+      file,
+      JSON.stringify({
+        version: 1,
+        kind: "install",
+        state: "running",
+        startedAt: "2026-10-03T00:00:00.000Z",
+        updatedAt: "2026-10-03T00:00:01.000Z",
+        step: { n: 2, total: 6, name: "installing packages" },
+        pid: process.ppid,
+      }),
+    );
+    return file;
+  }
+
+  it("is reported as running elsewhere by status, setup and cancel, with no writes", async () => {
+    const file = await foreignJob();
+    const before = await readFile(file, "utf8");
+    const { handlers, install, ui } = await setup();
+    const status = await handlers.status();
+    expect(status).toMatch(/running in another Alisio process/);
+    expect(status).toContain("2/6");
+    expect(status).not.toMatch(/interrupted/);
+    expect(await handlers.setup("--yes")).toMatch(/another Alisio process/);
+    expect(install).not.toHaveBeenCalled();
+    expect(ui.askQuestions).not.toHaveBeenCalled();
+    expect(await handlers.cancel()).toMatch(
+      /only be cancelled from the (Alisio )?process that started it/,
+    );
+    expect(await readFile(file, "utf8")).toBe(before);
+  });
+});
