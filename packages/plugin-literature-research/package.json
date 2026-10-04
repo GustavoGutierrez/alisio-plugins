@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-literature-research",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Safe zero-key scholarly metadata research tools for Alisio.",
   "keywords": [
     "alisio-plugin",
@@ -41,7 +41,7 @@
     "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "@alisio/sdk": ">=0.1.0-alpha.10 <0.4.0"
+    "@alisio/sdk": ">=0.1.0-alpha.10 <0.5.0"
   },
   "devDependencies": {
     "@alisio/sdk": "0.1.0-alpha.11",

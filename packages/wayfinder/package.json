@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-wayfinder",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Coordinates a resumable specification-driven development workflow by delegating bounded phases to fresh Alisio child sessions and persisting validated artifacts in the workspace.",
   "keywords": [
     "alisio-plugin",
@@ -42,7 +42,7 @@
     "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "@alisio/sdk": ">=0.1.0-alpha.10 <0.4.0"
+    "@alisio/sdk": ">=0.1.0-alpha.10 <0.5.0"
   },
   "devDependencies": {
     "@alisio/sdk": "0.1.0-alpha.10",

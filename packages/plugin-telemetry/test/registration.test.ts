@@ -1,7 +1,7 @@
 import type { ToolDefinition } from "@alisio/sdk";
 import { afterEach, describe, expect, it } from "vitest";
 import { COMMAND_NAMES } from "../src/commands.js";
-import { createTelemetryPlugin, resourcePaths, TOOL_NAMES } from "../src/index.js";
+import { createTelemetryPlugin, resourcePaths, TOOL_NAMES, VERSION } from "../src/index.js";
 import { makeFakeApi, makeTempDir, type TempDir } from "./helpers.js";
 
 let temp: TempDir | null = null;
@@ -29,7 +29,7 @@ describe("plugin registration", () => {
     expect(plugin.id).toBe("telemetry");
     expect(plugin.apiVersion).toBe(1);
     expect(plugin.categories).toEqual(["analytics"]);
-    expect(plugin.version).toBe("0.1.0");
+    expect(plugin.version).toBe(VERSION);
   });
 
   it("registers every tool with a read effect and a closed schema", () => {
