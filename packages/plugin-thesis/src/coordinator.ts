@@ -25,6 +25,7 @@ import {
   parseAnswerText,
   presentationRound,
   renderPending,
+  renderQuestionsForAgent,
   seedAnswersFromRaw,
 } from "./intake.js";
 import { checkPacks, explain, listPacks, newPack } from "./pack-commands.js";
@@ -52,8 +53,8 @@ import {
   atomicWrite,
   canonicalJson,
   defaultState,
+  normalizeRootArgument,
   readState,
-  validateRootName,
   writeState,
 } from "./storage.js";
 import { checkStyleFiles, listStyles } from "./style-commands.js";
@@ -185,7 +186,7 @@ export class ThesisCoordinator {
       else if (directory === undefined) directory = part;
       else throw new Error("Usage: /thesis:init [dir] [--lang <bcp47>] [--presentation]");
     }
-    if (directory !== undefined) validateRootName(directory);
+    if (directory !== undefined) directory = normalizeRootArgument(directory);
     if (hintArgument !== undefined && !isValidLanguageTag(hintArgument)) {
       throw new Error("--lang must be a well-formed BCP-47 tag such as es-CO");
     }
@@ -250,13 +251,15 @@ export class ThesisCoordinator {
     workspace: string,
     state: ThesisState,
     rounds: readonly number[],
+    mayAsk = true,
   ): Promise<string> {
     const hint = state.intake.languageHint ?? "en";
     for (const round of rounds) {
       if (state.intake.completedRounds.includes(round)) continue;
       let questions = buildRound(round, state.intake.answers, hint);
       while (questions.length > 0) {
-        if (!this.api.ui.interactive()) return this.park(workspace, state, round, questions);
+        if (!mayAsk || !this.api.ui.interactive())
+          return this.park(workspace, state, round, questions);
         const asked = await this.api.ui.askQuestions({ questions, label: "Thesis interview" });
         const { accepted, errors } = acceptAnswers(questions, flattenAnswers(asked), hint);
         Object.assign(state.intake.answers, accepted);
@@ -385,17 +388,33 @@ export class ThesisCoordinator {
     } catch (error) {
       return `${(error as Error).message}\n\n${renderPending(pending)}`;
     }
+    const outcome = await this.applyAnswers(workspace, state, flat, true);
+    return outcome.errors.length > 0
+      ? `No answers were recorded:\n- ${outcome.errors.join("\n- ")}\n\n${renderPending(pending)}`
+      : outcome.message;
+  }
+
+  /**
+   * The one code path that validates and persists interview answers, shared by `/thesis:answer`
+   * and the `thesis_answer` tool. Nothing is written when any answer is rejected.
+   */
+  private async applyAnswers(
+    workspace: string,
+    state: ThesisState,
+    flat: Record<string, string>,
+    mayAsk: boolean,
+  ): Promise<{ errors: string[]; message: string }> {
+    const pending = state.pendingQuestions as NonNullable<ThesisState["pendingQuestions"]>;
+    const hint = state.intake.languageHint ?? "en";
     const { accepted, errors } = acceptAnswers(pending.questions, flat, hint);
-    if (errors.length > 0) {
-      return `No answers were recorded:\n- ${errors.join("\n- ")}\n\n${renderPending(pending)}`;
-    }
+    if (errors.length > 0) return { errors, message: "" };
     Object.assign(state.intake.answers, accepted);
     const remaining = buildRound(pending.round, state.intake.answers, hint);
     if (remaining.length > 0) {
-      return this.park(workspace, state, pending.round, remaining);
+      return { errors, message: await this.park(workspace, state, pending.round, remaining) };
     }
     await this.completeRound(workspace, state, pending.round);
-    return this.advance(
+    const message = await this.advance(
       workspace,
       state,
       pending.round === presentationRound
@@ -403,7 +422,71 @@ export class ThesisCoordinator {
         : pending.round === icontecRound
           ? []
           : defaultRounds,
+      mayAsk,
     );
+    return { errors, message };
+  }
+
+  /**
+   * `thesis_answer`: persist interview answers the user stated in chat. Only the currently pending
+   * round can be answered (gates, sections, findings, styles and norms have no ids here), and the
+   * same validation as `/thesis:answer` applies. Returns an agent-readable summary.
+   */
+  async answerFromChat(
+    workspace: string,
+    answers: Record<string, unknown>,
+  ): Promise<{ ok: boolean; text: string }> {
+    const state = await readState(workspace);
+    if (!state) return { ok: false, text: "No thesis workspace here. Run /thesis:init first." };
+    const pending = state.pendingQuestions;
+    if (!pending) {
+      return {
+        ok: false,
+        text: "There are no pending interview questions. Run /thesis:init to continue the interview.",
+      };
+    }
+    const ids = pending.questions.map((question) => question.id);
+    const flat: Record<string, string> = {};
+    for (const [key, value] of Object.entries(answers)) {
+      if (typeof value !== "string") {
+        return { ok: false, text: `Answer for ${key} must be a string. Nothing was recorded.` };
+      }
+      flat[key] = value;
+    }
+    const keys = Object.keys(flat);
+    const unknown = keys.filter(
+      (key) => !ids.includes(key.endsWith(":text") ? key.slice(0, -5) : key),
+    );
+    if (keys.length === 0 || unknown.length > 0) {
+      return {
+        ok: false,
+        text: `${keys.length === 0 ? "No answers were given" : `Not pending interview ids: ${unknown.join(", ")}`}. Nothing was recorded. Pending question ids: ${ids.join(", ")}.`,
+      };
+    }
+    const outcome = await this.applyAnswers(workspace, state, flat, false);
+    if (outcome.errors.length > 0) {
+      return {
+        ok: false,
+        text: `No answers were recorded:\n- ${outcome.errors.join("\n- ")}\n\n${renderQuestionsForAgent(pending)}`,
+      };
+    }
+    const after = (await readState(workspace)) as ThesisState;
+    const files = ["state.json"];
+    const finished = pending.round !== after.pendingQuestions?.round;
+    if (finished) {
+      files.unshift("thesis.yaml", "compliance-profile.json");
+      if (pending.round === 3) files.push("research/intake.json");
+    }
+    const lines = [
+      `Recorded: ${keys.join(", ")}.`,
+      `Files written under ${after.root}/: ${files.join(", ")}.`,
+    ];
+    if (after.pendingQuestions) {
+      lines.push("", renderQuestionsForAgent(after.pendingQuestions));
+    } else {
+      lines.push("", "The interview rounds are complete.", this.nextStep(after));
+    }
+    return { ok: true, text: lines.join("\n") };
   }
 
   // ------------------------------------------------------------------------------------------

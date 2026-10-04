@@ -19,6 +19,7 @@ Load when the user starts or resumes a thesis workspace, or asks what the interv
 - Ask at most one open question at a time. Do not ask again what `thesis.yaml` already answers.
 - Never choose the citation style or presentation standard for the user. `Let the policy decide` is a valid answer that leaves the decision to institution rules, with a flagged default when none exists. Colombia never selects ICONTEC automatically.
 - Language values are BCP-47 tags (es-CO, en, pt-BR). Country values are ISO 3166-1 alpha-2 codes. Reject anything else and say what is allowed.
+- When the user states interview data in chat, confirm your interpretation in one sentence, then call `thesis_answer` (keys are the pending question ids, `<id>:text` for free text). Never call it for approvals, and never for ids that are not pending.
 - Headless sessions answer through `/thesis:answer` with `id=value` pairs or one JSON object. Free text uses `<id>:text=...`. Never invent an answer to unblock the flow.
 
 ## Decision Gates
@@ -34,9 +35,10 @@ Load when the user starts or resumes a thesis workspace, or asks what the interv
 ## Execution Steps
 
 1. Run `/thesis:init` (add `--lang <tag>` when you know the conversation language) and read the first round aloud with its recommended options.
-2. For headless sessions, relay the pending questions exactly and wait for `/thesis:answer`.
-3. After each round, state what was recorded and which round is next.
-4. When rounds 1 to 3 are complete, report the resolved citation style and whether it is a default, then the G0 result, then the next command.
+2. For conversational sessions, ask the pending questions one at a time and record each answer with `thesis_answer`; it returns the next pending question.
+3. For headless sessions, relay the pending questions exactly and wait for `/thesis:answer`.
+4. After each round, state what was recorded and which round is next.
+5. When rounds 1 to 3 are complete, report the resolved citation style and whether it is a default, then the G0 result, then the next command.
 
 ## Output Contract
 

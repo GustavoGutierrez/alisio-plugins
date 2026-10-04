@@ -42,6 +42,12 @@ una sesión sin interfaz, `/thesis:init` devuelve las preguntas con sus opciones
 `/thesis:answer`: las respuestas son pares `id=valor` separados por espacios o saltos de línea, o un
 único objeto JSON; el texto libre va en `<id>:text=...`.
 
+Para indicar el idioma usa `--lang` (`/thesis:init --lang es-CO`); la carpeta de la tesis es `thesis/`
+por defecto. Una carpeta con forma de idioma como `/thesis:init es` se rechaza; escribe `./es` para
+usar realmente esa carpeta. En el chat, el agente `thesis-coordinator` responde en prosa y en tu
+idioma, y registra los datos de la entrevista que indiques en la conversación mediante
+`thesis_answer`, que pide tu confirmación antes de escribir.
+
 ## Arquitectura
 
 ![Arquitectura](./assets/architecture.svg)
@@ -107,6 +113,7 @@ Los argumentos usan `<destino> -- <texto>`. Las URL de guías solo se obtienen m
 | `thesis_scholar_search` | Busca en OpenAlex, Crossref o arXiv |
 | `thesis_scholar_resolve` | Resuelve un DOI o identificador a un registro académico |
 | `thesis_status` | Resume el espacio de trabajo |
+| `thesis_answer` | Registra respuestas de la entrevista dadas en el chat (solo la ronda pendiente, nunca aprobaciones) |
 | `thesis_check` | Ejecuta las comprobaciones deterministas |
 | `thesis_build` | Genera la tesis |
 
@@ -218,9 +225,11 @@ paquete; Chrome se ejecuta con un perfil temporal y todas las solicitudes de red
 
 ## Agentes y habilidades
 
-Ocho agentes de solo lectura (coordinador, metodólogo, bibliotecario, auditor de evidencia, arquitecto,
-redactor, editor, revisor) y quince habilidades específicas se incluyen en `.agents/`. Solo el código del
-coordinador escribe archivos.
+Ocho agentes (coordinador, metodólogo, bibliotecario, auditor de evidencia, arquitecto,
+redactor, editor, revisor) y quince habilidades específicas se incluyen en `.agents/`. Los agentes hijos son de
+solo lectura y devuelven JSON; el coordinador conversacional responde en prosa y solo puede llamar a
+`thesis_answer` para escribir respuestas de la entrevista. Todo lo demás lo escribe el código del
+coordinador.
 
 ## Seguridad
 

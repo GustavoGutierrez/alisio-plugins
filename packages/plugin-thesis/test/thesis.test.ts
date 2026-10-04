@@ -139,6 +139,7 @@ describe("plugin registration", () => {
     ]);
     expect(info.get("init")).toMatchObject({ argumentHint: expect.stringContaining("--lang") });
     expect([...tools.keys()].sort()).toEqual([
+      "thesis_answer",
       "thesis_build",
       "thesis_check",
       "thesis_scholar_resolve",

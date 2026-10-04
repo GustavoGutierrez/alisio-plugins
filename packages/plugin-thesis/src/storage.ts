@@ -53,6 +53,22 @@ export function validateRootName(root: string): string {
   return root;
 }
 
+const languageLikeRoot = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/i;
+
+/**
+ * Normalize a user-typed thesis folder. A bare language tag (`es`, `es-CO`, `pt-BR`) is almost
+ * always a mistyped `--lang`, so it is refused; an explicit `./es` really means that folder.
+ */
+export function normalizeRootArgument(argument: string): string {
+  if (argument.startsWith("./")) return validateRootName(argument.slice(2));
+  if (languageLikeRoot.test(argument)) {
+    throw new Error(
+      `"${argument}" looks like a language code, not a folder. Use /thesis:init --lang ${argument} (the thesis root defaults to thesis/), or /thesis:init ./${argument} to really use that folder.`,
+    );
+  }
+  return validateRootName(argument);
+}
+
 /** Lexically resolve a relative path under `base`; throws when it would leave it. */
 export function resolveInside(base: string, relative: string): string {
   assertRelativePath(relative);

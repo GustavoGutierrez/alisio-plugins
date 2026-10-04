@@ -70,8 +70,10 @@ describe("resources", () => {
       );
       const front = parsed.frontmatter;
       expect(front.mode).toBe(role === "thesis-coordinator" ? "primary" : "subagent");
-      expect(front.readOnly).toBe(true);
-      expect(front.permission).toEqual({ write: "deny", process: "deny" });
+      // The coordinator alone may run thesis_answer (a write-effect tool), gated by `ask`.
+      const coordinator = role === "thesis-coordinator";
+      expect(front.readOnly).toBe(!coordinator);
+      expect(front.permission).toEqual({ write: coordinator ? "ask" : "deny", process: "deny" });
       for (const denied of ["task", "delegate", "subagent", "sessions_create"]) {
         expect(front.disallowedTools).toContain(denied);
       }

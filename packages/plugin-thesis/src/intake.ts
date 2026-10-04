@@ -698,6 +698,29 @@ export function renderPending(pending: PendingQuestions): string {
   return lines.join("\n");
 }
 
+/** Pending questions for the conversational agent: full text, options and the recommended one. */
+export function renderQuestionsForAgent(pending: PendingQuestions): string {
+  const lines = [
+    `Pending interview questions (round ${pending.round}). Ask the user one at a time, recommended option first, then record the answer with thesis_answer (keys: id, plus <id>:text for free text).`,
+  ];
+  for (const question of pending.questions) {
+    lines.push("", `${question.id}: ${question.question}`);
+    const ordered = [...question.options].sort(
+      (a, b) => Number(b.recommended === true) - Number(a.recommended === true),
+    );
+    for (const entry of ordered) {
+      const flags = [
+        entry.recommended ? "recommended" : "",
+        entry.textInput ? "takes text" : "",
+      ].filter(Boolean);
+      lines.push(
+        `  - ${entry.value}: ${entry.label}${flags.length ? ` (${flags.join(", ")})` : ""}${entry.description ? ` - ${entry.description}` : ""}`,
+      );
+    }
+  }
+  return lines.join("\n");
+}
+
 /** Seed answers from the raw fields of a thesis.yaml that already exists. */
 export function seedAnswersFromRaw(raw: Record<string, unknown>): Record<string, string> {
   const answers: Record<string, string> = {};

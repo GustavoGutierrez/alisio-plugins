@@ -23,6 +23,7 @@ export {
   assertRelativePath,
   atomicWrite,
   canonicalJson,
+  normalizeRootArgument,
   validateRootName,
   validateState,
 } from "./storage.js";
@@ -172,6 +173,39 @@ export function registerThesis(
     coordinator.doctor(),
   );
 
+  api.tools.register({
+    name: "thesis_answer",
+    description:
+      "Record interview answers the user stated in chat for the CURRENTLY PENDING interview round. Keys are pending question ids (plus <id>:text for free text); values are option values or free text. Confirm your interpretation with the user first. Never an approval: gates, sections, findings, styles and norms are not accepted. Returns what was recorded, the files written and the next pending questions.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        answers: {
+          type: "object",
+          additionalProperties: { type: "string", maxLength: 2000 },
+          minProperties: 1,
+          maxProperties: 20,
+        },
+      },
+      required: ["answers"],
+      additionalProperties: false,
+    },
+    effect: "write",
+    async execute(input, context) {
+      try {
+        const answers =
+          typeof input.answers === "object" &&
+          input.answers !== null &&
+          !Array.isArray(input.answers)
+            ? (input.answers as Record<string, unknown>)
+            : {};
+        const outcome = await coordinator.answerFromChat(context.workspace, answers);
+        return text(outcome.text, !outcome.ok);
+      } catch (error) {
+        return text(error instanceof Error ? error.message : "thesis_answer failed", true);
+      }
+    },
+  });
   api.tools.register({
     name: "thesis_scholar_search",
     description:
