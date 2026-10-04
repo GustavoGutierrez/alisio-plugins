@@ -266,8 +266,9 @@ async function localEntry(dir, manifest, previousByName, registryEntry, options)
   }
   if (!cover) note(name, "no cover found; using the default cover");
 
-  // Local metadata is authoritative; npm only adds publish recency and size.
-  if (!options.offline && publishedAt === null) {
+  // Local metadata is authoritative; npm only adds publish recency and size. A missing size means
+  // the cached entry was recorded before this version reached npm, so it is fetched again.
+  if (!options.offline && (publishedAt === null || unpackedSize === null)) {
     try {
       const packument = await fetchJson(packumentUrl(name));
       const time = packument?.time ?? {};
