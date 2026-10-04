@@ -47,6 +47,12 @@ session `/thesis:init` returns the questions with their options and the exact `/
 syntax: answers are `id=value` pairs separated by spaces or new lines, or one JSON object; free text
 goes in `:text=...`.
 
+If you pass your language, use `--lang` (`/thesis:init --lang es-CO`); the thesis folder defaults to
+`thesis/`. A bare language-like folder such as `/thesis:init es` is refused; write `./es` to really
+use that folder. In chat, the `thesis-coordinator` agent answers in prose in your language and
+records interview data you state in conversation through `thesis_answer`, which asks for your
+confirmation before writing.
+
 ## Architecture
 
 ![Architecture](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-thesis/assets/architecture.svg)
@@ -109,6 +115,7 @@ Arguments use ` -- `. Guide URLs are fetched only through a host `web_fetch` too
 | `thesis_scholar_search` | Search OpenAlex, Crossref or arXiv |
 | `thesis_scholar_resolve` | Resolve a DOI or identifier to a scholarly record |
 | `thesis_status` | Summarize the workspace |
+| `thesis_answer` | Record interview answers stated in chat (pending round only, never approvals) |
 | `thesis_check` | Run the deterministic checks |
 | `thesis_build` | Build the thesis |
 
@@ -219,9 +226,10 @@ with a temporary profile and every network request blocked.
 
 ## Agents and skills
 
-Eight read-only agents (coordinator, methodologist, librarian, evidence auditor, architect, writer,
-editor, reviewer) and fifteen focused skills ship in `.agents/`. Only the coordinator code writes
-files.
+Eight agents (coordinator, methodologist, librarian, evidence auditor, architect, writer,
+editor, reviewer) and fifteen focused skills ship in `.agents/`. Child agents are read-only and return
+JSON; the conversational coordinator replies in prose and can only call `thesis_answer` to write
+interview answers. Everything else is written by the coordinator code.
 
 ## Security
 
