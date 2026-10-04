@@ -49,7 +49,7 @@ export interface HostSupport {
   registered: () => boolean;
   activeProviderId: () => string | null;
   /** Present only when the host offers `api.decisions.activate`; older cores omit it. */
-  activate?: (providerId: string) => Promise<ActivationResult>;
+  activate?: (providerId: string, options?: { recommend?: boolean }) => Promise<ActivationResult>;
 }
 
 export interface CommandDeps {
@@ -358,7 +358,7 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
     const activate = deps.host.activate;
     if (!activate) return null;
     try {
-      const result = await activate("laya");
+      const result = await activate("laya", { recommend: true });
       const known = result && KNOWN_ACTIVATION.includes(result.status);
       return known
         ? {

@@ -283,6 +283,20 @@ describe("activation end to end against the fake server", () => {
     await laya.dispose?.();
   });
 
+  it("forwards the recommend option of /laya:activate to the host's activate member", async () => {
+    await installed();
+    const host = fakeHost();
+    const activate = vi.fn(async () => ({ status: "activated" as const }));
+    (host.api.decisions as unknown as { activate: typeof activate }).activate = activate;
+    const laya = plug();
+    await laya.setup(host.api);
+    const text = await (host.commands.get("activate") as (a: string) => Promise<string>)("");
+    expect(text).toMatch(/now the active decision provider/);
+    expect(activate).toHaveBeenCalledOnce();
+    expect(activate).toHaveBeenCalledWith("laya", { recommend: true });
+    await laya.dispose?.();
+  });
+
   it("without preload the first decide starts the server and still rejects not_ready", async () => {
     await installed();
     const host = fakeHost();

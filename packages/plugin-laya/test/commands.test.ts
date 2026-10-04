@@ -458,7 +458,7 @@ type ActivateResult = {
 };
 
 function hostWith(
-  activate?: (id: string) => Promise<ActivateResult>,
+  activate?: (id: string, options?: { recommend?: boolean }) => Promise<ActivateResult>,
   active: string | null = null,
 ) {
   return {
@@ -495,7 +495,7 @@ describe("activation after setup", () => {
       await handlers.setup("");
       await runtime.jobs.whenIdle();
       expect(activate).toHaveBeenCalledOnce();
-      expect(activate).toHaveBeenCalledWith("laya");
+      expect(activate).toHaveBeenCalledWith("laya", { recommend: true });
       const stored = JSON.parse(
         await readFile(
           join(dir, "state", "plugins", "laya", "runtime", "jobs", "current.json"),
@@ -573,7 +573,7 @@ describe("activation after setup", () => {
 describe("/laya:activate", () => {
   it("retries the activation on demand and records the outcome", async () => {
     const activate = vi
-      .fn<(id: string) => Promise<ActivateResult>>()
+      .fn<(id: string, options?: { recommend?: boolean }) => Promise<ActivateResult>>()
       .mockResolvedValueOnce({ status: "declined" })
       .mockResolvedValueOnce({ status: "activated" });
     const { handlers, runtime } = await setup({ host: hostWith(activate) });
@@ -584,6 +584,8 @@ describe("/laya:activate", () => {
     expect(runtime.jobs.current()?.activation?.status).toBe("declined");
     expect(await handlers.activate()).toMatch(/now the active decision provider/);
     expect(activate).toHaveBeenCalledTimes(2);
+    expect(activate).toHaveBeenNthCalledWith(1, "laya", { recommend: true });
+    expect(activate).toHaveBeenNthCalledWith(2, "laya", { recommend: true });
     expect(runtime.jobs.current()?.activation?.status).toBe("activated");
     activate.mockResolvedValueOnce({ status: "already_active" });
     expect(await handlers.activate()).toMatch(/already/i);

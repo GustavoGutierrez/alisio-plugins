@@ -23,11 +23,11 @@ export * from "./transport/http.js";
 export { VERSION } from "./version.js";
 
 /**
- * Optional host member (core 0.4.2+). The published SDK typings do not carry it yet, so it is
+ * Optional host member (core 0.4.2+; the `recommend` option needs 0.4.3+ and is ignored by older cores). The published SDK typings do not carry it yet, so it is
  * detected structurally and never required.
  */
 interface DecisionsWithActivate {
-  activate?: (providerId: string) => Promise<ActivationResult>;
+  activate?: (providerId: string, options?: { recommend?: boolean }) => Promise<ActivationResult>;
 }
 
 export interface CreateLayaPluginOptions {
@@ -92,8 +92,8 @@ export function createLayaPlugin(options: CreateLayaPluginOptions = {}): Plugin 
           activeProviderId: () => api.decisions?.activeProvider()?.id ?? null,
           ...(typeof (api.decisions as DecisionsWithActivate | undefined)?.activate === "function"
             ? {
-                activate: (id: string) =>
-                  (api.decisions as DecisionsWithActivate).activate?.(id) ??
+                activate: (id: string, activateOptions?: { recommend?: boolean }) =>
+                  (api.decisions as DecisionsWithActivate).activate?.(id, activateOptions) ??
                   Promise.resolve({ status: "unavailable" as const }),
               }
             : {}),

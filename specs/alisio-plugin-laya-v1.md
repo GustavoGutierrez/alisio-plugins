@@ -889,3 +889,19 @@ Two changes, no new SDK or core requirement (peer range unchanged, `>=0.3.0 <0.7
    asks for confirmation and persists the global config; the plugin never writes the user's `config.json`.
    `/laya:activate` repeats the call on demand; `/laya:status` gives a next step per outcome, and cores without the
    member keep the manual `decisions.provider = "laya"` instruction.
+
+## 18. 0.1.2 note (2026-10-04)
+
+No new SDK or core requirement (peer range unchanged, `>=0.3.0 <0.7.0`).
+
+1. **Recommended pre-selection.** Core 0.4.3 adds an optional second argument to the host member:
+   `api.decisions.activate(providerId, { recommend?: boolean })`. With `recommend: true` the host pre-selects "Yes
+   (recommended)" in its confirmation question. Every user-initiated activation (the one after a successful setup and
+   `/laya:activate`) passes `{ recommend: true }`; older cores ignore the extra argument. The local structural type
+   carries the optional argument; statuses, job record and texts are unchanged.
+2. **Documentation corrected from real measurements (2026-10-04).** The managed runtime takes about 6 GB on a
+   CUDA-capable machine (PyTorch's default wheels; about 1 GB on CPU only), the `multilingual` checkpoint download is
+   678 MB, and a first setup with warm caches took about 3 minutes. Repeated setups replace the previous runtime. The
+   README now describes the host-written `decisions.provider`, the `alisio install --update` remedy for peer
+   `@alisio/sdk` conflicts (ERESOLVE) and for the stale first install after a publication (npm metadata cache), and
+   that column and boolean decisions are near chance, which is why Smart Dashboard asks Laya only for the purpose.
