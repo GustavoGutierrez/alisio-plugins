@@ -24,6 +24,11 @@ Load this skill before choosing a diagram type, authoring, updating, or renderin
   fallback and an output outside the repository is rejected. Repository-level diagrams live in
   `diagrams/repository/` and write the shared `assets/` directory; those SVGs are embedded from the
   root `README.md` / `README.es.md`, not from a package.
+- Rendered SVGs get an opaque white background (`#ffffff`) and 24px padding on every side by default,
+  so they stay legible on dark themes. Override per target in `diagrams/<target>/diagram.config.json`
+  with `"background"` (CSS color or `"transparent"`) and `"padding"` (integer px, 0-200); `output` is
+  optional there. `{"background": "transparent", "padding": 0}` opts out. Padding is applied by
+  post-processing the SVG in the render step, never by hand.
 - Generated SVGs are never hand-edited. Change the `.mmd` source and re-render.
 - Keep each diagram small, legible, and single-concept, with no decorative noise.
 - Reference the SVG with a relative path, e.g. `./assets/<name>.svg`.
@@ -50,7 +55,8 @@ Load this skill before choosing a diagram type, authoring, updating, or renderin
 
 1. Pick the type from the table, then read `references/diagram-types.md` for minimal syntax.
 2. Author `diagrams/<target>/<name>.mmd`. For a repository-level output, also add
-   `diagrams/<target>/diagram.config.json` with `{"output": "assets"}`.
+   `diagrams/<target>/diagram.config.json` with `{"output": "assets"}`. Add `background`/`padding`
+   there only to override the white, 24px default.
 3. Render one target with `node scripts/render-diagrams.mjs --plugin=<target>`, or all with `pnpm diagrams`.
 4. Verify with `pnpm diagrams:check` (mtime-based; no browser needed).
 5. Embed the SVG with a relative path and one sentence explaining it: in

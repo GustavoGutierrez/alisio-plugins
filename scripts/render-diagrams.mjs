@@ -2,8 +2,8 @@
 /**
  * Render authored Mermaid diagrams to SVG for the publishable packages.
  *
- *   node scripts/render-diagrams.mjs --plugin=wayfinder
- *   node scripts/render-diagrams.mjs --plugin=wayfinder,other --plugin=third
+ *   node scripts/render-diagrams.mjs --plugin=plugin-wayfinder
+ *   node scripts/render-diagrams.mjs --plugin=plugin-wayfinder,other --plugin=third
  *   node scripts/render-diagrams.mjs --all
  *   node scripts/render-diagrams.mjs --all --check
  *
@@ -28,6 +28,19 @@
  * misconfigured target still fails. The repository-level diagrams live in
  * `diagrams/repository/` and declare `{"output": "assets"}`, writing the shared
  * `assets/` directory the root READMEs embed from.
+ *
+ * BACKGROUND AND PADDING. Rendered SVGs get an opaque WHITE background (#ffffff)
+ * and 24px of padding on every side by default, so lines stay visible on dark
+ * themes. Mermaid CLI has no padding option, so the SVG is post-processed (see
+ * `scripts/lib/diagram-style.mjs`): the renderer is run with `-b white`, then a
+ * full-size background <rect> is inserted and the viewBox/width/height/max-width
+ * grow by the padding. Override per target in `diagram.config.json`:
+ *
+ *   { "background": "#f5f5f5", "padding": 16 }   // CSS color or "transparent"; integer 0-200
+ *   { "background": "transparent", "padding": 0 } // opt out entirely
+ *
+ * `output` is optional there; a file with only style keys keeps the default
+ * `packages/<name>/assets` output. Invalid values fail with a clear error.
  *
  * WHY THE SOURCES SIT AT THE REPOSITORY ROOT. `pnpm-workspace.yaml` declares
  * `packages/*`, so a `diagrams/` directory placed under `packages/` would be
@@ -69,6 +82,8 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { applyDiagramStyle, resolveDiagramStyle } from "./lib/diagram-style.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -122,6 +137,8 @@ function usage() {
     "",
     `  A target with ${DIAGRAM_CONFIG} beside its sources renders to that`,
     '  repository-relative "output" directory instead of packages/<name>/assets.',
+    '  It may also set "background" (CSS color or "transparent"; default #ffffff)',
+    '  and "padding" (integer px, 0-200; default 24).',
     "",
     `  MERMAID_CLI_VERSION   Override the npx spec (default ${CLI_SPEC}).`,
     "  MERMAID_BROWSER       Explicit browser executable; also PUPPETEER_EXECUTABLE_PATH.",
@@ -322,6 +339,8 @@ function targetConfig(name) {
   }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
     throw new Error(`${DIAGRAM_CONFIG} for "${name}" must be a JSON object`);
+  const style = resolveDiagramStyle(parsed, name);
+  if (!("output" in parsed)) return { style };
   if (typeof parsed.output !== "string" || !parsed.output.trim())
     throw new Error(`${DIAGRAM_CONFIG} for "${name}" must declare a non-empty "output" directory`);
   const output = path.resolve(REPO_ROOT, parsed.output);
@@ -329,7 +348,12 @@ function targetConfig(name) {
     throw new Error(
       `${DIAGRAM_CONFIG} for "${name}" output must stay inside the repository: ${parsed.output}`,
     );
-  return { output };
+  return { output, style };
+}
+
+/** Background and padding for one target: the config's values over the defaults. */
+function targetStyle(name) {
+  return targetConfig(name)?.style ?? resolveDiagramStyle({}, name);
 }
 
 /**
@@ -442,10 +466,10 @@ function render(browser, targets, noSandbox) {
           input,
           "-o",
           output,
-          // Transparent, so a diagram sits on the README/page background rather
-          // than inside a white box that reads as a screenshot.
+          // White here; the configured background and padding are applied to the
+          // generated SVG afterwards (applyDiagramStyle). Mermaid CLI cannot pad.
           "-b",
-          "transparent",
+          "white",
         ];
         if (existsSync(config)) cliArgs.push("-c", config);
         if (puppeteerConfig) cliArgs.push("-p", puppeteerConfig);
@@ -456,6 +480,11 @@ function render(browser, targets, noSandbox) {
             env,
             ...invocation.options,
           });
+          writeFileSync(
+            output,
+            applyDiagramStyle(readFileSync(output, "utf8"), targetStyle(name)),
+            "utf8",
+          );
           console.log("ok");
           rendered += 1;
         } catch (error) {
@@ -526,7 +555,7 @@ function main() {
       // A declared output directory makes the target repository-level: no package
       // is required. Without a declaration the package must exist, so a typo is
       // still an error rather than a silent write into packages/<typo>/assets.
-      if (targetConfig(name)) continue;
+      if (targetConfig(name)?.output) continue;
       if (!isDirectory(path.join(PACKAGES_ROOT, name))) {
         console.error(
           `Diagram target "${name}" has no package directory at packages/${name} and no ${DIAGRAM_CONFIG}.`,

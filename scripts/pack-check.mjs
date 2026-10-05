@@ -40,6 +40,13 @@
  * `repository.url` points at this monorepo, and that `repository.directory`
  * matches the package's own directory.
  *
+ * RESOURCE PREFIX WARNINGS (NON-FATAL). Every agent and skill name should
+ * start with the plugin's short resource prefix (2-5 lowercase letters plus
+ * `-`, e.g. `wf-planner`); all names in a package share one prefix and no two
+ * packages share a prefix. The rule and the exemption list (plugin-thesis, by
+ * owner decision) live in `scripts/lib/resource-prefix.mjs`. Violations print
+ * one `WARNING` line each and never fail the check.
+ *
  * LEAK SCAN. Every tarball this check builds is also scanned by
  * `scripts/leak-check.mjs`, so `pnpm check` covers a packed artifact even on a
  * pull request that never runs the release preflight. The leak rules live in
@@ -51,6 +58,7 @@ import { tmpdir } from "node:os";
 import { basename, join, relative, resolve, sep } from "node:path";
 
 import { formatFindings, scanTarball } from "./leak-check.mjs";
+import { checkResourcePrefixes } from "./lib/resource-prefix.mjs";
 
 const selected = process.argv[2];
 const REPOSITORY_URL = "https://github.com/GustavoGutierrez/alisio-plugins";
@@ -121,6 +129,25 @@ const validateAgent = (front, label) => {
   if (!front.name) throw new Error(`agent is missing a non-empty name: ${label}`);
   if (!front.description) throw new Error(`agent is missing a description: ${label}`);
 };
+
+// Advisory resource-prefix check across the selected packages (never fatal).
+// Names are read from frontmatter, falling back to the file or directory name.
+const prefixInput = [];
+for (const [dir, manifest] of packageDirs) {
+  const resourceNames = [];
+  const agentsRoot = join(dir, ".agents", "agents");
+  for (const file of (await collectFiles(agentsRoot)).filter((f) => f.endsWith(".md"))) {
+    const front = readFrontmatter(await readFile(join(agentsRoot, file), "utf8"), file);
+    resourceNames.push(front.name || basename(file, ".md"));
+  }
+  const skillsDir = join(dir, ".agents", "skills");
+  if (await exists(skillsDir))
+    for (const entry of await readdir(skillsDir, { withFileTypes: true }))
+      if (entry.isDirectory() && (await exists(join(skillsDir, entry.name, "SKILL.md"))))
+        resourceNames.push(entry.name);
+  prefixInput.push({ name: manifest.name, resourceNames });
+}
+for (const warning of checkResourcePrefixes(prefixInput)) console.warn(`WARNING ${warning}`);
 
 for (const [dir, manifest] of packageDirs) {
   const fail = (message) => {
@@ -258,7 +285,18 @@ for (const [dir, manifest] of packageDirs) {
           "src/resources.ts exists but package/dist/resources.js does not export loadRoleInstructions",
         );
       for (const file of agentFiles) {
-        await module.loadRoleInstructions(file.replace(/\.md$/, ""));
+        // A loader keys roles either by the bare role left after dropping the resource
+        // prefix (`wf-planner` -> `planner`) or by the full agent name (`swarm-coder`).
+        // The bare role is tried first because an unknown role rejects synchronously,
+        // while a wrong full name could leave a dangling file read behind.
+        const stem = file.replace(/\.md$/, "");
+        const bare = stem.replace(/^[a-z]{2,5}-/, "");
+        try {
+          await module.loadRoleInstructions(bare);
+        } catch (error) {
+          if (bare === stem) throw error;
+          await module.loadRoleInstructions(stem);
+        }
       }
       deepChecked = true;
     }

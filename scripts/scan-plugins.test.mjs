@@ -161,13 +161,13 @@ test("prepareReadme strips the leading H1 and resolves relative links", () => {
   ].join("\n");
   const readme = prepareReadme(markdown, {
     repository: "https://github.com/GustavoGutierrez/alisio-plugins",
-    directory: "packages/wayfinder",
+    directory: "packages/plugin-wayfinder",
     npmUrl: "https://www.npmjs.com/package/@alisio/plugin-wayfinder",
   });
   assert.ok(readme.startsWith("![diagram]"));
   assert.ok(
     readme.includes(
-      "https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/wayfinder/assets/flow.svg",
+      "https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-wayfinder/assets/flow.svg",
     ),
   );
   assert.ok(

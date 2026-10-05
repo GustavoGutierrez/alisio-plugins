@@ -3,6 +3,16 @@
 ## Non-negotiable package rules
 
 - Name every publishable package `@alisio/plugin-*` and include the `alisio-plugin` keyword.
+- Keep the directory, npm name and metadata aligned: the package for `@alisio/plugin-<name>` lives in
+  `packages/plugin-<name>`, and its `repository.directory` and `homepage` point at that same path. Its
+  diagram sources live in `diagrams/plugin-<name>/`. Never rename a published package's npm name; a
+  directory or resource rename ships with a Changeset.
+- Give every plugin a short, unique **resource prefix** (2 to 5 lowercase letters, e.g. `wf-` for
+  wayfinder, `swarm-` for swarm, `thesis-` for thesis) and apply it to **every agent and skill name**
+  the plugin ships, in file names, frontmatter `name`, and every reference. Generic names such as
+  `specifier`, `coder`, `reviewer` or `planner` collide with other plugins and the host catalog, so they
+  are never allowed unprefixed. The prefix is distinct from every prefix already used in the monorepo.
+  Commands and tools are already namespaced by plugin id and need no prefix.
 - Keep plugins independently installable and self-contained. Never import another plugin or `@alisio/core`.
 - Prefer Node built-ins and `@alisio/sdk`; add an npm dependency only when its value outweighs its maintenance cost.
 - Use English for source, prompts, schemas, tests, documentation, and package metadata.
@@ -28,7 +38,8 @@
   that the two must be updated together, and is updated in the same change. Spanish is neutral and
   professional.
 - **Bilingual package READMEs (exception, owner-approved):** `packages/plugin-thesis/README.md` /
-  `README.es.md`, under the same pairing rules as the repo-level docs. Usage samples under
+  `README.es.md` and `packages/plugin-swarm/README.md` / `README.es.md`, under the same pairing rules
+  as the repo-level docs. Usage samples under
   `packages/plugin-thesis/samples/` may be written in the language of the thesis they illustrate.
 - **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this file, all source,
   all other package READMEs, all code comments, and every diagram label.
