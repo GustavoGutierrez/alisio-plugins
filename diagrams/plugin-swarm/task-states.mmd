@@ -1,0 +1,17 @@
+%% Card statuses on the board and their legal transitions.
+stateDiagram-v2
+    [*] --> queued
+    queued --> working: role claims it
+    working --> merging: handoff accepted
+    merging --> queued: next role has mail
+    merging --> done: terminal handoff
+    working --> waiting_approval: approval gate
+    waiting_approval --> queued: approve or accept
+    waiting_approval --> rejected: reject retry
+    rejected --> working: role re-runs
+    working --> clarifying: question
+    clarifying --> working: answer
+    working --> blocked: bounces exhausted
+    blocked --> working: retry
+    blocked --> queued: accept
+    done --> [*]

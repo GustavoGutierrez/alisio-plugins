@@ -1,0 +1,15 @@
+%% Dashboard: a follow-up view; only gate decisions can change state.
+flowchart LR
+    Chat["Alisio chat<br/>/swarm:* commands<br/>start and manage work"]
+    Page["Dashboard page<br/>top bar, filters, attention,<br/>board, work queue, activity,<br/>documents and diff"]
+    subgraph Server["Loopback server (127.0.0.1)"]
+        Guard["Token, Host and Origin checks,<br/>256 KiB cap, CSP"]
+        Read["Read routes<br/>state, doc, mission, agent tail"]
+        Gate["Gate decisions<br/>approve, comments, reject,<br/>answer, task retry, task delete"]
+    end
+    Services["SwarmServices"]
+    Chat --> Services
+    Page -- "poll every 2 s" --> Guard
+    Guard --> Read --> Services
+    Guard --> Gate --> Services
+    Page -. "copy command, session id,<br/>deep link" .-> Chat

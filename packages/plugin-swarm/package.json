@@ -1,0 +1,55 @@
+{
+  "name": "@alisio/plugin-swarm",
+  "version": "0.1.0",
+  "description": "Runs a handoff-driven swarm of specialised agents, each in its own git worktree, with durable handoffs, deterministic quality gates and a human approval gate.",
+  "keywords": [
+    "alisio-plugin",
+    "agent-swarm",
+    "multi-agent",
+    "git-worktree",
+    "methodology"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-swarm"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-swarm#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    ".agents",
+    "assets",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.3.0 <0.7.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.3.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

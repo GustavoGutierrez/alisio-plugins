@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "six-pack",
+  "description": "The full pipeline: specification with a human approval gate, test-first coding, cleaning, architecture, mutation hardening and final QA acceptance.",
+  "toolchain": "node-ts",
+  "approval": { "after": "specifier" },
+  "roles": [
+    { "id": "specifier", "agent": "swarm-specifier", "isolation": "master", "receive": "task", "propagation": "forward-only" },
+    { "id": "coder", "agent": "swarm-coder", "isolation": "worktree", "receive": "task", "propagation": "forward-only" },
+    { "id": "cleaner", "agent": "swarm-cleaner", "isolation": "worktree", "receive": "task", "propagation": "forward-only" },
+    { "id": "architect", "agent": "swarm-architect", "isolation": "worktree", "receive": "task", "propagation": "forward-only" },
+    { "id": "hardener", "agent": "swarm-hardener", "isolation": "worktree", "receive": "task", "propagation": "forward-only" },
+    { "id": "qa", "agent": "swarm-qa", "isolation": "worktree", "receive": "task", "propagation": "forward-only" }
+  ],
+  "gates": {
+    "coder": ["tests-green", "test-first", "coverage"],
+    "cleaner": ["tests-green", "crap", "dry"],
+    "architect": ["tests-green", "structure"],
+    "hardener": ["tests-green", "mutation"],
+    "qa": ["acceptance"]
+  }
+}

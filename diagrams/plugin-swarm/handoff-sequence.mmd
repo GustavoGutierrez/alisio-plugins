@@ -1,0 +1,23 @@
+%% One handoff, from the agent's envelope to the receiver's merge.
+sequenceDiagram
+    participant A as Agent (sender)
+    participant C as Coordinator
+    participant G as Gates
+    participant S as Handoff store
+    participant R as Receiver
+    A->>C: handoff envelope (commit, evidence)
+    C->>C: park as audit pending
+    C->>A: audit challenge (same session)
+    A->>C: second envelope
+    alt same commit
+        C->>G: run the role's gates
+        alt gates pass
+            C->>S: write handoff and deliver
+            C->>R: merge the commit in its worktree
+            C->>R: run the receiver
+        else a gate fails
+            C->>A: gate report (bounce)
+        end
+    else commit changed
+        C->>A: audit challenge again
+    end

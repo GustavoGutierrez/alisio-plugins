@@ -1,0 +1,16 @@
+%% The human approval gate and the clarification flow.
+flowchart TD
+    H["Gate role hands off"] --> P["Handoff held in pending_approval"]
+    P --> A["Attention: Approval"]
+    A --> D["Documents view: files, diff, comments"]
+    D --> C{"Comments exist?"}
+    C -- yes --> X["Approve disabled"]
+    C -- no --> Ok["Approve"]
+    Ok --> Rel["Release to the next role"]
+    A --> Rej["Reject"]
+    Rej --> R1["Retry: keep rejected commit,<br/>restore base, re-run with comments"]
+    Rej --> R2["Delete: archive and remove"]
+    Rej --> R3["Accept unchanged: release"]
+    Q["Role returns needs_clarification"] --> QA["Attention: Clarification"]
+    QA --> Ans["Operator answers"]
+    Ans --> Res["Same session resumes"]

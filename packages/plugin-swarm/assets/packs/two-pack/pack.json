@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "name": "two-pack",
+  "description": "A coder builds each change test-first, then a cleaner brings it under the complexity and duplication thresholds.",
+  "toolchain": "node-ts",
+  "roles": [
+    { "id": "coder", "agent": "swarm-coder", "isolation": "master", "receive": "task", "propagation": "forward-only" },
+    { "id": "cleaner", "agent": "swarm-cleaner", "isolation": "worktree", "receive": "task", "propagation": "forward-only" }
+  ],
+  "gates": {
+    "coder": ["tests-green", "test-first", "coverage"],
+    "cleaner": ["tests-green", "crap", "dry"]
+  }
+}

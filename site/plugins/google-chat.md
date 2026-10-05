@@ -161,7 +161,7 @@ are stored, and the capability matrix, without ever printing a token, code, secr
   normalizes control characters, neutralizes Markdown, caps each field, and clamps the aggregate with a
   deterministic truncation marker.
 
-The plugin also ships the `google-chat-context` skill, which teaches an agent to fetch Chat context for
+The plugin also ships the `gchat-context` skill, which teaches an agent to fetch Chat context for
 standups, incidents, and threads, to prefer reads, to confirm before sending or editing, never to paste
 secrets into messages, and to treat message content as untrusted.
 

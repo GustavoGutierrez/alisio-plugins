@@ -1,0 +1,14 @@
+%% The shipped packs: roles in pipeline order, approval gate and the terminal broadcast.
+flowchart LR
+    subgraph Two["two-pack"]
+        direction LR
+        T1["coder"] --> T2["cleaner"] --> TD(["done"])
+    end
+    subgraph Four["four-pack"]
+        direction LR
+        F1["specifier"] --> FA{{"approval"}} --> F2["coder"] --> F3["refactorer"] --> F4["architect"] --> FD(["done"])
+    end
+    subgraph Six["six-pack"]
+        direction LR
+        S1["specifier"] --> SA{{"approval"}} --> S2["coder"] --> S3["cleaner"] --> S4["architect"] --> S5["hardener"] --> S6["qa"] --> SD(["done"])
+    end

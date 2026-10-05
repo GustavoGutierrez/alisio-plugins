@@ -1,0 +1,12 @@
+%% The two-pass audit handshake of one handoff.
+stateDiagram-v2
+    [*] --> Parked: first envelope
+    Parked --> Challenged: audit challenge sent
+    Challenged --> Parked: commit changed
+    Challenged --> GateCheck: same commit
+    GateCheck --> Released: gates pass
+    GateCheck --> Challenged: gate fails (bounce)
+    Parked --> Held: rounds or bounces exhausted
+    GateCheck --> Held: bounces exhausted
+    Held --> Released: operator accepts
+    Released --> [*]

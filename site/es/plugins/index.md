@@ -18,6 +18,7 @@ Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portad
 - [OpenCode Console (Zen)](./opencode) — OpenCode Console gateway for Responses, Chat, and Messages models (`model-provider`)
 - [OpenCode Go](./opencode-go) — OpenCode Go multi-protocol model gateway (`model-provider`)
 - [OpenRouter](./openrouter) — OpenRouter OpenAI-compatible provider (`model-provider`)
+- [Swarm](./swarm) — Runs a handoff-driven pipeline of specialised agents, each in its own git worktree, with durable handoffs and human gates. (`methodology-harness`)
 - [Telemetry](./telemetry) — Privacy-first local agent observability with a SQLite source of truth, bounded read-only query tools, and opt-in OpenTelemetry-aligned OTLP export (`analytics`)
 - [Thesis Studio](./thesis) — Plans, researches, drafts and typesets university theses with verified evidence and deterministic quality gates. (`methodology-harness`)
 - [Wayfinder](./wayfinder) — Coordinates a durable specification-driven development workflow with bounded child sessions. (`methodology-harness`)

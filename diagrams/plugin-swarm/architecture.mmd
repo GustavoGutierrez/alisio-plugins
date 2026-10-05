@@ -1,0 +1,35 @@
+%% Swarm architecture: ports and adapters. Sources: diagrams/plugin-swarm/, output: packages/plugin-swarm/assets/.
+flowchart LR
+    subgraph Front["Front ends (same services)"]
+        Cmd["/swarm:* commands"]
+        Tools["swarm_* tools"]
+        Dash["Dashboard (HTTP + UI)"]
+        Panel["ui.panel and views"]
+    end
+    Services["SwarmServices<br/>one implementation of every decision"]
+    subgraph Core["Application and domain (pure TypeScript)"]
+        Forge["Forge and ProjectRuntime"]
+        Pump["Pump, audit, gates, approval"]
+        Domain["Packs, envelopes, pipeline,<br/>task state, attention"]
+    end
+    subgraph Ports["Ports"]
+        PRun["AgentRunner"]
+        PIso["Isolation"]
+        PStore["HandoffStore, BoardStore,<br/>TaskStateStore"]
+        PGate["GateRunner"]
+    end
+    subgraph Adapters["Adapters"]
+        ARun["Alisio child sessions"]
+        AGit["git worktrees"]
+        AFs["Atomic JSON files"]
+        AProc["Process gates (node-ts)"]
+    end
+    Cmd --> Services
+    Tools --> Services
+    Dash --> Services
+    Panel --> Services
+    Services --> Forge --> Pump --> Domain
+    Pump --> PRun --> ARun
+    Pump --> PIso --> AGit
+    Pump --> PStore --> AFs
+    Pump --> PGate --> AProc

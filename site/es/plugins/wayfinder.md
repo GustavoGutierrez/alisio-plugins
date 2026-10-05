@@ -86,22 +86,22 @@ this direct execution path; agent frontmatter describes the equivalent catalog-f
 
 | Agent | Responsibility | Capabilities |
 | --- | --- | --- |
-| `coordinator` | Inspectable catalog-facing guidance; it is not the TypeScript workflow authority | Read-only, no process |
-| `discoverer` | Repository evidence and critical questions | Read-only, no process |
-| `proposer` | Approval-ready outcome and boundaries | Read-only, no process |
-| `specifier` | Observable requirements | Read-only, no process |
-| `designer` | Lean technical approach | Read-only, no process |
-| `planner` | Ordered units and complete coverage | Read-only, no process |
-| `implementer` | One approved work unit | Write and process |
-| `verifier` | Independent evidence and checks | Read-only, process allowed |
-| `mutationist` | One bounded mutation run on already-installed tooling | Read-only, process allowed |
-| `archivist` | Archive-readiness inventory | Read-only, no process |
+| `wf-coordinator` | Inspectable catalog-facing guidance; it is not the TypeScript workflow authority | Read-only, no process |
+| `wf-discoverer` | Repository evidence and critical questions | Read-only, no process |
+| `wf-proposer` | Approval-ready outcome and boundaries | Read-only, no process |
+| `wf-specifier` | Observable requirements | Read-only, no process |
+| `wf-designer` | Lean technical approach | Read-only, no process |
+| `wf-planner` | Ordered units and complete coverage | Read-only, no process |
+| `wf-implementer` | One approved work unit | Write and process |
+| `wf-verifier` | Independent evidence and checks | Read-only, process allowed |
+| `wf-mutationist` | One bounded mutation run on already-installed tooling | Read-only, process allowed |
+| `wf-archivist` | Archive-readiness inventory | Read-only, no process |
 
-Each agent links one or more focused skills drawn from `wayfinder-coordinate`,
-`wayfinder-discover`, `wayfinder-propose`, `wayfinder-specify`, `wayfinder-design`,
-`wayfinder-plan`, `wayfinder-implement`, `wayfinder-verify`, `wayfinder-mutate`,
-`wayfinder-archive`, and `wayfinder-test-design`. The planner, implementer, and verifier load both
-their phase skill and `wayfinder-test-design`; a role loads every mapped skill in order. Child phases
+Each agent links one or more focused skills drawn from `wf-coordinate`,
+`wf-discover`, `wf-propose`, `wf-specify`, `wf-design`,
+`wf-plan`, `wf-implement`, `wf-verify`, `wf-mutate`,
+`wf-archive`, and `wf-test-design`. The planner, implementer, and verifier load both
+their phase skill and `wf-test-design`; a role loads every mapped skill in order. Child phases
 cannot delegate.
 
 ## How agents communicate
@@ -133,21 +133,21 @@ delegation chain.
 
 ## Methodology diagrams
 
-![Wayfinder lifecycle, phase pipeline, and gates](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/wayfinder/assets/methodology-flow.svg)
+![Wayfinder lifecycle, phase pipeline, and gates](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-wayfinder/assets/methodology-flow.svg)
 
 `methodology-flow.svg` maps the full lifecycle: user commands drive the deterministic
 `WayfinderCoordinator`, which runs each phase in a fresh child session, persists every artifact
 under `.alisio/wayfinder/changes//`, and enforces the proposal, plan, TDD, and mutation
 gates together with the verification and mutation feedback loops.
 
-![One phase handoff between the coordinator and a child session](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/wayfinder/assets/agent-communication.svg)
+![One phase handoff between the coordinator and a child session](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-wayfinder/assets/agent-communication.svg)
 
 `agent-communication.svg` shows a single phase handoff: the coordinator loads one agent and its
 mapped skills, creates a capability-narrowed child session, validates the one JSON result,
 persists the Markdown artifact and `state.json`, and rejects malformed, partial, or turn-limited
 output without advancing state.
 
-The Mermaid sources live in `diagrams/wayfinder/` at the repository root and are rendered with
+The Mermaid sources live in `diagrams/plugin-wayfinder/` at the repository root and are rendered with
 `pnpm diagrams`. The SVGs are generated output; never edit them by hand.
 
 ## Lifecycle and gates
@@ -274,7 +274,7 @@ code must record a decision at plan approval. This policy is pinned by a test so
 
 ## Test design and UI testability
 
-Two methodological rule sets ship in the `wayfinder-test-design` skill, which the planner,
+Two methodological rule sets ship in the `wf-test-design` skill, which the planner,
 implementer, and verifier load alongside their own skill:
 
 - **Test case design.** Every functional scenario gets at least one happy-path (positive) test and
@@ -419,5 +419,5 @@ sandbox. Review the package before loading it.
 
 ## Links
 
-- [Source](https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/wayfinder)
+- [Source](https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-wayfinder)
 - [Issues](https://github.com/GustavoGutierrez/alisio-plugins/issues)

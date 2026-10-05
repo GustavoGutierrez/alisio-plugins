@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Swarm plugin cover">
+  <title>Swarm</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <g stroke="#334155" stroke-width="2" fill="none">
+    <path d="M120 640 H1480"/>
+    <path d="M120 700 H1480"/>
+    <path d="M120 760 H1480"/>
+  </g>
+  <g fill="none" stroke="#38bdf8" stroke-width="5" marker-end="url(#arrow)">
+    <path d="M345 430 H450"/>
+    <path d="M650 430 H755"/>
+    <path d="M955 430 H1060"/>
+    <path d="M1260 430 H1365"/>
+  </g>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="30" fill="#e2e8f0" text-anchor="middle">
+    <rect x="145" y="370" width="200" height="120" rx="18" fill="#0b1220" stroke="#38bdf8" stroke-width="3"/>
+    <text x="245" y="440">specify</text>
+    <rect x="450" y="370" width="200" height="120" rx="18" fill="#0b1220" stroke="#38bdf8" stroke-width="3"/>
+    <text x="550" y="440">code</text>
+    <rect x="755" y="370" width="200" height="120" rx="18" fill="#0b1220" stroke="#38bdf8" stroke-width="3"/>
+    <text x="855" y="440">clean</text>
+    <rect x="1060" y="370" width="200" height="120" rx="18" fill="#0b1220" stroke="#38bdf8" stroke-width="3"/>
+    <text x="1160" y="440">harden</text>
+    <rect x="1365" y="370" width="110" height="120" rx="18" fill="#0b1220" stroke="#22c55e" stroke-width="3"/>
+    <text x="1420" y="440">QA</text>
+  </g>
+  <g fill="#38bdf8">
+    <circle cx="245" cy="640" r="12"/>
+    <circle cx="550" cy="700" r="12"/>
+    <circle cx="855" cy="760" r="12"/>
+    <circle cx="1160" cy="700" r="12"/>
+    <circle cx="1420" cy="640" r="12"/>
+  </g>
+  <text x="120" y="215" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="110" font-weight="700" fill="#f8fafc">Swarm</text>
+  <text x="124" y="275" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="38" fill="#94a3b8">One git worktree per agent. Durable handoffs. Deterministic gates.</text>
+  <text x="120" y="840" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="28" fill="#64748b">@alisio/plugin-swarm</text>
+</svg>

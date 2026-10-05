@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="swarm-token" content="__SWARM_TOKEN__">
+<title>Swarm</title>
+<link id="favicon" rel="icon" href="data:,">
+<link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+
+<header class="topbar">
+  <h1>Swarm</h1>
+  <span class="chip">runs on Alisio</span>
+  <span id="live-chip" class="chip" role="status" aria-live="polite"><span class="dot none" aria-hidden="true"></span><span id="live-text">connecting</span></span>
+  <span id="decision-chip" class="chip strong" hidden></span>
+  <span id="budget-chip" class="chip" hidden></span>
+  <span class="spacer"></span>
+  <button type="button" id="pause-btn" class="btn" aria-pressed="false" title="Stop refreshing while you read a long diff or transcript">Pause refresh</button>
+  <button type="button" id="theme-btn" class="btn" title="Switch between system, light and dark">Theme: system</button>
+  <label class="chime"><input type="checkbox" id="chime"> Chime</label>
+</header>
+
+<div class="filters" id="filters" role="group" aria-label="Filters">
+  <label>Project <select id="filter-project"><option value="">All</option></select></label>
+  <label>Role <select id="filter-role"><option value="">All</option></select></label>
+  <label>Status <select id="filter-status"><option value="">All</option></select></label>
+  <button type="button" id="filter-clear" class="btn small">Clear filters</button>
+</div>
+
+<section id="attention" class="attention" aria-labelledby="attention-title" hidden>
+  <h2 id="attention-title">Attention</h2>
+  <ul id="attention-list"></ul>
+</section>
+
+<div id="notice" class="notice" role="alert" hidden></div>
+
+<div class="layout" id="layout">
+  <main id="board" class="board" tabindex="-1" aria-label="Board"></main>
+  <div id="split-v" class="splitter vertical" role="separator" aria-orientation="vertical" aria-label="Resize the side rail" tabindex="0"></div>
+  <aside id="rail" class="rail">
+    <section id="queue-pane" class="pane" aria-labelledby="queue-title">
+      <h2 id="queue-title" class="pane-title">Work Queue</h2>
+      <div id="queue" class="queue"></div>
+    </section>
+    <div id="split-h" class="splitter horizontal" role="separator" aria-orientation="horizontal" aria-label="Resize the activity log" tabindex="0"></div>
+    <section id="activity-pane" class="pane" aria-labelledby="activity-title">
+      <h2 id="activity-title" class="pane-title">Activity</h2>
+      <ol id="activity-log" class="activity-log" tabindex="0"></ol>
+    </section>
+  </aside>
+</div>
+
+<dialog id="dlg-reject" aria-labelledby="dlg-reject-title">
+  <form id="form-reject" method="dialog" novalidate>
+    <h2 id="dlg-reject-title">Reject</h2>
+    <p class="hint" id="reject-target"></p>
+    <fieldset>
+      <legend>What should happen?</legend>
+      <label class="inline"><input type="radio" name="reject-action" value="retry" checked> Retry: restore the base and re-run with my comments</label>
+      <label class="inline"><input type="radio" name="reject-action" value="delete"> Delete: archive the task and remove it</label>
+      <label class="inline"><input type="radio" name="reject-action" value="accept"> Accept unchanged: release the work as it is</label>
+    </fieldset>
+    <label>Comments for the retry <textarea id="reject-comments" rows="4" maxlength="8000"></textarea></label>
+    <p class="error" id="reject-error" role="alert"></p>
+    <div class="actions"><button type="button" class="btn" data-close>Cancel</button><button type="submit" class="btn danger">Reject</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlg-docs" class="wide" aria-labelledby="dlg-docs-title">
+  <div class="dlg-body">
+    <h2 id="dlg-docs-title">Documents</h2>
+    <p class="hint" id="docs-meta"></p>
+    <div id="docs-list"></div>
+    <div class="diff-head">
+      <h3>Diff</h3>
+      <button type="button" class="btn small" id="diff-mode" aria-pressed="true">Side by side</button>
+    </div>
+    <div id="docs-diff" class="diff" tabindex="0"></div>
+    <p class="error" id="docs-error" role="alert"></p>
+    <div class="actions">
+      <button type="button" class="btn" id="docs-copy">Copy command</button>
+      <button type="button" class="btn" id="docs-clear">Clear comments</button>
+      <button type="button" class="btn danger" id="docs-reject">Reject</button>
+      <button type="button" class="btn primary" id="docs-approve">Approve</button>
+      <button type="button" class="btn" data-close>Close</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-prompt" aria-labelledby="dlg-prompt-title">
+  <form id="form-prompt" method="dialog" novalidate>
+    <h2 id="dlg-prompt-title">Answer</h2>
+    <p class="hint" id="prompt-detail"></p>
+    <label><span id="prompt-label">Answer</span> <textarea id="prompt-text" rows="4" maxlength="4000"></textarea></label>
+    <p class="error" id="prompt-error" role="alert"></p>
+    <div class="actions"><button type="button" class="btn" data-close>Cancel</button><button type="submit" class="btn primary" id="prompt-ok">Send</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlg-info" class="wide" aria-labelledby="dlg-info-title">
+  <div class="dlg-body">
+    <h2 id="dlg-info-title">Mission</h2>
+    <pre id="info-text" class="plain" tabindex="0"></pre>
+    <div class="actions"><button type="button" class="btn" data-close>Close</button></div>
+  </div>
+</dialog>
+
+<dialog id="dlg-tail" class="wide" aria-labelledby="dlg-tail-title">
+  <div class="dlg-body">
+    <h2 id="dlg-tail-title">Agent</h2>
+    <p class="hint"><span id="tail-meta"></span> <button type="button" class="btn small" id="tail-copy" hidden>Copy session id</button></p>
+    <ol id="tail-log" class="tail-log" tabindex="0"></ol>
+    <div class="actions"><button type="button" class="btn" data-close>Close</button></div>
+  </div>
+</dialog>
+
+<script src="/dashboard.js"></script>
+</body>
+</html>

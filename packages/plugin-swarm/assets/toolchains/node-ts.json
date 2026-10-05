@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "node-ts",
+  "description": "Node.js and TypeScript projects: package scripts for tests and coverage, ESLint for complexity, Stryker for mutation testing.",
+  "detect": [
+    "package.json"
+  ],
+  "commands": {
+    "test": {
+      "argv": [
+        "npm",
+        "test",
+        "--silent"
+      ],
+      "parser": "exit-code"
+    },
+    "coverage": {
+      "argv": [
+        "npx",
+        "vitest",
+        "run",
+        "--coverage",
+        "--coverage.reporter=json-summary"
+      ],
+      "parser": "istanbul-summary",
+      "report": "coverage/coverage-summary.json"
+    },
+    "complexity": {
+      "argv": [
+        "npx",
+        "eslint",
+        "--format",
+        "json",
+        "--rule",
+        "complexity: [\"error\", 1]",
+        "."
+      ],
+      "parser": "eslint-complexity"
+    },
+    "mutation": {
+      "argv": [
+        "npx",
+        "stryker",
+        "run",
+        "--incremental"
+      ],
+      "parser": "stryker-json",
+      "report": "reports/mutation/mutation.json"
+    },
+    "acceptance": {
+      "argv": [
+        "npm",
+        "run",
+        "--if-present",
+        "test:acceptance",
+        "--silent"
+      ],
+      "parser": "exit-code"
+    }
+  }
+}
