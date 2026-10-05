@@ -1,5 +1,11 @@
 # @alisio/plugin-wayfinder
 
+## 0.2.0
+
+### Minor Changes
+
+- 1f89d4e: Prefix every shipped agent and skill with `wf-` (for example `wf-planner` and `wf-verify`) so they no longer collide with other plugins or the host catalog, and move the package directory to `packages/plugin-wayfinder`. The npm name, plugin id, and commands are unchanged.
+
 ## 0.1.2
 
 ### Patch Changes
