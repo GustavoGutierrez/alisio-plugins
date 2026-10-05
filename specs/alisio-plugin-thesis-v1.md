@@ -3,7 +3,7 @@
 Status: draft, not implemented. Nothing is committed or published; the owner orders both.
 Audience: a coding agent implementing the package in this monorepo.
 Source material: the owner's architecture notes (`thesis.md`, untracked, Spanish), the existing
-`packages/wayfinder` (methodology-harness pattern) and `packages/plugin-literature-research`
+`packages/plugin-wayfinder` (methodology-harness pattern) and `packages/plugin-literature-research`
 (scholarly API client pattern), and toolchain research dated 2026-10-04 (§2.3).
 Out of scope: anything in the Alisio core, multi-user collaboration, plagiarism detection against
 closed corpora, a DOCX renderer (the renderer port in §10.0 keeps it a future adapter-only change), country packs other than Colombia.
@@ -50,7 +50,7 @@ Non-goals:
   the dev script `scripts/render-diagrams.mjs`, which detects an installed Chrome-family browser
   (Chrome, Chromium, Brave, Edge; overrides `MERMAID_BROWSER` / `PUPPETEER_EXECUTABLE_PATH`) and
   never downloads one. Its detection logic is the precedent for §10.6.
-- `packages/wayfinder` is the reference for a methodology plugin:
+- `packages/plugin-wayfinder` is the reference for a methodology plugin:
   - `definePlugin({ id, categories: ["methodology-harness"], apiVersion: 1, setup })`;
   - `api.resources.agents("../.agents/agents")` and `api.resources.skills("../.agents/skills")`,
     paths in `src/resources.ts`;
