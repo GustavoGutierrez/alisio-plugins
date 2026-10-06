@@ -1,0 +1,26 @@
+stateDiagram-v2
+  direction LR
+  state "ui-contract" as ui_contract
+  state "test-design" as test_design
+  state Phases {
+    [*] --> intake
+    intake --> context
+    context --> specify
+    specify --> ui_contract : spec approved
+    ui_contract --> tokens : only when new tokens
+    ui_contract --> plan : UI contract approved
+    tokens --> plan
+    plan --> test_design : plan approved
+    test_design --> build
+    build --> validate
+    validate --> review
+    review --> accept
+    accept --> archive : human approval
+    archive --> closed
+  }
+  [*] --> Phases
+  Phases --> Blocked : gate BLOCKED or loop exhausted
+  Blocked --> Phases : answer, approve, waive or retry the same phase
+  Phases --> Interrupted : host restart
+  Interrupted --> Phases : /frontsmith:resume
+  Phases --> [*] : closed

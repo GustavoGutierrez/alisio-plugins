@@ -1,0 +1,36 @@
+flowchart LR
+  coord["Coordinator (code)"]
+  fscoord["fs-coordinator"] -->|runs commands| coord
+  spec["fs-specifier"] -->|envelope| coord
+  uic["fs-ui-contractor"] -->|envelope| coord
+  tks["fs-tokensmith"] -->|envelope| coord
+  arch["fs-architect"] -->|envelope| coord
+  tst["fs-test-engineer"] -->|envelope| coord
+  impl["fs-implementer"] -->|envelope| coord
+  data["fs-data-engineer"] -->|envelope| coord
+  a11y["fs-a11y-auditor"] -->|envelope| coord
+  fid["fs-fidelity-reviewer"] -->|envelope| coord
+  rev["fs-reviewer"] -->|envelope| coord
+  arv["fs-archivist"] -->|envelope| coord
+  coord -->|writes| specj[("spec.json")]
+  coord -->|writes| uicj[("ui-contract.json")]
+  coord -->|writes| tokj[("tokens.json")]
+  coord -->|writes| planj[("plan.json")]
+  coord -->|writes| tm[("test-map.json")]
+  coord -->|writes| rep[("gate reports")]
+  coord -->|writes| val[("validation.md")]
+  specj -.->|input| uic
+  specj -.->|input| arch
+  specj -.->|input| tst
+  uicj -.->|input| tks
+  uicj -.->|input| arch
+  uicj -.->|input| impl
+  uicj -.->|input| fid
+  planj -.->|input| impl
+  planj -.->|input| data
+  planj -.->|input| tst
+  rep -.->|input| rev
+  rep -.->|input| a11y
+  rep -.->|input| fid
+  val -.->|input| arv
+  ind["Reviewer never sees implementer narratives"] -.-> rev

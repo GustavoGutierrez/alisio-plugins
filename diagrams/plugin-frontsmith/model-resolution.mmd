@@ -1,0 +1,20 @@
+flowchart TD
+  agent(["Child run for agent X"]) --> l1{"Runtime override has agent.X?"}
+  l1 -->|no| l2{"AGENTS.md block has agent.X?"}
+  l2 -->|no| l3{"config.json has agent.X?"}
+  l3 -->|no| l4{"Host options have agent.X?"}
+  l4 -->|no| def["Use frontmatter tier"]
+  l1 -->|yes| val{"Value kind"}
+  l2 -->|yes| val
+  l3 -->|yes| val
+  l4 -->|yes| val
+  def --> tier["Resolve tier through layers 1-4"]
+  val -->|model selector| sel["Use selector"]
+  val -->|inherit| inh["Inherit session model"]
+  val -->|"@tier"| tier
+  tier -->|bound| sel
+  tier -->|unbound| inh
+  sel --> chk["Validate with models.resolve"]
+  chk -->|unknown| err["Fail closed, name the layer"]
+  chk -->|ok| spawn["sessions.create with model"]
+  inh --> spawn

@@ -1,0 +1,15 @@
+flowchart TD
+  start(["A check is needed"]) --> q1{"Can code measure it?"}
+  q1 -->|yes| det["Deterministic engine decides PASS or FAIL"]
+  q1 -->|no| q2{"Is it a heuristic signal?"}
+  q2 -->|yes| sig["Engine raises REVIEW"]
+  q2 -->|no| adv["Advisory guidance to agents"]
+  det -->|FAIL| fix["Task bounced to implementer"]
+  det -->|tool missing| blk["BLOCKED, never PASS"]
+  det -.->|agents cannot overturn a FAIL| fix
+  sig --> agent["Agent classifies REVIEW"]
+  agent -->|"acceptable variation, REVIEW only"| ok["PASS with note"]
+  agent -->|defect| fix
+  agent -->|needs human| human(["Human waiver or manual verification"])
+  adv --> rev["Reviewer findings"]
+  rev -->|BLOCKER or MAJOR| fix

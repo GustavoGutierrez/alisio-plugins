@@ -1,0 +1,20 @@
+stateDiagram-v2
+  [*] --> Inspect
+  Inspect --> ContractReady : G2 approved
+  ContractReady --> Implement
+  Implement --> Integrity
+  Integrity --> Blocked : oracle or tool missing
+  Integrity --> Render
+  Render --> Measure
+  Measure --> Repair : rule FAIL
+  Measure --> CompareRegions
+  CompareRegions --> Repair : FAIL
+  CompareRegions --> Integration : PASS or REVIEW classified
+  Integration --> BehaviorA11y
+  BehaviorA11y --> Accepted : all required PASS
+  Repair --> Render : round up to 3 and improving
+  Repair --> Failed : budget exhausted or no improvement
+  Accepted --> [*]
+  note right of CompareRegions
+    uncalibrated means REVIEW, never PASS
+  end note

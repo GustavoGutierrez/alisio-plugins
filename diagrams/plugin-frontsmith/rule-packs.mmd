@@ -1,0 +1,24 @@
+flowchart LR
+  sp[("Shipped packs")]
+  wp[("Workspace packs in .frontsmith/packs")]
+  cfg[("config.json rules")]
+  stack["Stack profile"]
+  lvl["Feature level"]
+  act["Activate by appliesWhen"]
+  ext["Apply extends and overrides"]
+  prec["Precedence: config over workspace overrides by order over shipped"]
+  val["Validate PCK-001 to PCK-007"]
+  set["Resolved rule set with trails"]
+  eval["Engines evaluate files"]
+  sup["Suppressions and waivers"]
+  rep["Gate report"]
+  g0f["G0 FAIL"]
+  sp --> act
+  wp --> act
+  stack --> act
+  lvl --> act
+  act --> ext --> prec
+  cfg --> prec
+  prec --> val
+  val -->|error| g0f
+  val -->|ok| set --> eval --> sup --> rep

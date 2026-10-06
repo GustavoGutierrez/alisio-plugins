@@ -1,0 +1,29 @@
+flowchart TD
+  intake["Intake"] --> g0{"G0 Context"}
+  g0 --> spec["Specify: fs-specifier"]
+  spec --> g1{"G1 Spec"}
+  g1 --> a1(["Human: approve spec"])
+  a1 --> ui["UI contract: fs-ui-contractor"]
+  ui --> g2{"G2 UI"}
+  g2 --> a2(["Human: approve UI contract"])
+  a2 -.->|only when new tokens| tok["Tokens: fs-tokensmith + solver"]
+  tok --> g2t{"G2T Tokens"}
+  a2 --> plan["Plan: fs-architect"]
+  g2t --> plan
+  plan --> g3{"G3 Plan"}
+  g3 --> a3(["Human: approve plan"])
+  a3 --> td["Test design: fs-test-engineer"]
+  td --> g4{"G4 Tests"}
+  g4 --> build["Build loop: one task per child"]
+  build --> g6{"G6 Implementation"}
+  g6 -->|"FAIL, bounce up to 2"| build
+  g6 --> val["Validate: rules, architecture, tests, fidelity, a11y, budgets"]
+  val --> g7{"G7 Validation"}
+  g7 -->|"FAIL, repair up to 3"| build
+  g7 --> rev["Review: fs-reviewer"]
+  rev --> g8{"G8 Review"}
+  g8 -->|"BLOCKER or MAJOR, remediation up to 2"| build
+  g8 --> acc["Accept: validation.md"]
+  acc --> a4(["Human: approve acceptance"])
+  a4 --> arc["Archive: fs-archivist"]
+  lv["Levels L0-L3 skip phases"] -.-> intake

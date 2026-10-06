@@ -1,0 +1,57 @@
+flowchart TB
+  tui["Alisio TUI"]
+  web["Alisio web"]
+  ws[("Workspace files")]
+  subgraph Interface
+    cmd["Commands"]
+    tools["Tools"]
+    cli["CLI alisio-frontsmith"]
+    dash["Review dashboard"]
+    pres["Presenters: Markdown, tool result, interaction, status"]
+  end
+  subgraph Application
+    svc["FrontsmithServices"]
+    wf["Workflow coordinator"]
+    chk["Checks"]
+    eng["Rule engines"]
+    ports[["Ports"]]
+  end
+  subgraph Domain
+    gates["Gates G0-G9"]
+    rules["Rule model and resolver"]
+    color["Color math and solver"]
+    fid["Fidelity metrics"]
+    models["Model resolution"]
+    state["Feature state"]
+  end
+  subgraph Infrastructure
+    direction TB
+    babel["Babel parser"]
+    scan["CSS and template scanners"]
+    git["Git CLI"]
+    proc["Process exec"]
+    probe["Playwright probe process"]
+    png["PNG codec"]
+    child["Child session runner"]
+    fsx["Atomic file store"]
+  end
+  tui --> cmd
+  tui --> tools
+  web --> cmd
+  web --> tools
+  cmd --> svc
+  tools --> svc
+  cli --> svc
+  dash --> svc
+  cmd --> pres
+  tools --> pres
+  dash --> pres
+  svc --> wf
+  svc --> chk
+  wf --> gates
+  wf --> state
+  chk --> eng
+  eng --> rules
+  svc --> ports
+  Infrastructure -.->|implements| ports
+  Infrastructure --> ws

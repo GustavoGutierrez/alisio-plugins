@@ -1,0 +1,49 @@
+flowchart LR
+  subgraph Choices
+    c1["Spec and UI contract by states"]
+    c2["Deterministic rule packs"]
+    c3["Architecture boundaries and patterns catalog"]
+    c4["Component API lint: typed polymorphic props, variant maps"]
+    c5["Token and contrast solver"]
+    c6["Independent adversarial review"]
+    c7["Measured fidelity with calibration"]
+    c8["Protected oracles and diff guards"]
+    c9["Bounded loops"]
+    c10["Per-agent model tiers"]
+  end
+  subgraph Mechanisms
+    m1["No guessing of states or behavior"]
+    m2["Same input gives same verdict"]
+    m3["Dependency direction enforced"]
+    m4["Reusable, extensible components"]
+    m5["Accessible color by construction"]
+    m6["Errors not justified by the same context"]
+    m7["Local defects not hidden by global scores"]
+    m8["Agents cannot move the goalposts"]
+    m9["No endless polishing or silent acceptance"]
+    m10["Right model for each judgment"]
+  end
+  subgraph Outcomes
+    o1["Correctness"]
+    o2["Maintainability"]
+    o3["Scalability"]
+    o4["Polymorphism"]
+    o5["Accessibility"]
+    o6["Visual fidelity"]
+    o7["Determinism"]
+    o8["Cost control"]
+  end
+  c1 --> m1 --> o1
+  c2 --> m2 --> o7
+  c3 --> m3
+  m3 --> o2
+  m3 --> o3
+  c4 --> m4
+  m4 --> o4
+  m4 --> o2
+  c5 --> m5 --> o5
+  c6 --> m6 --> o1
+  c7 --> m7 --> o6
+  c8 --> m8 --> o7
+  c9 --> m9 --> o8
+  c10 --> m10 --> o8
