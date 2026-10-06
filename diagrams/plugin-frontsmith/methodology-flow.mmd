@@ -1,4 +1,5 @@
 flowchart TD
+  src[/"Optional: --from-spec file (.md or .json), copied and hashed"/] -.-> spec
   intake["Intake"] --> g0{"G0 Context"}
   g0 --> spec["Specify: fs-specifier"]
   spec --> g1{"G1 Spec"}

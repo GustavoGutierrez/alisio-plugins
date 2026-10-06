@@ -1,6 +1,6 @@
 # @alisio/plugin-frontsmith
 
-![Frontsmith](./cover.svg)
+![Frontsmith](./cover.webp)
 
 > Español: [README.es.md](./README.es.md). The two READMEs must be updated together.
 
@@ -12,11 +12,14 @@ reported as blocked, never as a pass.
 
 ## Status
 
-**Pre-release (0.1.0).** Everything below is implemented and covered by offline tests with scripted
+**Pre-release (0.2.0).** Everything below is implemented and covered by offline tests with scripted
 fakes for the child sessions. What has **not** been exercised against a live Alisio host yet:
 
 - real child sessions (the model-per-agent binding, the profiles of the agents, background jobs that
   outlive their command in the TUI, command time limits in a browser or a remote client);
+- the conversational coordinator on a live host: which tools the model is offered (the host ignores
+  the declared tool lists of a main agent for now), the plugin dialogs raised from inside a tool
+  call, the completion notice queued for the next turn, and long checks inside a coordinator run;
 - inline composite images in terminals, the dashboard through a remote web client, and how the
   Dock renders the Markdown artifacts;
 - whether a vision model can read the fidelity captures (without one, `fs-fidelity-reviewer` works
@@ -58,6 +61,10 @@ alisio install npm:@alisio/plugin-frontsmith
    a headless one prints the command.
 6. `/frontsmith:status login-form` shows the phase, gates, tasks and the next command at any time.
 
+To work in conversation instead, select the `frontsmith:fs-coordinator` agent (see "Conversational
+coordinator"). To start from a written spec, add `--from-spec docs/login.md` (see "Starting from a
+spec file").
+
 ## Methodology
 
 ![Phases from intake to archive, with gates, human approvals and the bounded loops](./assets/methodology-flow.svg)
@@ -77,7 +84,7 @@ artifacts and moves phases. The reviewer never sees the implementer's narrative.
 
 | Agent | Role | Default tier |
 | --- | --- | --- |
-| `fs-coordinator` | Explains and operates Frontsmith through its commands; never advances a phase | fast |
+| `fs-coordinator` | Guides a person through a feature in chat by calling the `fs_*` tools; never decides a gate or records a human decision itself | standard |
 | `fs-specifier` | Turns an intent into a verifiable spec with states and open questions | reasoning |
 | `fs-ui-contractor` | Turns the spec and designs into an executable UI contract | reasoning |
 | `fs-tokensmith` | Chooses token roles, names and contrast pairs, never colour values | standard |
@@ -101,6 +108,52 @@ Code decides what code can measure. Agents classify heuristic signals (`REVIEW`)
 variation as acceptable, but they cannot overturn a `FAIL`. A required tool that is missing gives
 `BLOCKED`, which stays visible until a person resolves or waives it.
 
+## Conversational coordinator
+
+Select the `frontsmith:fs-coordinator` agent (`/agent:frontsmith:fs-coordinator` or Shift+Tab) and
+talk. It reads the state with `fs_status`, then calls `fs_feature_new`, `fs_next`, `fs_answer` and
+`fs_approval_request` in the right order and explains each result. Code still runs every unit and
+every gate; the coordinator only sequences them.
+
+- **Every human decision stays human.** The level of a new feature, an answer to an open question and
+  an approval are recorded only after the person clicks in a dialog that the plugin builds and shows
+  (or types the command). The model never fills these dialogs. Text it relays for you, such as an
+  answer in your own words, is shown back to you exactly and recorded only if you choose Record. A
+  session that cannot ask gets the exact command back and nothing is recorded.
+- **Approvals.** `fs_approval_request` opens the same dialog as `/frontsmith:approve`, only for the
+  approval the feature currently owes. `config` approvals (re-baselining protected files) are
+  command-only.
+- **Long work runs as background jobs.** Every unit that runs a child agent starts as a job. When it
+  ends a short notice (written by code, with no agent text) is queued for the next turn, and the
+  coordinator waits for you to say continue. It never polls.
+- **Stops at gates.** `fs_next` returns without running anything while a question, an approval or a
+  closed feature is waiting for you. At most three units run per turn.
+- **Footer.** Every reply ends with `Feature, Phase, Gate, Next`, taken from the status.
+
+Known limit: the host does not yet honor the tool allow and deny lists declared in the agent file
+for a main agent, so `readOnly: false` also exposes the built-in write, shell and delegation tools to
+it. The lists are kept in the file for the day it does, and the guard today is the agent body, the
+host's per-call approvals, protected-file hashing and the plugin dialogs. A host request is
+documented in the spec (section 5.2). Custom agents are not part of this release.
+
+## Starting from a spec file
+
+`/frontsmith:new <feature> --level L1|L2|L3 --from-spec <path>` (or `fromSpec` on `fs_feature_new`)
+creates a feature from a document you already have. `-- <intent>` becomes optional; without it the
+intent is the title of the file.
+
+- The file must be inside the workspace, end in `.md`, `.markdown` or `.json`, and be at most
+  128 KiB of UTF-8. `.git`, `.alisio`, absolute paths and links that leave the workspace are refused.
+  A path with spaces needs the tool form. L0 cannot take a spec (it has no specify phase).
+- The file is copied to `docs/frontsmith/<feature>/source-spec.md` (or `.json`) and hashed; later
+  edits of the original do not change the run. The copy is protected: if it changes, the units that
+  use it are `BLOCKED`.
+- Markdown goes to `fs-specifier`, which normalizes it into the spec envelope: nothing is dropped
+  silently, implementation statements become assumptions, and ambiguities, contradictions and TBDs
+  become open questions that block gate G1 until you answer them.
+- A `.json` file that is already a valid spec envelope skips only the specifier run. Gate G1 still
+  runs, and spec approval at L1 and above still applies. It cannot be combined with L0.
+
 ## Rigor levels
 
 | Level | For | Phases | Human approvals |
@@ -121,7 +174,7 @@ All commands are `/frontsmith:<name>` and return a usage line when an argument i
 | --- | --- | --- |
 | `init` | | Create the project config and the gitignore entry |
 | `doctor` | | Check what a run needs |
-| `new` | `<feature> [--level L0-L3] [--mode ...] -- <intent>` | Create a feature |
+| `new` | `<feature> [--level L0-L3] [--mode ...] [--from-spec <path>] -- <intent>` | Create a feature, optionally from a spec file |
 | `status` | `[feature]` | Show one feature or list them |
 | `next` | `<feature> [--foreground]` | Run the next unit |
 | `answer` | `<feature> <Q-id> -- <text>` | Answer an open question |
@@ -145,7 +198,11 @@ All commands are `/frontsmith:<name>` and return a usage line when an argument i
 
 | Tool | Effect | Purpose |
 | --- | --- | --- |
-| `fs_status` | read | Phase, gates, tasks and next command, or the feature list |
+| `fs_status` | read | Phase, gates, tasks and next command, or the feature list; with a feature it adds a JSON view for the coordinator |
+| `fs_feature_new` | write | Create a feature (optionally from a spec file); the person picks the level in a dialog |
+| `fs_answer` | write | Relay an answer; recorded only after the person confirms in a dialog |
+| `fs_approval_request` | write | Open the approve/reject dialog for the approval currently owed (never `config`) |
+| `fs_next` | process | Advance one unit: stops at human gates, child units start as background jobs |
 | `fs_detect_stack` | read | Package manager, framework, styling and test tooling with evidence |
 | `fs_inventory` | read | Components, hooks, stores and design tokens |
 | `fs_rules_list` | read | Active rules, with resolution trails |
@@ -321,6 +378,8 @@ the package runs its own architecture checker over its sources in a test.
 ## Limitations
 
 - Pre-release: see "Status" for what has only been verified with fakes.
+- The coordinator's declared tool lists are not honored by the host for main agents yet (see
+  "Conversational coordinator").
 - Custom agents are planned, not shipped. The `agents.custom` key is accepted so that model bindings
   can already name an agent, but no custom agent is loaded or run in this release.
 - Flow-annotated JavaScript is not parsed; unparsable files are reported for review and skipped.

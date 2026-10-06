@@ -13,3 +13,7 @@ flowchart TD
   agent -->|needs human| human(["Human waiver or manual verification"])
   adv --> rev["Reviewer findings"]
   rev -->|BLOCKER or MAJOR| fix
+  coord(["fs-coordinator in chat"]) -->|"calls fs_ tools"| code["Code runs units and gates"]
+  code --> det
+  code -->|"decision needed"| dlg(["Plugin dialog: the person clicks"])
+  dlg -.->|"nothing recorded without the click"| human
