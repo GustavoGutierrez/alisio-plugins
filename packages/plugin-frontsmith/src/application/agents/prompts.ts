@@ -37,7 +37,7 @@ const tasks: Record<Exclude<FsRole, "coordinator">, string> = {
   archivist: "Write the retrospective and the rule candidates for the delivered feature.",
 };
 
-const fence = (text: string): string => {
+export const fence = (text: string): string => {
   const longest = Math.max(2, ...[...text.matchAll(/`+/g)].map((m) => m[0].length));
   const marks = "`".repeat(longest + 1);
   return `${marks}\n${text}\n${marks}`;

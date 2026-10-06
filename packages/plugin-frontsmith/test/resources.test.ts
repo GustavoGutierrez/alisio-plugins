@@ -14,6 +14,8 @@ import { shippedAgentTiers } from "../src/domain/models/agents.js";
 import {
   agentKeyOrder,
   agentProblems,
+  coordinatorDisallowedTools,
+  coordinatorTools,
   parseResource,
   readTools,
   skillHeadings,
@@ -32,7 +34,7 @@ const cards: Record<
   string,
   { maxTurns: number; timeoutMs: number; write: boolean; mode: "primary" | "subagent" }
 > = {
-  coordinator: { maxTurns: 6, timeoutMs: 120_000, write: false, mode: "primary" },
+  coordinator: { maxTurns: 24, timeoutMs: 600_000, write: false, mode: "primary" },
   specifier: { maxTurns: 10, timeoutMs: 300_000, write: false, mode: "subagent" },
   "ui-contractor": { maxTurns: 12, timeoutMs: 420_000, write: false, mode: "subagent" },
   tokensmith: { maxTurns: 8, timeoutMs: 300_000, write: false, mode: "subagent" },
@@ -62,7 +64,12 @@ describe("agent files", () => {
       it("has valid frontmatter in the order of spec 5.2", () => {
         expect(resource.keys).toEqual([...agentKeyOrder]);
         expect(
-          agentProblems(resource, { name, mode: card.mode, skills: roleSkills[role] }),
+          agentProblems(resource, {
+            name,
+            mode: card.mode,
+            skills: roleSkills[role],
+            ...(role === "coordinator" ? { profile: "coordinator" as const } : {}),
+          }),
         ).toEqual([]);
       });
 
@@ -72,6 +79,20 @@ describe("agent files", () => {
 
       it("uses the profile and limits of its card", () => {
         const front = resource.frontmatter;
+        if (role === "coordinator") {
+          expect(front).toMatchObject({
+            maxTurns: 24,
+            timeoutMs: 600_000,
+            maxOutputTokens: 6000,
+            readOnly: false,
+            permission: { write: "ask", process: "ask" },
+            hidden: false,
+            tier: "standard",
+          });
+          expect(front.tools).toEqual([...coordinatorTools]);
+          expect(front.disallowedTools).toEqual([...coordinatorDisallowedTools]);
+          return;
+        }
         expect(front.maxTurns).toBe(card.maxTurns);
         expect(front.timeoutMs).toBe(card.timeoutMs);
         expect(front.readOnly).toBe(!card.write);
@@ -105,6 +126,37 @@ describe("agent files", () => {
       });
     });
   }
+
+  it("gives the coordinator the exact tool allow and deny lists and a self-sufficient body", () => {
+    const resource = parseResource(read(join(agentsDir, "fs-coordinator.md")), "fs-coordinator");
+    expect(coordinatorTools).toEqual(
+      expect.arrayContaining([
+        "fs_status",
+        "fs_next",
+        "fs_answer",
+        "fs_approval_request",
+        "fs_feature_new",
+      ]),
+    );
+    expect(coordinatorDisallowedTools).toEqual(
+      expect.arrayContaining(["write_file", "edit_file", "shell", "fs_phase_run", "task"]),
+    );
+    const body = resource.body;
+    expect(body.length).toBeLessThan(24_000);
+    for (const name of [
+      "fs_status",
+      "fs_next",
+      "fs_answer",
+      "fs_approval_request",
+      "fs_feature_new",
+    ])
+      expect(body).toContain(name);
+    expect(body).toContain(
+      'Feature: <id> (<level>, <mode>) · Phase: <phase> · Gate: <id verdict | none> · Next: <one command or "waiting for job <id>">',
+    );
+    expect(body).toMatch(/Never approve, reject, waive/);
+    expect(body).not.toMatch(/cannot (?:drive|advance)/i);
+  });
 
   it("declares its tier in the frontmatter of every file, matching shippedAgentTiers exactly", () => {
     const fromFiles = Object.fromEntries(
@@ -225,7 +277,12 @@ describe("loadAgentProfile", () => {
       tier: "reasoning",
       permission: { write: "deny", process: "deny" },
     });
-    expect(await loadAgentProfile("coordinator")).toMatchObject({ mode: "primary", tier: "fast" });
+    expect(await loadAgentProfile("coordinator")).toMatchObject({
+      mode: "primary",
+      tier: "standard",
+      readOnly: false,
+      permission: { write: "ask", process: "ask" },
+    });
   });
 
   it("rejects an unknown role", async () => {

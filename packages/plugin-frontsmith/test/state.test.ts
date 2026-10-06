@@ -151,6 +151,40 @@ describe("feature state", () => {
   });
 });
 
+describe("optional source and answer provenance (additive, schemaVersion stays 1)", () => {
+  it("accepts a state with a source reference and a dialog answer", () => {
+    const state = fresh();
+    state.source = {
+      path: "specs/a.md",
+      format: "markdown",
+      sha256: "ab".repeat(32),
+      bytes: 10,
+      snapshot: "docs/frontsmith/projects/source-spec.md",
+      importedAt: NOW,
+    };
+    state.questions.push({
+      id: "Q-01",
+      question: "q",
+      blocking: true,
+      answer: "a",
+      answeredVia: "dialog",
+    });
+    expect(validateFeatureState(state)).toMatchObject({ ok: true });
+    expect(state.schemaVersion).toBe(1);
+  });
+
+  it("rejects a malformed source reference", () => {
+    const state = { ...fresh(), source: { path: 3 } };
+    const result = validateFeatureState(state);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors.map((e) => e.pointer)).toContain("/source");
+  });
+
+  it("accepts a state without them (a 0.1.0 state)", () => {
+    expect(validateFeatureState(fresh())).toMatchObject({ ok: true });
+  });
+});
+
 describe("state migrations", () => {
   it("is the identity for version 1 after validation", () => {
     const state = fresh();

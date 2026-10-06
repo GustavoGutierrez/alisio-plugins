@@ -1,5 +1,6 @@
 import type { SpecEnvelope } from "../../../domain/envelopes/spec.js";
 import { gateG1 } from "../../../domain/gates/g1.js";
+import { checkSourceJson } from "../../../domain/spec-source.js";
 import { renderSpecMd } from "../../render/spec-md.js";
 import { approvalCommand, approvalToLeave } from "../approvals.js";
 import {
@@ -17,13 +18,50 @@ import {
   writeEnvelope,
 } from "../env.js";
 import { openBlockingQuestions } from "../status.js";
-import { advance, clip, failureSummary, feedbackSection, sections } from "./shared.js";
+import {
+  advance,
+  blockOnSource,
+  checkSourceSnapshot,
+  clip,
+  failureSummary,
+  feedbackSection,
+  SOURCE_NOTE,
+  sections,
+  specifierSourceSection,
+} from "./shared.js";
 
 /** Specify phase (spec 7.1, 9.2): the specifier writes the spec, code renders and checks it (G1). */
 export async function runSpecify(env: PhaseEnv): Promise<UnitResult> {
   let state = await readState(env);
   let spec = await loadArtifact<SpecEnvelope>(env, state, "spec-json");
   const stale = state.gates.G1?.verdict === "FAIL";
+  const source = await checkSourceSnapshot(env, state);
+  if (!source.ok && (!spec || stale)) return blockOnSource(env, source.message);
+  const answeredBefore = state.questions.some((q) => q.answer !== undefined && q.answer !== "");
+  const importable =
+    !spec &&
+    !stale &&
+    state.source?.format === "spec-json" &&
+    source.ok &&
+    source.text !== undefined &&
+    !answeredBefore &&
+    (state.feedback?.spec ?? []).length === 0;
+  if (importable) {
+    const checked = checkSourceJson(source.text as string);
+    if (checked.ok) {
+      spec = checked.spec;
+      env.progress(`specify: imported ${state.source?.path}; specifier not run`);
+      await writeEnvelope(env, "spec-json", "spec.json", spec);
+      await writeArtifact(env, "spec", "spec.md", renderSpecMd(spec, env.feature));
+      await updateState(env, (draft) => {
+        for (const q of spec?.openQuestions ?? [])
+          if (!draft.questions.some((existing) => existing.id === q.id))
+            draft.questions.push({ id: q.id, question: q.question, blocking: q.blocking });
+        delete draft.blocked;
+      });
+      state = await readState(env);
+    }
+  }
   if (!spec || stale) {
     const context = state.artifacts.context
       ? await readText(env, state.artifacts.context.path)
@@ -47,8 +85,12 @@ export async function runSpecify(env: PhaseEnv): Promise<UnitResult> {
             }
           : undefined,
         feedbackSection(state, "spec"),
+        source.ok && source.text !== undefined
+          ? specifierSourceSection(state, source.text)
+          : undefined,
         stale ? await failureSummary(env, state, "G1") : undefined,
       ),
+      ...(source.ok && source.text !== undefined ? { note: SOURCE_NOTE } : {}),
     });
     if (outcome.status === "cancelled")
       return { kind: "cancelled", message: "specify was cancelled." };

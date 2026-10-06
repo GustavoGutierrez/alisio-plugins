@@ -45,6 +45,7 @@ async function loadResources(role: FsRole): Promise<{
     name,
     mode: role === "coordinator" ? "primary" : "subagent",
     skills,
+    ...(role === "coordinator" ? { profile: "coordinator" as const } : {}),
   });
   if (problems.length > 0)
     throw new Error(`Invalid agent resource ${name}: ${problems.join("; ")}`);
@@ -75,7 +76,7 @@ export async function loadAgentProfile(roleOrAgent: string): Promise<AgentProfil
   const role = requireRole(roleOrAgent);
   const { agent, instructions } = await loadResources(role);
   const front = agent.frontmatter;
-  const permission = front.permission as Record<string, "allow" | "deny">;
+  const permission = front.permission as Record<string, "allow" | "deny" | "ask">;
   return {
     name: `fs-${role}`,
     role,
@@ -88,8 +89,8 @@ export async function loadAgentProfile(roleOrAgent: string): Promise<AgentProfil
     maxOutputTokens: front.maxOutputTokens as number,
     readOnly: front.readOnly === true,
     permission: {
-      write: permission.write as "allow" | "deny",
-      process: permission.process as "allow" | "deny",
+      write: permission.write as "allow" | "deny" | "ask",
+      process: permission.process as "allow" | "deny" | "ask",
     },
     tier: front.tier as AgentProfile["tier"],
   };

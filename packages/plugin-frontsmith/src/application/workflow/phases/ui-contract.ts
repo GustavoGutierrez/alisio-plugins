@@ -18,7 +18,17 @@ import {
   writeArtifact,
 } from "../env.js";
 import { inventoryRows, tokensPhaseNeeded } from "../project.js";
-import { advance, clip, compact, failureSummary, feedbackSection, sections } from "./shared.js";
+import {
+  advance,
+  blockOnSource,
+  checkSourceSnapshot,
+  clip,
+  compact,
+  failureSummary,
+  feedbackSection,
+  referenceSourceSection,
+  sections,
+} from "./shared.js";
 
 export const referencesDir = (feature: string): string => `.frontsmith/references/${feature}`;
 
@@ -78,6 +88,8 @@ export async function runUiContract(env: PhaseEnv): Promise<UnitResult> {
   let contract = await loadArtifact<UiContractEnvelope>(env, state, "ui-contract");
   const stale = state.gates.G2?.verdict === "FAIL";
   if (!contract || stale) {
+    const source = await checkSourceSnapshot(env, state);
+    if (!source.ok) return blockOnSource(env, source.message);
     const { deps } = env;
     const fs = deps.fsFor(env.root);
     const listing = await fs.listFiles();
@@ -117,6 +129,7 @@ export async function runUiContract(env: PhaseEnv): Promise<UnitResult> {
               .map((r) => `- ${r.name} (${r.path})`)
               .join("\n") || "None found.",
         },
+        source.text !== undefined ? referenceSourceSection(source.text) : undefined,
         feedbackSection(state, "ui-contract"),
         stale ? await failureSummary(env, state, "G2") : undefined,
       ),

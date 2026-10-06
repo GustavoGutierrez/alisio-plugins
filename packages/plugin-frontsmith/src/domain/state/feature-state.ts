@@ -27,6 +27,7 @@ export const artifactKinds = [
   "validation",
   "review",
   "retro",
+  "source-spec",
 ] as const;
 export type ArtifactKind = (typeof artifactKinds)[number];
 
@@ -67,6 +68,19 @@ export interface QuestionState {
   blocking: boolean;
   answer?: string;
   answeredAt?: string;
+  /** How the answer got in: the typed command, or a plugin dialog the person confirmed (provenance). */
+  answeredVia?: "command" | "dialog";
+}
+
+/** `--from-spec`: where the specification came from and the immutable copy the run uses (AD-17). */
+export interface SourceSpecRef {
+  path: string;
+  format: "markdown" | "spec-json";
+  sha256: string;
+  bytes: number;
+  /** Workspace-relative path of the copy under the artifacts directory. */
+  snapshot: string;
+  importedAt: string;
 }
 
 export interface FeatureState {
@@ -104,6 +118,8 @@ export interface FeatureState {
    * `findings` lists the finding ids the task must fix.
    */
   taskContracts?: Record<string, PlanTask & { findings?: string[] }>;
+  /** Present when the feature was created with `--from-spec`; absent otherwise (optional, schema stays 1). */
+  source?: SourceSpecRef;
   /** Why the feature cannot move on without a person (W-27); cleared when the unit is re-run. */
   blocked?: { reason: string; at: string; gate?: GateId; task?: string };
 }
@@ -179,6 +195,17 @@ export function validateFeatureState(raw: unknown): StateValidation {
       if (!isRecord(question) || !matchesId("question", question.id))
         fail(`/questions/${index}`, "invalid question");
     });
+  if (raw.source !== undefined) {
+    const source = raw.source;
+    if (
+      !isRecord(source) ||
+      typeof source.path !== "string" ||
+      typeof source.sha256 !== "string" ||
+      typeof source.snapshot !== "string" ||
+      (source.format !== "markdown" && source.format !== "spec-json")
+    )
+      fail("/source", "source must hold path, format, sha256 and snapshot");
+  }
   if (!isRecord(raw.artifacts)) fail("/artifacts", "must be an object");
   if (!isRecord(raw.protected)) fail("/protected", "must be an object");
   if (!Array.isArray(raw.tasks)) fail("/tasks", "must be an array");

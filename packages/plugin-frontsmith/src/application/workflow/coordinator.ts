@@ -24,7 +24,14 @@ import {
   approvalToLeave,
   type RejectTarget,
 } from "./approvals.js";
-import { finishGate, type PhaseEnv, readJson, type UnitResult, type WorkflowDeps } from "./env.js";
+import {
+  artifactDirOf,
+  finishGate,
+  type PhaseEnv,
+  readJson,
+  type UnitResult,
+  type WorkflowDeps,
+} from "./env.js";
 import { FOREGROUND_COMMAND_LIMIT_MS } from "./jobs.js";
 import { runAccept } from "./phases/accept.js";
 import { runArchive } from "./phases/archive.js";
@@ -39,7 +46,9 @@ import { runTokens } from "./phases/tokens.js";
 import { referencesDir, runUiContract } from "./phases/ui-contract.js";
 import { runValidate } from "./phases/validate.js";
 import { tokensPhaseNeeded } from "./project.js";
+import { prepareSource, snapshotName } from "./source-spec.js";
 import { gateHolds, type NextAction, nextAction, openBlockingQuestions } from "./status.js";
+import { buildCoordinatorView, type CoordinatorView } from "./view.js";
 
 export class WorkflowError extends Error {
   constructor(message: string) {
@@ -50,9 +59,12 @@ export class WorkflowError extends Error {
 
 export interface NewFeatureInput {
   feature: string;
-  intent: string;
+  /** Required unless `fromSpec` is given, which derives one. */
+  intent?: string;
   level: Level;
   mode?: Mode;
+  /** Workspace-relative `.md`, `.markdown` or `.json` specification file (`--from-spec`). */
+  fromSpec?: string;
 }
 
 export interface RunOptions {
@@ -63,6 +75,27 @@ export interface RunOptions {
   signal?: AbortSignal;
   progress?: (line: string) => void;
 }
+
+/** Units that run no child: `fs_next` runs them inline (spec 7.5). */
+const INLINE_UNITS = new Set(["intake", "context", "accept"]);
+
+export interface JobFinishedEvent {
+  feature: string;
+  id: string;
+  unit: string;
+  /** The unit result kind (`advanced`, `waiting`, `blocked`, `closed`, `cancelled`), or `failed`. */
+  outcome: string;
+  next: NextAction;
+}
+
+export interface AdvanceOptions extends RunOptions {
+  onJobFinished?: (event: JobFinishedEvent) => void;
+}
+
+export type AdvanceOutcome =
+  | NextOutcome
+  | { kind: "job"; id: string; unit: string }
+  | { kind: "waiting-for-person"; next: NextAction };
 
 export type NextOutcome =
   | { kind: "job-started"; id: string; unit: string }
@@ -150,11 +183,19 @@ export class WorkflowCoordinator {
     const mode = input.mode ?? "build";
     if (!(modes as readonly string[]).includes(mode))
       throw new WorkflowError(`Mode must be one of ${modes.join(", ")}.`);
-    const intent = input.intent.trim();
-    if (intent === "" || intent.length > MAX_TEXT)
-      throw new WorkflowError(`The intent must be between 1 and ${MAX_TEXT} characters.`);
     if (await this.deps.store.read(root, input.feature))
       throw new WorkflowError(`Feature ${input.feature} already exists.`);
+    const prepared =
+      input.fromSpec === undefined
+        ? undefined
+        : await prepareSource(this.deps, root, input.fromSpec, input.level);
+    if (prepared && !prepared.ok) throw new WorkflowError(prepared.message);
+    const source = prepared?.ok ? prepared.source : undefined;
+    const intent = (input.intent?.trim() || source?.intent || "").trim();
+    if (intent === "" || intent.length > MAX_TEXT)
+      throw new WorkflowError(
+        `The intent must be between 1 and ${MAX_TEXT} characters (give one, or use --from-spec).`,
+      );
     const state = createFeatureState({
       feature: input.feature,
       intent,
@@ -162,6 +203,25 @@ export class WorkflowCoordinator {
       mode,
       now: this.now(),
     });
+    if (source) {
+      const config = await this.deps.project.readConfig(root);
+      const snapshot = `${artifactDirOf(config.config, input.feature)}/${snapshotName(source.format)}`;
+      await this.deps.writer.write(root, snapshot, source.text);
+      state.source = {
+        path: source.path,
+        format: source.format,
+        sha256: source.sha256,
+        bytes: source.bytes,
+        snapshot,
+        importedAt: this.now(),
+      };
+      state.artifacts["source-spec"] = {
+        path: snapshot,
+        sha256: source.sha256,
+        writtenAt: this.now(),
+      };
+      state.protected[snapshot] = source.sha256;
+    }
     await this.deps.store.create(root, state);
     return state;
   }
@@ -181,6 +241,17 @@ export class WorkflowCoordinator {
       readOnly: opened.readOnly,
       running,
     };
+  }
+
+  /** The state the conversational coordinator reads (`fs_status`, `fs_approval_request`). */
+  async view(root: string, feature: string): Promise<CoordinatorView> {
+    const opened = await this.deps.store.read(root, feature);
+    if (!opened) throw new WorkflowError(`Unknown feature ${feature}.`);
+    return buildCoordinatorView(
+      this.deps.fsFor(root),
+      opened.state,
+      this.deps.jobs.isRunning(feature),
+    );
   }
 
   async list(root: string): Promise<FeatureState[]> {
@@ -271,6 +342,51 @@ export class WorkflowCoordinator {
     return { kind: "unit", unit, result, next: nextAction(after) };
   }
 
+  /**
+   * `fs_next` (conversational coordinator): stops at every human gate without running anything,
+   * runs deterministic units inline, and starts every unit that runs a child as a background job
+   * with a completion hook, so the run clock of the calling session never limits it (AD-16).
+   */
+  async advance(root: string, feature: string, options: AdvanceOptions): Promise<AdvanceOutcome> {
+    const state = await this.load(root, feature, { mutating: true });
+    const running = this.deps.jobs.isRunning(feature);
+    if (running) {
+      const id = state.job?.id ?? "";
+      return { kind: "job", id, unit: state.job?.unit ?? state.phase };
+    }
+    const next = nextAction(state);
+    if (next.kind === "answer" || next.kind === "approve" || next.kind === "closed")
+      return { kind: "waiting-for-person", next };
+    const unit = state.phase;
+    if (INLINE_UNITS.has(unit)) return this.next(root, feature, { ...options, foreground: true });
+    const env = await this.makeEnv(root, feature, options);
+    let last: UnitResult | undefined;
+    let jobId = "";
+    const { id } = await this.deps.jobs.start({
+      root,
+      feature,
+      unit,
+      onStop: () => this.deps.agents.runner.cancelAll(),
+      run: async (signal) => {
+        last = await this.runUnit({ ...env, signal });
+        return last.message;
+      },
+      onFinish: async (result) => {
+        if (!options.onJobFinished) return;
+        const after = await this.load(root, feature, { mutating: false });
+        options.onJobFinished({
+          feature,
+          id: jobId,
+          unit,
+          outcome: result.status === "completed" ? (last?.kind ?? "failed") : result.status,
+          next: nextAction(after),
+        });
+      },
+    });
+    jobId = id;
+    return { kind: "job-started", id, unit };
+  }
+
   /** `fs_phase_run`: the same unit in the agent loop, with cancellation and progress (spec 7.5). */
   async runForeground(root: string, feature: string, options: RunOptions): Promise<NextOutcome> {
     return this.next(root, feature, { ...options, foreground: true });
@@ -300,6 +416,7 @@ export class WorkflowCoordinator {
     feature: string,
     questionId: string,
     text: string,
+    options: { via?: "command" | "dialog" } = {},
   ): Promise<{ message: string }> {
     if (!matchesId("question", questionId))
       throw new WorkflowError(`Invalid question id ${questionId}; use Q-01.`);
@@ -320,6 +437,7 @@ export class WorkflowCoordinator {
           if (!q) return;
           q.answer = answer;
           q.answeredAt = this.now();
+          q.answeredVia = options.via ?? "command";
           const open = openBlockingQuestions(draft);
           if (open.length > 0) return;
           if (draft.phase === "specify" && draft.artifacts["spec-json"]) {

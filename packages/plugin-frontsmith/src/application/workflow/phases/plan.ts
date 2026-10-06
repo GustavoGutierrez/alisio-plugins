@@ -26,7 +26,17 @@ import {
   writeEnvelope,
   writePlain,
 } from "../env.js";
-import { advance, clip, compact, failureSummary, feedbackSection, sections } from "./shared.js";
+import {
+  advance,
+  blockOnSource,
+  checkSourceSnapshot,
+  clip,
+  compact,
+  failureSummary,
+  feedbackSection,
+  referenceSourceSection,
+  sections,
+} from "./shared.js";
 
 const CONTRACT_FILE =
   /(?:^|\/)(?:openapi|swagger|asyncapi|schema)[^/]*\.(?:json|ya?ml|graphql)$|\.graphql$/i;
@@ -137,6 +147,8 @@ export async function runPlan(env: PhaseEnv): Promise<UnitResult> {
   let plan = await loadArtifact<PlanEnvelope>(env, state, "plan-json");
   const stale = state.gates.G3?.verdict === "FAIL";
   if (!plan || stale) {
+    const source = await checkSourceSnapshot(env, state);
+    if (!source.ok) return blockOnSource(env, source.message);
     const { deps } = env;
     const contract = await loadArtifact<UiContractEnvelope>(env, state, "ui-contract");
     const context = state.artifacts.context
@@ -178,6 +190,7 @@ export async function runPlan(env: PhaseEnv): Promise<UnitResult> {
           body: files.length > 0 ? files.map((f) => `- ${f}`).join("\n") : "none",
         },
         { title: "Build layers available", body: "ui, data, test" },
+        source.text !== undefined ? referenceSourceSection(source.text) : undefined,
         feedbackSection(state, "plan"),
         stale ? await failureSummary(env, state, "G3") : undefined,
       ),

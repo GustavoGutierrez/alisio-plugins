@@ -20,6 +20,7 @@ import type { Git } from "../ports/git.js";
 import type { IntegrityReader } from "../ports/integrity.js";
 import type { ProcessRunner } from "../ports/process-runner.js";
 import type { ProjectStore } from "../ports/project-store.js";
+import type { SourceReader } from "../ports/source-reader.js";
 import type { ModuleResolver, WorkspaceFs } from "../ports/workspace-fs.js";
 import type { WorkspaceWriter } from "../ports/workspace-writer.js";
 import type { RulesService } from "../rules/rules-service.js";
@@ -64,6 +65,8 @@ export interface WorkflowDeps {
   assets: AssetReader;
   resolver: ModuleResolver;
   analyzer: FileAnalyzer;
+  /** Reads the specification file of `--from-spec`. */
+  sources: SourceReader;
   patterns(): Promise<PatternsCatalog>;
   /** Problems with the model configuration, selectors validated against the host when it can (FSM-*). */
   modelProblems(root: string): Promise<string[]>;

@@ -337,7 +337,7 @@ describe("ModelsService over a real workspace", () => {
       expect(view.rows).toHaveLength(12);
       const reviewer = view.rows.find((r) => r.agent === "fs-reviewer");
       expect(reviewer).toMatchObject({ defaultTier: "reasoning", model: null, source: "default" });
-      expect(view.rows.find((r) => r.agent === "fs-coordinator")?.defaultTier).toBe("fast");
+      expect(view.rows.find((r) => r.agent === "fs-coordinator")?.defaultTier).toBe("standard");
     } finally {
       await ws.cleanup();
     }
@@ -374,7 +374,7 @@ describe("ModelsService over a real workspace", () => {
       });
       expect(by("fs-tokensmith")).toMatchObject({ model: "config/s", source: "config" });
       expect(by("fs-archivist")).toMatchObject({ model: "config/a", source: "config" });
-      expect(by("fs-coordinator")).toMatchObject({ model: "host/f", source: "host-options" });
+      expect(by("fs-coordinator")).toMatchObject({ model: "config/s", source: "config" });
       expect(by("acme-i18n-reviewer")).toMatchObject({
         defaultTier: "reasoning",
         model: "agents/md",

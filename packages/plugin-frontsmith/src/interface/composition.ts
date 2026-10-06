@@ -26,6 +26,7 @@ import { FsFeatureStore } from "../infrastructure/fs/feature-store.js";
 import { FsIntegrityReader } from "../infrastructure/fs/integrity.js";
 import { FsModelsRuntimeStore } from "../infrastructure/fs/models-runtime-store.js";
 import { FsProjectStore } from "../infrastructure/fs/project-store.js";
+import { FsSourceReader } from "../infrastructure/fs/source-reader.js";
 import { ensureIgnoreEntries } from "../infrastructure/fs/storage.js";
 import { NodeModuleResolver, NodeWorkspaceFs } from "../infrastructure/fs/workspace-fs.js";
 import { FsWorkspaceWriter } from "../infrastructure/fs/workspace-writer.js";
@@ -190,6 +191,7 @@ export function compose(options: ComposeOptions = {}): Composition {
     assets,
     resolver,
     analyzer,
+    sources: new FsSourceReader(),
     patterns: () => loadPatternsCatalog(),
     modelProblems: async (root) => {
       const catalog = options.catalog?.();

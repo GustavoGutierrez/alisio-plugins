@@ -22,19 +22,25 @@ describe("detection tools", () => {
       "fs_budget_check",
       "fs_fidelity_run",
       "fs_gate_run",
+      "fs_next",
       "fs_phase_run",
     ];
+    const writeTools = ["fs_answer", "fs_approval_request", "fs_feature_new"];
     expect([...harness.tools.keys()].sort()).toEqual(
       [
         "fs_a11y_run",
+        "fs_answer",
+        "fs_approval_request",
         "fs_architecture_check",
         "fs_budget_check",
         "fs_contrast",
         "fs_detect_stack",
+        "fs_feature_new",
         "fs_fidelity_run",
         "fs_gate_run",
         "fs_inventory",
         "fs_models",
+        "fs_next",
         "fs_palette_generate",
         "fs_phase_run",
         "fs_rules_check",
@@ -44,7 +50,13 @@ describe("detection tools", () => {
       ].sort(),
     );
     for (const tool of harness.tools.values()) {
-      expect(tool.effect).toBe(processTools.includes(tool.name) ? "process" : "read");
+      expect(tool.effect).toBe(
+        writeTools.includes(tool.name)
+          ? "write"
+          : processTools.includes(tool.name)
+            ? "process"
+            : "read",
+      );
       expect(tool.inputSchema).toMatchObject({ type: "object", additionalProperties: false });
       expect(tool.name).toMatch(/^[a-zA-Z0-9_-]{1,64}$/);
     }

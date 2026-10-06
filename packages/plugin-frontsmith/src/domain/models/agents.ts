@@ -5,7 +5,7 @@ import type { Tier } from "./grammar.js";
  * must declare the same `tier`; a test pins the two together.
  */
 export const shippedAgentTiers: Readonly<Record<string, Tier>> = {
-  "fs-coordinator": "fast",
+  "fs-coordinator": "standard",
   "fs-specifier": "reasoning",
   "fs-ui-contractor": "reasoning",
   "fs-tokensmith": "standard",

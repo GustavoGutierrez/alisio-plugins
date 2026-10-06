@@ -7,6 +7,7 @@ import { compose } from "../composition.js";
 import { DashboardController, registerDashboard } from "../dashboard/controller.js";
 import { registerArchitecture } from "./architecture.js";
 import { registerRulesCommand } from "./commands.js";
+import { registerCoordinatorTools } from "./coordinator-tools.js";
 import { registerFidelity } from "./fidelity.js";
 import { registerModels } from "./models.js";
 import { registerRulesTools } from "./rules-tools.js";
@@ -51,6 +52,7 @@ export function registerPlugin(api: PluginAPI, options: RegisterOptions = {}): P
   const status = new StatusWiring(api, composition.services);
   const detach = status.attach();
   registerWorkflow(api, composition.services, status);
+  registerCoordinatorTools(api, composition.services, status);
   registerFidelity(api, composition.services);
   registerViews(api, composition.services);
   const dashboard = new DashboardController(composition.services);

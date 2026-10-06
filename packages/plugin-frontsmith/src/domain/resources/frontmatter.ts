@@ -87,6 +87,45 @@ export const readTools = [
 ] as const;
 export const writeTools = [...readTools, "write_file", "edit_file", "run_process"] as const;
 
+/**
+ * The conversational coordinator (AD-16) is the one agent that is not read-only: it sequences the
+ * workflow through plugin tools. Alisio 0.4.4 ignores `tools`, `disallowedTools` and `permission`
+ * for a primary agent, so these lists document the intent and are pinned for a host that honors
+ * them; today the guard is the body, host approvals, protected hashes and the plugin dialogs.
+ * Plugin tool names are written bare; the host exposes them with a `p_<hash>_` prefix.
+ */
+export const coordinatorTools = [
+  ...readTools,
+  "ask_user_question",
+  "skill_load",
+  "skill_search",
+  "fs_status",
+  "fs_feature_new",
+  "fs_next",
+  "fs_answer",
+  "fs_approval_request",
+  "fs_gate_run",
+  "fs_rules_list",
+  "fs_models",
+  "fs_detect_stack",
+] as const;
+export const coordinatorDisallowedTools = [
+  ...delegationTools,
+  "write_file",
+  "edit_file",
+  "run_process",
+  "shell",
+  "fs_phase_run",
+  "fs_fidelity_run",
+  "fs_a11y_run",
+  "fs_budget_check",
+] as const;
+export const coordinatorLimits = {
+  maxTurns: 24,
+  timeoutMs: 600_000,
+  maxOutputTokens: 6000,
+} as const;
+
 export const skillHeadings = [
   "## Activation Contract",
   "## Hard Rules",
@@ -107,10 +146,16 @@ const sameList = (a: readonly string[], b: readonly string[]): boolean =>
 /** Problems with an agent file; empty when it is valid. */
 export function agentProblems(
   resource: ParsedResource,
-  expected: { name: string; mode: "primary" | "subagent"; skills: readonly string[] },
+  expected: {
+    name: string;
+    mode: "primary" | "subagent";
+    skills: readonly string[];
+    profile?: "coordinator";
+  },
 ): string[] {
   const front = resource.frontmatter;
   const problems: string[] = [];
+  if (expected.profile === "coordinator") return coordinatorProblems(resource, expected);
   if (!sameList(resource.keys, agentKeyOrder))
     problems.push(`frontmatter keys must be exactly, in order: ${agentKeyOrder.join(", ")}`);
   if (front.name !== expected.name) problems.push(`name must be ${expected.name}`);
@@ -187,5 +232,37 @@ export function skillProblems(resource: ParsedResource, name: string, raw: strin
     problems.push("metadata needs author and version");
   if (raw.split("\n").length >= MAX_SKILL_LINES)
     problems.push(`must stay under ${MAX_SKILL_LINES} lines`);
+  return problems;
+}
+
+function coordinatorProblems(
+  resource: ParsedResource,
+  expected: { name: string; skills: readonly string[] },
+): string[] {
+  const front = resource.frontmatter;
+  const problems: string[] = [];
+  if (!sameList(resource.keys, agentKeyOrder))
+    problems.push(`frontmatter keys must be exactly, in order: ${agentKeyOrder.join(", ")}`);
+  if (front.name !== expected.name) problems.push(`name must be ${expected.name}`);
+  if (typeof front.description !== "string" || front.description.length === 0)
+    problems.push("description is required");
+  if (!isStringList(front.tools) || !sameList(front.tools, coordinatorTools))
+    problems.push(`tools must be exactly: ${coordinatorTools.join(", ")}`);
+  if (
+    !isStringList(front.disallowedTools) ||
+    !sameList(front.disallowedTools, coordinatorDisallowedTools)
+  )
+    problems.push(`disallowedTools must be exactly: ${coordinatorDisallowedTools.join(", ")}`);
+  if (front.mode !== "primary") problems.push("mode must be primary");
+  for (const [key, value] of Object.entries(coordinatorLimits))
+    if (front[key] !== value) problems.push(`${key} must be ${value}`);
+  const permission = front.permission as Record<string, unknown> | undefined;
+  if (!permission || permission.write !== "ask" || permission.process !== "ask")
+    problems.push("permission.write and permission.process must be ask");
+  if (front.hidden !== false) problems.push("hidden must be false");
+  if (front.readOnly !== false) problems.push("readOnly must be false for the coordinator");
+  if (!isStringList(front.skills) || !sameList(front.skills, expected.skills))
+    problems.push(`skills must be ${expected.skills.join(", ")}`);
+  if (front.tier !== "standard") problems.push("tier must be standard");
   return problems;
 }

@@ -30,6 +30,7 @@ export interface Harness {
 export function createHarness(
   workspaceOf: (sessionId?: string) => string = () => process.cwd(),
   ui: Partial<PluginAPI["ui"]> = {},
+  sessions: Record<string, unknown> = {},
 ): Harness {
   const tools = new Map<string, ToolDefinition>();
   const commands: Harness["commands"] = new Map();
@@ -66,6 +67,7 @@ export function createHarness(
       workspace: (id: string) => workspaceOf(id),
       create: unavailable("sessions.create"),
       run: unavailable("sessions.run"),
+      ...sessions,
     },
     ui: {
       interactive: () => false,

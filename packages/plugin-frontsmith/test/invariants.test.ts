@@ -214,20 +214,24 @@ describe("package invariants (workflow)", () => {
     expect(files.has("aggregate")).toBe(true);
   });
 
-  it("registers the 15 plugin tools and the 21 slash commands", () => {
+  it("registers the 19 plugin tools and the 21 slash commands", () => {
     const harness = createHarness();
     registerFrontsmith(harness.api);
     expect([...harness.tools.keys()].sort()).toEqual(
       [
         "fs_a11y_run",
+        "fs_answer",
+        "fs_approval_request",
         "fs_architecture_check",
         "fs_budget_check",
         "fs_contrast",
         "fs_detect_stack",
+        "fs_feature_new",
         "fs_fidelity_run",
         "fs_gate_run",
         "fs_inventory",
         "fs_models",
+        "fs_next",
         "fs_palette_generate",
         "fs_phase_run",
         "fs_rules_check",
@@ -236,7 +240,7 @@ describe("package invariants (workflow)", () => {
         "fs_tokens_check",
       ].sort(),
     );
-    expect(harness.tools.size).toBe(15);
+    expect(harness.tools.size).toBe(19);
     const planned = [
       "init",
       "doctor",

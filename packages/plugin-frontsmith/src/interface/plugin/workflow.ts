@@ -37,7 +37,7 @@ export interface CommandLine {
   text: string;
 }
 
-const VALUE_FLAGS = ["level", "mode", "until", "task", "confirm"] as const;
+const VALUE_FLAGS = ["level", "mode", "until", "task", "confirm", "from-spec"] as const;
 const BOOLEAN_FLAGS = ["foreground"] as const;
 
 export class UsageProblem extends Error {}
@@ -71,7 +71,7 @@ export function parseCommandLine(args: string): CommandLine {
 const usage = (line: string): string => `Usage: ${code(line)}`;
 
 const USAGE = {
-  new: "/frontsmith:new <feature> --level L0|L1|L2|L3 [--mode build|replicate|refine|redesign] -- <intent>",
+  new: "/frontsmith:new <feature> --level L0|L1|L2|L3 [--mode build|replicate|refine|redesign] [--from-spec <path.md|path.json>] -- <intent>",
   status: "/frontsmith:status [feature]",
   next: "/frontsmith:next <feature> [--foreground]",
   answer: "/frontsmith:answer <feature> <Q-id> -- <answer>",
@@ -91,7 +91,7 @@ const featureArg = (word: string | undefined, line: string): string => {
 };
 
 /** Errors a person can act on become their message; anything else is a bug and propagates. */
-function friendly(error: unknown): string | undefined {
+export function friendly(error: unknown): string | undefined {
   if (
     error instanceof UsageProblem ||
     error instanceof WorkflowError ||
@@ -108,16 +108,45 @@ const sessionOf = (context: CommandContext | undefined): string => {
   return context.sessionId;
 };
 
-async function chooseLevel(
+export interface LevelChoice {
+  /** The level to mark as recommended; defaults to `defaults.level`. */
+  proposal?: Level;
+  /** A source spec is given: L0 has no specify phase, so it is not offered. */
+  withSource?: boolean;
+  /** Code-built context shown above the question (feature, mode, intent, source). */
+  context?: string;
+}
+
+const LEVEL_OPTIONS: Array<{ value: Level; label: string; description: string }> = [
+  {
+    value: "L0",
+    label: "L0 trivial",
+    description: "A typo, copy or a local tweak: build, validate, review",
+  },
+  { value: "L1", label: "L1 small feature", description: "Spec approval, then a task list" },
+  {
+    value: "L2",
+    label: "L2 product feature",
+    description: "Spec, UI contract, plan and acceptance approvals",
+  },
+  {
+    value: "L3",
+    label: "L3 high risk",
+    description: "As L2 plus decision records, two reviews and a sign-off",
+  },
+];
+
+export async function chooseLevel(
   api: PluginAPI,
   services: FrontsmithServices,
   root: string,
   feature: string,
   sessionId: string,
+  choice: LevelChoice = {},
 ): Promise<Level | undefined> {
   if (!api.ui.interactive()) return undefined;
   const config = await services.deps.project.readConfig(root);
-  const preselected = config.config.defaults.level;
+  const preselected = choice.proposal ?? config.config.defaults.level;
   const answer = await askQuestions(api, {
     session: sessionId,
     scope: feature,
@@ -125,49 +154,30 @@ async function chooseLevel(
       {
         id: "level",
         header: "Rigor level",
-        question: "How much rigor does this feature need?",
-        options: [
-          {
-            value: "L0",
-            label: "L0 trivial",
-            description: "A typo, copy or a local tweak: build, validate, review",
-            ...(preselected === "L0" ? { recommended: true } : {}),
-          },
-          {
-            value: "L1",
-            label: "L1 small feature",
-            description: "Spec approval, then a task list",
-            ...(preselected === "L1" ? { recommended: true } : {}),
-          },
-          {
-            value: "L2",
-            label: "L2 product feature",
-            description: "Spec, UI contract, plan and acceptance approvals",
-            ...(preselected === "L2" ? { recommended: true } : {}),
-          },
-          {
-            value: "L3",
-            label: "L3 high risk",
-            description: "As L2 plus decision records, two reviews and a sign-off",
-            ...(preselected === "L3" ? { recommended: true } : {}),
-          },
-        ],
+        question: `${choice.context ? `${choice.context}\n\n` : ""}How much rigor does this feature need?`,
+        options: LEVEL_OPTIONS.filter((o) => !(choice.withSource && o.value === "L0")).map((o) => ({
+          ...o,
+          ...(preselected === o.value ? { recommended: true } : {}),
+        })),
       },
     ],
   });
   const value = answer?.level;
-  return typeof value === "string" && (levels as readonly string[]).includes(value)
+  return typeof value === "string" &&
+    (levels as readonly string[]).includes(value) &&
+    !(choice.withSource && value === "L0")
     ? (value as Level)
     : undefined;
 }
 
 /** Interactive sessions confirm an approval with the person; headless runs get the exact command. */
-async function confirmApproval(
+export async function confirmApproval(
   api: PluginAPI,
   sessionId: string,
   feature: string,
   target: ApprovalTarget,
   summary: string,
+  comments?: string,
 ): Promise<"approve" | "reject" | "details" | undefined> {
   const answer = await askQuestions(api, {
     session: sessionId,
@@ -176,7 +186,7 @@ async function confirmApproval(
       {
         id: "decision",
         header: `Approve ${target}`,
-        question: `${summary}\n\nApprove ${target} of ${feature}?`,
+        question: `${summary}${comments ? `\n\nRejection comments (quoted, relayed by the assistant):\n> ${comments.replace(/\n/g, "\n> ")}` : ""}\n\nApprove ${target} of ${feature}?`,
         options: [
           {
             value: "approve",
@@ -187,8 +197,9 @@ async function confirmApproval(
           {
             value: "reject",
             label: "Reject",
-            description:
-              "Go back to the producing phase (give the comments with /frontsmith:reject)",
+            description: comments
+              ? "Reject with the comments shown below"
+              : "Go back to the producing phase (give the comments with /frontsmith:reject)",
           },
           {
             value: "details",
@@ -233,12 +244,21 @@ export async function workflowCommand(
         return doctorMarkdown(await services.doctor(root));
       case "new": {
         const feature = featureArg(first, USAGE.new);
-        if (line.text === "") throw new UsageProblem(usage(USAGE.new));
+        const fromSpec = line.flags["from-spec"];
+        if (fromSpec !== undefined && typeof fromSpec !== "string")
+          throw new UsageProblem(usage(USAGE.new));
+        if (fromSpec !== undefined && line.words.length > 1)
+          throw new UsageProblem(
+            `${usage(USAGE.new)} A path with spaces is not supported in the command form; use the fs_feature_new tool or rename the file.`,
+          );
+        if (line.text === "" && fromSpec === undefined) throw new UsageProblem(usage(USAGE.new));
         let level = line.flags.level;
         if (level !== undefined && !(levels as readonly string[]).includes(level as string))
           throw new UsageProblem(usage(USAGE.new));
         if (level === undefined) {
-          level = await chooseLevel(api, services, root, feature, sessionOf(context));
+          level = await chooseLevel(api, services, root, feature, sessionOf(context), {
+            withSource: fromSpec !== undefined,
+          });
           // B-17: defaults.level only preselects the interactive option; headless runs must say it.
           if (level === undefined) throw new UsageProblem(usage(USAGE.new));
         }
@@ -247,9 +267,10 @@ export async function workflowCommand(
           throw new UsageProblem(usage(USAGE.new));
         const state = await workflow.newFeature(root, {
           feature,
-          intent: line.text,
+          ...(line.text !== "" ? { intent: line.text } : {}),
           level: level as Level,
           ...(typeof mode === "string" ? { mode: mode as (typeof modes)[number] } : {}),
+          ...(fromSpec !== undefined ? { fromSpec } : {}),
         });
         return `Created ${code(state.feature)} (${state.level}, ${state.mode}). Run ${code(`/frontsmith:next ${state.feature}`)} to start.`;
       }
@@ -385,7 +406,7 @@ const COMMANDS: Array<{ name: string; description: string; hint: string }> = [
   {
     name: "new",
     description: "Create a feature",
-    hint: "<feature> [--level L0-L3] [--mode build|replicate|refine|redesign] -- <intent>",
+    hint: "<feature> [--level L0-L3] [--mode build|replicate|refine|redesign] [--from-spec <path>] -- <intent>",
   },
   { name: "status", description: "Show a feature, or list the features", hint: "[feature]" },
   { name: "next", description: "Run the next unit of a feature", hint: "<feature> [--foreground]" },
@@ -452,8 +473,9 @@ export function workflowTools(
           }
           if (!isFeatureId(feature)) return errorResult("Invalid feature id");
           const status = await services.workflow.status(context.workspace, feature);
+          const view = await services.workflow.view(context.workspace, feature);
           return toolResult({
-            summary: `${feature}: phase ${status.state.phase}. Next: ${status.next.command}`,
+            summary: `${feature}: phase ${status.state.phase}. Next: ${status.next.command}\n\n\`\`\`json\n${JSON.stringify(view, null, 2)}\n\`\`\``,
             primary: {
               kind: "progress",
               title: `${feature} (${status.state.level})`,

@@ -23,6 +23,8 @@ export interface StartJobInput {
   run(signal: AbortSignal): Promise<string>;
   /** Called by `stop` after the signal aborts (cancels the running child sessions). */
   onStop?: () => void;
+  /** Called once after the job settled and its lock was released; a failure here is ignored. */
+  onFinish?(result: { status: JobRecord["status"]; summary: string }): void | Promise<void>;
 }
 
 /** What the interface layer hears about units starting and settling (`ui.status`, spec 18.1). */
@@ -141,6 +143,11 @@ export class JobManager {
           unit: input.unit,
           id,
         });
+      }
+      try {
+        await input.onFinish?.({ status, summary });
+      } catch {
+        // A completion notice is presentation; it never changes the outcome of the unit.
       }
     })();
     this.running.set(input.feature, entry);

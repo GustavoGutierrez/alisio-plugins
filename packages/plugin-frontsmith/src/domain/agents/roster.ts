@@ -81,7 +81,7 @@ export interface AgentProfile {
   timeoutMs: number;
   maxOutputTokens: number;
   readOnly: boolean;
-  permission: { write: "allow" | "deny"; process: "allow" | "deny" };
+  permission: { write: "allow" | "deny" | "ask"; process: "allow" | "deny" | "ask" };
   tier: Tier;
 }
 
