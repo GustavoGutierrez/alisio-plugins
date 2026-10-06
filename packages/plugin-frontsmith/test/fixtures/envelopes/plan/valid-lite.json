@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "plan",
+  "summary": "Add a project card list.",
+  "components": [],
+  "state": [],
+  "dataFlow": [
+    "page reads the cache"
+  ],
+  "contracts": [],
+  "errors": [],
+  "dependencies": [],
+  "adrs": [],
+  "risks": [],
+  "architectureConfig": null,
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Card",
+      "goal": "Show a project card",
+      "layer": "ui",
+      "files": [
+        "src/entities/project/ui/ProjectCard.tsx",
+        "src/entities/project/ui/ProjectCard.test.tsx"
+      ],
+      "acceptanceCriteria": [
+        "AC-01"
+      ],
+      "tests": [
+        {
+          "path": "src/entities/project/ui/ProjectCard.test.tsx",
+          "level": "component"
+        }
+      ],
+      "validation": [
+        "typecheck",
+        "lint",
+        "testRelated"
+      ],
+      "constraints": [
+        "no new dependency"
+      ],
+      "dependsOn": [],
+      "stopConditions": [
+        "contract is missing"
+      ],
+      "tdd": "required",
+      "tddExemptReason": null
+    }
+  ]
+}

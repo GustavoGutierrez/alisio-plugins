@@ -82,6 +82,22 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
 
+  packages/plugin-frontsmith:
+    dependencies:
+      '@babel/parser':
+        specifier: 7.29.9
+        version: 7.29.9
+    devDependencies:
+      '@alisio/sdk':
+        specifier: 0.3.0
+        version: 0.3.0
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: 5.0.1
+        version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
+
   packages/plugin-google-chat:
     devDependencies:
       '@alisio/sdk':
@@ -232,11 +248,11 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
 
-  packages/plugin-web-search:
+  packages/plugin-wayfinder:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.1.0-alpha.11
-        version: 0.1.0-alpha.11
+        specifier: 0.1.0-alpha.10
+        version: 0.1.0-alpha.10
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -244,11 +260,11 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(@types/node@26.6.2)(vite@8.3.1(@types/node@26.6.2)(yaml@2.9.1))
 
-  packages/plugin-wayfinder:
+  packages/plugin-web-search:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.1.0-alpha.10
-        version: 0.1.0-alpha.10
+        specifier: 0.1.0-alpha.11
+        version: 0.1.0-alpha.11
       typescript:
         specifier: 7.0.2
         version: 7.0.2

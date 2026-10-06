@@ -1,0 +1,67 @@
+{
+  "name": "@alisio/plugin-frontsmith",
+  "version": "0.1.0",
+  "description": "Runs a gated frontend engineering workflow with specialist agents, deterministic rule packs, architecture, accessibility and token checks, and a reproducible visual-fidelity pipeline.",
+  "keywords": [
+    "alisio-plugin",
+    "frontend",
+    "methodology",
+    "design-system",
+    "accessibility",
+    "visual-regression"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-frontsmith"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-frontsmith#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "alisio-frontsmith": "dist/interface/cli/main.js"
+  },
+  "files": [
+    "dist",
+    ".agents",
+    "rule-packs",
+    "catalog",
+    "presets",
+    "adapters",
+    "schemas",
+    "assets",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@babel/parser": "7.29.9"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.3.0 <0.7.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.3.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

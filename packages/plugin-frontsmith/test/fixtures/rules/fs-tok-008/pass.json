@@ -1,0 +1,22 @@
+{
+  "$fixture": {
+    "tokens": {
+      "path": "docs/frontsmith/x/tokens.json",
+      "values": {
+        "--color-text": {
+          "light": "#767676"
+        },
+        "--color-bg": {
+          "light": "#ffffff"
+        }
+      },
+      "pairs": [
+        {
+          "fg": "--color-text",
+          "bg": "--color-bg",
+          "kind": "normal_text"
+        }
+      ]
+    }
+  }
+}

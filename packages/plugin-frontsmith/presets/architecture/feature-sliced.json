@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "preset": "feature-sliced",
+  "sourceRoots": ["src"],
+  "aliases": "tsconfig",
+  "layers": [
+    { "name": "app", "paths": ["src/app/**"] },
+    { "name": "pages", "paths": ["src/pages/**"] },
+    { "name": "widgets", "paths": ["src/widgets/**"] },
+    { "name": "features", "paths": ["src/features/**"] },
+    { "name": "entities", "paths": ["src/entities/**"] },
+    { "name": "shared", "paths": ["src/shared/**"] }
+  ],
+  "allow": {
+    "app": ["pages", "widgets", "features", "entities", "shared"],
+    "pages": ["widgets", "features", "entities", "shared"],
+    "widgets": ["features", "entities", "shared"],
+    "features": ["entities", "shared"],
+    "entities": ["shared"],
+    "shared": []
+  },
+  "allowSameLayer": ["app", "shared"],
+  "slices": {
+    "layers": ["pages", "widgets", "features", "entities"],
+    "depth": 1,
+    "publicApi": ["index.ts", "index.tsx", "index.js"]
+  },
+  "roles": {
+    "presentational": ["src/shared/ui/**", "src/**/ui/**"],
+    "forbiddenForPresentational": [
+      "src/**/api/**",
+      "src/**/model/**",
+      "@tanstack/react-query",
+      "zustand",
+      "pinia",
+      "@reduxjs/toolkit"
+    ]
+  },
+  "atomic": null,
+  "ignore": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "**/__tests__/**"]
+}

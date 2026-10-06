@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "METH-AP-01",
+      "title": "Vibe coding as a delivery process",
+      "detectedBy": [],
+      "reviewHint": "Check that a spec, a plan and evidence exist; a vague prompt followed by a quick visual look is not delivery."
+    },
+    {
+      "id": "METH-AP-02",
+      "title": "Implementing before understanding the repository",
+      "detectedBy": [],
+      "reviewHint": "Look for duplicated components, parallel patterns and unnecessary dependencies."
+    },
+    {
+      "id": "METH-AP-03",
+      "title": "One mega-prompt for the whole feature",
+      "detectedBy": [],
+      "reviewHint": "Check that analysis, architecture, UX, implementation and validation ran as separate stages."
+    },
+    {
+      "id": "METH-AP-04",
+      "title": "Tests written to confirm the existing code",
+      "detectedBy": ["FS-GOV-003"],
+      "reviewHint": "Ask whether each test states a requirement or only describes what the code happens to do."
+    },
+    {
+      "id": "METH-AP-05",
+      "title": "All tests pass without evidence",
+      "detectedBy": [],
+      "reviewHint": "Require the list of tests that ran, their results and what stayed unvalidated."
+    },
+    {
+      "id": "METH-AP-06",
+      "title": "Snapshots as a substitute for behaviour",
+      "detectedBy": ["FS-TST-005", "FS-TST-006", "FS-GOV-007"],
+      "reviewHint": "Ask what behaviour each snapshot protects and who reviewed its updates."
+    },
+    {
+      "id": "METH-AP-07",
+      "title": "Fragile end-to-end selectors",
+      "detectedBy": ["FS-TST-001", "FS-TST-007"],
+      "reviewHint": "Prefer role and label queries that reflect what users perceive."
+    },
+    {
+      "id": "METH-AP-08",
+      "title": "Opportunistic refactoring outside the scope",
+      "detectedBy": ["FS-GOV-005"],
+      "reviewHint": "Check that every changed file serves an acceptance criterion of the task."
+    },
+    {
+      "id": "METH-AP-09",
+      "title": "Dependencies added for convenience",
+      "detectedBy": ["FS-GOV-004", "FS-GOV-008"],
+      "reviewHint": "Check whether the existing stack already solves the problem."
+    },
+    {
+      "id": "METH-AP-10",
+      "title": "Inventing contracts",
+      "detectedBy": [],
+      "reviewHint": "Compare mocks and clients with the real contract files and operations."
+    },
+    {
+      "id": "METH-AP-11",
+      "title": "Confusing a pretty design with complete UX",
+      "detectedBy": [],
+      "reviewHint": "Look for error, loading, keyboard, mobile, extreme-content and feedback states."
+    },
+    {
+      "id": "METH-AP-12",
+      "title": "Self-approval in the same context",
+      "detectedBy": [],
+      "reviewHint": "Require an independent review session for relevant changes."
+    },
+    {
+      "id": "AC01",
+      "title": "Simplifying or omitting elements",
+      "detectedBy": [],
+      "reviewHint": "Compare the reference inventory with the DOM and look for silently substituted assets."
+    },
+    {
+      "id": "AC02",
+      "title": "Positioning the whole page by coordinates",
+      "detectedBy": ["FS-CSS-006"],
+      "reviewHint": "Test with other content and viewports; structure should come from grid, flex or flow."
+    },
+    {
+      "id": "AC03",
+      "title": "Fixed heights plus hidden overflow",
+      "detectedBy": ["FS-CSS-004"],
+      "reviewHint": "Check expansion, long text and zoom."
+    },
+    {
+      "id": "AC04",
+      "title": "Hiding document overflow as a fix",
+      "detectedBy": ["FS-CSS-001"],
+      "reviewHint": "Find the element that overflows instead of clipping the page."
+    },
+    {
+      "id": "AC05",
+      "title": "Responsive design as proportional shrinking",
+      "detectedBy": [],
+      "reviewHint": "Check that structure and actions change by width, not only sizes."
+    },
+    {
+      "id": "AC06",
+      "title": "Validating only the nominal width",
+      "detectedBy": [],
+      "reviewHint": "Test breakpoint edges, narrow widths and long content."
+    },
+    {
+      "id": "AC07",
+      "title": "Visual order apart from semantic order",
+      "detectedBy": [],
+      "reviewHint": "Review the DOM order and the focus order."
+    },
+    {
+      "id": "AC08",
+      "title": "Arbitrary values for every component",
+      "detectedBy": ["FS-TOK-001", "FS-TOK-002", "FS-TW-002"],
+      "reviewHint": "Require approved tokens and a documented exception."
+    },
+    {
+      "id": "AC09",
+      "title": "Compensating fonts with padding",
+      "detectedBy": [],
+      "reviewHint": "Verify the font file, loading, weight and line height before adjusting geometry."
+    },
+    {
+      "id": "AC10",
+      "title": "A div instead of a button",
+      "detectedBy": ["FS-A11Y-002", "FS-A11Y-007"],
+      "reviewHint": "Use a native control or a complete accessible pattern."
+    },
+    {
+      "id": "AC11",
+      "title": "Interactions that only look real",
+      "detectedBy": [],
+      "reviewHint": "Run the task and check the result; declare a demo when nothing is connected."
+    },
+    {
+      "id": "AC12",
+      "title": "Only the ideal state",
+      "detectedBy": [],
+      "reviewHint": "Review the state matrix and extreme data before closing."
+    },
+    {
+      "id": "AC13",
+      "title": "Removing or hiding focus",
+      "detectedBy": ["FS-CSS-005", "FS-TW-006"],
+      "reviewHint": "Check visible focus against sticky headers and overlays."
+    },
+    {
+      "id": "AC14",
+      "title": "Clipped modal or popover",
+      "detectedBy": [],
+      "reviewHint": "Review anchoring, container, stacking context and focus management."
+    },
+    {
+      "id": "AC15",
+      "title": "Mobile that deletes functions",
+      "detectedBy": [],
+      "reviewHint": "Require an explicit access strategy; do not hide features to pass a capture."
+    },
+    {
+      "id": "AC16",
+      "title": "Dark theme by colour inversion",
+      "detectedBy": ["FS-CSS-008"],
+      "reviewHint": "Use semantic roles and validated pairs per theme."
+    },
+    {
+      "id": "AC17",
+      "title": "Contradictory CSS or undetectable dynamic Tailwind",
+      "detectedBy": ["FS-TW-001", "FS-TW-003"],
+      "reviewHint": "Inspect compiled CSS and computed styles; write complete class names."
+    },
+    {
+      "id": "AC18",
+      "title": "Depending on libraries that are not installed",
+      "detectedBy": ["FS-GOV-008"],
+      "reviewHint": "Inspect dependencies, versions and APIs before implementing."
+    },
+    {
+      "id": "AC19",
+      "title": "Repeated markup with inconsistent variants",
+      "detectedBy": ["FS-CMP-002"],
+      "reviewHint": "Reuse when behaviour and contract match; avoid premature abstraction."
+    },
+    {
+      "id": "AC20",
+      "title": "Approving by self-description",
+      "detectedBy": [],
+      "reviewHint": "Require independent evidence artifacts; report BLOCKED when verification is unavailable."
+    },
+    {
+      "id": "AV01",
+      "title": "Interchangeable composition",
+      "detectedBy": [],
+      "reviewHint": "Choose the structure by task; keep a conventional pattern when it works."
+    },
+    {
+      "id": "AV02",
+      "title": "Marketing hero inside a tool",
+      "detectedBy": [],
+      "reviewHint": "Use a compact header with the action visible; reserve a hero for an offer or an experience."
+    },
+    {
+      "id": "AV03",
+      "title": "Every datum in a card",
+      "detectedBy": [],
+      "reviewHint": "Use a table, a list or relation groups; keep cards for independent units."
+    },
+    {
+      "id": "AV04",
+      "title": "Nested decorative containers",
+      "detectedBy": [],
+      "reviewHint": "Flatten the grouping; keep functional nesting such as a panel with controls."
+    },
+    {
+      "id": "AV05",
+      "title": "Ornaments louder than the task",
+      "detectedBy": [],
+      "reviewHint": "Reduce effects or give them a purpose and a bounded area."
+    },
+    {
+      "id": "AV06",
+      "title": "Everything equally prominent",
+      "detectedBy": [],
+      "reviewHint": "Define an attention order with differences in size, weight, space or colour."
+    },
+    {
+      "id": "AV07",
+      "title": "Palette chosen by reflex",
+      "detectedBy": [],
+      "reviewHint": "Justify families by identity and roles; do not change an approved palette because of fashion."
+    },
+    {
+      "id": "AV08",
+      "title": "Elegance through faint text",
+      "detectedBy": [],
+      "reviewHint": "Keep contrast and legibility; check real backgrounds and states."
+    },
+    {
+      "id": "AV09",
+      "title": "Typography without criteria or substituted",
+      "detectedBy": [],
+      "reviewHint": "Load the approved family and real weights and define roles; do not ban a font only because it is common."
+    },
+    {
+      "id": "AV10",
+      "title": "Large headings with extreme tracking",
+      "detectedBy": [],
+      "reviewHint": "Tune by typeface, length and viewport; use expressive display type only where it fits."
+    },
+    {
+      "id": "AV11",
+      "title": "Every control looks like a chip",
+      "detectedBy": [],
+      "reviewHint": "Differentiate appearance by behaviour; give equal functions equal shapes."
+    },
+    {
+      "id": "AV12",
+      "title": "Mixed or oversized icons",
+      "detectedBy": [],
+      "reviewHint": "Use one family, scale and stroke; add icons only when they help recognition."
+    },
+    {
+      "id": "AV13",
+      "title": "Filler image or stereotyped metaphor",
+      "detectedBy": [],
+      "reviewHint": "Use specific content; decoration may set a tone if it does not interfere."
+    },
+    {
+      "id": "AV14",
+      "title": "Generic or repeated copy",
+      "detectedBy": [],
+      "reviewHint": "Use concrete task language and contextual help where it removes doubt."
+    },
+    {
+      "id": "AV15",
+      "title": "Invented figures, clients or testimonials",
+      "detectedBy": [],
+      "reviewHint": "A failure when presented as real; use verified content or an identified demo."
+    },
+    {
+      "id": "AV16",
+      "title": "Uniform spacing for different relations",
+      "detectedBy": [],
+      "reviewHint": "Use less distance inside a group and more between groups; respect the system."
+    },
+    {
+      "id": "AV17",
+      "title": "Excess emptiness to look sophisticated",
+      "detectedBy": [],
+      "reviewHint": "Match density to the user; use deliberate space in editorial or brand contexts."
+    },
+    {
+      "id": "AV18",
+      "title": "Continuous motion without meaning",
+      "detectedBy": [],
+      "reviewHint": "Signal relevant changes; respect user preferences and motion criteria."
+    },
+    {
+      "id": "AV19",
+      "title": "Humanising with random imperfections",
+      "detectedBy": [],
+      "reviewHint": "Express personality through content and direction; allow irregularity only in authorised assets."
+    },
+    {
+      "id": "AV20",
+      "title": "Swapping one cliche for another",
+      "detectedBy": [],
+      "reviewHint": "Choose from the brief, not in opposition to a list of banned styles."
+    }
+  ]
+}

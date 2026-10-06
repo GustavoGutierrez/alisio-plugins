@@ -1,0 +1,7 @@
+{
+  "$fixture": {
+    "files": {
+      "package.json": "{\n  \"name\": \"x\",\n  \"scripts\": {\n    \"test:u\": \"vitest run -u\"\n  }\n}\n"
+    }
+  }
+}

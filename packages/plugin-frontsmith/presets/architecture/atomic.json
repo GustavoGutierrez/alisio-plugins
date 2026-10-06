@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "preset": "atomic",
+  "sourceRoots": ["src"],
+  "aliases": "tsconfig",
+  "layers": [
+    { "name": "atoms", "paths": ["src/components/atoms/**"] },
+    { "name": "molecules", "paths": ["src/components/molecules/**"] },
+    { "name": "organisms", "paths": ["src/components/organisms/**"] },
+    { "name": "templates", "paths": ["src/components/templates/**"] },
+    { "name": "pages", "paths": ["src/components/pages/**"] }
+  ],
+  "allow": {
+    "atoms": ["molecules", "organisms", "templates", "pages"],
+    "molecules": ["atoms", "organisms", "templates", "pages"],
+    "organisms": ["atoms", "molecules", "templates", "pages"],
+    "templates": ["atoms", "molecules", "organisms", "pages"],
+    "pages": ["atoms", "molecules", "organisms", "templates"]
+  },
+  "allowSameLayer": ["atoms", "molecules", "organisms", "templates", "pages"],
+  "atomic": {
+    "levels": ["atoms", "molecules", "organisms", "templates", "pages"],
+    "paths": {
+      "atoms": ["src/components/atoms/**"],
+      "molecules": ["src/components/molecules/**"],
+      "organisms": ["src/components/organisms/**"],
+      "templates": ["src/components/templates/**"],
+      "pages": ["src/components/pages/**"]
+    }
+  },
+  "ignore": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "**/__tests__/**"]
+}

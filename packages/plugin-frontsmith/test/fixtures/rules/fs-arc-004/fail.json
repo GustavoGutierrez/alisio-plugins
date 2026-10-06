@@ -1,0 +1,30 @@
+{
+  "$fixture": {
+    "architecture": {
+      "schemaVersion": 1,
+      "sourceRoots": [
+        "src"
+      ],
+      "layers": [
+        {
+          "name": "all",
+          "paths": [
+            "src/**"
+          ]
+        }
+      ],
+      "allow": {
+        "all": []
+      },
+      "allowSameLayer": [
+        "all"
+      ],
+      "atomic": null,
+      "ignore": []
+    },
+    "files": {
+      "src/a.ts": "import { b } from \"./b\";\nexport const a = b;\n",
+      "src/b.ts": "import { a } from \"./a\";\nexport const b = a;\n"
+    }
+  }
+}

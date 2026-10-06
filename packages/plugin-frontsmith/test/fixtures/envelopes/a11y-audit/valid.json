@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "a11y-audit",
+  "findings": [
+    {
+      "ruleRef": "FS-A11Y-004",
+      "wcag": "3.3.2",
+      "severity": "MAJOR",
+      "location": {
+        "file": "src/form.tsx",
+        "line": 12
+      },
+      "caseId": null,
+      "elementId": null,
+      "evidence": "input has no label",
+      "fix": "add a label",
+      "status": "fail"
+    }
+  ],
+  "manualChecks": [
+    {
+      "criterion": "2.4.3 Focus Order",
+      "procedure": "Tab through the form",
+      "result": "not-run",
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "next",
+  "extends": "react",
+  "detect": { "dependencies": ["next"] },
+  "sourceGlobs": ["{app,pages,components,src}/**/*.{ts,tsx,js,jsx}"],
+  "templates": { "kind": "jsx", "globs": ["**/*.{tsx,jsx}"] },
+  "componentApi": "react",
+  "testGlobs": ["**/*.{spec,test}.{ts,tsx,js,jsx}", "e2e/**/*.{ts,js}"],
+  "packs": ["fs-react", "fs-next"],
+  "commands": { "testRelated": null }
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-svelte",
+  "version": "1.0.0",
+  "title": "Svelte rules",
+  "description": "Svelte-specific rules.",
+  "extends": [],
+  "appliesWhen": {
+    "framework": ["svelte"]
+  },
+  "rules": [
+    {
+      "id": "FS-SVT-001",
+      "title": "{@html} used",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "template-element",
+      "params": {
+        "blocks": "^@html$"
+      },
+      "files": ["**/*.svelte"],
+      "appliesWhen": {},
+      "message": "{@html} injects unsanitised HTML.",
+      "fix": "Render structured content or sanitise the HTML first.",
+      "rationale": "Injected HTML is a cross-site scripting risk.",
+      "source": "Svelte security guidance",
+      "suppressible": false,
+      "tags": ["security"],
+      "fixtures": {
+        "pass": ["fs-svt-001/pass.svelte"],
+        "fail": ["fs-svt-001/fail.svelte"]
+      }
+    },
+    {
+      "id": "FS-SVT-002",
+      "title": "Untyped export let prop in a TypeScript component",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "component-api",
+      "params": {
+        "checks": ["exportLetTyped"]
+      },
+      "files": ["**/*.svelte"],
+      "appliesWhen": {},
+      "message": "A prop declared with export let has no type.",
+      "fix": "Add a type annotation.",
+      "rationale": "Untyped props lose checking in TypeScript components.",
+      "source": "Svelte guidance",
+      "suppressible": false,
+      "tags": ["props"],
+      "fixtures": {
+        "pass": ["fs-svt-002/pass.svelte"],
+        "fail": ["fs-svt-002/fail.svelte"]
+      }
+    }
+  ],
+  "overrides": []
+}

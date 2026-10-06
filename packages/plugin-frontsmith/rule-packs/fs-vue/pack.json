@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-vue",
+  "version": "1.0.0",
+  "title": "Vue rules",
+  "description": "Vue-specific rules.",
+  "extends": [],
+  "appliesWhen": {
+    "framework": ["vue"]
+  },
+  "rules": [
+    {
+      "id": "FS-VUE-001",
+      "title": "v-html used",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "template-element",
+      "params": {
+        "element": ".",
+        "hasAttr": ["v-html"]
+      },
+      "files": ["**/*.vue"],
+      "appliesWhen": {},
+      "message": "v-html injects unsanitised HTML.",
+      "fix": "Render structured content or sanitise the HTML first.",
+      "rationale": "Injected HTML is a cross-site scripting risk.",
+      "source": "Vue security guidance",
+      "suppressible": false,
+      "tags": ["security"],
+      "fixtures": {
+        "pass": ["fs-vue-001/pass.vue"],
+        "fail": ["fs-vue-001/fail.vue"]
+      }
+    },
+    {
+      "id": "FS-VUE-002",
+      "title": "defineProps without a type argument or runtime types",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "component-api",
+      "params": {
+        "checks": ["definePropsTyped"]
+      },
+      "files": ["**/*.vue"],
+      "appliesWhen": {},
+      "message": "defineProps has neither a type argument nor runtime prop types.",
+      "fix": "Use defineProps<{ ... }>() or an object of runtime types.",
+      "rationale": "Untyped props lose validation and editor support.",
+      "source": "Vue guidance",
+      "suppressible": false,
+      "tags": ["props"],
+      "fixtures": {
+        "pass": ["fs-vue-002/pass.vue"],
+        "fail": ["fs-vue-002/fail.vue"]
+      }
+    },
+    {
+      "id": "FS-VUE-003",
+      "title": "v-for without a key",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "template-element",
+      "params": {
+        "element": ".",
+        "hasAttr": ["v-for"],
+        "lacksAttr": ["key"]
+      },
+      "files": ["**/*.vue"],
+      "appliesWhen": {},
+      "message": "A v-for list has no :key.",
+      "fix": "Add a stable :key.",
+      "rationale": "Without keys Vue reuses elements incorrectly when the list changes.",
+      "source": "Vue guidance",
+      "suppressible": false,
+      "tags": ["key"],
+      "fixtures": {
+        "pass": ["fs-vue-003/pass.vue"],
+        "fail": ["fs-vue-003/fail.vue"]
+      }
+    },
+    {
+      "id": "FS-VUE-004",
+      "title": "v-if and v-for on the same element",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "template-element",
+      "params": {
+        "element": ".",
+        "hasAttr": ["v-if", "v-for"]
+      },
+      "files": ["**/*.vue"],
+      "appliesWhen": {},
+      "message": "v-if and v-for share one element.",
+      "fix": "Filter the list in a computed property or wrap the element in a template.",
+      "rationale": "The two directives have different precedence in Vue 2 and 3, which causes bugs.",
+      "source": "Vue guidance",
+      "suppressible": false,
+      "tags": ["directives"],
+      "fixtures": {
+        "pass": ["fs-vue-004/pass.vue"],
+        "fail": ["fs-vue-004/fail.vue"]
+      }
+    }
+  ],
+  "overrides": []
+}

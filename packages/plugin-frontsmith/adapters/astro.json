@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "astro",
+  "extends": null,
+  "detect": { "dependencies": ["astro"] },
+  "sourceGlobs": ["src/**/*.{astro,ts,tsx,js,jsx}"],
+  "templates": { "kind": "astro", "globs": ["**/*.astro"] },
+  "componentApi": "none",
+  "testGlobs": ["**/*.{spec,test}.{ts,js}", "e2e/**/*.ts"],
+  "packs": [],
+  "commands": { "testRelated": null }
+}

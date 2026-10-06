@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "vue",
+  "extends": null,
+  "detect": { "dependencies": ["vue"] },
+  "sourceGlobs": ["src/**/*.{vue,ts,js}"],
+  "templates": { "kind": "vue-sfc", "globs": ["**/*.vue"] },
+  "componentApi": "none",
+  "testGlobs": ["**/*.{spec,test}.{ts,js}", "e2e/**/*.ts"],
+  "packs": ["fs-vue"],
+  "commands": { "testRelated": null }
+}

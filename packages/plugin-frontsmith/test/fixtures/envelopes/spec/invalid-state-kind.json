@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "kind": "spec",
+  "problem": "People cannot find their projects quickly.",
+  "objective": "Show a searchable project list.",
+  "users": [
+    {
+      "role": "member",
+      "permissions": [
+        "view projects"
+      ]
+    }
+  ],
+  "inScope": [
+    "project list"
+  ],
+  "outOfScope": [
+    "billing"
+  ],
+  "requirements": [
+    {
+      "id": "R-01",
+      "statement": "The list shows every project the member can access.",
+      "priority": "must"
+    }
+  ],
+  "businessRules": [
+    "Archived projects are hidden by default."
+  ],
+  "states": [
+    {
+      "id": "ST-initial",
+      "kind": "weird",
+      "description": "First paint."
+    },
+    {
+      "id": "ST-success",
+      "kind": "success",
+      "description": "Projects are shown."
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "requirementId": "R-01",
+      "given": "a member with two projects",
+      "when": "the page opens",
+      "then": "both projects are listed",
+      "critical": true
+    }
+  ],
+  "edgeCases": [
+    "very long project name"
+  ],
+  "accessibility": [
+    "list is keyboard operable"
+  ],
+  "performance": [],
+  "security": [],
+  "analytics": [],
+  "assumptions": [
+    "English copy only"
+  ],
+  "openQuestions": [
+    {
+      "id": "Q-01",
+      "question": "Should archived projects be searchable?",
+      "blocking": false,
+      "options": [
+        "yes",
+        "no"
+      ],
+      "recommendation": "no"
+    }
+  ]
+}

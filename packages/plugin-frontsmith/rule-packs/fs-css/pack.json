@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-css",
+  "version": "1.0.0",
+  "title": "CSS layout rules",
+  "description": "Deterministic layout and style rules for CSS, SCSS, LESS, CSS modules and Tailwind projects.",
+  "extends": [],
+  "appliesWhen": {
+    "styling": ["css", "scss", "less", "css-modules", "tailwind"]
+  },
+  "rules": [
+    {
+      "id": "FS-CSS-001",
+      "title": "Do not hide overflow on the document root",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "css-declaration",
+      "params": {
+        "selector": "^(?:html|body|:root)$",
+        "property": "^overflow(?:-x|-y)?$",
+        "value": "^(?:hidden|clip)$"
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "Root overflow is hidden; content beyond the viewport becomes unreachable.",
+      "fix": "Find the element that overflows and fix its sizing; use local scrolling only where intended.",
+      "rationale": "Hiding root overflow masks layout defects and hides content from users.",
+      "source": "CSS layout practice",
+      "suppressible": false,
+      "tags": ["AC04"],
+      "fixtures": {
+        "pass": ["fs-css-001/pass.css"],
+        "fail": ["fs-css-001/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-002",
+      "title": "!important outside @layer utilities or reset files",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "css-declaration",
+      "params": {
+        "property": ".",
+        "important": true,
+        "notInsideAtRule": "^layer\\s+utilities$",
+        "excludeFiles": ["**/{reset,normalize}*.{css,scss,less}", "**/reset/**"]
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "!important is used outside a utility layer or reset file.",
+      "fix": "Fix the specificity problem, or move the declaration into the utilities layer.",
+      "rationale": "!important makes later overrides impossible and hides cascade mistakes.",
+      "source": "CSS maintainability",
+      "suppressible": true,
+      "tags": ["important"],
+      "fixtures": {
+        "pass": ["fs-css-002/pass.css"],
+        "fail": ["fs-css-002/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-003",
+      "title": "transition: all",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "css-declaration",
+      "params": {
+        "property": "^transition(?:-property)?$",
+        "value": "(?:^|[\\s,])all(?:$|[\\s,])"
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "transition: all animates every property, including layout properties.",
+      "fix": "List the properties that should animate.",
+      "rationale": "Animating everything causes jank and unexpected motion when styles change.",
+      "source": "CSS performance practice",
+      "suppressible": false,
+      "tags": ["transition"],
+      "fixtures": {
+        "pass": ["fs-css-003/pass.css"],
+        "fail": ["fs-css-003/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-004",
+      "title": "Fixed height with overflow hidden in the same block",
+      "severity": "major",
+      "kind": "heuristic",
+      "category": "layout",
+      "engine": "css-declaration",
+      "params": {
+        "property": "^height$",
+        "value": "^(?!auto|inherit|initial|unset|100%|fit-content|min-content|max-content)[\\d.]+(?:px|rem|em|vh|svh|dvh|ch)$",
+        "requireSiblingProperty": {
+          "property": "^overflow(?:-y)?$",
+          "value": "^(?:hidden|clip)$"
+        }
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A fixed height combined with hidden overflow can clip text, errors or translations.",
+      "fix": "Use min-height or intrinsic height and verify with long content and zoom.",
+      "rationale": "Fixed boxes that hide overflow lose content as soon as text grows.",
+      "source": "CSS layout practice",
+      "suppressible": false,
+      "tags": ["AC03"],
+      "fixtures": {
+        "pass": ["fs-css-004/pass.css"],
+        "fail": ["fs-css-004/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-005",
+      "title": "outline none without a :focus-visible replacement",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "a11y",
+      "engine": "css-file-guard",
+      "params": {
+        "whenProperty": {
+          "property": "^outline(?:-style)?$",
+          "value": "^(?:none|0)$"
+        },
+        "requiresAnywhere": {
+          "selector": ":focus-visible",
+          "property": "^(?:outline|box-shadow|border|background|text-decoration)"
+        }
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The focus outline is removed and no :focus-visible style replaces it in this file.",
+      "fix": "Keep the default outline or add a visible :focus-visible style.",
+      "rationale": "Keyboard users lose track of focus when the indicator disappears.",
+      "source": "WCAG 2.4.7 Focus Visible",
+      "suppressible": false,
+      "tags": ["AC13"],
+      "fixtures": {
+        "pass": ["fs-css-005/pass.css"],
+        "fail": ["fs-css-005/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-006",
+      "title": "More than six position: absolute declarations in one file",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "layout",
+      "engine": "file-metric",
+      "params": {
+        "metric": "absolutePositionDecls",
+        "max": 6
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The file positions many elements absolutely, which usually means coordinate-based layout.",
+      "fix": "Use grid, flex or normal flow for structure; keep absolute positioning for justified layers.",
+      "rationale": "Coordinate layouts match one screenshot and break with other content or viewports.",
+      "source": "CSS layout practice",
+      "suppressible": false,
+      "tags": ["AC02"],
+      "fixtures": {
+        "pass": ["fs-css-006/pass.css"],
+        "fail": ["fs-css-006/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-007",
+      "title": "Literal z-index not using a --z-* token",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "css-raw-value",
+      "params": {
+        "properties": "^z-index$",
+        "kinds": ["integer"],
+        "allow": ["0"]
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "z-index uses a literal number instead of a --z-* token.",
+      "fix": "Define the layer as a token (--z-modal) and reference it with var().",
+      "rationale": "Magic stacking numbers escalate and collide; named layers stay reviewable.",
+      "source": "Design token practice",
+      "suppressible": false,
+      "tags": ["z-index"],
+      "fixtures": {
+        "pass": ["fs-css-007/pass.css"],
+        "fail": ["fs-css-007/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-008",
+      "title": "filter: invert() in a dark theme",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "a11y",
+      "engine": "css-declaration",
+      "params": {
+        "property": "^filter$",
+        "value": "invert\\(",
+        "selector": "(?:\\[data-theme=[\"']?dark|\\.dark\\b|\\.theme-dark\\b)",
+        "insideAtRule": "^media\\s+\\(prefers-color-scheme:\\s*dark\\)",
+        "selectorOrAtRule": true
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A dark theme is built by inverting colours, which breaks photos, states and contrast.",
+      "fix": "Define semantic colour roles per theme and validate each pair.",
+      "rationale": "Inversion makes contrast unpredictable; dark themes need their own validated palette.",
+      "source": "Colour system practice",
+      "suppressible": false,
+      "tags": ["AC16"],
+      "fixtures": {
+        "pass": ["fs-css-008/pass.css"],
+        "fail": ["fs-css-008/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-009",
+      "title": "Animation without a reduced-motion alternative",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "a11y",
+      "engine": "css-declaration",
+      "params": {
+        "property": "^animation(?:-name)?$",
+        "value": "^(?!none$)",
+        "notInsideAtRule": "prefers-reduced-motion\\s*:\\s*no-preference",
+        "unlessFileHasAtRule": "prefers-reduced-motion\\s*:\\s*reduce"
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "An animation runs with no prefers-reduced-motion handling in this file.",
+      "fix": "Wrap it in prefers-reduced-motion: no-preference or add a reduce override.",
+      "rationale": "Motion can trigger discomfort; users can ask for less of it.",
+      "source": "WCAG 2.3.3 Animation from Interactions",
+      "suppressible": false,
+      "tags": ["AV18"],
+      "fixtures": {
+        "pass": ["fs-css-009/pass.css"],
+        "fail": ["fs-css-009/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-010",
+      "title": "font-size in vw without clamp()",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "css-declaration",
+      "params": {
+        "property": "^font-size$",
+        "value": "^\\s*[\\d.]+vw\\s*$"
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "font-size depends only on the viewport width, so it ignores user text settings.",
+      "fix": "Wrap the value in clamp() with rem bounds.",
+      "rationale": "Pure viewport units stop text from scaling with zoom and user preferences.",
+      "source": "CSS typography practice",
+      "suppressible": false,
+      "tags": ["font-size"],
+      "fixtures": {
+        "pass": ["fs-css-010/pass.css"],
+        "fail": ["fs-css-010/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-011",
+      "title": "@font-face without font-display",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "css-at-rule",
+      "params": {
+        "name": "^font-face$",
+        "require": {
+          "property": "^font-display$"
+        }
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "@font-face does not declare font-display.",
+      "fix": "Add font-display: swap (or the strategy your project chose).",
+      "rationale": "Without it browsers may hide text while the font loads.",
+      "source": "Web font loading practice",
+      "suppressible": false,
+      "tags": ["fonts"],
+      "fixtures": {
+        "pass": ["fs-css-011/pass.css"],
+        "fail": ["fs-css-011/fail.css"]
+      }
+    },
+    {
+      "id": "FS-CSS-012",
+      "title": "Physical direction properties where logical ones express reading direction",
+      "severity": "nit",
+      "kind": "advisory",
+      "category": "layout",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Prefer logical properties (margin-inline-start, padding-block, inset-inline) where spacing follows the reading direction, so right-to-left layouts need no overrides."
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "Physical direction properties may need overrides for right-to-left languages.",
+      "fix": "Use logical properties where the spacing follows the reading direction.",
+      "rationale": "Logical properties adapt to writing mode and direction without extra rules.",
+      "source": "CSS logical properties",
+      "suppressible": false,
+      "tags": []
+    }
+  ],
+  "overrides": []
+}

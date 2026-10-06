@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "patterns": [
+    {
+      "id": "PAT-CONTAINER-PRESENTATIONAL",
+      "name": "Container / presentational split",
+      "intent": "Keep data access and state in a container and render through a presentational component that only receives props.",
+      "useWhen": [
+        "A view is reused with different data sources",
+        "The view needs isolated tests and stories without data fixtures"
+      ],
+      "avoidWhen": [
+        "The component is a tiny leaf with no data access",
+        "Splitting would only forward props one level"
+      ],
+      "structure": "Container (fetch, state, handlers) -> presentational component (props in, events out). Presentational files import no data, state or service modules.",
+      "verifiedBy": ["FS-ARC-005"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-HEADLESS-HOOK",
+      "name": "Headless logic hook + view component",
+      "intent": "Move behavior into a hook or composable with no markup, and let one or more view components render it.",
+      "useWhen": [
+        "Several views share the same interaction logic",
+        "Behavior needs tests without a DOM"
+      ],
+      "avoidWhen": ["The logic is trivial and used once", "The hook would wrap a single useState"],
+      "structure": "useThing() returns state and handlers; a view component calls it and renders. Views stay free of data modules.",
+      "verifiedBy": ["FS-ARC-005"],
+      "frameworks": ["react", "preact", "solid", "vue", "svelte"]
+    },
+    {
+      "id": "PAT-COMPOUND",
+      "name": "Compound components with shared context",
+      "intent": "Let related parts (Tabs, Tab, Panel) share state through context so callers compose them freely.",
+      "useWhen": [
+        "A widget has several cooperating parts with flexible layout",
+        "Callers need to reorder or omit parts"
+      ],
+      "avoidWhen": [
+        "The parts are always rendered together in one fixed layout",
+        "A single configurable component is enough"
+      ],
+      "structure": "Root component owns state and provides context; child parts read it and are exported as properties or named exports.",
+      "verifiedBy": [],
+      "frameworks": ["react", "preact", "solid", "vue", "svelte"]
+    },
+    {
+      "id": "PAT-SLOTS",
+      "name": "Slots / children composition over prop drilling",
+      "intent": "Accept regions of markup (children, named slots, render props) instead of passing many configuration props down.",
+      "useWhen": [
+        "A layout component needs caller-defined regions",
+        "Props are only forwarded through several levels"
+      ],
+      "avoidWhen": [
+        "The content is a single scalar value",
+        "A slot would hide a required, validated structure"
+      ],
+      "structure": "Layout component renders children or named slots in fixed places; callers supply the content.",
+      "verifiedBy": [],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-POLYMORPHIC-AS",
+      "name": "Polymorphic `as` element with typed props",
+      "intent": "Let a component render a different element or component while keeping the prop types of the chosen target.",
+      "useWhen": [
+        "A primitive such as Button or Text must render as a link or heading",
+        "Semantics must follow the usage site"
+      ],
+      "avoidWhen": ["The element never varies", "A discriminated variant prop would be clearer"],
+      "structure": "Generic `as` prop constrained to element types; props are the union of the primitive's own props and the target's.",
+      "verifiedBy": ["FS-CMP-003"],
+      "frameworks": ["react", "preact", "solid"]
+    },
+    {
+      "id": "PAT-VARIANT-MAP",
+      "name": "Static variant map (union prop -> class string)",
+      "intent": "Map each value of a union prop to a complete, statically written class string instead of building class names by interpolation.",
+      "useWhen": [
+        "A component has a small closed set of visual variants",
+        "The styling tool scans source for class names"
+      ],
+      "avoidWhen": ["Variants are open-ended or user supplied", "Styles depend on runtime data"],
+      "structure": "const variants: Record<Variant, string> = { primary: '...', secondary: '...' }; the component indexes the map.",
+      "verifiedBy": ["FS-CMP-002", "FS-TW-001"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-CONTROLLED-UNCONTROLLED",
+      "name": "Controlled/uncontrolled pair with `value`/`defaultValue`",
+      "intent": "Support both a parent-owned value and an internally owned one with the same component.",
+      "useWhen": [
+        "A form control is used both inside forms and standalone",
+        "Callers sometimes need to drive the value"
+      ],
+      "avoidWhen": [
+        "The component is only ever controlled by a form library",
+        "State never needs to be external"
+      ],
+      "structure": "value + onChange for controlled use; defaultValue for initial uncontrolled state; a mode never switches during the lifetime.",
+      "verifiedBy": [],
+      "frameworks": ["react", "preact", "solid", "vue", "svelte"]
+    },
+    {
+      "id": "PAT-UI-STATE-MACHINE",
+      "name": "Explicit UI state union for loading/empty/error/success",
+      "intent": "Model the screen state as a closed union and render exactly one branch per state.",
+      "useWhen": [
+        "A view loads data or has several mutually exclusive states",
+        "Error and empty states need design"
+      ],
+      "avoidWhen": ["The view is static", "The state is a single boolean"],
+      "structure": "type State = idle | loading | empty | error | success; one switch renders each state; reviewers check every state exists.",
+      "verifiedBy": [],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-API-ADAPTER",
+      "name": "Contract-derived API client adapter behind a port",
+      "intent": "Reach the backend through an adapter that implements a port defined by the application, derived from the API contract.",
+      "useWhen": [
+        "The UI depends on a backend contract that may change",
+        "Tests need a fake backend"
+      ],
+      "avoidWhen": [
+        "A prototype with one throwaway call",
+        "The framework already provides a typed client"
+      ],
+      "structure": "Port interface in the application layer; adapter in infrastructure maps contract types to domain types; UI depends on the port only.",
+      "verifiedBy": ["FS-ARC-001"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-REPOSITORY",
+      "name": "Data access repository per entity",
+      "intent": "Give each entity one module that owns reading and writing it, hiding transport and caching details.",
+      "useWhen": [
+        "Several features read or write the same entity",
+        "Storage or transport may change"
+      ],
+      "avoidWhen": [
+        "Data is fetched once in a single route loader",
+        "The entity has no persistence"
+      ],
+      "structure": "entities/<name>/api exposes get/list/save functions; features import the public API of the entity, never its transport.",
+      "verifiedBy": ["FS-ARC-001"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-QUERY-CACHE",
+      "name": "Server state in a query cache, not global stores",
+      "intent": "Keep data that lives on the server in a query cache with keys and invalidation, and keep client stores for client-only state.",
+      "useWhen": [
+        "The same server data appears on several screens",
+        "Loading, staleness and refetching must be handled"
+      ],
+      "avoidWhen": ["Data is local-only UI state", "The app has one request and no sharing"],
+      "structure": "Query keys per resource; components read through hooks; mutations invalidate keys; no copying of server data into a global store.",
+      "verifiedBy": [],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-OPTIMISTIC-COMMAND",
+      "name": "Command with optimistic update and rollback",
+      "intent": "Apply the expected result immediately, send the command, and roll back with a visible error if it fails.",
+      "useWhen": [
+        "The action almost always succeeds and latency is noticeable",
+        "A rollback path can be shown clearly"
+      ],
+      "avoidWhen": [
+        "The outcome depends on server validation the client cannot predict",
+        "The action is destructive or financial"
+      ],
+      "structure": "Snapshot -> apply local change -> send command -> on failure restore the snapshot and announce the error.",
+      "verifiedBy": [],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-PROVIDER-INJECTION",
+      "name": "Context/provider for dependency injection at app root",
+      "intent": "Create concrete dependencies once at the application root and expose them through a provider so features depend on abstractions.",
+      "useWhen": [
+        "Features need services that tests must replace",
+        "A dependency has app-wide lifetime"
+      ],
+      "avoidWhen": [
+        "The value is local to one component tree",
+        "Importing the module directly is simpler and testable"
+      ],
+      "structure": "app/ builds the adapters and mounts providers; features read them through hooks typed with the port.",
+      "verifiedBy": ["FS-ARC-001"],
+      "frameworks": ["react", "preact", "solid", "vue", "angular"]
+    },
+    {
+      "id": "PAT-FEATURE-SLICED",
+      "name": "Feature-Sliced Design layering",
+      "intent": "Organize code in layers (app, pages, widgets, features, entities, shared) where imports only point downward and slices expose a public API.",
+      "useWhen": [
+        "A medium or large product with many features",
+        "Several teams work in one repository"
+      ],
+      "avoidWhen": [
+        "A small app with a handful of components",
+        "The team already follows another documented structure"
+      ],
+      "structure": "src/<layer>/<slice>/{ui,model,api,index.ts}; layers import only lower layers; slices import each other only through public APIs.",
+      "verifiedBy": ["FS-ARC-001", "FS-ARC-002", "FS-ARC-003"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-HEXAGONAL",
+      "name": "Ports and adapters for frontend domain logic",
+      "intent": "Keep domain rules independent of the framework, define ports in the application layer, and implement them with adapters.",
+      "useWhen": [
+        "Domain rules are non-trivial and must be tested without the UI",
+        "Backends or devices may be swapped"
+      ],
+      "avoidWhen": ["The app is mostly presentation", "A thin layer over a typed client is enough"],
+      "structure": "domain <- application (use cases, ports) <- infrastructure (adapters); ui calls application only.",
+      "verifiedBy": ["FS-ARC-001"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-ATOMIC",
+      "name": "Atomic design levels",
+      "intent": "Compose the interface from atoms, molecules, organisms, templates and pages where each level uses only lower ones.",
+      "useWhen": [
+        "A design system is being built from small reusable parts",
+        "Designers already speak in these levels"
+      ],
+      "avoidWhen": [
+        "The product has few shared components",
+        "The levels would be applied mechanically to feature code"
+      ],
+      "structure": "components/atoms -> molecules -> organisms -> templates -> pages; a level never imports a higher level.",
+      "verifiedBy": ["FS-ARC-006"],
+      "frameworks": ["all"]
+    },
+    {
+      "id": "PAT-ERROR-BOUNDARY",
+      "name": "Error boundary per route/region with recoverable UI",
+      "intent": "Contain rendering failures in a region and show a message with a way to retry or leave.",
+      "useWhen": [
+        "A region can fail independently of the rest of the page",
+        "A route should never white-screen"
+      ],
+      "avoidWhen": [
+        "The framework already provides a route-level error screen that is sufficient",
+        "The failure cannot be recovered and needs a full reload"
+      ],
+      "structure": "Boundary around a route or widget; fallback shows what failed, a retry action and a link out; errors are reported.",
+      "verifiedBy": [],
+      "frameworks": ["react", "preact", "solid", "vue", "svelte", "angular"]
+    },
+    {
+      "id": "PAT-FORM-SCHEMA",
+      "name": "Schema-driven form validation shared with the contract",
+      "intent": "Describe the form once as a schema, derived from or checked against the API contract, and reuse it for validation and types.",
+      "useWhen": ["Forms mirror an API payload", "Client and server must agree on rules"],
+      "avoidWhen": ["A single trivial field", "Validation is purely visual"],
+      "structure": "Schema -> inferred type -> form resolver; error messages mapped to fields with accessible associations.",
+      "verifiedBy": [],
+      "frameworks": ["all"]
+    }
+  ]
+}

@@ -1,0 +1,734 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-design",
+  "version": "1.0.0",
+  "title": "Design direction guidance",
+  "description": "Advisory design heuristics for agents and reviewers: operating rules for UI work and signals of generic or low-quality interfaces. They never produce findings; reviewers raise REVIEW items from them.",
+  "extends": [],
+  "appliesWhen": {},
+  "rules": [
+    {
+      "id": "FS-DSN-UI01",
+      "title": "One primary task per view",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Define one primary task for each view or functional region, and name the action and content that make it possible."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: one primary task per view.",
+      "fix": "Define one primary task for each view or functional region, and name the action and content that make it possible.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI01"]
+    },
+    {
+      "id": "FS-DSN-UI02",
+      "title": "Hierarchy before decoration",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Build hierarchy with size, weight, position and space before adding decoration. Title, content and call to action must have distinguishable priorities."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: hierarchy before decoration.",
+      "fix": "Build hierarchy with size, weight, position and space before adding decoration. Title, content and call to action must have distinguishable priorities.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI02"]
+    },
+    {
+      "id": "FS-DSN-UI03",
+      "title": "Group by proximity",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Group related items by proximity and separate groups by more space than the items inside a group. Document the inner and outer gaps."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: group by proximity.",
+      "fix": "Group related items by proximity and separate groups by more space than the items inside a group. Document the inner and outer gaps.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI03"]
+    },
+    {
+      "id": "FS-DSN-UI04",
+      "title": "Shared alignment anchors",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Align blocks to common anchors and justify local optical deviations. Measure the grid and the boxes."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: shared alignment anchors.",
+      "fix": "Align blocks to common anchors and justify local optical deviations. Measure the grid and the boxes.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI04"]
+    },
+    {
+      "id": "FS-DSN-UI05",
+      "title": "Repetition for sameness, contrast for difference",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Give the same role the same treatment and use contrast for important differences. Explain every exception."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: repetition for sameness, contrast for difference.",
+      "fix": "Give the same role the same treatment and use contrast for important differences. Explain every exception.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI05"]
+    },
+    {
+      "id": "FS-DSN-UI06",
+      "title": "One body family",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Pick one body typeface and add another only when it has a distinct role. Define fonts, weights, licences and roles."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: one body family.",
+      "fix": "Pick one body typeface and add another only when it has a distinct role. Define fonts, weights, licences and roles.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI06"]
+    },
+    {
+      "id": "FS-DSN-UI07",
+      "title": "Typography with real content",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Design typography with real content, including numbers and long text. Review reading, wrapping and fallbacks."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: typography with real content.",
+      "fix": "Design typography with real content, including numbers and long text. Review reading, wrapping and fallbacks.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI07"]
+    },
+    {
+      "id": "FS-DSN-UI08",
+      "title": "Emphasis for progress",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Reserve the strongest emphasis for what lets the user advance in the task. Secondary actions must not compete without a reason."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: emphasis for progress.",
+      "fix": "Reserve the strongest emphasis for what lets the user advance in the task. Secondary actions must not compete without a reason.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI08"]
+    },
+    {
+      "id": "FS-DSN-UI09",
+      "title": "Semantic palette with validated pairs",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Use a semantic palette and validate every permitted foreground and background pair against the contrast graph."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: semantic palette with validated pairs.",
+      "fix": "Use a semantic palette and validate every permitted foreground and background pair against the contrast graph.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI09"]
+    },
+    {
+      "id": "FS-DSN-UI10",
+      "title": "Structure and space before boxes",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Prefer structure and space to group content; add a box, border or shadow only when it explains a relationship. Every container needs a purpose."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: structure and space before boxes.",
+      "fix": "Prefer structure and space to group content; add a box, border or shadow only when it explains a relationship. Every container needs a purpose.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI10"]
+    },
+    {
+      "id": "FS-DSN-UI11",
+      "title": "Consistent radii, strokes, icons and elevation",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Keep radii, stroke widths, icons and elevations consistent through shared tokens and variants."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: consistent radii, strokes, icons and elevation.",
+      "fix": "Keep radii, stroke widths, icons and elevations consistent through shared tokens and variants.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI11"]
+    },
+    {
+      "id": "FS-DSN-UI12",
+      "title": "Density follows frequency and experience",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Match density to how often and how expertly the interface is used: a frequent operator may need more information on screen."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: density follows frequency and experience.",
+      "fix": "Match density to how often and how expertly the interface is used: a frequent operator may need more information on screen.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI12"]
+    },
+    {
+      "id": "FS-DSN-UI13",
+      "title": "Specific actions and recoverable errors",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Write specific action labels and errors that offer a way to recover: the action (\"Save changes\"), the reason for a failure and the next step."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: specific actions and recoverable errors.",
+      "fix": "Write specific action labels and errors that offer a way to recover: the action (\"Save changes\"), the reason for a failure and the next step.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI13"]
+    },
+    {
+      "id": "FS-DSN-UI14",
+      "title": "Authentic imagery with intentional cropping",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Use authentic or clearly illustrative images with an intentional crop. Record the asset, aspect ratio, focal point and accessible alternative."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: authentic imagery with intentional cropping.",
+      "fix": "Use authentic or clearly illustrative images with an intentional crop. Record the asset, aspect ratio, focal point and accessible alternative.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI14"]
+    },
+    {
+      "id": "FS-DSN-UI15",
+      "title": "Motion that explains",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Use motion to explain a response or a relationship, and respect reduced-motion preferences. Give each transition a purpose, a final state and an alternative."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: motion that explains.",
+      "fix": "Use motion to explain a response or a relationship, and respect reduced-motion preferences. Give each transition a purpose, a final state and an alternative.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI15"]
+    },
+    {
+      "id": "FS-DSN-UI16",
+      "title": "Responsive composition keeps priorities",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Adapt the composition by width while keeping priorities and reading order; do not shrink everything proportionally."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: responsive composition keeps priorities.",
+      "fix": "Adapt the composition by width while keeping priorities and reading order; do not shrink everything proportionally.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI16"]
+    },
+    {
+      "id": "FS-DSN-UI17",
+      "title": "Equal care for every state",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Design loading, empty, error and success states with the same care as the normal state, using a state matrix with content."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: equal care for every state.",
+      "fix": "Design loading, empty, error and success states with the same care as the normal state, using a state matrix with content.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI17"]
+    },
+    {
+      "id": "FS-DSN-UI18",
+      "title": "Finish when the contract is met",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Stop when the contract is satisfied and no relevant defect remains. Report the evidence and the remaining differences instead of polishing endlessly."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design guidance: finish when the contract is met.",
+      "fix": "Stop when the contract is satisfied and no relevant defect remains. Report the evidence and the remaining differences instead of polishing endlessly.",
+      "rationale": "Operating rule for UI work; a heuristic, not a measured threshold.",
+      "source": "Design heuristics",
+      "suppressible": false,
+      "tags": ["UI18"]
+    },
+    {
+      "id": "FS-DSN-AV01",
+      "title": "Interchangeable composition",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Interchangeable composition. Why it can weaken the interface: The content is squeezed into a template and the task loses priority. Recommended correction: Choose the structure by task; keep a conventional pattern when it works. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: interchangeable composition.",
+      "fix": "Choose the structure by task; keep a conventional pattern when it works.",
+      "rationale": "The content is squeezed into a template and the task loses priority.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV01"]
+    },
+    {
+      "id": "FS-DSN-AV02",
+      "title": "Marketing hero inside a tool",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Marketing hero inside a tool. Why it can weaken the interface: A huge heading delays reaching the work. Recommended correction: Use a compact header with the action visible; reserve a hero for an offer or an experience. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: marketing hero inside a tool.",
+      "fix": "Use a compact header with the action visible; reserve a hero for an offer or an experience.",
+      "rationale": "A huge heading delays reaching the work.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV02"]
+    },
+    {
+      "id": "FS-DSN-AV03",
+      "title": "Every datum in a card",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Every datum in a card. Why it can weaken the interface: Cards fragment reading and make attribute comparison hard. Recommended correction: Use a table, a list or relation groups; keep cards for independent units. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: every datum in a card.",
+      "fix": "Use a table, a list or relation groups; keep cards for independent units.",
+      "rationale": "Cards fragment reading and make attribute comparison hard.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV03"]
+    },
+    {
+      "id": "FS-DSN-AV04",
+      "title": "Nested decorative containers",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Nested decorative containers. Why it can weaken the interface: Borders, shadows and padding consume space without clarifying structure. Recommended correction: Flatten the grouping; keep functional nesting such as a panel with controls. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: nested decorative containers.",
+      "fix": "Flatten the grouping; keep functional nesting such as a panel with controls.",
+      "rationale": "Borders, shadows and padding consume space without clarifying structure.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV04"]
+    },
+    {
+      "id": "FS-DSN-AV05",
+      "title": "Ornaments louder than the task",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Ornaments louder than the task. Why it can weaken the interface: Attention goes to effects rather than decisions. Recommended correction: Reduce effects or give them a purpose and a bounded area. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: ornaments louder than the task.",
+      "fix": "Reduce effects or give them a purpose and a bounded area.",
+      "rationale": "Attention goes to effects rather than decisions.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV05"]
+    },
+    {
+      "id": "FS-DSN-AV06",
+      "title": "Everything equally prominent",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Everything equally prominent. Why it can weaken the interface: Nothing says what to do first. Recommended correction: Define an attention order with differences in size, weight, space or colour. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: everything equally prominent.",
+      "fix": "Define an attention order with differences in size, weight, space or colour.",
+      "rationale": "Nothing says what to do first.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV06"]
+    },
+    {
+      "id": "FS-DSN-AV07",
+      "title": "Palette chosen by reflex",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Palette chosen by reflex. Why it can weaken the interface: The brand could belong to any product. Recommended correction: Justify families by identity and roles; do not change an approved palette because of fashion. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: palette chosen by reflex.",
+      "fix": "Justify families by identity and roles; do not change an approved palette because of fashion.",
+      "rationale": "The brand could belong to any product.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV07"]
+    },
+    {
+      "id": "FS-DSN-AV08",
+      "title": "Elegance through faint text",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Elegance through faint text. Why it can weaken the interface: Readability is sacrificed to soften the screenshot. Recommended correction: Keep contrast and legibility; check real backgrounds and states. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: elegance through faint text.",
+      "fix": "Keep contrast and legibility; check real backgrounds and states.",
+      "rationale": "Readability is sacrificed to soften the screenshot.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV08"]
+    },
+    {
+      "id": "FS-DSN-AV09",
+      "title": "Typography without criteria or substituted",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Typography without criteria or substituted. Why it can weaken the interface: Tone, metrics, line breaks and density change. Recommended correction: Load the approved family and real weights and define roles; do not ban a font only because it is common. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: typography without criteria or substituted.",
+      "fix": "Load the approved family and real weights and define roles; do not ban a font only because it is common.",
+      "rationale": "Tone, metrics, line breaks and density change.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV09"]
+    },
+    {
+      "id": "FS-DSN-AV10",
+      "title": "Large headings with extreme tracking",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Large headings with extreme tracking. Why it can weaken the interface: The graphic effect reduces legibility or breaks on mobile. Recommended correction: Tune by typeface, length and viewport; use expressive display type only where it fits. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: large headings with extreme tracking.",
+      "fix": "Tune by typeface, length and viewport; use expressive display type only where it fits.",
+      "rationale": "The graphic effect reduces legibility or breaks on mobile.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV10"]
+    },
+    {
+      "id": "FS-DSN-AV11",
+      "title": "Every control looks like a chip",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Every control looks like a chip. Why it can weaken the interface: Buttons, filters, tags and states become confusable. Recommended correction: Differentiate appearance by behaviour; give equal functions equal shapes. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: every control looks like a chip.",
+      "fix": "Differentiate appearance by behaviour; give equal functions equal shapes.",
+      "rationale": "Buttons, filters, tags and states become confusable.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV11"]
+    },
+    {
+      "id": "FS-DSN-AV12",
+      "title": "Mixed or oversized icons",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Mixed or oversized icons. Why it can weaken the interface: Stylistic noise and visual weight without value. Recommended correction: Use one family, scale and stroke; add icons only when they help recognition. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: mixed or oversized icons.",
+      "fix": "Use one family, scale and stroke; add icons only when they help recognition.",
+      "rationale": "Stylistic noise and visual weight without value.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV12"]
+    },
+    {
+      "id": "FS-DSN-AV13",
+      "title": "Filler image or stereotyped metaphor",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Filler image or stereotyped metaphor. Why it can weaken the interface: It occupies space without showing the product or information. Recommended correction: Use specific content; decoration may set a tone if it does not interfere. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: filler image or stereotyped metaphor.",
+      "fix": "Use specific content; decoration may set a tone if it does not interfere.",
+      "rationale": "It occupies space without showing the product or information.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV13"]
+    },
+    {
+      "id": "FS-DSN-AV14",
+      "title": "Generic or repeated copy",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Generic or repeated copy. Why it can weaken the interface: It adds reading without clarifying benefit or action. Recommended correction: Use concrete task language and contextual help where it removes doubt. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: generic or repeated copy.",
+      "fix": "Use concrete task language and contextual help where it removes doubt.",
+      "rationale": "It adds reading without clarifying benefit or action.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV14"]
+    },
+    {
+      "id": "FS-DSN-AV15",
+      "title": "Invented figures, clients or testimonials",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Invented figures, clients or testimonials. Why it can weaken the interface: The screen suggests facts that nothing supports. Recommended correction: A failure when presented as real; use verified content or an identified demo. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: invented figures, clients or testimonials.",
+      "fix": "A failure when presented as real; use verified content or an identified demo.",
+      "rationale": "The screen suggests facts that nothing supports.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV15"]
+    },
+    {
+      "id": "FS-DSN-AV16",
+      "title": "Uniform spacing for different relations",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Uniform spacing for different relations. Why it can weaken the interface: The grouping between title, help, fields and sections is lost. Recommended correction: Use less distance inside a group and more between groups; respect the system. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: uniform spacing for different relations.",
+      "fix": "Use less distance inside a group and more between groups; respect the system.",
+      "rationale": "The grouping between title, help, fields and sections is lost.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV16"]
+    },
+    {
+      "id": "FS-DSN-AV17",
+      "title": "Excess emptiness to look sophisticated",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Excess emptiness to look sophisticated. Why it can weaken the interface: Data is scattered and the user scrolls for no benefit. Recommended correction: Match density to the user; use deliberate space in editorial or brand contexts. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: excess emptiness to look sophisticated.",
+      "fix": "Match density to the user; use deliberate space in editorial or brand contexts.",
+      "rationale": "Data is scattered and the user scrolls for no benefit.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV17"]
+    },
+    {
+      "id": "FS-DSN-AV18",
+      "title": "Continuous motion without meaning",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Continuous motion without meaning. Why it can weaken the interface: It competes for attention and can hinder use. Recommended correction: Signal relevant changes; respect user preferences and motion criteria. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: continuous motion without meaning.",
+      "fix": "Signal relevant changes; respect user preferences and motion criteria.",
+      "rationale": "It competes for attention and can hinder use.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV18"]
+    },
+    {
+      "id": "FS-DSN-AV19",
+      "title": "Humanising with random imperfections",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Humanising with random imperfections. Why it can weaken the interface: Misalignments and variations damage consistency. Recommended correction: Express personality through content and direction; allow irregularity only in authorised assets. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: humanising with random imperfections.",
+      "fix": "Express personality through content and direction; allow irregularity only in authorised assets.",
+      "rationale": "Misalignments and variations damage consistency.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV19"]
+    },
+    {
+      "id": "FS-DSN-AV20",
+      "title": "Swapping one cliche for another",
+      "severity": "minor",
+      "kind": "advisory",
+      "category": "design",
+      "engine": "advisory",
+      "params": {
+        "guidance": "Swapping one cliche for another. Why it can weaken the interface: Beige, serif or brutalism can become another automatic template. Recommended correction: Choose from the brief, not in opposition to a list of banned styles. Treat it as a REVIEW signal, not a failure, unless it violates the brief, authorised content or a functional or accessibility criterion."
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "Design review signal: swapping one cliche for another.",
+      "fix": "Choose from the brief, not in opposition to a list of banned styles.",
+      "rationale": "Beige, serif or brutalism can become another automatic template.",
+      "source": "Design review heuristics",
+      "suppressible": false,
+      "tags": ["AV20"]
+    }
+  ],
+  "overrides": []
+}

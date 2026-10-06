@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "review",
+  "findings": [
+    {
+      "dimension": "architecture",
+      "severity": "MAJOR",
+      "file": "src/a.ts",
+      "line": 40,
+      "claim": "crosses a boundary",
+      "evidence": "imports infrastructure",
+      "fix": "use the port",
+      "acRef": "AC-02"
+    }
+  ],
+  "verdict": "approved"
+}

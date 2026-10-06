@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-tokens",
+  "version": "1.0.0",
+  "title": "Design token rules",
+  "description": "Rules for raw values, token naming, themes and required contrast pairs.",
+  "extends": [],
+  "appliesWhen": {},
+  "rules": [
+    {
+      "id": "FS-TOK-001",
+      "title": "Raw colour literal outside token definition files",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "css-raw-value",
+      "params": {
+        "properties": "^(?:color|background(?:-color|-image)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline(?:-color)?|fill|stroke|box-shadow|text-shadow|text-decoration-color|caret-color|accent-color|--[\\w-]+|\\$[\\w-]+)$",
+        "kinds": ["color"],
+        "allow": ["transparent", "currentcolor", "inherit", "initial", "unset", "none"]
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A raw colour literal is used outside the token definition files.",
+      "fix": "Reference a semantic token with var(--color-...) and define the value once in the token files.",
+      "rationale": "Scattered literals drift apart and cannot follow a theme.",
+      "source": "Design token practice",
+      "suppressible": false,
+      "tags": ["AC08"],
+      "fixtures": {
+        "pass": ["fs-tok-001/pass.css"],
+        "fail": ["fs-tok-001/fail.css"]
+      }
+    },
+    {
+      "id": "FS-TOK-002",
+      "title": "Raw spacing or radius length not in the token scale",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "css-raw-value",
+      "params": {
+        "properties": "^(?:margin|padding|gap|row-gap|column-gap|border(?:-[a-z]+)*-radius|inset|top|right|bottom|left)(?:-[a-z]+)?$",
+        "kinds": ["length"],
+        "allow": ["0", "1px", "100%", "auto"]
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A raw spacing or radius length is used instead of a scale token.",
+      "fix": "Use a spacing or radius token such as var(--space-3).",
+      "rationale": "Arbitrary lengths make spacing inconsistent and hard to change.",
+      "source": "Design token practice",
+      "suppressible": true,
+      "tags": ["AC08"],
+      "fixtures": {
+        "pass": ["fs-tok-002/pass.css"],
+        "fail": ["fs-tok-002/fail.css"]
+      }
+    },
+    {
+      "id": "FS-TOK-003",
+      "title": "Custom property is not lowercase kebab-case",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "token-file",
+      "params": {
+        "naming": "^--[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+      },
+      "files": ["**/*.{css,scss,less}"],
+      "appliesWhen": {},
+      "message": "A custom property name is not lowercase kebab-case.",
+      "fix": "Rename it, for example --color-action-bg.",
+      "rationale": "A single naming grammar keeps tokens searchable and mappable across tools.",
+      "source": "Design token naming",
+      "suppressible": false,
+      "tags": ["naming"],
+      "fixtures": {
+        "pass": ["fs-tok-003/pass.json"],
+        "fail": ["fs-tok-003/fail.json"]
+      }
+    },
+    {
+      "id": "FS-TOK-004",
+      "title": "Semantic token named by colour or position",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "token-file",
+      "params": {
+        "forbidNames": "^--(?:(?:red|blue|green|yellow|orange|purple|pink|teal|cyan|indigo|violet|gray|grey|black|white|dark|light)-(?!\\d+$)[a-z]|(?:left|right|top|bottom)-[a-z]|[a-z]+\\d+$)"
+      },
+      "files": ["**/*.{css,scss,less}"],
+      "appliesWhen": {},
+      "message": "A token is named after its colour or position instead of its role.",
+      "fix": "Name tokens by purpose (--color-action-bg, --color-text-muted).",
+      "rationale": "Role names survive a rebrand or a dark theme; colour names do not.",
+      "source": "Design token naming",
+      "suppressible": false,
+      "tags": ["naming"],
+      "fixtures": {
+        "pass": ["fs-tok-004/pass.json"],
+        "fail": ["fs-tok-004/fail.json"]
+      }
+    },
+    {
+      "id": "FS-TOK-005",
+      "title": "var() reference to an undefined custom property without fallback",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "token-file",
+      "params": {
+        "undefinedRefs": true
+      },
+      "files": ["**/*.{css,scss,less,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "var() references a custom property that nothing defines, and it has no fallback.",
+      "fix": "Define the token, fix the name, or add a fallback value.",
+      "rationale": "An undefined property makes the declaration invalid at computed-value time.",
+      "source": "CSS custom properties",
+      "suppressible": false,
+      "tags": ["undefined"],
+      "fixtures": {
+        "pass": ["fs-tok-005/pass.css"],
+        "fail": ["fs-tok-005/fail.css"]
+      }
+    },
+    {
+      "id": "FS-TOK-006",
+      "title": "Token defined but never used",
+      "severity": "nit",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "token-file",
+      "params": {
+        "unused": true
+      },
+      "files": ["**/*.{css,scss,less}"],
+      "appliesWhen": {},
+      "message": "A token is defined in the token files but nothing references it.",
+      "fix": "Remove it or use it.",
+      "rationale": "Dead tokens hide the real vocabulary of the design system.",
+      "source": "Design token practice",
+      "suppressible": false,
+      "tags": ["unused"],
+      "fixtures": {
+        "pass": ["fs-tok-006/pass.json"],
+        "fail": ["fs-tok-006/fail.json"]
+      }
+    },
+    {
+      "id": "FS-TOK-007",
+      "title": "Token present in one theme block and missing in another",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "token-file",
+      "params": {
+        "themeParity": true
+      },
+      "files": ["**/*.{css,scss,less}"],
+      "appliesWhen": {},
+      "message": "A token exists in one [data-theme] block but not in another.",
+      "fix": "Define the token in every theme.",
+      "rationale": "A missing token silently falls back to another value and breaks contrast.",
+      "source": "Theming practice",
+      "suppressible": false,
+      "tags": ["themes"],
+      "fixtures": {
+        "pass": ["fs-tok-007/pass.json"],
+        "fail": ["fs-tok-007/fail.json"]
+      }
+    },
+    {
+      "id": "FS-TOK-008",
+      "title": "Required contrast pair fails",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "a11y",
+      "engine": "token-pair-contrast",
+      "params": {
+        "target": "AA"
+      },
+      "files": ["**/tokens.json"],
+      "appliesWhen": {},
+      "message": "A required foreground and background token pair is below the contrast minimum.",
+      "fix": "Choose colours from the palette solver or adjust the pair; never relax the threshold.",
+      "rationale": "Contrast is arithmetic: the pair either meets the target or it does not.",
+      "source": "WCAG 1.4.3 Contrast (Minimum)",
+      "suppressible": false,
+      "tags": ["contrast"],
+      "fixtures": {
+        "pass": ["fs-tok-008/pass.json"],
+        "fail": ["fs-tok-008/fail.json"]
+      }
+    }
+  ],
+  "overrides": []
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "sourceRoots": ["src"],
+  "aliases": "none",
+  "layers": [
+    { "name": "ports", "paths": ["src/application/ports/**"] },
+    { "name": "domain", "paths": ["src/domain/**"] },
+    { "name": "application", "paths": ["src/application/**"] },
+    { "name": "infrastructure", "paths": ["src/infrastructure/**"] },
+    { "name": "interface", "paths": ["src/interface/**"] },
+    { "name": "root", "paths": ["src/index.ts", "src/version.ts", "src/resources.ts"] }
+  ],
+  "allow": {
+    "domain": [],
+    "ports": ["domain"],
+    "application": ["ports", "domain"],
+    "infrastructure": ["ports", "domain"],
+    "interface": ["application", "ports", "domain", "infrastructure"],
+    "root": ["domain", "application", "ports", "infrastructure", "interface"]
+  },
+  "allowSameLayer": ["ports", "domain", "application", "infrastructure", "interface", "root"],
+  "atomic": null,
+  "ignore": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**"]
+}

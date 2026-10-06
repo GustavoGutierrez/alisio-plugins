@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "preset": "layered",
+  "sourceRoots": ["src"],
+  "aliases": "tsconfig",
+  "layers": [
+    { "name": "pages", "paths": ["src/pages/**"] },
+    { "name": "components", "paths": ["src/components/**"] },
+    { "name": "hooks", "paths": ["src/hooks/**"] },
+    { "name": "services", "paths": ["src/services/**"] },
+    { "name": "lib", "paths": ["src/lib/**"] }
+  ],
+  "allow": {
+    "pages": ["components", "hooks", "services", "lib"],
+    "components": ["hooks", "services", "lib"],
+    "hooks": ["services", "lib"],
+    "services": ["lib"],
+    "lib": []
+  },
+  "allowSameLayer": ["pages", "components", "hooks", "services", "lib"],
+  "atomic": null,
+  "ignore": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "**/__tests__/**"]
+}

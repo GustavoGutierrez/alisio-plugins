@@ -1,0 +1,61 @@
+{
+  "blue": {
+    "light": {
+      "canvas": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "text": "#0F172A",
+      "muted": "#475569",
+      "border": "#64748B",
+      "action": "#2563EB",
+      "actionHover": "#1D4ED8",
+      "onAction": "#FFFFFF",
+      "success": "#166534",
+      "warning": "#92400E",
+      "danger": "#991B1B"
+    },
+    "dark": {
+      "canvas": "#0F172A",
+      "surface": "#1E293B",
+      "text": "#F8FAFC",
+      "muted": "#CBD5E1",
+      "border": "#94A3B8",
+      "action": "#60A5FA",
+      "actionHover": "#93C5FD",
+      "onAction": "#0F172A",
+      "success": "#4ADE80",
+      "warning": "#FBBF24",
+      "danger": "#F87171"
+    }
+  },
+  "teal": {
+    "light": {
+      "canvas": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "text": "#0F172A",
+      "muted": "#475569",
+      "border": "#64748B",
+      "action": "#0F766E",
+      "actionHover": "#115E59",
+      "onAction": "#FFFFFF",
+      "success": "#166534",
+      "warning": "#92400E",
+      "danger": "#991B1B"
+    },
+    "dark": {
+      "canvas": "#0F172A",
+      "surface": "#1E293B",
+      "text": "#F8FAFC",
+      "muted": "#CBD5E1",
+      "border": "#94A3B8",
+      "action": "#2DD4BF",
+      "actionHover": "#5EEAD4",
+      "onAction": "#0F172A",
+      "success": "#4ADE80",
+      "warning": "#FBBF24",
+      "danger": "#F87171"
+    }
+  },
+  "expectedPairs": 72,
+  "pairsPerPalette": 18,
+  "roles": 11
+}

@@ -1,0 +1,43 @@
+{
+  "$fixture": {
+    "architecture": {
+      "schemaVersion": 1,
+      "sourceRoots": [
+        "src"
+      ],
+      "layers": [
+        {
+          "name": "ui",
+          "paths": [
+            "src/components/**"
+          ]
+        }
+      ],
+      "allow": {
+        "ui": []
+      },
+      "allowSameLayer": [
+        "ui"
+      ],
+      "atomic": {
+        "levels": [
+          "atoms",
+          "molecules"
+        ],
+        "paths": {
+          "atoms": [
+            "src/components/atoms/**"
+          ],
+          "molecules": [
+            "src/components/molecules/**"
+          ]
+        }
+      },
+      "ignore": []
+    },
+    "files": {
+      "src/components/atoms/A.ts": "import { M } from \"../molecules/M\";\nexport const A = M;\n",
+      "src/components/molecules/M.ts": "export const M = 1;\n"
+    }
+  }
+}

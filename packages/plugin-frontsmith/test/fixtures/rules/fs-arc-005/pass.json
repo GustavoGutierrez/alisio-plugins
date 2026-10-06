@@ -1,0 +1,38 @@
+{
+  "$fixture": {
+    "architecture": {
+      "schemaVersion": 1,
+      "sourceRoots": [
+        "src"
+      ],
+      "layers": [
+        {
+          "name": "shared",
+          "paths": [
+            "src/**"
+          ]
+        }
+      ],
+      "allow": {
+        "shared": []
+      },
+      "allowSameLayer": [
+        "shared"
+      ],
+      "atomic": null,
+      "ignore": [],
+      "roles": {
+        "presentational": [
+          "src/shared/ui/**"
+        ],
+        "forbiddenForPresentational": [
+          "zustand",
+          "src/**/model/**"
+        ]
+      }
+    },
+    "files": {
+      "src/shared/ui/Card.tsx": "export const Card = () => null;\n"
+    }
+  }
+}

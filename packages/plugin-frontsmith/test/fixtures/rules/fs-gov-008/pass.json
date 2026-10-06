@@ -1,0 +1,8 @@
+{
+  "$fixture": {
+    "files": {
+      "package.json": "{\"name\":\"app\",\"dependencies\":{\"react\":\"^18.0.0\"}}",
+      "src/a.ts": "import { useState } from \"react\";\nexport default useState;\n"
+    }
+  }
+}

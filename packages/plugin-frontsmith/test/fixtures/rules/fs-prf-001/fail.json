@@ -1,0 +1,38 @@
+{
+  "$fixture": {
+    "budget": {
+      "config": {
+        "schemaVersion": 1,
+        "bundle": {
+          "dir": "dist",
+          "entryGlobs": [
+            "dist/assets/index-*.js"
+          ],
+          "cssGlobs": [
+            "dist/assets/index-*.css"
+          ],
+          "maxInitialJsGzipKb": 10,
+          "maxInitialCssGzipKb": 5,
+          "maxDeltaGzipKb": 10
+        },
+        "images": {
+          "globs": [
+            "public/**/*.{png,jpg,jpeg,webp,avif}"
+          ],
+          "maxBytes": 300000,
+          "maxWidthPx": 2560
+        },
+        "inlineData": {
+          "maxBytes": 4096
+        }
+      },
+      "assets": [
+        {
+          "path": "dist/assets/index-abc.js",
+          "bytes": 90000,
+          "gzipBytes": 30000
+        }
+      ]
+    }
+  }
+}

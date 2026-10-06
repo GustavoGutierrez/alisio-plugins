@@ -1,0 +1,10 @@
+{
+  "$fixture": {
+    "stack": {
+      "tailwindMajor": 4
+    },
+    "files": {
+      "tailwind.config.js": "module.exports = { theme: { extend: { colors: {} } } };\n"
+    }
+  }
+}

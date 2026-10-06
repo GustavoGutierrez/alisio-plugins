@@ -1,0 +1,3 @@
+it("does nothing", () => {
+  doThing();
+});

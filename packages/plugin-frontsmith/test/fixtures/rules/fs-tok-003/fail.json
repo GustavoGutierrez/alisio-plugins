@@ -1,0 +1,7 @@
+{
+  "$fixture": {
+    "files": {
+      "src/styles/tokens.css": ":root {\n  --colorBg: #ffffff;\n}\n"
+    }
+  }
+}

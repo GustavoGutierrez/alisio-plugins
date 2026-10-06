@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-tailwind",
+  "version": "1.0.0",
+  "title": "Tailwind CSS rules",
+  "description": "Rules for Tailwind class names, arbitrary values, conflicts, @apply and configuration.",
+  "extends": [],
+  "appliesWhen": {
+    "styling": ["tailwind"]
+  },
+  "rules": [
+    {
+      "id": "FS-TW-001",
+      "title": "Class names built by interpolation",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "class-token",
+      "params": {
+        "dynamicInterpolation": true
+      },
+      "files": ["**/*.{tsx,jsx,vue,svelte,astro,html,ts,js}"],
+      "appliesWhen": {},
+      "message": "A class name is assembled from parts, so Tailwind cannot detect it.",
+      "fix": "Write complete class names, for example through a variant map.",
+      "rationale": "Tailwind only generates classes it finds as complete strings.",
+      "source": "Tailwind CSS",
+      "suppressible": false,
+      "tags": ["TW-03", "AC17"],
+      "fixtures": {
+        "pass": ["fs-tw-001/pass.tsx"],
+        "fail": ["fs-tw-001/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-TW-002",
+      "title": "Arbitrary value for colour or spacing",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "class-token",
+      "params": {
+        "token": "^(?:[\\w-]+:)*-?[a-z-]+-\\[(?:#[0-9a-fA-F]{3,8}|(?:rgb|hsl|hwb|lab|lch|oklab|oklch)a?\\(.*\\)|-?[\\d.]+(?:px|rem|em|%|vh|vw)?)\\]$"
+      },
+      "files": ["**/*.{tsx,jsx,vue,svelte,astro,html,ts,js}"],
+      "appliesWhen": {},
+      "message": "An arbitrary value bypasses the design tokens.",
+      "fix": "Use a theme token or extend the theme.",
+      "rationale": "Arbitrary values multiply one-off colours and sizes.",
+      "source": "Tailwind CSS",
+      "suppressible": true,
+      "tags": ["TW-02"],
+      "fixtures": {
+        "pass": ["fs-tw-002/pass.tsx"],
+        "fail": ["fs-tw-002/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-TW-003",
+      "title": "Conflicting utilities in one class string",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "class-token",
+      "params": {
+        "conflicts": [
+          ["p-*", "px-*", "pl-*", "pr-*"],
+          ["m-*", "mx-*", "ml-*", "mr-*"],
+          ["flex", "grid", "block", "inline", "inline-block", "inline-flex", "hidden"],
+          ["text-left", "text-center", "text-right"]
+        ]
+      },
+      "files": ["**/*.{tsx,jsx,vue,svelte,astro,html,ts,js}"],
+      "appliesWhen": {},
+      "message": "The class string contains utilities that set the same property.",
+      "fix": "Keep one of them, or put the other behind a variant.",
+      "rationale": "Conflicting utilities depend on stylesheet order, not on intent.",
+      "source": "Tailwind CSS",
+      "suppressible": false,
+      "tags": ["TW-07"],
+      "fixtures": {
+        "pass": ["fs-tw-003/pass.tsx"],
+        "fail": ["fs-tw-003/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-TW-004",
+      "title": "More than ten @apply in one CSS file",
+      "severity": "nit",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "class-token",
+      "params": {
+        "cssApply": true,
+        "maxApplyPerFile": 10
+      },
+      "files": ["**/*.{css,scss,less}"],
+      "appliesWhen": {},
+      "message": "The file uses @apply heavily.",
+      "fix": "Prefer components or utilities in markup.",
+      "rationale": "Heavy @apply recreates a parallel CSS layer.",
+      "source": "Tailwind CSS",
+      "suppressible": false,
+      "tags": ["TW-12"],
+      "fixtures": {
+        "pass": ["fs-tw-004/pass.css"],
+        "fail": ["fs-tw-004/fail.css"]
+      }
+    },
+    {
+      "id": "FS-TW-005",
+      "title": "Tailwind v3 theme.extend config in a v4 project",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "tokens",
+      "engine": "package-json",
+      "params": {
+        "fileContent": "\\btheme\\s*:[\\s\\S]*?\\bextend\\b",
+        "minTailwindMajor": 4
+      },
+      "files": ["tailwind.config.{js,cjs,mjs,ts}"],
+      "appliesWhen": {},
+      "message": "A Tailwind v3 configuration with theme.extend exists in a v4 project.",
+      "fix": "Move the tokens to an @theme block in CSS.",
+      "rationale": "Tailwind v4 reads tokens from CSS; the v3 config can drift from them.",
+      "source": "Tailwind CSS v4",
+      "suppressible": false,
+      "tags": ["TW-13"],
+      "fixtures": {
+        "pass": ["fs-tw-005/pass.json"],
+        "fail": ["fs-tw-005/fail.json"]
+      }
+    },
+    {
+      "id": "FS-TW-006",
+      "title": "hover utility without a focus-visible counterpart",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "a11y",
+      "engine": "class-token",
+      "params": {
+        "requireVariantCounterpart": {
+          "variant": "hover",
+          "counterparts": ["focus-visible", "focus"]
+        }
+      },
+      "files": ["**/*.{tsx,jsx,vue,svelte,astro,html,ts,js}"],
+      "appliesWhen": {},
+      "message": "An interactive element styles hover but not keyboard focus.",
+      "fix": "Add the same treatment with focus-visible:.",
+      "rationale": "Keyboard users get no feedback from hover-only styles.",
+      "source": "WCAG 2.4.7 Focus Visible",
+      "suppressible": false,
+      "tags": ["TW-09"],
+      "fixtures": {
+        "pass": ["fs-tw-006/pass.tsx"],
+        "fail": ["fs-tw-006/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-TW-007",
+      "title": "Safelist with more than 20 entries",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "layout",
+      "engine": "package-json",
+      "params": {
+        "jsonLiteralCountMax": {
+          "key": "safelist",
+          "max": 20
+        }
+      },
+      "files": ["tailwind.config.{js,cjs,mjs,ts}"],
+      "appliesWhen": {},
+      "message": "The Tailwind safelist is long.",
+      "fix": "Write complete class names where they are used instead of safelisting them.",
+      "rationale": "Large safelists hide dynamic class construction.",
+      "source": "Tailwind CSS",
+      "suppressible": false,
+      "tags": ["TW-13"],
+      "fixtures": {
+        "pass": ["fs-tw-007/pass.json"],
+        "fail": ["fs-tw-007/fail.json"]
+      }
+    }
+  ],
+  "overrides": []
+}

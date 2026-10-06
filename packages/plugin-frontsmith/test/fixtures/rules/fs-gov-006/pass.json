@@ -1,0 +1,30 @@
+{
+  "$fixture": {
+    "unit": {
+      "taskFiles": [],
+      "testPaths": [],
+      "allowedGeneratedPaths": [],
+      "scope": "task",
+      "sourceRoots": [
+        "src"
+      ],
+      "protectedGlobs": [],
+      "approvedDependencies": [],
+      "rules": {},
+      "changes": [
+        {
+          "path": "pnpm-lock.yaml",
+          "status": "M",
+          "before": "a",
+          "after": "b"
+        },
+        {
+          "path": "package.json",
+          "status": "M",
+          "before": "{}",
+          "after": "{\"name\":\"x\"}"
+        }
+      ]
+    }
+  }
+}

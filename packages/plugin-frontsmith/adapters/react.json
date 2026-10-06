@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "react",
+  "extends": null,
+  "detect": { "dependencies": ["react"] },
+  "sourceGlobs": ["src/**/*.{ts,tsx,js,jsx}"],
+  "templates": { "kind": "jsx", "globs": ["**/*.{tsx,jsx}"] },
+  "componentApi": "react",
+  "testGlobs": ["**/*.{spec,test}.{ts,tsx,js,jsx}", "e2e/**/*.{ts,js}"],
+  "packs": ["fs-react"],
+  "commands": { "testRelated": null }
+}

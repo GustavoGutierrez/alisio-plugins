@@ -1,0 +1,103 @@
+{
+  "packageManager": "pnpm",
+  "monorepo": false,
+  "typescript": true,
+  "framework": "react",
+  "frameworkVersion": "19.1.0",
+  "meta": "none",
+  "styling": [
+    "css-modules",
+    "css"
+  ],
+  "state": [
+    "@tanstack/react-query",
+    "zustand"
+  ],
+  "tests": [
+    "vitest",
+    "testing-library",
+    "playwright"
+  ],
+  "storybook": false,
+  "playwrightResolvable": true,
+  "axeResolvable": false,
+  "sourceRoots": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "build": "vite build"
+  },
+  "evidence": [
+    {
+      "fact": "packageManager=pnpm",
+      "source": "pnpm-lock.yaml"
+    },
+    {
+      "fact": "typescript=true",
+      "source": "tsconfig.json"
+    },
+    {
+      "fact": "framework=react",
+      "source": "package.json#dependencies.react"
+    },
+    {
+      "fact": "frameworkVersion=19.1.0",
+      "source": "node_modules/react/package.json"
+    },
+    {
+      "fact": "styling=css-modules",
+      "source": "src/widgets/project-list/ui/ProjectList.module.css"
+    },
+    {
+      "fact": "styling=css",
+      "source": "src/app/app.css"
+    },
+    {
+      "fact": "state=@tanstack/react-query",
+      "source": "package.json#dependencies.@tanstack/react-query"
+    },
+    {
+      "fact": "state=zustand",
+      "source": "package.json#dependencies.zustand"
+    },
+    {
+      "fact": "tests=vitest",
+      "source": "package.json#devDependencies.vitest"
+    },
+    {
+      "fact": "tests=testing-library",
+      "source": "package.json#devDependencies.@testing-library/react"
+    },
+    {
+      "fact": "tests=playwright",
+      "source": "package.json#devDependencies.@playwright/test"
+    },
+    {
+      "fact": "playwrightResolvable=true",
+      "source": "resolve:playwright"
+    },
+    {
+      "fact": "sourceRoot=src",
+      "source": "dir:src"
+    },
+    {
+      "fact": "script.typecheck",
+      "source": "package.json#scripts.typecheck"
+    },
+    {
+      "fact": "script.lint",
+      "source": "package.json#scripts.lint"
+    },
+    {
+      "fact": "script.test",
+      "source": "package.json#scripts.test"
+    },
+    {
+      "fact": "script.build",
+      "source": "package.json#scripts.build"
+    }
+  ]
+}

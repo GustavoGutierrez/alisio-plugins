@@ -1,0 +1,26 @@
+{
+  "$fixture": {
+    "unit": {
+      "taskFiles": [],
+      "testPaths": [],
+      "allowedGeneratedPaths": [],
+      "scope": "task",
+      "sourceRoots": [
+        "src"
+      ],
+      "protectedGlobs": [],
+      "approvedDependencies": [
+        "left-pad"
+      ],
+      "rules": {},
+      "changes": [
+        {
+          "path": "package.json",
+          "status": "M",
+          "before": "{\"dependencies\":{}}",
+          "after": "{\"dependencies\":{\"left-pad\":\"^1.0.0\"}}"
+        }
+      ]
+    }
+  }
+}

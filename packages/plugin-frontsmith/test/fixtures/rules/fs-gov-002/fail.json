@@ -1,0 +1,29 @@
+{
+  "$fixture": {
+    "unit": {
+      "taskFiles": [],
+      "testPaths": [],
+      "allowedGeneratedPaths": [],
+      "scope": "task",
+      "sourceRoots": [
+        "src"
+      ],
+      "protectedGlobs": [],
+      "approvedDependencies": [],
+      "rules": {
+        "FS-CSS-001": {
+          "severity": "major",
+          "suppressible": false
+        }
+      },
+      "changes": [
+        {
+          "path": "src/a.css",
+          "status": "M",
+          "before": ".a { color: red; }",
+          "after": "/* frontsmith-disable-next-line FS-CSS-001 -- because the build asked me to */\nbody { overflow: hidden; }"
+        }
+      ]
+    }
+  }
+}

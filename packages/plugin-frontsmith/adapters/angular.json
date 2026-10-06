@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "angular",
+  "extends": null,
+  "detect": { "dependencies": ["@angular/core"] },
+  "sourceGlobs": ["src/**/*.{ts,html,scss,css}"],
+  "templates": { "kind": "angular", "globs": ["**/*.component.html"] },
+  "componentApi": "none",
+  "testGlobs": ["**/*.spec.ts", "e2e/**/*.ts", "cypress/**/*.ts"],
+  "packs": ["fs-angular"],
+  "commands": { "testRelated": null }
+}

@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-architecture",
+  "version": "1.0.0",
+  "title": "Architecture rules",
+  "description": "Layer direction, slice, cycle, role and level rules driven by .frontsmith/architecture.json.",
+  "extends": [],
+  "appliesWhen": {
+    "architectureConfig": true
+  },
+  "rules": [
+    {
+      "id": "FS-ARC-001",
+      "title": "Import violates allowed layer direction",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "direction"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The import goes against the allowed layer direction.",
+      "fix": "Move the shared code down, or invert the dependency through a port.",
+      "rationale": "Layer direction keeps low-level code independent of high-level code.",
+      "source": "Layered architecture",
+      "suppressible": false,
+      "tags": ["layers"],
+      "fixtures": {
+        "pass": ["fs-arc-001/pass.json"],
+        "fail": ["fs-arc-001/fail.json"]
+      }
+    },
+    {
+      "id": "FS-ARC-002",
+      "title": "Cross-slice import within one sliced layer",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "crossSlice"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A slice imports another slice of the same layer.",
+      "fix": "Lift the shared part into a lower layer.",
+      "rationale": "Slices must stay independent so they can change and ship separately.",
+      "source": "Feature-Sliced Design",
+      "suppressible": false,
+      "tags": ["slices"],
+      "fixtures": {
+        "pass": ["fs-arc-002/pass.json"],
+        "fail": ["fs-arc-002/fail.json"]
+      }
+    },
+    {
+      "id": "FS-ARC-003",
+      "title": "Deep import bypasses a slice public API",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "publicApi"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The import reaches inside another slice instead of using its public API.",
+      "fix": "Import from the slice index file and export what is needed there.",
+      "rationale": "Deep imports freeze a slice's internal structure.",
+      "source": "Feature-Sliced Design",
+      "suppressible": false,
+      "tags": ["publicApi"],
+      "fixtures": {
+        "pass": ["fs-arc-003/pass.json"],
+        "fail": ["fs-arc-003/fail.json"]
+      }
+    },
+    {
+      "id": "FS-ARC-004",
+      "title": "Import cycle",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "cycles"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The file is part of an import cycle.",
+      "fix": "Break the cycle by extracting the shared part or inverting a dependency.",
+      "rationale": "Cycles make initialisation order fragile and block independent change.",
+      "source": "Dependency management",
+      "suppressible": false,
+      "tags": ["cycles"],
+      "fixtures": {
+        "pass": ["fs-arc-004/pass.json"],
+        "fail": ["fs-arc-004/fail.json"]
+      }
+    },
+    {
+      "id": "FS-ARC-005",
+      "title": "Presentational component imports data, state or service modules",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "roles"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A presentational component imports data, state or service code.",
+      "fix": "Pass data and callbacks through props from a container.",
+      "rationale": "Presentational components stay reusable and easy to test when they do not fetch or own state.",
+      "source": "Container-presentational pattern",
+      "suppressible": false,
+      "tags": ["roles"],
+      "fixtures": {
+        "pass": ["fs-arc-005/pass.json"],
+        "fail": ["fs-arc-005/fail.json"]
+      }
+    },
+    {
+      "id": "FS-ARC-006",
+      "title": "Atomic level imports a higher level",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "atomic"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "An atom imports a molecule.",
+      "fix": "Move the shared piece down to the lower level.",
+      "rationale": "Each atomic level may only build on lower ones.",
+      "source": "Atomic design",
+      "suppressible": false,
+      "tags": ["atomic"],
+      "fixtures": {
+        "pass": ["fs-arc-006/pass.json"],
+        "fail": ["fs-arc-006/fail.json"]
+      }
+    },
+    {
+      "id": "FS-ARC-007",
+      "title": "Source file not mapped to any layer",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "architecture",
+      "engine": "architecture",
+      "params": {
+        "check": "unmapped"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The file belongs to no architecture layer.",
+      "fix": "Map its directory to a layer, or ignore it explicitly in architecture.json.",
+      "rationale": "Unmapped code escapes every dependency rule.",
+      "source": "Layered architecture",
+      "suppressible": false,
+      "tags": ["unmapped"],
+      "fixtures": {
+        "pass": ["fs-arc-007/pass.json"],
+        "fail": ["fs-arc-007/fail.json"]
+      }
+    }
+  ],
+  "overrides": []
+}

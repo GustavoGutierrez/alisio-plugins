@@ -1,0 +1,65 @@
+{
+  "packageManager": "npm",
+  "monorepo": false,
+  "typescript": false,
+  "framework": "vue",
+  "frameworkVersion": "^3.4.0 (declared)",
+  "meta": "none",
+  "styling": [
+    "scss"
+  ],
+  "state": [
+    "pinia"
+  ],
+  "tests": [
+    "vitest"
+  ],
+  "storybook": false,
+  "playwrightResolvable": false,
+  "axeResolvable": false,
+  "sourceRoots": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "evidence": [
+    {
+      "fact": "packageManager=npm",
+      "source": "package-lock.json"
+    },
+    {
+      "fact": "framework=vue",
+      "source": "package.json#dependencies.vue"
+    },
+    {
+      "fact": "frameworkVersion=^3.4.0 (declared)",
+      "source": "package.json#dependencies.vue"
+    },
+    {
+      "fact": "styling=scss",
+      "source": "package.json#devDependencies.sass"
+    },
+    {
+      "fact": "state=pinia",
+      "source": "package.json#dependencies.pinia"
+    },
+    {
+      "fact": "tests=vitest",
+      "source": "package.json#devDependencies.vitest"
+    },
+    {
+      "fact": "sourceRoot=src",
+      "source": "dir:src"
+    },
+    {
+      "fact": "script.lint",
+      "source": "package.json#scripts.lint"
+    },
+    {
+      "fact": "script.test",
+      "source": "package.json#scripts.test"
+    }
+  ]
+}

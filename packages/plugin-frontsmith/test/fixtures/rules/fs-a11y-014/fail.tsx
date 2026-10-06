@@ -1,0 +1,9 @@
+export const A = () => (
+  <table>
+    <tbody>
+      <tr>
+        <td>1</td>
+      </tr>
+    </tbody>
+  </table>
+);

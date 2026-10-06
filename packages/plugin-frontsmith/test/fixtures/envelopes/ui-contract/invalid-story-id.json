@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "kind": "ui-contract",
+  "mode": "replicate",
+  "surfaces": [
+    {
+      "id": "projects-page",
+      "route": "/projects",
+      "purpose": "operate"
+    }
+  ],
+  "stateMatrix": [
+    {
+      "stateId": "ST-empty",
+      "trigger": "no projects",
+      "ui": "empty message",
+      "actions": [
+        "create"
+      ],
+      "a11y": "message is announced",
+      "testLevel": [
+        "component"
+      ]
+    }
+  ],
+  "viewports": [
+    [
+      1024,
+      640
+    ],
+    [
+      390,
+      640
+    ]
+  ],
+  "breakpoints": [
+    {
+      "name": "mobile-max",
+      "maxWidth": 599
+    }
+  ],
+  "elements": [
+    {
+      "id": "primary-cta",
+      "locator": {
+        "role": "button",
+        "name": "Create project"
+      },
+      "critical": true
+    },
+    {
+      "id": "toolbar",
+      "locator": {
+        "testId": "toolbar"
+      },
+      "critical": false
+    },
+    {
+      "id": "cards",
+      "locator": {
+        "testId": "cards"
+      },
+      "critical": true
+    }
+  ],
+  "componentMap": [
+    {
+      "design": "Card",
+      "code": "src/shared/ui/card/Card.tsx",
+      "reuse": "reuse"
+    }
+  ],
+  "interactions": [
+    {
+      "elementId": "primary-cta",
+      "on": "activate",
+      "result": "opens the create dialog",
+      "keyboard": "Enter|Space"
+    }
+  ],
+  "focusOrder": [
+    "primary-cta"
+  ],
+  "fidelityRules": [
+    {
+      "id": "GEO-01",
+      "requirement": "Toolbar to cards gap 32 CSS px",
+      "kind": "relation",
+      "subject": "toolbar",
+      "object": "cards",
+      "property": "gapVertical",
+      "expected": 32,
+      "unit": "css_px",
+      "tolerance": 0,
+      "severity": "blocking",
+      "provenance": "specified",
+      "verification": "bounding_box"
+    }
+  ],
+  "typography": [
+    {
+      "elementId": "primary-cta",
+      "fontSize": "16px",
+      "lineHeight": "24px",
+      "fontWeight": 600
+    }
+  ],
+  "regions": [
+    {
+      "id": "cards",
+      "elementId": "cards",
+      "critical": true
+    }
+  ],
+  "masks": [
+    {
+      "selector": "[data-clock]",
+      "reason": "live clock",
+      "elementId": null
+    }
+  ],
+  "cases": [
+    {
+      "id": "projects-desktop-success",
+      "surfaceId": "projects-page",
+      "stateId": "ST-success",
+      "viewport": [
+        1024,
+        640
+      ],
+      "theme": "light",
+      "setup": {
+        "storyId": "x"
+      }
+    }
+  ],
+  "tokensNeeded": [
+    {
+      "name": "--color-action-bg",
+      "role": "action background",
+      "status": "existing"
+    }
+  ],
+  "references": [
+    {
+      "file": "projects-desktop.png",
+      "caseId": "projects-desktop-success"
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-testing",
+  "version": "1.0.0",
+  "title": "Testing rules",
+  "description": "Rules for locators, focused tests, sleeps, assertions, snapshots and snapshot flags.",
+  "extends": [],
+  "appliesWhen": {
+    "tests": ["vitest", "jest", "testing-library", "playwright", "cypress"]
+  },
+  "rules": [
+    {
+      "id": "FS-TST-001",
+      "title": "Fragile CSS or XPath locator in a test",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "testing",
+      "engine": "test-locator",
+      "params": {
+        "fragile": true
+      },
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+        "e2e/**/*.{ts,js}",
+        "tests/**/*.{ts,js}",
+        "cypress/**/*.{ts,js}",
+        "**/__tests__/**/*.{ts,tsx,js,jsx}"
+      ],
+      "appliesWhen": {},
+      "message": "A test locates elements with a fragile CSS or XPath selector.",
+      "fix": "Use a role, label or text query, or a stable test id.",
+      "rationale": "Structural selectors break whenever markup changes, with no change in behaviour.",
+      "source": "Testing practice",
+      "suppressible": false,
+      "tags": ["locator"],
+      "fixtures": {
+        "pass": ["fs-tst-001/pass.ts"],
+        "fail": ["fs-tst-001/fail.ts"]
+      }
+    },
+    {
+      "id": "FS-TST-002",
+      "title": ".only committed",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "testing",
+      "engine": "test-locator",
+      "params": {
+        "forbidCalls": "(?:^|\\.)(?:describe|it|test|context|suite)\\.only$|^(?:fit|fdescribe)$"
+      },
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+        "e2e/**/*.{ts,js}",
+        "tests/**/*.{ts,js}",
+        "cypress/**/*.{ts,js}",
+        "**/__tests__/**/*.{ts,tsx,js,jsx}"
+      ],
+      "appliesWhen": {},
+      "message": "A focused test (.only) would silently skip the rest of the suite.",
+      "fix": "Remove .only.",
+      "rationale": "A committed .only makes CI pass while most tests do not run.",
+      "source": "Testing practice",
+      "suppressible": false,
+      "tags": ["only"],
+      "fixtures": {
+        "pass": ["fs-tst-002/pass.ts"],
+        "fail": ["fs-tst-002/fail.ts"]
+      }
+    },
+    {
+      "id": "FS-TST-003",
+      "title": "Arbitrary sleep in a test",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "testing",
+      "engine": "test-locator",
+      "params": {
+        "forbidCalls": "(?:^|\\.)waitForTimeout$|^setTimeout$"
+      },
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+        "e2e/**/*.{ts,js}",
+        "tests/**/*.{ts,js}",
+        "cypress/**/*.{ts,js}",
+        "**/__tests__/**/*.{ts,tsx,js,jsx}"
+      ],
+      "appliesWhen": {},
+      "message": "A test sleeps for a fixed time.",
+      "fix": "Wait for a condition: an assertion, a locator state or a network response.",
+      "rationale": "Fixed sleeps are either too slow or flaky.",
+      "source": "Testing practice",
+      "suppressible": false,
+      "tags": ["sleep"],
+      "fixtures": {
+        "pass": ["fs-tst-003/pass.ts"],
+        "fail": ["fs-tst-003/fail.ts"]
+      }
+    },
+    {
+      "id": "FS-TST-004",
+      "title": "Test without assertions",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "testing",
+      "engine": "test-locator",
+      "params": {
+        "requireAssertions": true
+      },
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+        "e2e/**/*.{ts,js}",
+        "tests/**/*.{ts,js}",
+        "cypress/**/*.{ts,js}",
+        "**/__tests__/**/*.{ts,tsx,js,jsx}"
+      ],
+      "appliesWhen": {},
+      "message": "A test has no assertion.",
+      "fix": "Assert the behaviour the test is about.",
+      "rationale": "A test without assertions passes whatever the code does.",
+      "source": "Testing practice",
+      "suppressible": false,
+      "tags": ["assertions"],
+      "fixtures": {
+        "pass": ["fs-tst-004/pass.ts"],
+        "fail": ["fs-tst-004/fail.ts"]
+      }
+    },
+    {
+      "id": "FS-TST-005",
+      "title": "More than three snapshot assertions in one test file",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "testing",
+      "engine": "file-metric",
+      "params": {
+        "metric": "snapshotAssertions",
+        "max": 3
+      },
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+        "e2e/**/*.{ts,js}",
+        "tests/**/*.{ts,js}",
+        "cypress/**/*.{ts,js}",
+        "**/__tests__/**/*.{ts,tsx,js,jsx}"
+      ],
+      "appliesWhen": {},
+      "message": "The file relies heavily on snapshot assertions.",
+      "fix": "Assert behaviour; keep snapshots for small, stable outputs.",
+      "rationale": "Snapshots are easy to accept mechanically and rarely state intent.",
+      "source": "Testing practice",
+      "suppressible": false,
+      "tags": ["snapshots"],
+      "fixtures": {
+        "pass": ["fs-tst-005/pass.ts"],
+        "fail": ["fs-tst-005/fail.ts"]
+      }
+    },
+    {
+      "id": "FS-TST-006",
+      "title": "Snapshot update flag in a package script",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "testing",
+      "engine": "package-json",
+      "params": {
+        "scriptsForbid": "--update-snapshots?|--updateSnapshot|\\s-u\\b"
+      },
+      "files": ["**/package.json"],
+      "appliesWhen": {},
+      "message": "A package script updates snapshots automatically.",
+      "fix": "Remove the flag; update baselines deliberately and review them.",
+      "rationale": "Automatic updates make visual and snapshot tests approve whatever changed.",
+      "source": "Visual regression practice",
+      "suppressible": false,
+      "tags": ["snapshots"],
+      "fixtures": {
+        "pass": ["fs-tst-006/pass.json"],
+        "fail": ["fs-tst-006/fail.json"]
+      }
+    },
+    {
+      "id": "FS-TST-007",
+      "title": "getByTestId where no role or label query is used in the same test",
+      "severity": "nit",
+      "kind": "heuristic",
+      "category": "testing",
+      "engine": "test-locator",
+      "params": {
+        "flagWithoutAlternative": {
+          "call": "(?:^|\\.)getByTestId$",
+          "alternatives": "(?:^|\\.)(?:getByRole|getByLabel|getByLabelText|getByText|getByPlaceholder|findByRole|queryByRole)$"
+        }
+      },
+      "files": [
+        "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+        "e2e/**/*.{ts,js}",
+        "tests/**/*.{ts,js}",
+        "cypress/**/*.{ts,js}",
+        "**/__tests__/**/*.{ts,tsx,js,jsx}"
+      ],
+      "appliesWhen": {},
+      "message": "The test selects only by test id.",
+      "fix": "Prefer role, label or text queries that reflect what users perceive.",
+      "rationale": "Test ids hide accessibility problems that role queries would reveal.",
+      "source": "Testing practice",
+      "suppressible": false,
+      "tags": ["testid"],
+      "fixtures": {
+        "pass": ["fs-tst-007/pass.ts"],
+        "fail": ["fs-tst-007/fail.ts"]
+      }
+    }
+  ],
+  "overrides": []
+}

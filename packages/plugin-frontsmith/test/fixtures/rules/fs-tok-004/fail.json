@@ -1,0 +1,7 @@
+{
+  "$fixture": {
+    "files": {
+      "src/styles/tokens.css": ":root {\n  --blue-button: #0f62fe;\n}\n"
+    }
+  }
+}

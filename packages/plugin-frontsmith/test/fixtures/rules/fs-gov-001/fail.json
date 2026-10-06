@@ -1,0 +1,24 @@
+{
+  "$fixture": {
+    "unit": {
+      "taskFiles": [],
+      "testPaths": [],
+      "allowedGeneratedPaths": [],
+      "scope": "task",
+      "sourceRoots": [
+        "src"
+      ],
+      "protectedGlobs": [],
+      "approvedDependencies": [],
+      "rules": {},
+      "changes": [
+        {
+          "path": ".frontsmith/config.json",
+          "status": "M",
+          "before": "{}",
+          "after": "{\"limits\":{}}"
+        }
+      ]
+    }
+  }
+}

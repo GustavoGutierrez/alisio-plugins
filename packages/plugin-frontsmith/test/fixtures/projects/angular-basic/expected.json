@@ -1,0 +1,93 @@
+{
+  "packageManager": "npm",
+  "monorepo": false,
+  "typescript": true,
+  "framework": "angular",
+  "frameworkVersion": "17.3.12",
+  "meta": "angular",
+  "styling": [
+    "scss"
+  ],
+  "state": [
+    "@ngrx/store"
+  ],
+  "tests": [
+    "jest",
+    "cypress"
+  ],
+  "storybook": false,
+  "playwrightResolvable": false,
+  "axeResolvable": false,
+  "sourceRoots": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "ng lint",
+    "test": "jest",
+    "e2e": "cypress run",
+    "build": "ng build"
+  },
+  "evidence": [
+    {
+      "fact": "packageManager=npm",
+      "source": "package-lock.json"
+    },
+    {
+      "fact": "typescript=true",
+      "source": "tsconfig.json"
+    },
+    {
+      "fact": "framework=angular",
+      "source": "package.json#dependencies.@angular/core"
+    },
+    {
+      "fact": "meta=angular",
+      "source": "package.json#dependencies.@angular/core"
+    },
+    {
+      "fact": "frameworkVersion=17.3.12",
+      "source": "node_modules/@angular/core/package.json"
+    },
+    {
+      "fact": "styling=scss",
+      "source": "package.json#devDependencies.sass"
+    },
+    {
+      "fact": "state=@ngrx/store",
+      "source": "package.json#dependencies.@ngrx/store"
+    },
+    {
+      "fact": "tests=jest",
+      "source": "package.json#devDependencies.jest"
+    },
+    {
+      "fact": "tests=cypress",
+      "source": "package.json#devDependencies.cypress"
+    },
+    {
+      "fact": "sourceRoot=src",
+      "source": "dir:src"
+    },
+    {
+      "fact": "script.typecheck",
+      "source": "package.json#scripts.typecheck"
+    },
+    {
+      "fact": "script.lint",
+      "source": "package.json#scripts.lint"
+    },
+    {
+      "fact": "script.test",
+      "source": "package.json#scripts.test"
+    },
+    {
+      "fact": "script.e2e",
+      "source": "package.json#scripts.e2e"
+    },
+    {
+      "fact": "script.build",
+      "source": "package.json#scripts.build"
+    }
+  ]
+}

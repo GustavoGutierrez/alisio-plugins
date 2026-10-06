@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "solid",
+  "extends": null,
+  "detect": { "dependencies": ["solid-js"] },
+  "sourceGlobs": ["src/**/*.{ts,tsx,js,jsx}"],
+  "templates": { "kind": "jsx", "globs": ["**/*.{tsx,jsx}"] },
+  "componentApi": "none",
+  "testGlobs": ["**/*.{spec,test}.{ts,tsx,js,jsx}", "e2e/**/*.{ts,js}"],
+  "packs": [],
+  "commands": { "testRelated": null }
+}

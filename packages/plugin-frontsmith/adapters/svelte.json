@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "svelte",
+  "extends": null,
+  "detect": { "dependencies": ["svelte"] },
+  "sourceGlobs": ["src/**/*.{svelte,ts,js}"],
+  "templates": { "kind": "svelte", "globs": ["**/*.svelte"] },
+  "componentApi": "none",
+  "testGlobs": ["**/*.{spec,test}.{ts,js}", "e2e/**/*.ts"],
+  "packs": ["fs-svelte"],
+  "commands": { "testRelated": null }
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "tokens",
+  "namespace": "",
+  "roles": [
+    {
+      "token": "--color-action-bg",
+      "layer": "semantic",
+      "category": "color",
+      "purpose": "primary action fill",
+      "status": "new"
+    }
+  ],
+  "requiredPairs": [
+    {
+      "fg": "--color-action-fg",
+      "bg": "--color-action-bg",
+      "kind": "normal_text",
+      "states": [
+        "default",
+        "hover"
+      ]
+    }
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "generation": {
+    "strategy": "catalog",
+    "family": "blue",
+    "locked": {
+      "--color-brand": "blue"
+    }
+  },
+  "rationale": "Blue family keeps the existing brand."
+}

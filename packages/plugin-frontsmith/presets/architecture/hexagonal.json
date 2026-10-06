@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "preset": "hexagonal",
+  "sourceRoots": ["src"],
+  "aliases": "tsconfig",
+  "layers": [
+    { "name": "domain", "paths": ["src/domain/**"] },
+    { "name": "application", "paths": ["src/application/**"] },
+    { "name": "infrastructure", "paths": ["src/infrastructure/**"] },
+    { "name": "ui", "paths": ["src/ui/**"] }
+  ],
+  "allow": {
+    "domain": [],
+    "application": ["domain"],
+    "infrastructure": ["application", "domain"],
+    "ui": ["application"]
+  },
+  "allowSameLayer": ["domain", "application", "infrastructure", "ui"],
+  "atomic": null,
+  "ignore": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "**/__tests__/**"]
+}

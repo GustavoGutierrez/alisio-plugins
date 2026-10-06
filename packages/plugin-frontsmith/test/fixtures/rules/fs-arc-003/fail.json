@@ -1,0 +1,61 @@
+{
+  "$fixture": {
+    "architecture": {
+      "schemaVersion": 1,
+      "sourceRoots": [
+        "src"
+      ],
+      "layers": [
+        {
+          "name": "features",
+          "paths": [
+            "src/features/**"
+          ]
+        },
+        {
+          "name": "widgets",
+          "paths": [
+            "src/widgets/**"
+          ]
+        },
+        {
+          "name": "shared",
+          "paths": [
+            "src/shared/**"
+          ]
+        }
+      ],
+      "allow": {
+        "features": [
+          "shared"
+        ],
+        "widgets": [
+          "features",
+          "shared"
+        ],
+        "shared": []
+      },
+      "allowSameLayer": [
+        "shared"
+      ],
+      "atomic": null,
+      "ignore": [],
+      "slices": {
+        "layers": [
+          "features",
+          "widgets"
+        ],
+        "depth": 1,
+        "publicApi": [
+          "index.ts",
+          "index.tsx"
+        ]
+      }
+    },
+    "files": {
+      "src/widgets/w/index.ts": "import { s } from \"../../features/f/model/store\";\nexport const w = s;\n",
+      "src/features/f/model/store.ts": "export const s = 1;\n",
+      "src/features/f/index.ts": "export { s } from \"./model/store\";\n"
+    }
+  }
+}

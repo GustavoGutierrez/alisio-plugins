@@ -1,0 +1,87 @@
+{
+  "packageManager": "pnpm",
+  "monorepo": true,
+  "typescript": true,
+  "framework": "react",
+  "frameworkVersion": "18.3.1",
+  "meta": "none",
+  "styling": [
+    "tailwind",
+    "css"
+  ],
+  "tailwindMajor": 4,
+  "state": [],
+  "tests": [
+    "vitest"
+  ],
+  "storybook": false,
+  "playwrightResolvable": false,
+  "axeResolvable": false,
+  "sourceRoots": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "build": "vite build"
+  },
+  "evidence": [
+    {
+      "fact": "packageManager=pnpm",
+      "source": "pnpm-lock.yaml"
+    },
+    {
+      "fact": "monorepo=true",
+      "source": "pnpm-workspace.yaml"
+    },
+    {
+      "fact": "typescript=true",
+      "source": "tsconfig.json"
+    },
+    {
+      "fact": "framework=react",
+      "source": "package.json#dependencies.react"
+    },
+    {
+      "fact": "frameworkVersion=18.3.1",
+      "source": "node_modules/react/package.json"
+    },
+    {
+      "fact": "styling=tailwind",
+      "source": "package.json#devDependencies.tailwindcss"
+    },
+    {
+      "fact": "tailwindMajor=4",
+      "source": "node_modules/tailwindcss/package.json"
+    },
+    {
+      "fact": "styling=css",
+      "source": "src/index.css"
+    },
+    {
+      "fact": "tests=vitest",
+      "source": "package.json#devDependencies.vitest"
+    },
+    {
+      "fact": "sourceRoot=src",
+      "source": "dir:src"
+    },
+    {
+      "fact": "script.typecheck",
+      "source": "package.json#scripts.typecheck"
+    },
+    {
+      "fact": "script.lint",
+      "source": "package.json#scripts.lint"
+    },
+    {
+      "fact": "script.test",
+      "source": "package.json#scripts.test"
+    },
+    {
+      "fact": "script.build",
+      "source": "package.json#scripts.build"
+    }
+  ]
+}

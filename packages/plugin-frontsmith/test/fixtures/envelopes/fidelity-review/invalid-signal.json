@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "fidelity-review",
+  "classifications": [
+    {
+      "findingId": "F-0007",
+      "verdict": "defect",
+      "rationale": "Wrong font size."
+    }
+  ],
+  "repairPlan": [
+    {
+      "order": 1,
+      "cause": "Card title uses 20px instead of 18px",
+      "files": [
+        "src/card.css"
+      ],
+      "findingIds": [
+        "F-0007"
+      ]
+    }
+  ],
+  "designCritique": [
+    {
+      "signal": "ugly",
+      "region": "cards",
+      "effect": "every datum sits in a card",
+      "proposal": "use a table"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "plan",
+  "summary": "Add a project card list.",
+  "components": [
+    {
+      "name": "ProjectCard",
+      "path": "src/entities/project/ui/ProjectCard.tsx",
+      "action": "new",
+      "atomicLevel": "molecule",
+      "role": "presentational",
+      "patterns": [
+        "PAT-POLYMORPHIC-AS"
+      ],
+      "props": [
+        {
+          "name": "as",
+          "type": "ElementType",
+          "required": false
+        }
+      ],
+      "imports": [
+        "src/shared/ui/card/index.ts"
+      ]
+    }
+  ],
+  "state": [
+    {
+      "name": "projects",
+      "owner": "server-cache",
+      "tool": "@tanstack/react-query",
+      "location": "src/entities/project/api"
+    }
+  ],
+  "dataFlow": [
+    "page reads the cache"
+  ],
+  "contracts": [
+    {
+      "kind": "openapi",
+      "file": "api/openapi/projects.json",
+      "operations": [
+        "listProjects"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "operation": "listProjects",
+      "cases": [
+        "401 -> forbidden state"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "zod",
+      "version": "4.1.5",
+      "reason": "validate responses"
+    }
+  ],
+  "adrs": [
+    {
+      "id": "ADR-001",
+      "title": "Server cache",
+      "context": "Several views share data",
+      "decision": "Use a server cache",
+      "consequences": "Cache invalidation rules"
+    }
+  ],
+  "risks": [
+    {
+      "category": "security",
+      "text": "Project names are rendered as text only."
+    }
+  ],
+  "architectureConfig": null,
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Card",
+      "goal": "Show a project card",
+      "layer": "ui",
+      "files": [
+        "src/entities/project/ui/ProjectCard.tsx",
+        "src/entities/project/ui/ProjectCard.test.tsx"
+      ],
+      "acceptanceCriteria": [
+        "AC-01"
+      ],
+      "tests": [
+        {
+          "path": "src/entities/project/ui/ProjectCard.test.tsx",
+          "level": "component"
+        }
+      ],
+      "validation": [
+        "typecheck",
+        "lint",
+        "testRelated"
+      ],
+      "constraints": [
+        "no new dependency"
+      ],
+      "dependsOn": [],
+      "stopConditions": [
+        "contract is missing"
+      ],
+      "tdd": "exempt",
+      "tddExemptReason": null
+    }
+  ]
+}

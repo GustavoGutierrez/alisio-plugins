@@ -1,0 +1,8 @@
+{
+  "$fixture": {
+    "files": {
+      "package.json": "{\"name\":\"app\",\"dependencies\":{\"react\":\"^18.0.0\"}}",
+      "src/a.ts": "import pad from \"left-pad\";\nexport default pad;\n"
+    }
+  }
+}

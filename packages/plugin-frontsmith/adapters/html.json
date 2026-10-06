@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "html",
+  "extends": null,
+  "detect": { "files": ["**/*.html"] },
+  "sourceGlobs": ["**/*.{html,css,js}"],
+  "templates": { "kind": "html", "globs": ["**/*.html"] },
+  "componentApi": "none",
+  "testGlobs": ["**/*.{spec,test}.{ts,js}", "e2e/**/*.{ts,js}"],
+  "packs": [],
+  "commands": { "testRelated": null }
+}

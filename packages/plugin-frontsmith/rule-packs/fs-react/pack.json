@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-react",
+  "version": "1.0.0",
+  "title": "React rules",
+  "description": "React-specific rules.",
+  "extends": [],
+  "appliesWhen": {
+    "framework": ["react"]
+  },
+  "rules": [
+    {
+      "id": "FS-RCT-001",
+      "title": "useEffect that only copies props into state",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "framework",
+      "engine": "component-api",
+      "params": {
+        "checks": ["noEffectOnlySetsState"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "An effect only sets state derived from other values.",
+      "fix": "Compute the value during render instead.",
+      "rationale": "Derived state in an effect causes an extra render and can show stale values.",
+      "source": "React guidance",
+      "suppressible": false,
+      "tags": ["effects"],
+      "fixtures": {
+        "pass": ["fs-rct-001/pass.tsx"],
+        "fail": ["fs-rct-001/fail.tsx"]
+      }
+    }
+  ],
+  "overrides": []
+}

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-next",
+  "version": "1.0.0",
+  "title": "Next.js rules",
+  "description": "Next.js-specific rules.",
+  "extends": [],
+  "appliesWhen": {
+    "meta": ["next"]
+  },
+  "rules": [
+    {
+      "id": "FS-NXT-001",
+      "title": "Raw img instead of next/image",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "jsx-element",
+      "params": {
+        "element": "^img$"
+      },
+      "files": ["{app,pages,src/app,src/pages}/**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "A raw img bypasses Next.js image optimisation.",
+      "fix": "Use next/image.",
+      "rationale": "next/image handles sizing, lazy loading and formats.",
+      "source": "Next.js",
+      "suppressible": false,
+      "tags": ["images"],
+      "fixtures": {
+        "pass": ["fs-nxt-001/pass.tsx"],
+        "fail": ["fs-nxt-001/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-NXT-002",
+      "title": "Internal navigation with an anchor instead of next/link",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "jsx-element",
+      "params": {
+        "element": "^a$",
+        "attrValue": {
+          "name": "href",
+          "value": "^/(?!/)"
+        }
+      },
+      "files": ["{app,pages,src/app,src/pages}/**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "An internal link uses a plain anchor and forces a full page load.",
+      "fix": "Use next/link.",
+      "rationale": "next/link enables client-side navigation and prefetching.",
+      "source": "Next.js",
+      "suppressible": false,
+      "tags": ["links"],
+      "fixtures": {
+        "pass": ["fs-nxt-002/pass.tsx"],
+        "fail": ["fs-nxt-002/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-NXT-003",
+      "title": "\"use client\" file with no hooks, handlers or browser APIs",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "framework",
+      "engine": "component-api",
+      "params": {
+        "checks": ["noUnneededUseClient"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "The file is marked as a client component but uses nothing that needs the client.",
+      "fix": "Remove \"use client\" so the component renders on the server.",
+      "rationale": "Client components add JavaScript to the bundle.",
+      "source": "Next.js",
+      "suppressible": false,
+      "tags": ["rsc"],
+      "fixtures": {
+        "pass": ["fs-nxt-003/pass.tsx"],
+        "fail": ["fs-nxt-003/fail.tsx"]
+      }
+    }
+  ],
+  "overrides": []
+}

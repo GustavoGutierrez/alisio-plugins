@@ -1,0 +1,134 @@
+{
+  "fidelityRules": [
+    {
+      "id": "GEO-CTA",
+      "requirement": "GEO-CTA requirement",
+      "kind": "geometry",
+      "subject": "primary-cta",
+      "property": "x",
+      "expected": 720,
+      "unit": "css_px",
+      "tolerance": 0,
+      "severity": "blocking",
+      "provenance": "specified",
+      "verification": "bounding_box"
+    },
+    {
+      "id": "REL-GAP",
+      "requirement": "REL-GAP requirement",
+      "kind": "relation",
+      "subject": "toolbar",
+      "property": "gapVertical",
+      "expected": 32,
+      "unit": "css_px",
+      "tolerance": 0,
+      "severity": "blocking",
+      "provenance": "specified",
+      "verification": "bounding_box",
+      "object": "cards"
+    },
+    {
+      "id": "TYPE-TITLE",
+      "requirement": "TYPE-TITLE requirement",
+      "kind": "typography",
+      "subject": "card-title",
+      "property": "fontSize",
+      "expected": "18px",
+      "tolerance": 0,
+      "severity": "major",
+      "provenance": "specified",
+      "verification": "computed_style"
+    },
+    {
+      "id": "COL-CTA",
+      "requirement": "COL-CTA requirement",
+      "kind": "color",
+      "subject": "primary-cta",
+      "property": "backgroundColor",
+      "expected": "#2563EB",
+      "tolerance": 0,
+      "severity": "major",
+      "provenance": "specified",
+      "verification": "computed_style"
+    },
+    {
+      "id": "CNT-CTA",
+      "requirement": "CNT-CTA requirement",
+      "kind": "content",
+      "subject": "primary-cta",
+      "property": "text",
+      "expected": "Create project",
+      "tolerance": 0,
+      "severity": "blocking",
+      "provenance": "specified",
+      "verification": "content"
+    },
+    {
+      "id": "AST-LOGO",
+      "requirement": "AST-LOGO requirement",
+      "kind": "asset",
+      "subject": "logo",
+      "property": "sha256",
+      "expected": "abc123",
+      "tolerance": 0,
+      "severity": "blocking",
+      "provenance": "specified",
+      "verification": "asset_hash"
+    },
+    {
+      "id": "OVF-X",
+      "requirement": "OVF-X requirement",
+      "kind": "overflow",
+      "subject": "page",
+      "property": "pageHorizontal",
+      "expected": false,
+      "tolerance": 0,
+      "severity": "blocking",
+      "provenance": "specified",
+      "verification": "overflow"
+    },
+    {
+      "id": "VIS-CARDS",
+      "requirement": "VIS-CARDS requirement",
+      "kind": "visual",
+      "subject": "cards",
+      "property": "regionDiff",
+      "expected": 0,
+      "tolerance": 0,
+      "severity": "major",
+      "provenance": "specified",
+      "verification": "region_diff"
+    }
+  ],
+  "regions": [
+    {
+      "id": "cards",
+      "elementId": "cards",
+      "critical": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "projects-desktop-success",
+      "surfaceId": "projects-page",
+      "stateId": "ST-success",
+      "viewport": [
+        1024,
+        640
+      ],
+      "theme": "light",
+      "setup": {}
+    },
+    {
+      "id": "projects-mobile-success",
+      "surfaceId": "projects-page",
+      "stateId": "ST-success",
+      "viewport": [
+        390,
+        640
+      ],
+      "theme": "light",
+      "setup": {}
+    }
+  ]
+}

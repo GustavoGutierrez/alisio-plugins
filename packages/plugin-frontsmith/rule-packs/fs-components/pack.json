@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-components",
+  "version": "1.0.0",
+  "title": "Component API rules",
+  "description": "Component structure rules for React and Preact: typed props, variants, polymorphism, refs, nesting and keys.",
+  "extends": [],
+  "appliesWhen": {
+    "framework": ["react", "preact"]
+  },
+  "rules": [
+    {
+      "id": "FS-CMP-001",
+      "title": "Exported component props untyped or any",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["propsTyped", "noAnyProps"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "An exported component has untyped or any-typed props.",
+      "fix": "Declare an explicit props type.",
+      "rationale": "Untyped props remove the contract that makes components safe to reuse.",
+      "source": "Component API practice",
+      "suppressible": false,
+      "tags": ["props"],
+      "fixtures": {
+        "pass": ["fs-cmp-001/pass.tsx"],
+        "fail": ["fs-cmp-001/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-002",
+      "title": "More than four boolean props",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["maxBooleanProps"],
+        "maxBooleanProps": 4
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "The component has more than four boolean props.",
+      "fix": "Model the variants as a union prop or a variant map.",
+      "rationale": "Boolean explosions create impossible combinations and hard-to-read call sites.",
+      "source": "Component API practice",
+      "suppressible": false,
+      "tags": ["variants"],
+      "fixtures": {
+        "pass": ["fs-cmp-002/pass.tsx"],
+        "fail": ["fs-cmp-002/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-003",
+      "title": "Polymorphic as prop without generic element typing",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["polymorphicAsTyped"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "The \"as\" prop is not typed with a generic element type.",
+      "fix": "Type it as <T extends ElementType> with ComponentPropsWithoutRef<T>.",
+      "rationale": "An untyped \"as\" prop loses prop checking for the rendered element.",
+      "source": "Component API practice",
+      "suppressible": false,
+      "tags": ["polymorphic"],
+      "fixtures": {
+        "pass": ["fs-cmp-003/pass.tsx"],
+        "fail": ["fs-cmp-003/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-004",
+      "title": "Primitive does not forward refs (React before 19)",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["forwardRefPrimitives"],
+        "forwardRefPrimitives": ["**/shared/ui/**", "**/components/ui/**"]
+      },
+      "files": ["**/shared/ui/**/*.{tsx,jsx}", "**/components/ui/**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "A shared UI primitive does not forward its ref.",
+      "fix": "Wrap it in forwardRef (not needed from React 19).",
+      "rationale": "Primitives are composed into popovers and forms that need DOM access.",
+      "source": "Component API practice",
+      "suppressible": false,
+      "tags": ["ref"],
+      "fixtures": {
+        "pass": ["fs-cmp-004/pass.tsx"],
+        "fail": ["fs-cmp-004/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-005",
+      "title": "More than one exported component per file",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["oneExportedComponent"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "The file exports more than one component.",
+      "fix": "Move each component to its own file.",
+      "rationale": "One component per file keeps imports and reviews focused.",
+      "source": "Component structure",
+      "suppressible": false,
+      "tags": ["structure"],
+      "fixtures": {
+        "pass": ["fs-cmp-005/pass.tsx"],
+        "fail": ["fs-cmp-005/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-006",
+      "title": "Component file longer than 250 lines",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "components",
+      "engine": "file-metric",
+      "params": {
+        "metric": "lines",
+        "max": 250
+      },
+      "files": ["**/*.{tsx,jsx,vue,svelte}"],
+      "appliesWhen": {},
+      "message": "The component file is longer than 250 lines.",
+      "fix": "Split it into smaller components or hooks.",
+      "rationale": "Long components mix concerns and are hard to review.",
+      "source": "Component structure",
+      "suppressible": false,
+      "tags": ["size"],
+      "fixtures": {
+        "pass": ["fs-cmp-006/pass.tsx"],
+        "fail": ["fs-cmp-006/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-007",
+      "title": "Component defined inside another component",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["noNestedComponentDefinition"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "A component is defined inside another component's body.",
+      "fix": "Move it to module scope and pass data through props.",
+      "rationale": "A nested definition is a new component type on every render, so its state resets.",
+      "source": "React guidance",
+      "suppressible": false,
+      "tags": ["nesting"],
+      "fixtures": {
+        "pass": ["fs-cmp-007/pass.tsx"],
+        "fail": ["fs-cmp-007/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-008",
+      "title": "Array index used as key",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "components",
+      "engine": "component-api",
+      "params": {
+        "checks": ["noIndexKey"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "An array index is used as a React key.",
+      "fix": "Use a stable id from the data.",
+      "rationale": "Index keys break state and animations when the list is reordered.",
+      "source": "React guidance",
+      "suppressible": false,
+      "tags": ["key"],
+      "fixtures": {
+        "pass": ["fs-cmp-008/pass.tsx"],
+        "fail": ["fs-cmp-008/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-CMP-009",
+      "title": "dangerouslySetInnerHTML used",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "components",
+      "engine": "jsx-element",
+      "params": {
+        "element": ".",
+        "hasAttr": ["dangerouslySetInnerHTML"]
+      },
+      "files": ["**/*.{tsx,jsx}"],
+      "appliesWhen": {},
+      "message": "dangerouslySetInnerHTML injects unsanitised HTML.",
+      "fix": "Render structured content, or sanitise the HTML and request a human waiver.",
+      "rationale": "Injected HTML is the classic route to cross-site scripting.",
+      "source": "Web security practice",
+      "suppressible": false,
+      "tags": ["security"],
+      "fixtures": {
+        "pass": ["fs-cmp-009/pass.tsx"],
+        "fail": ["fs-cmp-009/fail.tsx"]
+      }
+    }
+  ],
+  "overrides": []
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "archive",
+  "retrospective": {
+    "escaped": [],
+    "detectedBy": [],
+    "ambiguities": [
+      "empty state copy"
+    ],
+    "missingContext": [],
+    "costlyChecks": [],
+    "automationCandidates": [],
+    "lessons": []
+  },
+  "ruleCandidates": [
+    {
+      "id": "CAND-001",
+      "rationale": "Repeated defect",
+      "evidence": [
+        "review.md#F-3"
+      ],
+      "rule": {
+        "id": "ACME-UI-001",
+        "title": "Example"
+      }
+    }
+  ]
+}

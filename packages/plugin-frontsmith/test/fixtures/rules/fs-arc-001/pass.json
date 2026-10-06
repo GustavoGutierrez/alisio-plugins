@@ -1,0 +1,37 @@
+{
+  "$fixture": {
+    "architecture": {
+      "schemaVersion": 1,
+      "sourceRoots": [
+        "src"
+      ],
+      "layers": [
+        {
+          "name": "app",
+          "paths": [
+            "src/app/**"
+          ]
+        },
+        {
+          "name": "shared",
+          "paths": [
+            "src/shared/**"
+          ]
+        }
+      ],
+      "allow": {
+        "app": [
+          "shared"
+        ],
+        "shared": []
+      },
+      "allowSameLayer": [],
+      "atomic": null,
+      "ignore": []
+    },
+    "files": {
+      "src/app/main.ts": "import { y } from \"../shared/util\";\nexport const x = y;\n",
+      "src/shared/util.ts": "export const y = 1;\n"
+    }
+  }
+}

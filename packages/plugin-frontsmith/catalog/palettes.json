@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "1.0.0",
+  "defaultProfile": "work-app",
+  "families": ["blue", "teal"],
+  "scales": {
+    "blue": ["#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD"],
+    "teal": ["#115E59", "#0F766E", "#0D9488", "#2DD4BF", "#5EEAD4"],
+    "success": ["#14532D", "#166534", "#15803D", "#4ADE80", "#86EFAC"],
+    "warning": ["#78350F", "#92400E", "#B45309", "#FBBF24", "#FCD34D"],
+    "danger": ["#7F1D1D", "#991B1B", "#B91C1C", "#F87171", "#FCA5A5"]
+  },
+  "neutral": {
+    "cold": {
+      "50": "#F8FAFC",
+      "100": "#F1F5F9",
+      "200": "#E2E8F0",
+      "300": "#CBD5E1",
+      "400": "#94A3B8",
+      "500": "#64748B",
+      "600": "#475569",
+      "700": "#334155",
+      "800": "#1E293B",
+      "900": "#0F172A",
+      "950": "#020617"
+    }
+  },
+  "ramps": {
+    "blue": {
+      "50": "#EFF6FF",
+      "100": "#DBEAFE",
+      "200": "#BFDBFE",
+      "300": "#93C5FD",
+      "400": "#60A5FA",
+      "500": "#3B82F6",
+      "600": "#2563EB",
+      "700": "#1D4ED8",
+      "800": "#1E40AF",
+      "900": "#1E3A8A",
+      "950": "#172554"
+    }
+  },
+  "accents": [
+    {
+      "id": "blue",
+      "light": {
+        "solid": "#2563EB",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#60A5FA",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "teal",
+      "light": {
+        "solid": "#0F766E",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#5EEAD4",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "green",
+      "light": {
+        "solid": "#166534",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#86EFAC",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "amber",
+      "light": {
+        "solid": "#92400E",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#FCD34D",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "orange",
+      "light": {
+        "solid": "#9A3412",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#FDBA74",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "red",
+      "light": {
+        "solid": "#991B1B",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#FCA5A5",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "pink",
+      "light": {
+        "solid": "#9D174D",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#F9A8D4",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "violet",
+      "light": {
+        "solid": "#6D28D9",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#C4B5FD",
+        "on": "#0F172A"
+      }
+    },
+    {
+      "id": "graphite",
+      "light": {
+        "solid": "#334155",
+        "on": "#FFFFFF"
+      },
+      "dark": {
+        "solid": "#CBD5E1",
+        "on": "#0F172A"
+      }
+    }
+  ],
+  "roleTemplates": {
+    "blue": {
+      "light": {
+        "bg-canvas": "#F8FAFC",
+        "bg-surface": "#FFFFFF",
+        "bg-subtle": "#F1F5F9",
+        "text-primary": "#0F172A",
+        "text-secondary": "#475569",
+        "border-subtle": "#E2E8F0",
+        "border-control": "#64748B",
+        "action-bg": "#2563EB",
+        "action-fg": "#FFFFFF",
+        "action-hover": "#1D4ED8",
+        "action-active": "#1E40AF",
+        "link": "#1D4ED8",
+        "link-hover": "#1E40AF",
+        "focus-ring": "#2563EB",
+        "selection-bg": "#DBEAFE",
+        "selection-fg": "#1E3A8A",
+        "success-bg": "#DCFCE7",
+        "success-fg": "#166534",
+        "warning-bg": "#FEF3C7",
+        "warning-fg": "#92400E",
+        "danger-bg": "#FEE2E2",
+        "danger-fg": "#991B1B",
+        "info-bg": "#DBEAFE",
+        "info-fg": "#1E3A8A"
+      },
+      "dark": {
+        "bg-canvas": "#020617",
+        "bg-surface": "#0F172A",
+        "bg-subtle": "#1E293B",
+        "text-primary": "#F1F5F9",
+        "text-secondary": "#CBD5E1",
+        "border-subtle": "#334155",
+        "border-control": "#94A3B8",
+        "action-bg": "#60A5FA",
+        "action-fg": "#0F172A",
+        "action-hover": "#93C5FD",
+        "action-active": "#BFDBFE",
+        "link": "#93C5FD",
+        "link-hover": "#BFDBFE",
+        "focus-ring": "#93C5FD",
+        "selection-bg": "#172554",
+        "selection-fg": "#BFDBFE",
+        "success-bg": "#052E16",
+        "success-fg": "#BBF7D0",
+        "warning-bg": "#451A03",
+        "warning-fg": "#FDE68A",
+        "danger-bg": "#450A0A",
+        "danger-fg": "#FECACA",
+        "info-bg": "#172554",
+        "info-fg": "#BFDBFE"
+      }
+    }
+  },
+  "profiles": {
+    "work-app": {
+      "id": "work-app",
+      "roles": [
+        "canvas",
+        "surface",
+        "text",
+        "muted",
+        "border",
+        "action",
+        "actionHover",
+        "onAction",
+        "success",
+        "warning",
+        "danger"
+      ],
+      "tokenNames": {
+        "canvas": "--color-bg-canvas",
+        "surface": "--color-bg-surface",
+        "text": "--color-text-primary",
+        "muted": "--color-text-secondary",
+        "border": "--color-border-control",
+        "action": "--color-action-bg",
+        "actionHover": "--color-action-hover",
+        "onAction": "--color-action-fg",
+        "success": "--color-success-fg",
+        "warning": "--color-warning-fg",
+        "danger": "--color-danger-fg"
+      },
+      "fixed": {
+        "light": {
+          "canvas": "#F8FAFC",
+          "surface": "#FFFFFF",
+          "text": "#0F172A",
+          "muted": "#475569",
+          "border": "#64748B",
+          "onAction": "#FFFFFF"
+        },
+        "dark": {
+          "canvas": "#0F172A",
+          "surface": "#1E293B",
+          "text": "#F8FAFC",
+          "muted": "#CBD5E1",
+          "border": "#94A3B8",
+          "onAction": "#0F172A"
+        }
+      },
+      "choose": [
+        {
+          "role": "action",
+          "scale": "$family",
+          "target": {
+            "light": 1,
+            "dark": 3
+          },
+          "against": [
+            {
+              "role": "onAction",
+              "min": 5
+            },
+            {
+              "role": "canvas",
+              "min": 3.2
+            },
+            {
+              "role": "surface",
+              "min": 3.2
+            }
+          ]
+        },
+        {
+          "role": "actionHover",
+          "scale": "$family",
+          "relativeTo": "action",
+          "offset": {
+            "light": -1,
+            "dark": 1
+          },
+          "direction": {
+            "light": "below",
+            "dark": "above"
+          },
+          "against": [
+            {
+              "role": "onAction",
+              "min": 5
+            },
+            {
+              "role": "canvas",
+              "min": 3.2
+            },
+            {
+              "role": "surface",
+              "min": 3.2
+            }
+          ]
+        },
+        {
+          "role": "success",
+          "scale": "success",
+          "target": {
+            "light": 1,
+            "dark": 3
+          },
+          "against": [
+            {
+              "role": "canvas",
+              "min": 5
+            },
+            {
+              "role": "surface",
+              "min": 5
+            }
+          ]
+        },
+        {
+          "role": "warning",
+          "scale": "warning",
+          "target": {
+            "light": 1,
+            "dark": 3
+          },
+          "against": [
+            {
+              "role": "canvas",
+              "min": 5
+            },
+            {
+              "role": "surface",
+              "min": 5
+            }
+          ]
+        },
+        {
+          "role": "danger",
+          "scale": "danger",
+          "target": {
+            "light": 1,
+            "dark": 3
+          },
+          "against": [
+            {
+              "role": "canvas",
+              "min": 5
+            },
+            {
+              "role": "surface",
+              "min": 5
+            }
+          ]
+        }
+      ],
+      "pairs": [
+        {
+          "fg": "text",
+          "bg": "canvas",
+          "min": 7,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "muted",
+          "bg": "canvas",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "border",
+          "bg": "canvas",
+          "min": 3.2,
+          "kind": "non_text"
+        },
+        {
+          "fg": "success",
+          "bg": "canvas",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "warning",
+          "bg": "canvas",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "danger",
+          "bg": "canvas",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "action",
+          "bg": "canvas",
+          "min": 3.2,
+          "kind": "non_text"
+        },
+        {
+          "fg": "actionHover",
+          "bg": "canvas",
+          "min": 3.2,
+          "kind": "non_text"
+        },
+        {
+          "fg": "text",
+          "bg": "surface",
+          "min": 7,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "muted",
+          "bg": "surface",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "border",
+          "bg": "surface",
+          "min": 3.2,
+          "kind": "non_text"
+        },
+        {
+          "fg": "success",
+          "bg": "surface",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "warning",
+          "bg": "surface",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "danger",
+          "bg": "surface",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "action",
+          "bg": "surface",
+          "min": 3.2,
+          "kind": "non_text"
+        },
+        {
+          "fg": "actionHover",
+          "bg": "surface",
+          "min": 3.2,
+          "kind": "non_text"
+        },
+        {
+          "fg": "onAction",
+          "bg": "action",
+          "min": 5,
+          "kind": "normal_text"
+        },
+        {
+          "fg": "onAction",
+          "bg": "actionHover",
+          "min": 5,
+          "kind": "normal_text"
+        }
+      ]
+    }
+  }
+}

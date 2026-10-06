@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-angular",
+  "version": "1.0.0",
+  "title": "Angular rules",
+  "description": "Angular-specific rules.",
+  "extends": [],
+  "appliesWhen": {
+    "framework": ["angular"]
+  },
+  "rules": [
+    {
+      "id": "FS-NG-001",
+      "title": "[innerHTML] binding",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "template-element",
+      "params": {
+        "element": ".",
+        "hasAttr": ["innerHTML"]
+      },
+      "files": ["**/*.component.html", "**/*.component.ts"],
+      "appliesWhen": {},
+      "message": "[innerHTML] renders HTML that Angular only partly sanitises.",
+      "fix": "Render structured content in the template.",
+      "rationale": "Bound HTML is a cross-site scripting risk when the value is not trusted.",
+      "source": "Angular security guidance",
+      "suppressible": false,
+      "tags": ["security"],
+      "fixtures": {
+        "pass": ["fs-ng-001/pass.html"],
+        "fail": ["fs-ng-001/fail.html"]
+      }
+    },
+    {
+      "id": "FS-NG-002",
+      "title": "bypassSecurityTrust call",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "framework",
+      "engine": "component-api",
+      "params": {
+        "checks": ["noBypassSecurityTrust"]
+      },
+      "files": ["**/*.ts"],
+      "appliesWhen": {},
+      "message": "bypassSecurityTrust* disables Angular's sanitisation.",
+      "fix": "Remove it and render sanitised content.",
+      "rationale": "Bypassing the sanitiser turns any untrusted value into an injection point.",
+      "source": "Angular security guidance",
+      "suppressible": false,
+      "tags": ["security"],
+      "fixtures": {
+        "pass": ["fs-ng-002/pass.ts"],
+        "fail": ["fs-ng-002/fail.ts"]
+      }
+    },
+    {
+      "id": "FS-NG-003",
+      "title": "Presentational component without OnPush",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "framework",
+      "engine": "component-api",
+      "params": {
+        "checks": ["onPushRequired"]
+      },
+      "files": ["**/*.component.ts"],
+      "appliesWhen": {},
+      "message": "A presentational component does not use OnPush change detection.",
+      "fix": "Set changeDetection: ChangeDetectionStrategy.OnPush.",
+      "rationale": "OnPush avoids needless change detection for components driven by inputs.",
+      "source": "Angular performance guidance",
+      "suppressible": false,
+      "tags": ["performance"],
+      "fixtures": {
+        "pass": ["fs-ng-003/pass.ts"],
+        "fail": ["fs-ng-003/fail.ts"]
+      }
+    }
+  ],
+  "overrides": []
+}

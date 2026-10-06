@@ -1,0 +1,29 @@
+{
+  "$fixture": {
+    "unit": {
+      "taskFiles": [],
+      "testPaths": [],
+      "allowedGeneratedPaths": [],
+      "scope": "task",
+      "sourceRoots": [
+        "src"
+      ],
+      "protectedGlobs": [],
+      "approvedDependencies": [],
+      "rules": {
+        "FS-TOK-002": {
+          "severity": "minor",
+          "suppressible": true
+        }
+      },
+      "changes": [
+        {
+          "path": "src/a.css",
+          "status": "M",
+          "before": ".a { color: red; }",
+          "after": "/* frontsmith-disable-next-line FS-TOK-002 -- legacy spacing scale kept for now */\n.a { padding: 13px; }"
+        }
+      ]
+    }
+  }
+}

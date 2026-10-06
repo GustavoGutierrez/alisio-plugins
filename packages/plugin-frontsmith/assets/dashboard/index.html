@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="frontsmith-token" content="__FRONTSMITH_TOKEN__" />
+    <title>Frontsmith review dashboard</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="bar">
+      <h1>Frontsmith</h1>
+      <nav aria-label="Sections">
+        <button type="button" data-tab="board" aria-pressed="true">Gate board</button>
+        <button type="button" data-tab="fidelity" aria-pressed="false">Fidelity</button>
+        <button type="button" data-tab="rules" aria-pressed="false">Rules</button>
+      </nav>
+      <button type="button" id="theme" aria-label="Toggle color theme">Theme</button>
+    </header>
+    <main id="main" tabindex="-1">
+      <p id="notice" role="status" aria-live="polite"></p>
+      <section id="board" aria-labelledby="board-title">
+        <h2 id="board-title">Features</h2>
+        <div id="features"></div>
+        <div id="feature"></div>
+      </section>
+      <section id="fidelity" hidden aria-labelledby="fidelity-title">
+        <h2 id="fidelity-title">Visual fidelity</h2>
+        <div id="fidelity-body"></div>
+      </section>
+      <section id="rules" hidden aria-labelledby="rules-title">
+        <h2 id="rules-title">Active rules</h2>
+        <div id="rules-body"></div>
+      </section>
+    </main>
+    <dialog id="confirm" aria-labelledby="confirm-title">
+      <form method="dialog">
+        <h2 id="confirm-title">Confirm</h2>
+        <p id="confirm-text"></p>
+        <label id="comments-label" for="comments" hidden>Comments for the producing phase</label>
+        <textarea id="comments" rows="4" hidden></textarea>
+        <div class="row">
+          <button value="cancel">Cancel</button>
+          <button value="ok" id="confirm-ok">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-governance",
+  "version": "1.0.0",
+  "title": "Governance rules",
+  "description": "Guards that keep agents inside their task: protected files, suppressions, tests, dependencies, scope, lockfiles, snapshots and declared imports.",
+  "extends": [],
+  "appliesWhen": {},
+  "rules": [
+    {
+      "id": "FS-GOV-001",
+      "title": "Protected oracle or configuration changed by an agent run",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "protected"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "A protected oracle or configuration file changed during this unit.",
+      "fix": "Revert the change, or ask a human to review it and approve it with /frontsmith:approve <feature> config.",
+      "rationale": "References, tolerances, contracts, packs, waivers and configuration are the oracles the gates trust; an agent must not edit them.",
+      "source": "Frontsmith integrity model",
+      "suppressible": false,
+      "tags": ["oracle"],
+      "fixtures": {
+        "pass": ["fs-gov-001/pass.json"],
+        "fail": ["fs-gov-001/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-002",
+      "title": "New inline suppression without reason or on a non-suppressible rule",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "suppressions"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "A new suppression comment has no valid reason or targets a rule that cannot be suppressed.",
+      "fix": "Remove the comment and fix the finding, or ask a human for a waiver.",
+      "rationale": "Suppressions are only honoured for minor and nit rules marked suppressible, with a written reason.",
+      "source": "Frontsmith integrity model",
+      "suppressible": false,
+      "tags": ["suppression"],
+      "fixtures": {
+        "pass": ["fs-gov-002/pass.json"],
+        "fail": ["fs-gov-002/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-003",
+      "title": "Tests weakened by an agent run",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "testWeakening"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "A test was deleted, lost assertions, was skipped or focused, or a coverage threshold was lowered.",
+      "fix": "Restore the test or coverage threshold and fix the code instead.",
+      "rationale": "Weakening tests is the cheapest way to turn a gate green, so it is checked deterministically.",
+      "source": "Test integrity",
+      "suppressible": false,
+      "tags": ["tests"],
+      "fixtures": {
+        "pass": ["fs-gov-003/pass.json"],
+        "fail": ["fs-gov-003/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-004",
+      "title": "Dependency or script change without approval",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "dependencies"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "A dependency or package script changed without a recorded approval.",
+      "fix": "Approve the dependency with /frontsmith:approve <feature> dependency <name>, or remove it.",
+      "rationale": "New dependencies and changed scripts widen what gates execute and what ships.",
+      "source": "Dependency hygiene",
+      "suppressible": false,
+      "tags": ["dependencies"],
+      "fixtures": {
+        "pass": ["fs-gov-004/pass.json"],
+        "fail": ["fs-gov-004/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-005",
+      "title": "Change outside the task scope",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "scope"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "The unit changed a file that its task contract does not cover.",
+      "fix": "Revert the unrelated change, or ask for a new task that names the file.",
+      "rationale": "Opportunistic edits grow the diff, the risk and the review load without serving the acceptance criteria.",
+      "source": "Scope discipline",
+      "suppressible": false,
+      "tags": ["scope"],
+      "fixtures": {
+        "pass": ["fs-gov-005/pass.json"],
+        "fail": ["fs-gov-005/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-006",
+      "title": "Lockfile changed without manifest change",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "lockfile"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "A lockfile changed but no package.json did.",
+      "fix": "Revert the lockfile change, or explain the manifest change that justifies it.",
+      "rationale": "A lockfile that moves on its own usually means an accidental install or upgrade.",
+      "source": "",
+      "suppressible": false,
+      "tags": ["lockfile"],
+      "fixtures": {
+        "pass": ["fs-gov-006/pass.json"],
+        "fail": ["fs-gov-006/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-007",
+      "title": "Snapshot or baseline files changed during implementation",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "diff-guard",
+      "params": {
+        "guard": "snapshots"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "A snapshot or visual baseline changed during implementation.",
+      "fix": "Revert it; baselines are approved by a human with /frontsmith:baseline approve.",
+      "rationale": "Updating snapshots during a build turns a failing check into a passing one without evidence.",
+      "source": "Visual regression practice",
+      "suppressible": false,
+      "tags": ["snapshots"],
+      "fixtures": {
+        "pass": ["fs-gov-007/pass.json"],
+        "fail": ["fs-gov-007/fail.json"]
+      }
+    },
+    {
+      "id": "FS-GOV-008",
+      "title": "Import of a package not declared in package.json",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "governance",
+      "engine": "package-json",
+      "params": {
+        "requireDeclaredImports": true
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "The file imports a package that package.json does not declare.",
+      "fix": "Use an installed package, or add the dependency and have a human approve it.",
+      "rationale": "Agents sometimes import libraries that are not installed; the build then fails or hides a half-written substitute.",
+      "source": "Dependency hygiene",
+      "suppressible": false,
+      "tags": ["AC18"],
+      "fixtures": {
+        "pass": ["fs-gov-008/pass.json"],
+        "fail": ["fs-gov-008/fail.json"]
+      }
+    }
+  ],
+  "overrides": []
+}

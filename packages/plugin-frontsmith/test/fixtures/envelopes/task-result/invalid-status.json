@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "kind": "task-result",
+  "taskId": "T-001",
+  "status": "finished",
+  "summary": "Added the card.",
+  "changedPaths": [
+    "src/entities/project/ui/ProjectCard.tsx"
+  ],
+  "commands": [
+    {
+      "argv": "pnpm vitest related --run src/entities/project/ui/ProjectCard.tsx",
+      "exitCode": 0,
+      "summary": "3 passed"
+    }
+  ],
+  "testFirst": {
+    "testPath": "src/entities/project/ui/ProjectCard.test.tsx",
+    "failingOutputExcerpt": "1 failed",
+    "passingOutputExcerpt": "3 passed"
+  },
+  "acceptance": [
+    {
+      "acId": "AC-01",
+      "satisfiedBy": [
+        "src/entities/project/ui/ProjectCard.tsx"
+      ]
+    }
+  ],
+  "deviations": [],
+  "questions": [],
+  "newDependencies": []
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "namespace": "--color-",
+  "edges": [
+    {
+      "fg": ["text-primary", "text-secondary", "link", "link-hover"],
+      "bg": ["bg-canvas", "bg-surface", "bg-subtle"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["action-fg"],
+      "bg": ["action-bg", "action-hover", "action-active"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["selection-fg"],
+      "bg": ["selection-bg"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["success-fg"],
+      "bg": ["success-bg"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["warning-fg"],
+      "bg": ["warning-bg"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["danger-fg"],
+      "bg": ["danger-bg"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["info-fg"],
+      "bg": ["info-bg"],
+      "kind": "normal_text"
+    },
+    {
+      "fg": ["border-control", "focus-ring"],
+      "bg": ["bg-canvas", "bg-surface", "bg-subtle"],
+      "kind": "non_text"
+    }
+  ]
+}

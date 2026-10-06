@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "test-map",
+  "entries": [
+    {
+      "acId": "AC-01",
+      "risk": "empty list hides the create action",
+      "levels": [
+        "component",
+        "visual"
+      ],
+      "tests": [
+        {
+          "path": "src/entities/project/ui/ProjectCard.test.tsx",
+          "name": "shows the empty state with a create action",
+          "level": "component"
+        }
+      ],
+      "evidence": "component result",
+      "manual": {
+        "procedure": "open it"
+      }
+    }
+  ]
+}

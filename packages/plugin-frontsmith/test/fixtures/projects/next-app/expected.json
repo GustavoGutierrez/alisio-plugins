@@ -1,0 +1,95 @@
+{
+  "packageManager": "bun",
+  "monorepo": false,
+  "typescript": true,
+  "framework": "react",
+  "frameworkVersion": "19.0.0",
+  "meta": "next",
+  "styling": [
+    "css"
+  ],
+  "state": [],
+  "tests": [
+    "vitest",
+    "playwright"
+  ],
+  "storybook": true,
+  "playwrightResolvable": true,
+  "axeResolvable": false,
+  "sourceRoots": [
+    "app",
+    "components"
+  ],
+  "scripts": {
+    "lint": "next lint",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "build": "next build"
+  },
+  "evidence": [
+    {
+      "fact": "packageManager=bun",
+      "source": "bun.lock"
+    },
+    {
+      "fact": "typescript=true",
+      "source": "tsconfig.json"
+    },
+    {
+      "fact": "framework=react",
+      "source": "package.json#dependencies.react"
+    },
+    {
+      "fact": "meta=next",
+      "source": "package.json#dependencies.next"
+    },
+    {
+      "fact": "frameworkVersion=19.0.0",
+      "source": "node_modules/react/package.json"
+    },
+    {
+      "fact": "styling=css",
+      "source": "app/globals.css"
+    },
+    {
+      "fact": "tests=vitest",
+      "source": "package.json#devDependencies.vitest"
+    },
+    {
+      "fact": "tests=playwright",
+      "source": "package.json#devDependencies.playwright"
+    },
+    {
+      "fact": "storybook=true",
+      "source": "package.json#devDependencies.@storybook/react"
+    },
+    {
+      "fact": "playwrightResolvable=true",
+      "source": "resolve:playwright"
+    },
+    {
+      "fact": "sourceRoot=app",
+      "source": "dir:app"
+    },
+    {
+      "fact": "sourceRoot=components",
+      "source": "dir:components"
+    },
+    {
+      "fact": "script.lint",
+      "source": "package.json#scripts.lint"
+    },
+    {
+      "fact": "script.test",
+      "source": "package.json#scripts.test"
+    },
+    {
+      "fact": "script.e2e",
+      "source": "package.json#scripts.e2e"
+    },
+    {
+      "fact": "script.build",
+      "source": "package.json#scripts.build"
+    }
+  ]
+}

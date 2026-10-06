@@ -1,0 +1,11 @@
+{
+  // Path aliases follow the Feature-Sliced Design layers.
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+  },
+  "include": ["src"],
+}

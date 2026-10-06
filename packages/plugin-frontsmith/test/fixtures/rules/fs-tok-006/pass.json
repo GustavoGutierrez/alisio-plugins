@@ -1,0 +1,8 @@
+{
+  "$fixture": {
+    "files": {
+      "src/styles/tokens.css": ":root {\n  --color-text: #111111;\n}\n",
+      "src/app.css": ".a {\n  color: var(--color-text);\n}\n"
+    }
+  }
+}

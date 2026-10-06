@@ -1,0 +1,7 @@
+{
+  "$fixture": {
+    "files": {
+      "src/styles/tokens.css": "[data-theme=\"light\"] {\n  --color-bg: #ffffff;\n  --color-text: #111111;\n}\n[data-theme=\"dark\"] {\n  --color-bg: #111111;\n  --color-text: #f5f5f5;\n}\n"
+    }
+  }
+}

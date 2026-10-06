@@ -1,0 +1,24 @@
+{
+  "$fixture": {
+    "unit": {
+      "taskFiles": [],
+      "testPaths": [],
+      "allowedGeneratedPaths": [],
+      "scope": "task",
+      "sourceRoots": [
+        "src"
+      ],
+      "protectedGlobs": [],
+      "approvedDependencies": [],
+      "rules": {},
+      "changes": [
+        {
+          "path": "src/a.ts",
+          "status": "M",
+          "before": "a",
+          "after": "b"
+        }
+      ]
+    }
+  }
+}

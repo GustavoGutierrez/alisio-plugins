@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "packId": "fs-performance",
+  "version": "1.0.0",
+  "title": "Performance rules",
+  "description": "Budget and asset rules: bundle size, images, inline data and heavy imports.",
+  "extends": [],
+  "appliesWhen": {},
+  "rules": [
+    {
+      "id": "FS-PRF-001",
+      "title": "Initial JavaScript gzip size over the absolute budget",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "budget",
+      "params": {
+        "kind": "initialJs"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "The initial JavaScript bundle is over its gzip budget.",
+      "fix": "Split the entry, lazy-load routes, or remove dependencies.",
+      "rationale": "Initial JavaScript is the largest cost of first load.",
+      "source": "Web performance practice",
+      "suppressible": false,
+      "tags": ["bundle"],
+      "fixtures": {
+        "pass": ["fs-prf-001/pass.json"],
+        "fail": ["fs-prf-001/fail.json"]
+      }
+    },
+    {
+      "id": "FS-PRF-002",
+      "title": "Initial CSS gzip size over the absolute budget",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "budget",
+      "params": {
+        "kind": "initialCss"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "The initial CSS bundle is over its gzip budget.",
+      "fix": "Remove unused styles or split critical CSS.",
+      "rationale": "Render-blocking CSS delays first paint.",
+      "source": "Web performance practice",
+      "suppressible": false,
+      "tags": ["bundle"],
+      "fixtures": {
+        "pass": ["fs-prf-002/pass.json"],
+        "fail": ["fs-prf-002/fail.json"]
+      }
+    },
+    {
+      "id": "FS-PRF-003",
+      "title": "Bundle growth over the allowed increase",
+      "severity": "major",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "budget",
+      "params": {
+        "kind": "delta"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "The initial bundle grew by more than the allowed amount since the baseline.",
+      "fix": "Find what grew, or have a human record a new baseline.",
+      "rationale": "Small increases accumulate unnoticed unless each change is bounded.",
+      "source": "Web performance practice",
+      "suppressible": false,
+      "tags": ["bundle"],
+      "fixtures": {
+        "pass": ["fs-prf-003/pass.json"],
+        "fail": ["fs-prf-003/fail.json"]
+      }
+    },
+    {
+      "id": "FS-PRF-004",
+      "title": "img without width and height",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "jsx-element",
+      "params": {
+        "element": "^img$",
+        "lacksAttr": ["width", "height"],
+        "lacksAttrMode": "anyOf",
+        "exemptAttrValue": {
+          "names": ["class", "style"],
+          "value": "aspect-"
+        },
+        "includeTemplates": true
+      },
+      "files": ["**/*.{tsx,jsx,vue,svelte,astro,html}"],
+      "appliesWhen": {},
+      "message": "An image has no intrinsic size and no aspect ratio, so it shifts the layout when it loads.",
+      "fix": "Set width and height, or reserve space with an aspect-ratio class or style.",
+      "rationale": "Layout shift hurts perceived stability.",
+      "source": "Core Web Vitals (CLS)",
+      "suppressible": false,
+      "tags": ["cls"],
+      "fixtures": {
+        "pass": ["fs-prf-004/pass.tsx"],
+        "fail": ["fs-prf-004/fail.tsx"]
+      }
+    },
+    {
+      "id": "FS-PRF-005",
+      "title": "Image asset over the size or width budget",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "budget",
+      "params": {
+        "kind": "image"
+      },
+      "files": ["**/*"],
+      "appliesWhen": {},
+      "message": "An image is larger than the image budget.",
+      "fix": "Resize or compress it, or serve responsive variants.",
+      "rationale": "Large images dominate transfer size.",
+      "source": "Web performance practice",
+      "suppressible": false,
+      "tags": ["images"],
+      "fixtures": {
+        "pass": ["fs-prf-005/pass.json"],
+        "fail": ["fs-prf-005/fail.json"]
+      }
+    },
+    {
+      "id": "FS-PRF-006",
+      "title": "Inline data URI over 4 KiB",
+      "severity": "minor",
+      "kind": "deterministic",
+      "category": "performance",
+      "engine": "budget",
+      "params": {
+        "kind": "inlineData"
+      },
+      "files": ["**/*.{css,scss,less,ts,tsx,js,jsx,vue,svelte,astro,html}"],
+      "appliesWhen": {},
+      "message": "A large data: URI is inlined in code.",
+      "fix": "Move the asset to a file so it can be cached and compressed.",
+      "rationale": "Inline blobs inflate bundles and bypass caching.",
+      "source": "Web performance practice",
+      "suppressible": false,
+      "tags": ["inline"],
+      "fixtures": {
+        "pass": ["fs-prf-006/pass.css"],
+        "fail": ["fs-prf-006/fail.css"]
+      }
+    },
+    {
+      "id": "FS-PRF-007",
+      "title": "Import of a heavy library root",
+      "severity": "minor",
+      "kind": "heuristic",
+      "category": "performance",
+      "engine": "import-specifier",
+      "params": {
+        "forbid": "^(?:lodash|moment|date-fns|rxjs)$"
+      },
+      "files": ["**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte,astro}"],
+      "appliesWhen": {},
+      "message": "A heavy library is imported from its root entry.",
+      "fix": "Import the specific function (lodash/debounce) or use a lighter alternative.",
+      "rationale": "Root imports can pull the whole library into the bundle.",
+      "source": "Bundle size practice",
+      "suppressible": false,
+      "tags": ["imports"],
+      "fixtures": {
+        "pass": ["fs-prf-007/pass.ts"],
+        "fail": ["fs-prf-007/fail.ts"]
+      }
+    }
+  ],
+  "overrides": []
+}

@@ -1,0 +1,62 @@
+{
+  "packageManager": "yarn",
+  "monorepo": false,
+  "typescript": true,
+  "framework": "svelte",
+  "frameworkVersion": "4.2.19",
+  "meta": "none",
+  "styling": [],
+  "state": [],
+  "tests": [
+    "jest"
+  ],
+  "storybook": false,
+  "playwrightResolvable": false,
+  "axeResolvable": false,
+  "sourceRoots": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest",
+    "build": "vite build"
+  },
+  "evidence": [
+    {
+      "fact": "packageManager=yarn",
+      "source": "yarn.lock"
+    },
+    {
+      "fact": "typescript=true",
+      "source": "tsconfig.json"
+    },
+    {
+      "fact": "framework=svelte",
+      "source": "package.json#devDependencies.svelte"
+    },
+    {
+      "fact": "frameworkVersion=4.2.19",
+      "source": "node_modules/svelte/package.json"
+    },
+    {
+      "fact": "tests=jest",
+      "source": "package.json#devDependencies.jest"
+    },
+    {
+      "fact": "sourceRoot=src",
+      "source": "dir:src"
+    },
+    {
+      "fact": "script.lint",
+      "source": "package.json#scripts.lint"
+    },
+    {
+      "fact": "script.test",
+      "source": "package.json#scripts.test"
+    },
+    {
+      "fact": "script.build",
+      "source": "package.json#scripts.build"
+    }
+  ]
+}

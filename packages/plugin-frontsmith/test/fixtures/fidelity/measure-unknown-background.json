@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "environment": {
+    "browser": "chromium",
+    "browserVersion": "153.0.0.0",
+    "playwrightVersion": "1.63.0",
+    "os": "linux",
+    "dpr": 1
+  },
+  "cases": {
+    "projects-desktop-success": {
+      "caseId": "projects-desktop-success",
+      "viewport": [
+        1024,
+        640
+      ],
+      "capture": "projects-desktop-success.png",
+      "captureSize": [
+        1024,
+        640
+      ],
+      "pageOverflow": false,
+      "elements": {
+        "primary-cta": {
+          "box": {
+            "x": 720,
+            "y": 20,
+            "width": 160,
+            "height": 40
+          },
+          "styles": {
+            "color": "rgb(255, 255, 255)"
+          },
+          "clipped": false,
+          "visible": true,
+          "background": "unknown",
+          "covered": false,
+          "text": "  Create \n project "
+        },
+        "toolbar": {
+          "box": {
+            "x": 24,
+            "y": 0,
+            "width": 600,
+            "height": 48
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        },
+        "cards": {
+          "box": {
+            "x": 24,
+            "y": 80,
+            "width": 600,
+            "height": 400
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        },
+        "card-title": {
+          "box": {
+            "x": 40,
+            "y": 96,
+            "width": 200,
+            "height": 24
+          },
+          "styles": {
+            "font-size": "18px",
+            "line-height": "24px",
+            "font-weight": "700"
+          },
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        },
+        "logo": {
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 32,
+            "height": 32
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false,
+          "assetSha256": "ABC123"
+        },
+        "page": {
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 1024,
+            "height": 640
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        }
+      },
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        }
+      ],
+      "masks": []
+    },
+    "projects-mobile-success": {
+      "caseId": "projects-mobile-success",
+      "viewport": [
+        1024,
+        640
+      ],
+      "capture": "projects-mobile-success.png",
+      "captureSize": [
+        1024,
+        640
+      ],
+      "pageOverflow": false,
+      "elements": {
+        "primary-cta": {
+          "box": {
+            "x": 720,
+            "y": 20,
+            "width": 160,
+            "height": 40
+          },
+          "styles": {
+            "color": "rgb(255, 255, 255)"
+          },
+          "clipped": false,
+          "visible": true,
+          "background": "#2563EB",
+          "covered": false,
+          "text": "  Create \n project "
+        },
+        "toolbar": {
+          "box": {
+            "x": 24,
+            "y": 0,
+            "width": 600,
+            "height": 48
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        },
+        "cards": {
+          "box": {
+            "x": 24,
+            "y": 80,
+            "width": 600,
+            "height": 400
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        },
+        "card-title": {
+          "box": {
+            "x": 40,
+            "y": 96,
+            "width": 200,
+            "height": 24
+          },
+          "styles": {
+            "font-size": "18px",
+            "line-height": "24px",
+            "font-weight": "700"
+          },
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        },
+        "logo": {
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 32,
+            "height": 32
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false,
+          "assetSha256": "ABC123"
+        },
+        "page": {
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 1024,
+            "height": 640
+          },
+          "styles": {},
+          "clipped": false,
+          "visible": true,
+          "background": "#FFFFFF",
+          "covered": false
+        }
+      },
+      "fonts": [
+        {
+          "family": "Inter",
+          "status": "loaded"
+        }
+      ],
+      "masks": []
+    }
+  }
+}
