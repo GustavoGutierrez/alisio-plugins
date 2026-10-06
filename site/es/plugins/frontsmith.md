@@ -6,7 +6,7 @@ pageClass: "plugin-detail"
 
 <PluginDetail slug="frontsmith" />
 
-![Frontsmith](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-frontsmith/cover.svg)
+![Frontsmith](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-frontsmith/cover.webp)
 
 > English: [README.md](https://github.com/GustavoGutierrez/alisio-plugins/blob/HEAD/packages/plugin-frontsmith/README.md). Ambos README deben actualizarse en conjunto.
 
@@ -19,13 +19,17 @@ nunca como aprobada.
 
 ## Estado
 
-**Versión preliminar (0.1.0).** Todo lo que se describe está implementado y cubierto por pruebas
+**Versión preliminar (0.2.0).** Todo lo que se describe está implementado y cubierto por pruebas
 sin conexión, con dobles guionizados para las sesiones hijas. Lo que **todavía no** se ha ejercitado
 contra un host Alisio real:
 
 - las sesiones hijas reales (la asignación de modelo por agente, los perfiles de los agentes, los
   trabajos en segundo plano que sobreviven a su comando en la TUI y los límites de tiempo de los
   comandos en un navegador o en un cliente remoto);
+- el coordinador conversacional en un host real: qué herramientas se ofrecen al modelo (por ahora el
+  host ignora las listas de herramientas declaradas de un agente principal), los diálogos del plugin
+  lanzados desde una llamada a herramienta, el aviso de finalización encolado para el siguiente
+  turno y las verificaciones largas dentro de una ejecución del coordinador;
 - las imágenes compuestas en línea en terminales, el panel a través de un cliente web remoto y cómo
   muestra el Dock los artefactos en Markdown;
 - si un modelo con visión puede leer las capturas de fidelidad (sin uno, `fs-fidelity-reviewer`
@@ -74,6 +78,10 @@ alisio install npm:@alisio/plugin-frontsmith
 6. `/frontsmith:status login-form` muestra en cualquier momento la fase, las compuertas, las tareas y
    el siguiente comando.
 
+Para trabajar en conversación, seleccione el agente `frontsmith:fs-coordinator` (véase «Coordinador
+conversacional»). Para partir de una especificación escrita, añada `--from-spec docs/login.md`
+(véase «Partir de un archivo de especificación»).
+
 ## Metodología
 
 ![Fases desde la recepción hasta el archivo, con compuertas, aprobaciones humanas y los ciclos acotados](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-frontsmith/assets/methodology-flow.svg)
@@ -93,7 +101,7 @@ los artefactos y cambia de fase. El revisor nunca ve la narración del implement
 
 | Agente | Función | Nivel por defecto |
 | --- | --- | --- |
-| `fs-coordinator` | Explica y opera Frontsmith mediante sus comandos; nunca avanza una fase | fast |
+| `fs-coordinator` | Guía a una persona por una funcionalidad en el chat llamando a las herramientas `fs_*`; nunca decide una compuerta ni registra por sí mismo una decisión humana | standard |
 | `fs-specifier` | Convierte una intención en una especificación verificable con estados y preguntas abiertas | reasoning |
 | `fs-ui-contractor` | Convierte la especificación y los diseños en un contrato de UI ejecutable | reasoning |
 | `fs-tokensmith` | Elige roles, nombres y pares de contraste de los tokens, nunca valores de color | standard |
@@ -119,6 +127,59 @@ El código decide lo que el código puede medir. Los agentes clasifican las señ
 herramienta requerida que falta produce `BLOCKED`, que permanece visible hasta que una persona lo
 resuelve o lo exime.
 
+## Coordinador conversacional
+
+Seleccione el agente `frontsmith:fs-coordinator` (`/agent:frontsmith:fs-coordinator` o Shift+Tab) y
+converse. Lee el estado con `fs_status` y luego llama a `fs_feature_new`, `fs_next`, `fs_answer` y
+`fs_approval_request` en el orden correcto, explicando cada resultado. El código sigue ejecutando
+cada unidad y cada compuerta; el coordinador solo las secuencia.
+
+- **Toda decisión humana sigue siendo humana.** El nivel de una funcionalidad nueva, la respuesta a
+  una pregunta abierta y una aprobación se registran solo después de que la persona hace clic en un
+  diálogo que construye y muestra el plugin (o escribe el comando). El modelo nunca rellena esos
+  diálogos. El texto que retransmite en nombre de usted, como una respuesta con sus palabras, se le
+  muestra tal cual y solo se registra si elige Registrar. Una sesión que no puede preguntar recibe el
+  comando exacto y no se registra nada.
+- **Aprobaciones.** `fs_approval_request` abre el mismo diálogo que `/frontsmith:approve`, solo para
+  la aprobación que la funcionalidad debe en ese momento. Las aprobaciones de `config` (volver a fijar
+  los archivos protegidos) son exclusivas del comando.
+- **El trabajo largo se ejecuta como trabajos en segundo plano.** Toda unidad que ejecuta un agente
+  hijo se inicia como trabajo. Al terminar se encola para el siguiente turno un aviso breve (escrito
+  por el código, sin texto de agentes) y el coordinador espera a que usted diga que continúe. Nunca
+  consulta en bucle.
+- **Se detiene en las compuertas.** `fs_next` regresa sin ejecutar nada mientras haya una pregunta,
+  una aprobación o una funcionalidad cerrada esperando. Se ejecutan como máximo tres unidades por
+  turno.
+- **Pie.** Cada respuesta termina con `Feature, Phase, Gate, Next`, tomados del estado.
+
+Límite conocido: el host aún no respeta las listas de herramientas permitidas y denegadas que el
+archivo del agente declara para un agente principal, así que `readOnly: false` también le expone las
+herramientas integradas de escritura, shell y delegación. Las listas se conservan en el archivo para
+cuando lo haga; hoy la protección son el cuerpo del agente, las aprobaciones por llamada del host, el
+hash de los archivos protegidos y los diálogos del plugin. La solicitud al host está documentada en
+la especificación (sección 5.2). Los agentes personalizados no forman parte de esta versión.
+
+## Partir de un archivo de especificación
+
+`/frontsmith:new  --level L1|L2|L3 --from-spec ` (o `fromSpec` en `fs_feature_new`)
+crea una funcionalidad a partir de un documento que ya tiene. `-- ` pasa a ser opcional; sin
+él, la intención es el título del archivo.
+
+- El archivo debe estar dentro del espacio de trabajo, terminar en `.md`, `.markdown` o `.json` y
+  pesar como máximo 128 KiB en UTF-8. Se rechazan `.git`, `.alisio`, las rutas absolutas y los
+  enlaces que salgan del espacio de trabajo. Una ruta con espacios requiere la forma de herramienta.
+  L0 no admite una especificación (no tiene fase de especificación).
+- El archivo se copia a `docs/frontsmith//source-spec.md` (o `.json`) y se calcula su hash;
+  editar luego el original no cambia la ejecución. La copia está protegida: si cambia, las unidades
+  que la usan quedan en `BLOCKED`.
+- El Markdown pasa a `fs-specifier`, que lo normaliza en el sobre de especificación: nada se descarta
+  en silencio, las afirmaciones de implementación pasan a ser supuestos, y las ambigüedades,
+  contradicciones y pendientes (TBD) pasan a ser preguntas abiertas que bloquean la compuerta G1
+  hasta que usted las responda.
+- Un archivo `.json` que ya es un sobre de especificación válido omite solo la ejecución del
+  especificador. La compuerta G1 sigue ejecutándose y la aprobación de la especificación sigue
+  aplicando desde L1. No se puede combinar con L0.
+
 ## Niveles de rigor
 
 | Nivel | Para | Fases | Aprobaciones humanas |
@@ -140,7 +201,7 @@ incorrecto.
 | --- | --- | --- |
 | `init` | | Crear la configuración del proyecto y la entrada de gitignore |
 | `doctor` | | Comprobar lo que necesita una ejecución |
-| `new` | ` [--level L0-L3] [--mode ...] -- ` | Crear una funcionalidad |
+| `new` | ` [--level L0-L3] [--mode ...] [--from-spec ] -- ` | Crear una funcionalidad, opcionalmente desde un archivo de especificación |
 | `status` | `[feature]` | Mostrar una funcionalidad o listarlas |
 | `next` | ` [--foreground]` | Ejecutar la siguiente unidad |
 | `answer` | `  -- ` | Responder una pregunta abierta |
@@ -164,7 +225,11 @@ incorrecto.
 
 | Herramienta | Efecto | Propósito |
 | --- | --- | --- |
-| `fs_status` | lectura | Fase, compuertas, tareas y siguiente comando, o la lista de funcionalidades |
+| `fs_status` | lectura | Fase, compuertas, tareas y siguiente comando, o la lista de funcionalidades; con una funcionalidad añade una vista JSON para el coordinador |
+| `fs_feature_new` | escritura | Crear una funcionalidad (opcionalmente desde un archivo de especificación); la persona elige el nivel en un diálogo |
+| `fs_answer` | escritura | Retransmitir una respuesta; se registra solo tras la confirmación de la persona en un diálogo |
+| `fs_approval_request` | escritura | Abrir el diálogo aprobar/rechazar de la aprobación que corresponde en ese momento (nunca `config`) |
+| `fs_next` | proceso | Avanzar una unidad: se detiene en las compuertas humanas; las unidades con agentes hijos inician trabajos en segundo plano |
 | `fs_detect_stack` | lectura | Gestor de paquetes, framework, estilos y pruebas, con evidencia |
 | `fs_inventory` | lectura | Componentes, hooks, almacenes y tokens de diseño |
 | `fs_rules_list` | lectura | Reglas activas, con su trazado de resolución |
@@ -352,6 +417,8 @@ fuentes en una prueba.
 ## Limitaciones
 
 - Versión preliminar: véase «Estado» para lo que solo se verificó con dobles.
+- Las listas de herramientas declaradas del coordinador aún no las respeta el host para agentes
+  principales (véase «Coordinador conversacional»).
 - Los agentes personalizados están planificados, no entregados. La clave `agents.custom` se acepta
   para que las asignaciones de modelo ya puedan nombrar un agente, pero en esta versión no se carga
   ni se ejecuta ningún agente personalizado.
