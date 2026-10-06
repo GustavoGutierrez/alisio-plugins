@@ -86,6 +86,7 @@ La superficie completa de capacidades, los límites duros y los errores más fre
 | [`@alisio/plugin-wayfinder`](packages/plugin-wayfinder#readme) | `methodology-harness` | Coordina un flujo de desarrollo guiado por especificaciones y duradero con sesiones hijas acotadas. |
 | [`@alisio/plugin-thesis`](packages/plugin-thesis#readme) | `methodology-harness` | Planifica, investiga, redacta y compone tesis universitarias con evidencia verificada y compuertas de calidad deterministas. |
 | [`@alisio/plugin-swarm`](packages/plugin-swarm#readme) | `methodology-harness` | Ejecuta un enjambre de agentes especializados en worktrees de git separados, con compuertas de calidad deterministas, una compuerta de aprobación humana y un panel local. |
+| [`@alisio/plugin-frontsmith`](packages/plugin-frontsmith#readme) | `methodology-harness` | Ejecuta un flujo de ingeniería frontend con compuertas, agentes especialistas, paquetes de reglas y verificaciones deterministas, y un proceso reproducible de fidelidad visual. |
 
 `methodology-harness` es una categoría de catálogo estricta que valida el host. Requiere un runtime de
 Alisio que incluya `@alisio/core` `0.1.0-alpha.15` o posterior; un plugin no puede declarar esa

@@ -11,6 +11,7 @@ Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portad
 - [Brave Search](./brave-search) — Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback (`search`, `tools`)
 - [Context7 Docs](./context7) — Resolve library names and fetch third-party documentation from the Context7 hosted service (`tools`)
 - [DeepSeek](./deepseek) — Dedicated DeepSeek Chat Completions and Responses provider (`model-provider`)
+- [Frontsmith](./frontsmith) — Runs a gated frontend engineering workflow with specialist agents, deterministic rule packs, architecture, accessibility and token checks, and a reproducible visual-fidelity pipeline. (`methodology-harness`)
 - [Google Chat](./google-chat) — Google Chat tools with a send-only webhook mode and a full OAuth user mode, read-first defaults, and untrusted-content framing (`tools`)
 - [Laya](./laya) — Local Laya decision provider: fast select, boolean and ordinal decisions from a managed, isolated server with consent-based setup (`decisions`)
 - [Literature Research](./literature-research) — Safe scholarly metadata and abstract research (`search`, `tools`)

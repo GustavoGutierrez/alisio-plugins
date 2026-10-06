@@ -85,6 +85,7 @@ The full capability surface, the hard limits and the sharpest failure modes live
 | [`@alisio/plugin-wayfinder`](packages/plugin-wayfinder#readme) | `methodology-harness` | Coordinates a durable specification-driven development workflow with bounded child sessions. |
 | [`@alisio/plugin-thesis`](packages/plugin-thesis#readme) | `methodology-harness` | Plans, researches, drafts and typesets university theses with verified evidence and deterministic quality gates. |
 | [`@alisio/plugin-swarm`](packages/plugin-swarm#readme) | `methodology-harness` | Runs a handoff-driven swarm of specialised agents in separate git worktrees, with deterministic quality gates, a human approval gate and a local dashboard. |
+| [`@alisio/plugin-frontsmith`](packages/plugin-frontsmith#readme) | `methodology-harness` | Runs a gated frontend engineering workflow with specialist agents, deterministic rule packs and checks, and a reproducible visual-fidelity pipeline. |
 
 `methodology-harness` is a strict, host-validated catalog category. It requires an Alisio runtime
 that carries `@alisio/core` `0.1.0-alpha.15` or newer; a plugin cannot declare that dependency itself,
