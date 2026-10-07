@@ -1,0 +1,23 @@
+id: integers
+name:
+  es: "Números enteros"
+code: INT
+grades: ["Séptimo", "Octavo"]
+prerequisites: [natural-numbers]
+objectives:
+  - id: integer-operations
+    text:
+      es: "Opera con números enteros respetando la regla de los signos."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: integer-order
+    text:
+      es: "Ordena y ubica números enteros en la recta numérica."
+    levels: [basico, intermedio]
+keywords: [entero, signo, opuesto, valor absoluto]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: integer-ops, levels: [basico, intermedio, avanzado, genio] }

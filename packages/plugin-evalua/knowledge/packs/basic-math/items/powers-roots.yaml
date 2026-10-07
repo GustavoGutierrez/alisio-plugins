@@ -1,0 +1,48 @@
+- id: powers-three-cubed
+  type: single_choice
+  level: basico
+  cognitive: recall
+  stem:
+    - "Calcula $3^{3}$."
+  options:
+    - { key: A, text: "9", correct: false, error: "multiplied-base-by-exponent" }
+    - { key: B, text: "27", correct: true, error: "none" }
+    - { key: C, text: "6", correct: false, error: "added-base-and-exponent" }
+    - { key: D, text: "81", correct: false, error: "used-exponent-as-four" }
+  answer: { canonical: "27", display: "27" }
+  solution:
+    - "$3^{3} = 3 \\cdot 3 \\cdot 3$"
+    - "$3 \\cdot 3 \\cdot 3 = 27$"
+  check: { kind: rational-equal, value: "27" }
+- id: powers-sqrt-144
+  type: single_choice
+  level: intermedio
+  cognitive: apply
+  stem:
+    - "Calcula $\\sqrt{144}$."
+  options:
+    - { key: A, text: "12", correct: true, error: "none" }
+    - { key: B, text: "14", correct: false, error: "halved-the-number" }
+    - { key: C, text: "72", correct: false, error: "halved-the-number" }
+    - { key: D, text: "24", correct: false, error: "divided-by-six" }
+  answer: { canonical: "12", display: "12" }
+  solution:
+    - "$12 \\cdot 12 = 144$"
+    - "Por lo tanto, $\\sqrt{144} = 12$."
+  check: { kind: rational-equal, value: "12" }
+- id: powers-two-to-five
+  type: single_choice
+  level: intermedio
+  cognitive: apply
+  stem:
+    - "Calcula $2^{5}$."
+  options:
+    - { key: A, text: "10", correct: false, error: "multiplied-base-by-exponent" }
+    - { key: B, text: "32", correct: true, error: "none" }
+    - { key: C, text: "25", correct: false, error: "squared-the-exponent" }
+    - { key: D, text: "64", correct: false, error: "used-exponent-as-six" }
+  answer: { canonical: "32", display: "32" }
+  solution:
+    - "$2^{5} = 2 \\cdot 2 \\cdot 2 \\cdot 2 \\cdot 2$"
+    - "$2 \\cdot 2 \\cdot 2 \\cdot 2 \\cdot 2 = 32$"
+  check: { kind: rational-equal, value: "32" }

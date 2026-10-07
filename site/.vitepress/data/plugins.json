@@ -145,6 +145,41 @@
       "source": "local"
     },
     {
+      "name": "@alisio/plugin-evalua",
+      "slug": "evalua",
+      "title": "Evalua",
+      "pluginId": "evalua",
+      "description": "Guides teachers through a short interview for printable school math exams and keeps the teacher profile, workspace and exam numbering.",
+      "version": "0.0.0",
+      "publishedAt": null,
+      "firstPublishedAt": null,
+      "author": "Alisio",
+      "maintainers": [],
+      "license": "MIT",
+      "repository": "https://github.com/GustavoGutierrez/alisio-plugins",
+      "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-evalua#readme",
+      "bugs": "https://github.com/GustavoGutierrez/alisio-plugins/issues",
+      "npmUrl": "https://www.npmjs.com/package/@alisio/plugin-evalua",
+      "categories": [
+        "methodology-harness"
+      ],
+      "keywords": [
+        "alisio-plugin",
+        "education",
+        "math",
+        "exams"
+      ],
+      "unpackedSize": null,
+      "dependencyCount": 1,
+      "peerCount": 1,
+      "installName": "@alisio/plugin-evalua",
+      "cover": "/covers/evalua.webp",
+      "readme": "Evalúa helps a teacher prepare printable school math exams through a short, guided interview.\n\n> Status: early release. This version ships the foundation only: the teacher profile, the workspace\n> layout, exam numbering and the interview. Exam generation and PDF output arrive in later releases.\n\n## Install\n\n```sh\nalisio plugins install @alisio/plugin-evalua\n```\n\nRequires Node 22.16 or newer and `@alisio/sdk` `>=0.3.0 <0.7.0`.\n\n## Basic usage\n\n| Command | What it does |\n| --- | --- |\n| `/evalua:init [dir] [--edit]` | Creates the workspace (default folder `evalua/`) and asks for the teacher profile once. `--edit` re-asks with current values preselected. |\n| `/evalua:new [topic]` | Runs the exam interview (topic, grade, level, item types, count, same exam or bank, columns, page limit, time, closing text). The profile is asked first only if `teacher.yaml` is missing. |\n| `/evalua:status` | Shows the profile, any pending interview round, the exam draft and the exam folders. |\n\nIn a headless session the pending round is stored in the workspace state. Continue with\n`/evalua:new id=value ...` (free text goes in `:text=...`).\n\nTools for agents: `evalua_profile` (get or set the profile), `evalua_answer` (answer the pending\nround), `evalua_status` (read-only state as JSON).\n\n## Workspace layout\n\n```\n<workspace>/\n  .alisio/evalua/state.json     machine-owned state (atomic writes)\n  evalua/\n    teacher.yaml                teacher profile, safe to edit by hand\n    assets/logo.png             optional logo (PNG, JPEG or WebP, up to 2 MB; SVG is rejected)\n    exams/NN-slug/              created only after the teacher approves the exam spec\n```\n\nExam numbers are consecutive and never reused, even if a folder is deleted by hand.\n\n## Profile fields\n\n`teacherName`, `institution` (printed upper-case), optional `logo`, `subject` (default\nMatemáticas), `language` (default `es`) and `paper` (`letter` or `a4`, default `letter`).\n\n## License\n\nMIT",
+      "downloadsLastMonth": null,
+      "featured": false,
+      "source": "local"
+    },
+    {
       "name": "@alisio/plugin-frontsmith",
       "slug": "frontsmith",
       "title": "Frontsmith",

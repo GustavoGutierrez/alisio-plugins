@@ -1,0 +1,19 @@
+id: percentages
+name:
+  es: "Porcentajes"
+code: POR
+grades: ["Séptimo", "Octavo"]
+prerequisites: [decimals]
+objectives:
+  - id: percent-of-a-number
+    text:
+      es: "Calcula el porcentaje de una cantidad."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [porcentaje, tanto por ciento, proporción]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: percent, levels: [basico, intermedio, avanzado, genio] }

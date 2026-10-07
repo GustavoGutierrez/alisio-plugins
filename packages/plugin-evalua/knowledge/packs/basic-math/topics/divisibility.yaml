@@ -1,0 +1,23 @@
+id: divisibility
+name:
+  es: "Divisibilidad, MCD y MCM"
+code: DIV
+grades: ["Sexto", "Séptimo"]
+prerequisites: [natural-numbers]
+objectives:
+  - id: gcd-lcm
+    text:
+      es: "Calcula el máximo común divisor y el mínimo común múltiplo."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: prime-factorization
+    text:
+      es: "Descompone un número en factores primos."
+    levels: [intermedio, avanzado]
+keywords: [múltiplo, divisor, primo, mcm, mcd]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: gcd-lcm, levels: [basico, intermedio, avanzado, genio] }

@@ -1,0 +1,24 @@
+id: fractions
+name:
+  es: "Fracciones"
+code: FRA
+grades: ["Sexto", "Séptimo"]
+prerequisites: [divisibility]
+objectives:
+  - id: simplify-fractions
+    text:
+      es: "Simplifica fracciones hasta su forma irreducible."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: fraction-operations
+    text:
+      es: "Suma, resta, multiplica y divide fracciones."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [fracción, numerador, denominador, simplificar, común denominador]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: fraction-simplify, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: fraction-ops, levels: [basico, intermedio, avanzado, genio] }

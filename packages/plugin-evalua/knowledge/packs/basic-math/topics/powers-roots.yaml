@@ -1,0 +1,23 @@
+id: powers-roots
+name:
+  es: "Potencias y raíces"
+code: POT
+grades: ["Séptimo", "Octavo"]
+prerequisites: [natural-numbers]
+objectives:
+  - id: integer-powers
+    text:
+      es: "Calcula potencias de base entera y exponente natural."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: exact-roots
+    text:
+      es: "Calcula raíces cuadradas exactas de cuadrados perfectos."
+    levels: [intermedio, avanzado]
+keywords: [potencia, base, exponente, raíz cuadrada, cuadrado perfecto]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: bank, file: items/powers-roots.yaml }

@@ -1,0 +1,19 @@
+id: decimals
+name:
+  es: "Números decimales"
+code: DEC
+grades: ["Sexto", "Séptimo"]
+prerequisites: [fractions]
+objectives:
+  - id: decimal-operations
+    text:
+      es: "Suma, resta y multiplica números decimales."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [decimal, coma decimal, décimas, centésimas]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: decimal-ops, levels: [basico, intermedio, avanzado, genio] }

@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: basic-math
+version: 1
+name:
+  es: "Matemática básica"
+  en: "Basic math"
+code: BAS
+requires: []
+extends: null
+overrides: false
+levels:
+  basico:
+    steps: [1, 2]
+    coefficientRange: [-9, 9]
+    cognitiveMix: { recall: 50, apply: 40, reason: 10 }
+    secondsPerItem: 60
+  intermedio:
+    steps: [2, 3]
+    coefficientRange: [-15, 15]
+    cognitiveMix: { recall: 30, apply: 50, reason: 20 }
+    secondsPerItem: 100
+  avanzado:
+    steps: [3, 5]
+    coefficientRange: [-30, 30]
+    cognitiveMix: { recall: 20, apply: 45, reason: 35 }
+    secondsPerItem: 150
+  genio:
+    steps: [4, 8]
+    coefficientRange: [-60, 60]
+    cognitiveMix: { recall: 10, apply: 35, reason: 55 }
+    secondsPerItem: 240

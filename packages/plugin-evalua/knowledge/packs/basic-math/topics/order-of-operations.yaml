@@ -1,0 +1,19 @@
+id: order-of-operations
+name:
+  es: "Jerarquía de las operaciones"
+code: ORD
+grades: ["Séptimo", "Octavo"]
+prerequisites: [integers]
+objectives:
+  - id: precedence
+    text:
+      es: "Aplica la jerarquía de las operaciones al calcular una expresión."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [jerarquía, paréntesis, precedencia, operación combinada]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: order-of-operations, levels: [basico, intermedio, avanzado, genio] }

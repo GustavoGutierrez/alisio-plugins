@@ -1,0 +1,47 @@
+- id: natural-place-value-400
+  type: single_choice
+  level: basico
+  cognitive: recall
+  stem:
+    - "¿Cuál es el valor posicional del dígito 4 en el número 3 472?"
+  options:
+    - { key: A, text: "4", correct: false, error: "confused-with-the-digit" }
+    - { key: B, text: "400", correct: true, error: "none" }
+    - { key: C, text: "40", correct: false, error: "wrong-place" }
+    - { key: D, text: "4 000", correct: false, error: "wrong-place" }
+  answer: { canonical: "400", display: "400" }
+  solution:
+    - "El dígito 4 está en la posición de las centenas."
+    - "Su valor posicional es 400."
+  check: { kind: rational-equal, value: "400" }
+- id: natural-compare-4350
+  type: single_choice
+  level: intermedio
+  cognitive: apply
+  stem:
+    - "¿Cuál de los siguientes números es el mayor?"
+  options:
+    - { key: A, text: "4 305", correct: false, error: "compared-first-difference-wrongly" }
+    - { key: B, text: "4 350", correct: true, error: "none" }
+    - { key: C, text: "4 035", correct: false, error: "fewer-thousands" }
+    - { key: D, text: "4 053", correct: false, error: "fewer-thousands" }
+  answer: { canonical: "4350", display: "4 350" }
+  solution:
+    - "Se comparan las cifras de izquierda a derecha."
+    - "4 350 es el mayor."
+  check: { kind: rational-equal, value: "4350" }
+- id: natural-write-3040
+  type: single_choice
+  level: basico
+  cognitive: recall
+  stem:
+    - "Escribe con cifras el número tres mil cuarenta."
+  options:
+    - { key: A, text: "3 040", correct: true, error: "none" }
+    - { key: B, text: "3 400", correct: false, error: "misplaced-zero" }
+    - { key: C, text: "340", correct: false, error: "missing-thousands" }
+    - { key: D, text: "30 040", correct: false, error: "extra-zero" }
+  answer: { canonical: "3040", display: "3 040" }
+  solution:
+    - "Tres mil cuarenta se escribe 3 040."
+  check: { kind: rational-equal, value: "3040" }

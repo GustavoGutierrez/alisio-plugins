@@ -314,6 +314,16 @@ for (const [dir, manifest] of packageDirs) {
         if (!files.includes(packedPath)) fail(`packed tarball missing ${packedPath}`);
       }
     }
+
+    // The shipped knowledge base is data the interview and generator read at runtime, so
+    // every knowledge file must travel in the tarball.
+    const knowledgeDir = join(dir, "knowledge");
+    if (await exists(knowledgeDir)) {
+      for (const relative of await collectFiles(knowledgeDir)) {
+        const packedPath = `package/knowledge/${relative}`;
+        if (!files.includes(packedPath)) fail(`packed tarball missing ${packedPath}`);
+      }
+    }
     console.log(`OK ${manifest.name}@${manifest.version}`);
   } finally {
     await rm(temp, { recursive: true, force: true });

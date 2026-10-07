@@ -1,0 +1,23 @@
+id: natural-numbers
+name:
+  es: "Números naturales y valor posicional"
+code: NUM
+grades: ["Sexto", "Séptimo"]
+prerequisites: []
+objectives:
+  - id: place-value
+    text:
+      es: "Identifica el valor posicional de un dígito en un número natural."
+    levels: [basico, intermedio]
+  - id: read-write-naturals
+    text:
+      es: "Lee, escribe y ordena números naturales."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [valor posicional, natural, dígito, centena]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: bank, file: items/natural-numbers.yaml }
