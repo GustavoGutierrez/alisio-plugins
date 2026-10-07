@@ -12,17 +12,31 @@ answers and distractors computed by code and a page budget that is measured, nev
 > generate → build → Gate B) that writes the four documents as HTML and PDF are implemented and
 > tested.
 
-## Install
+## Quick path
 
-```sh
+Install it persistently through Alisio:
+
+```bash
 alisio install npm:@alisio/plugin-evalua
 ```
 
-Requires Node 22.16 or newer and `@alisio/sdk` `>=0.3.0 <0.7.0`.
+Install a specific version, or update an installed plugin to a specific version:
 
-To refresh installed plugins: `alisio install --update` (all of them) or
-`alisio install npm:@alisio/plugin-evalua --update` (this one). For local development,
-`npm install --save-dev @alisio/plugin-evalua` then `alisio --plugin @alisio/plugin-evalua`.
+```bash
+alisio install npm:@alisio/plugin-evalua@0.2.1
+alisio install npm:@alisio/plugin-evalua@0.2.1 --update
+```
+
+`alisio install --update` (without a spec) refreshes every installed plugin.
+
+For project-local development instead:
+
+```bash
+npm install --save-dev @alisio/plugin-evalua
+alisio --plugin @alisio/plugin-evalua
+```
+
+Requires Node 22.16 or newer and `@alisio/sdk` `>=0.3.0 <0.7.0`.
 
 ## How to use it
 

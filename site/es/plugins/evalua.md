@@ -23,15 +23,29 @@ páginas que se mide, nunca se adivina.
 
 ## Instalación
 
-```sh
+Instálalo de forma persistente con Alisio:
+
+```bash
 alisio install npm:@alisio/plugin-evalua
 ```
 
-Requiere Node 22.16 o superior y `@alisio/sdk` `>=0.3.0 <0.7.0`.
+Instala una versión concreta, o actualiza un plugin instalado a una versión concreta:
 
-Para actualizar los plugins instalados: `alisio install --update` (todos) o
-`alisio install npm:@alisio/plugin-evalua --update` (solo este). Para desarrollo local,
-`npm install --save-dev @alisio/plugin-evalua` y luego `alisio --plugin @alisio/plugin-evalua`.
+```bash
+alisio install npm:@alisio/plugin-evalua@0.2.1
+alisio install npm:@alisio/plugin-evalua@0.2.1 --update
+```
+
+`alisio install --update` (sin spec) actualiza todos los plugins instalados.
+
+Para desarrollo local en el proyecto, en su lugar:
+
+```bash
+npm install --save-dev @alisio/plugin-evalua
+alisio --plugin @alisio/plugin-evalua
+```
+
+Requiere Node 22.16 o superior y `@alisio/sdk` `>=0.3.0 <0.7.0`.
 
 ## Cómo se usa
 
