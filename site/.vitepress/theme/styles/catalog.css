@@ -797,20 +797,58 @@
   margin-top: 0;
 }
 
-/* Landing hero: featured panel over `background-box.jpg`. The dark scrim keeps
- * the gradient title and the light copy legible in both themes; see the theme
- * report for the measured ratios. Decorative image, no text sits on the raw
- * artwork. */
+/* Landing hero: a looping, muted background video behind the featured panel.
+ * The dark scrim keeps the gradient title and the light copy legible in both
+ * themes; see the theme report for the measured ratios. The video is
+ * decorative, so no text sits on the raw footage. */
 .catalog-page .VPHero {
   position: relative;
+  /* Own stacking context, so the video and its scrim paint behind the copy
+   * without fighting the default theme's z-indexes. */
+  z-index: 0;
+  overflow: hidden;
   background-color: var(--alisio-deep-navy);
-  background-image: var(--alisio-panel-overlay), url("/assets/background-box.jpg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
   /* No border: the dark panel already delimits the hero, and the rule read as
    * another full-width separator above the feature cards. */
   border-bottom: 0;
+}
+
+/* The video renders through the hero info slot, which lives inside the text
+ * column, so that column must stop being the containing block. The copy is
+ * stacked back on top explicitly below. */
+.catalog-page .VPHero .main {
+  position: static;
+  /* VitePress gives the text column `z-index: 10`. A flex item with a z-index
+   * other than `auto` opens its own stacking context even when it is static,
+   * which would drag the video above the logo column; `auto` keeps everything
+   * in the hero's single stacking context. */
+  z-index: auto;
+}
+
+.catalog-page .VPHero .main > *:not(.hero-video) {
+  position: relative;
+  z-index: 2;
+}
+
+.catalog-page .VPHero .hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  /* Cover the panel at any viewport size, exactly as the artwork did. */
+  object-fit: cover;
+  object-position: center;
+}
+
+/* The scrim sits above the video, below the copy, and never eats a click. */
+.catalog-page .VPHero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--alisio-panel-overlay);
 }
 
 /* Give the feature cards clear separation below the hero panel. `items` ships
@@ -827,17 +865,22 @@
 /* On narrow screens the hero stacks the artwork above the copy, so a vertical
  * scrim keeps the top open for the mark and darkens the text band below. */
 @media (max-width: 959px) {
-  .catalog-page .VPHero {
-    background-image:
-      linear-gradient(
-        180deg,
-        rgba(2, 14, 28, 0.3) 0%,
-        rgba(2, 14, 28, 0.42) 32%,
-        rgba(2, 14, 28, 0.82) 44%,
-        rgba(2, 14, 28, 0.9) 58%,
-        rgba(2, 14, 28, 0.92) 100%
-      ),
-      url("/assets/background-box.jpg");
+  .catalog-page .VPHero::after {
+    background-image: linear-gradient(
+      180deg,
+      rgba(2, 14, 28, 0.3) 0%,
+      rgba(2, 14, 28, 0.42) 32%,
+      rgba(2, 14, 28, 0.82) 44%,
+      rgba(2, 14, 28, 0.9) 58%,
+      rgba(2, 14, 28, 0.92) 100%
+    );
+  }
+}
+
+/* A looping background video is exactly what this preference asks us to stop. */
+@media (prefers-reduced-motion: reduce) {
+  .catalog-page .VPHero .hero-video {
+    display: none;
   }
 }
 
@@ -856,15 +899,11 @@
   background-color: var(--vp-c-bg);
 }
 
-/* Site footer over `footer-background.jpg`, same gradient scrim treatment. No
- * border-top: the dark panel fill already separates the footer from the page,
- * and dropping the rule keeps the landing down to the rules the design wants. */
+/* Site footer: a flat dark panel. No border-top: the dark fill already
+ * separates the footer from the page, and dropping the rule keeps the landing
+ * down to the rules the design wants. */
 .VPFooter.VPFooter {
   background-color: var(--alisio-deep-navy);
-  background-image: var(--alisio-footer-overlay), url("/assets/footer-background.jpg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
   border-top: 0;
 }
 

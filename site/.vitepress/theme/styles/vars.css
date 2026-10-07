@@ -84,15 +84,13 @@
   --alisio-focus-ring: var(--alisio-blue-deep); /* 4.55:1 on white (non-text) */
   --alisio-badge-ring: rgba(6, 35, 61, 0.14);
 
-  /* Featured surfaces that always sit on a dark scrim (hero, footer). These are
-   * gradient scrims, not flat washes: the dark stop is placed behind the copy
-   * and the transparent stop behind the artwork, so `background-box.jpg` and
-   * `footer-background.jpg` read as real backgrounds. Hero copy sits in the
-   * left column, so the hero scrim darkens left-to-right; the footer copy is
-   * centred, so the footer scrim darkens at its vertical middle and opens at
-   * top and bottom. The measured worst case is pure white under the lightest
-   * stop behind text: 0.85 on the hero and 0.78 in the footer keep the muted
-   * `--alisio-panel-text-muted` at 6.5:1 and 5.9:1. */
+  /* The featured surface that always sits on a dark scrim: the landing hero.
+   * This is a gradient scrim, not a flat wash: the dark stop is placed behind
+   * the copy and the transparent stop behind the footage, so the background
+   * video reads as a real background. Hero copy sits in the left column, so the
+   * scrim darkens left-to-right. The measured worst case is pure white under
+   * the lightest stop behind text: 0.85 keeps the muted
+   * `--alisio-panel-text-muted` at 6.5:1. */
   --alisio-panel-text: #edf9ff;
   --alisio-panel-text-muted: #a8cddd;
   --alisio-panel-overlay: linear-gradient(
@@ -101,14 +99,6 @@
     rgba(2, 14, 28, 0.88) 48%,
     rgba(2, 14, 28, 0.62) 78%,
     rgba(2, 14, 28, 0.36) 100%
-  );
-  --alisio-footer-overlay: linear-gradient(
-    180deg,
-    rgba(2, 14, 28, 0.5) 0%,
-    rgba(2, 14, 28, 0.78) 30%,
-    rgba(2, 14, 28, 0.88) 50%,
-    rgba(2, 14, 28, 0.78) 70%,
-    rgba(2, 14, 28, 0.46) 100%
   );
 
   /* Category badge colours (12 catalog categories + source). Each pair keeps

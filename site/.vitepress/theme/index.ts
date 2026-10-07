@@ -10,6 +10,7 @@ import PluginCover from "./components/PluginCover.vue";
 import PluginDetail from "./components/PluginDetail.vue";
 import RecentlyPublished from "./components/RecentlyPublished.vue";
 import RelativeTime from "./components/RelativeTime.vue";
+import SiteLayout from "./SiteLayout.vue";
 
 /**
  * Extends the VitePress default theme (same as Alisio) with catalog components.
@@ -18,6 +19,7 @@ import RelativeTime from "./components/RelativeTime.vue";
  */
 export default {
   extends: DefaultTheme,
+  Layout: SiteLayout,
   enhanceApp({ app }) {
     app.component("InstallCommand", InstallCommand);
     app.component("PluginBadges", PluginBadges);
