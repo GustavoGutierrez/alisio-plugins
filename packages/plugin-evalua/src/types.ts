@@ -6,6 +6,9 @@ export type Level = (typeof levels)[number];
 export const itemTypes = ["single_choice", "multiple_choice", "open", "practice"] as const;
 export type ItemType = (typeof itemTypes)[number];
 
+export const cognitives = ["recall", "apply", "reason"] as const;
+export type Cognitive = (typeof cognitives)[number];
+
 export const roundIds = ["profile", "1", "2", "2b", "3"] as const;
 export type RoundId = (typeof roundIds)[number];
 

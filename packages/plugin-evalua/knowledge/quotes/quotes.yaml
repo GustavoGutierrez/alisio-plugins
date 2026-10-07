@@ -1,0 +1,20 @@
+# Closing-text catalogue (spec 9.4). Data only; every entry names its source.
+# Spanish renderings of documented works; no entry is written from memory.
+- id: galileo-universe
+  text: "El universo está escrito en lenguaje matemático."
+  author: "Galileo Galilei"
+  source: "Galileo Galilei, Il Saggiatore (1623); traducción libre al español."
+  tags: [logic, knowledge, wisdom]
+  language: es
+- id: euclid-no-royal-road
+  text: "No hay camino real que lleve a la geometría."
+  author: "Euclides (recogido por Proclo)"
+  source: "Proclo, Comentario al Libro I de los Elementos de Euclides."
+  tags: [diligence, perseverance]
+  language: es
+- id: gauss-queen-of-sciences
+  text: "La matemática es la reina de las ciencias y la teoría de números, la reina de la matemática."
+  author: "Carl Friedrich Gauss"
+  source: "Atribuido a Gauss; citado en Sartorius, Gauss zum Gedächtniss (1856)."
+  tags: [knowledge, wisdom]
+  language: es

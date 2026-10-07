@@ -573,6 +573,11 @@ horas", "90 minutos"), ordinals for grades, option letters. Adding a language is
 - Candidate Bible references to transcribe and verify: Proverbios 2:6, 3:13, 4:7, Eclesiastés 9:10,
   Colosenses 3:23, Santiago 1:5.
 - The agents may propose pinning but may not author text outside the catalogue or the teacher's own.
+- Shipped v1 catalogue: three sourced famous quotes and the twenty-two Reina-Valera 1909 verses from
+  §9.4, transcribed verbatim from eBible.org's public-domain `spaRV1909` release (source recorded per
+  entry). A workspace quotes layer (`<root>/quotes/*.yaml`, precedence workspace > shipped) lets a
+  teacher add their own closing texts — including a copyrighted version they are licensed to use —
+  without the package shipping them.
 
 ### 9.5 Answer sheet, solution book, rubric, control log
 
@@ -770,7 +775,8 @@ otherwise.
 - Logo: allow-listed raster formats only, size cap, magic-byte check, copied (not referenced).
 - Chrome: temp profile, no network, file access limited to the build dir, hard timeout, always killed.
 - No credential, no local machine path in any committed file or packed tarball (`leak:check`,
-  `pack:check`); test fixtures use synthetic paths such as `/scratch/p`, never `/tmp`, `/home/u`.
+  `pack:check`); test fixtures use synthetic paths such as `/scratch/p`, never a session-specific
+  temporary path or a personal home path.
 - Persist atomically (`wx` temp file + `rename`), mode `0600` for state, `0644` for exam outputs.
 
 ## 14. Package design
@@ -1087,3 +1093,56 @@ passed on the isolated run (337 tests) and on the final full run.
   now require two data-driven themes, `classic` (default, sober/formal) and `blue` (print-friendly),
   selected by `exam.yaml.template` and extensible from `templates/themes/<id>/` with no code change;
   an unknown id is `EVL-DOC-005`.
+
+### 18.4 Phase 3 (as built, uncommitted)
+
+Date: 2026-10-06. Nothing is committed or published. `pnpm check` is green: lint (`biome check`,
+973 files, no fixes), `leak:check` clean (1714 tracked files), `typecheck`, tests, `build`,
+`pack:check` (`OK @alisio/plugin-evalua@0.0.0`), `docs:check` (18 plugins, 42 pages, 76 links, 68
+images) and `docs:build`. `packages/plugin-evalua` has **253 tests across 17 files** plus 46 script
+tests. The unrelated `plugin-laya` race of 18.2 surfaced once more under the parallel `pnpm -r test`
+and passed on the rerun.
+
+**What exists**
+
+- The full v1 family set: **24 families** in `src/families/` (the seven of Phase 2 plus
+  prime-factorization, mixed-numbers, rational-compare, proportion, powers-roots,
+  expression-evaluate, like-terms, polynomial-ops, special-products, factoring, linear-equation,
+  linear-inequality, linear-system-2x2, rational-expression, quadratic-equation, linear-function and
+  word-problem-linear). `Family.solve` now returns a rational, a polynomial or canonical text, so
+  polynomial and interval answers are first-class.
+- The **`algebra` pack** (`requires: [basic-math]`, code `ALG`) with ten topics and Spanish
+  word-problem templates as data.
+- `src/blueprint.ts`: `buildBlueprint` apportions each item type across topics and the level's
+  cognitive mix by largest remainder; deterministic and summing to the total.
+- `src/generate.ts`: candidates from `family -> bank`, a bounded 50-attempt redraw loop, de-duplication
+  by canonical stem + answer, `EVL-ITM-009` on an unfilled slot, key spreading by a seeded round-robin
+  (spec 8.4), and a stable `ref` = topic code + first 4 (6 on collision) hex of the SHA-256 of the
+  canonical item JSON.
+- `src/verify.ts`: `EVL-ITM-001..010` for drafts and frozen items, plus `checkKeyDistribution`.
+- `src/checks.ts`: `EVL-EXM-001..004`.
+- `src/quotes.ts`: the closing catalogue loader, a deterministic tag-overlap selection with a
+  `sha256(examId + id)` tie-break, teacher text and pinned ids, and a **workspace quotes layer**
+  (`loadQuotesLayers`, precedence workspace > shipped). Shipped: three sourced famous quotes and 22
+  Reina-Valera 1909 verses transcribed from eBible.org's public-domain `spaRV1909` release.
+
+**Decisions and deviations**
+
+- Families emit `single_choice`; `generate` adapts a family core to `open`/`practice` (no options).
+  `multiple_choice` cannot be derived from a single-answer family, so it is filled from bank items
+  only and an unfilled slot is the explicit `EVL-ITM-009`.
+- `EVL-ITM-011` (KaTeX) is deferred to Phase 4, where KaTeX is vendored; `EVL-EXM-003` bank
+  stratification is a basic length/identity check for now.
+- Bible licensing (owner request): the Reina-Valera 1960 and the RVC, RVR1995 and NVI editions are
+  copyrighted (© Sociedades Bíblicas Unidas / United Bible Societies / Biblica), so none is shipped.
+  The package ships only public-domain text (RVR1909, transcribed from a named source); a teacher who
+  wants a copyrighted version adds it to the workspace quotes layer, which never travels in the
+  package.
+- Spec change: §9.4 records the shipped catalogue and the workspace layer; §13 no longer writes the
+  literal machine path that `leak:check` rejected once the spec became tracked.
+
+**Still open in Phase 3 / next**
+
+- `EVL-ITM-011` (KaTeX) belongs to Phase 4; wiring the quotes into the documents (the closing text of
+  the exam and solution book) is Phase 4; the blueprint/generate pipeline is not yet called from a
+  coordinator tool (Phase 5).

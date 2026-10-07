@@ -2,9 +2,25 @@ import { type CommandContext, definePlugin, type PluginAPI, type ToolResult } fr
 import { type CoordinatorOptions, EvaluaCoordinator } from "./coordinator.js";
 import { VERSION } from "./version.js";
 
+export {
+  type Blueprint,
+  type BlueprintCell,
+  type BlueprintInput,
+  blueprintTotal,
+  buildBlueprint,
+  distribute,
+} from "./blueprint.js";
+export { type ExamCheckInput, verifyExam } from "./checks.js";
 export { type Clock, fixedClock, schoolYear, systemClock } from "./clock.js";
 export { EvaluaCoordinator } from "./coordinator.js";
 export { families, familyIds, getFamily } from "./families/index.js";
+export {
+  type ExamItem,
+  type GenerateInput,
+  type GenerateResult,
+  generateExam,
+  MAX_SLOT_ATTEMPTS,
+} from "./generate.js";
 export {
   acceptAnswers,
   buildDraft,
@@ -26,6 +42,7 @@ export {
   loadKnowledge,
   type PackMeta,
   shippedKnowledgeDir,
+  shippedQuotesDir,
   type Topic,
 } from "./knowledge/index.js";
 export { latexPoly, latexRational } from "./math/latex.js";
@@ -48,6 +65,18 @@ export {
   writeProfile,
 } from "./profile.js";
 export {
+  type ClosingInput,
+  type ClosingSelection,
+  loadQuotes,
+  loadQuotesLayers,
+  parseQuoteFile,
+  type QuoteEntry,
+  type QuoteKind,
+  type QuotesCatalogue,
+  type QuotesLayer,
+  selectClosing,
+} from "./quotes.js";
+export {
   assertRelativePath,
   atomicWrite,
   canonicalJson,
@@ -58,6 +87,7 @@ export {
   writeState,
 } from "./storage.js";
 export * from "./types.js";
+export { checkKeyDistribution, verifyDraft, verifyItem } from "./verify.js";
 export {
   allocateExamFolder,
   evaluaRootPath,

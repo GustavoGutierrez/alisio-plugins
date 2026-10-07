@@ -1,0 +1,138 @@
+# Bible closing-text catalogue (spec 9.4), Reina-Valera 1909, public domain.
+#
+# Transcribed from eBible.org's `spaRV1909` release (Reina-Valera 1909, "Public Domain /
+# Dominio Público"): https://ebible.org/bible/details.php?id=spaRV1909 — file
+# spaRV1909_vpl.zip. The text is kept verbatim (including the old orthography and the
+# bracketed supplied words); no entry is written from memory.
+- id: bible-prov-2-6
+  text: "Porque Jehová da la sabiduría, y de su boca [viene] el conocimiento y la inteligencia."
+  reference: "Proverbios 2:6"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge, logic]
+  language: es
+- id: bible-prov-3-13
+  text: "Bienaventurado el hombre que halla la sabiduría, y que obtiene la inteligencia:"
+  reference: "Proverbios 3:13"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-prov-4-7
+  text: "Sabiduría ante todo: adquiere sabiduría: y ante toda tu posesión adquiere inteligencia."
+  reference: "Proverbios 4:7"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, diligence]
+  language: es
+- id: bible-ecc-9-10
+  text: "Todo lo que te viniere á la mano para hacer, hazlo según tus fuerzas; porque en el sepulcro, adonde tú vas, no hay obra, ni industria, ni ciencia, ni sabiduría."
+  reference: "Eclesiastés 9:10"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [diligence, perseverance]
+  language: es
+- id: bible-col-3-23
+  text: "Y todo lo que hagáis, hacedlo de ánimo, como al Señor, y no á los hombres;"
+  reference: "Colosenses 3:23"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [diligence, perseverance]
+  language: es
+- id: bible-jas-1-5
+  text: "Y si alguno de vosotros tiene falta de sabiduría, demándela á Dios, el cual da á todos abundantemente, y no zahiere; y le será dada."
+  reference: "Santiago 1:5"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-psa-147-4
+  text: "El cuenta el número de las estrellas; á todas ellas llama por sus nombres."
+  reference: "Salmos 147:4"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [knowledge, logic]
+  language: es
+- id: bible-psa-90-12
+  text: "Enséñanos de tal modo á contar nuestros días, que traigamos al corazón sabiduría."
+  reference: "Salmos 90:12"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-psa-111-10
+  text: "El principio de la sabiduría es el temor de Jehová: buen entendimiento tienen cuantos ponen aquéllos por obra: su loor permanece para siempre."
+  reference: "Salmos 111:10"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-isa-40-12
+  text: "¿Quién midió las aguas con su puño, y aderezó los cielos con su palmo, y con tres dedos allegó el polvo de la tierra, y pesó los montes con balanza, y con peso los collados?"
+  reference: "Isaías 40:12"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [logic, knowledge]
+  language: es
+- id: bible-1co-14-40
+  text: "Empero hágase todo decentemente y con orden."
+  reference: "1 Corintios 14:40"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [logic, diligence]
+  language: es
+- id: bible-pro-9-10
+  text: "El temor de Jehová es el principio de la sabiduría; y la ciencia de los santos es inteligencia."
+  reference: "Proverbios 9:10"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-pro-18-15
+  text: "El corazón del entendido adquiere sabiduría; y el oído de los sabios busca la ciencia."
+  reference: "Proverbios 18:15"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [knowledge, diligence]
+  language: es
+- id: bible-pro-6-6
+  text: "Ve á la hormiga, oh perezoso, mira sus caminos, y sé sabio;"
+  reference: "Proverbios 6:6"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [diligence, perseverance]
+  language: es
+- id: bible-pro-16-16
+  text: "Mejor es adquirir sabiduría que oro preciado; y adquirir inteligencia vale más que la plata."
+  reference: "Proverbios 16:16"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-pro-13-4
+  text: "Desea, y nada [alcanza] el alma del perezoso: mas el alma de los diligentes será engordada."
+  reference: "Proverbios 13:4"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [diligence, perseverance]
+  language: es
+- id: bible-dan-2-21
+  text: "Y él es el que muda los tiempos y las oportunidades: quita reyes, y pone reyes: da la sabiduría á los sabios, y la ciencia á los entendidos:"
+  reference: "Daniel 2:21"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-ecc-3-1
+  text: "PARA todas las cosas hay sazón, y todo lo que se quiere debajo del cielo, [tiene su] tiempo:"
+  reference: "Eclesiastés 3:1"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [logic, wisdom]
+  language: es
+- id: bible-job-28-12
+  text: "Empero ¿dónde se hallará la sabiduría? ¿y dónde está el lugar de la prudencia?"
+  reference: "Job 28:12"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-pro-3-19
+  text: "Jehová con sabiduría fundó la tierra; afirmó los cielos con inteligencia."
+  reference: "Proverbios 3:19"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [wisdom, knowledge]
+  language: es
+- id: bible-pro-12-1
+  text: "EL que ama la corrección ama la sabiduría: mas el que aborrece la reprensión, es ignorante."
+  reference: "Proverbios 12:1"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [diligence, wisdom]
+  language: es
+- id: bible-pro-16-3
+  text: "Encomienda á Jehová tus obras, y tus pensamientos serán afirmados."
+  reference: "Proverbios 16:3"
+  source: "eBible.org, spaRV1909 (Reina-Valera 1909), dominio público."
+  tags: [diligence, perseverance]
+  language: es
