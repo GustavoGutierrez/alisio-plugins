@@ -43,7 +43,7 @@ body {
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
-.exam-header { border-top: 3px solid var(--accent); border-bottom: 1px solid var(--rule); padding: 3mm 2mm 2.5mm; }
+.exam-header { border-top: 3px solid var(--accent); padding: 3mm 2mm 2.5mm; }
 .exam-header.band { background: var(--header-bg); color: var(--header-text); border-color: var(--header-bg); padding: 3.5mm 3mm; }
 .exam-header .header-top { display: flex; align-items: center; justify-content: center; gap: 4mm; }
 .exam-header .logo { max-height: 18mm; max-width: 34mm; object-fit: contain; }
@@ -52,7 +52,7 @@ body {
 .exam-header .title { font-family: var(--heading-font); font-weight: 700; font-size: 1.05em; margin-top: 1mm; letter-spacing: 0.02em; }
 .exam-header .theme { font-family: var(--heading-font); margin-top: 0.8mm; font-size: 0.95em; }
 .exam-header.band .institution, .exam-header.band .title, .exam-header.band .theme { color: var(--header-text); }
-.info-box { border: 1px solid var(--info-border); border-radius: 16px; margin: 3mm 4mm; padding: 2mm; }
+.info-box { border: 1px solid var(--info-border); border-radius: 16px; margin: 3mm 1mm; padding: 2mm; }
 .info-table { width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; }
 .info-table td { border: 1px solid var(--rule); padding: 1.4mm 2mm; vertical-align: middle; }
 .info-table .label { font-family: var(--heading-font); font-weight: 700; width: 15%; background: var(--accent-soft); }
@@ -62,7 +62,7 @@ body {
 .info-table .nota-label { display: block; font-family: var(--heading-font); font-weight: 700; }
 .info-table .nota-box { display: block; height: 15mm; border: 1.5px solid var(--nota-border); margin-top: 1mm; }
 .intro { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm; margin: 3mm 0; text-align: justify; }
-.section-title { font-family: var(--heading-font); font-weight: 700; margin: var(--item-gap) 0 1mm; break-after: avoid; }
+.section-title { font-family: var(--heading-font); font-weight: 700; border: 1px solid var(--rule); border-radius: 6px; padding: 1.2mm 2.5mm; margin: var(--item-gap) 0 1.5mm; break-after: avoid; }
 .item { margin-bottom: var(--item-gap); break-inside: avoid; }
 .item .stem { display: block; }
 .item .ref { color: var(--ref); font-size: 0.85em; margin-left: 1mm; }
@@ -85,5 +85,6 @@ table.grid th, table.grid td { border: 1px solid var(--rule); padding: 1mm 2mm; 
 .solution-entry .answer { font-weight: 700; }
 .misconception { font-size: 0.9em; color: var(--ref); }
 .columns-2 .questions { column-count: 2; column-gap: 8mm; }
+.columns-2.has-options .questions { column-rule: 1px solid var(--rule); }
 `;
 }

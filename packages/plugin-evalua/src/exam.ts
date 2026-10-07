@@ -9,6 +9,7 @@ import {
   itemTypes,
   type Level,
   levels,
+  type NumberingScheme,
 } from "./types.js";
 
 /** `exam.yaml` (spec 5.2): the frozen exam spec, plus the id, number, template and status. */
@@ -35,6 +36,12 @@ export function fromDraft(
     template: extra.template ?? "classic",
     status: "approved-a",
   };
+}
+
+function readNumbering(value: unknown): NumberingScheme {
+  return (["continuous", "section", "letters"] as readonly string[]).includes(value as string)
+    ? (value as NumberingScheme)
+    : "letters";
 }
 
 function readItemTypes(value: unknown): Record<ItemType, number> {
@@ -97,6 +104,7 @@ export function parseExam(text: string): ExamSpec {
         }
       : {}),
     columns: parsed.columns === 2 ? 2 : 1,
+    numbering: readNumbering(parsed.numbering),
     maxPages: typeof parsed.maxPages === "number" ? parsed.maxPages : "auto",
     durationMinutes: Number.isInteger(parsed.durationMinutes)
       ? (parsed.durationMinutes as number)
@@ -144,6 +152,7 @@ export function toSpecLike(spec: ExamSpec): ExamSpecLike {
     instrument: spec.instrument,
     calculator: spec.calculator,
     columns: spec.columns,
+    numbering: spec.numbering,
     introOverride: spec.introOverride,
     schoolYear: spec.schoolYear,
   };

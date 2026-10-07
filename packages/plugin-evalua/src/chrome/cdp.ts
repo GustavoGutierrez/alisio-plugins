@@ -117,6 +117,8 @@ export interface PrintRequest {
   timeoutMs?: number;
   /** When given, evaluated in the page before printing; its value is returned as `audit`. */
   auditScript?: string;
+  /** When given, Chrome prints it as the page footer, which numbers the pages. */
+  footerHtml?: string;
 }
 
 export interface PrintResult {
@@ -209,7 +211,13 @@ export async function printHtmlToPdf(request: PrintRequest): Promise<PrintResult
     const printed = (await withTimeout(
       client.send(
         "Page.printToPDF",
-        { printBackground: true, preferCSSPageSize: true, displayHeaderFooter: false },
+        {
+          printBackground: true,
+          preferCSSPageSize: true,
+          displayHeaderFooter: request.footerHtml !== undefined,
+          headerTemplate: "<div></div>",
+          footerTemplate: request.footerHtml ?? "<div></div>",
+        },
         sessionId,
       ),
       timeoutMs,

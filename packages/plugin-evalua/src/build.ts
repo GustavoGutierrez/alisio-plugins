@@ -3,7 +3,7 @@ import { join } from "node:path";
 import type { Blueprint } from "./blueprint.js";
 import { printHtmlToPdf } from "./chrome/cdp.js";
 import type { ExamItem } from "./generate.js";
-import { emitDocument } from "./html/emit.js";
+import { emitDocument, pageFooterHtml } from "./html/emit.js";
 import { evaluaMathRenderer, katexCss } from "./katex.js";
 import type { CheckFinding } from "./knowledge/report.js";
 import { auditFindings, auditScript, parseAuditReport } from "./layout/audit.js";
@@ -206,6 +206,7 @@ export async function buildExam(input: BuildInput): Promise<BuildOutput> {
         executable: input.executable,
         html,
         auditScript: auditScript(legibilityFloors),
+        footerHtml: pageFooterHtml(input.locale),
         ...(input.timeoutMs === undefined ? {} : { timeoutMs: input.timeoutMs }),
       }).then((result) => ({
         pdf: result.pdf,

@@ -132,4 +132,9 @@ export const ROUND2: Answers = {
   distribution: "same",
   columns: "1",
 };
-export const ROUND3: Answers = { pages: "auto", time: "120-pencil", closing: "none" };
+export const ROUND3: Answers = {
+  pages: "auto",
+  time: "120-pencil",
+  closing: "none",
+  numbering: "letters",
+};

@@ -129,9 +129,12 @@ describe("exam rounds", () => {
     expect(questions[0]?.options[0]?.label).toContain("30");
   });
 
-  it("round 3 asks pages, time, closing", () => {
+  it("round 3 asks pages, time, closing, numbering", () => {
     const questions = buildRound("3", { answers: {}, catalog: emptyCatalog });
-    expect(questions.map((q) => q.id)).toEqual(["pages", "time", "closing"]);
+    expect(questions.map((q) => q.id)).toEqual(["pages", "time", "closing", "numbering"]);
+    const numbering = questions.find((q) => q.id === "numbering");
+    expect(numbering?.options[0]?.value).toBe("letters");
+    expect(numbering?.options.map((o) => o.value)).toEqual(["letters", "section", "continuous"]);
     check(questions);
   });
 });

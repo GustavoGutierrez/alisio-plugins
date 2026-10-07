@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { buildBlueprint } from "../src/blueprint.js";
 import { familyIds } from "../src/families/index.js";
 import { type ExamItem, generateExam } from "../src/generate.js";
-import { emitDocument } from "../src/html/emit.js";
+import { emitDocument, pageFooterHtml } from "../src/html/emit.js";
 import {
   shippedKnowledgeDir,
   shippedLocalesDir,
@@ -271,7 +271,7 @@ describe("emitDocument", () => {
     // The rounded, gray frame that keeps the table clear of the page edge.
     expect(html).toContain('<div class="info-box"><table class="info-table">');
     expect(html).toContain(
-      ".info-box { border: 1px solid var(--info-border); border-radius: 16px; margin: 3mm 4mm; padding: 2mm; }",
+      ".info-box { border: 1px solid var(--info-border); border-radius: 16px; margin: 3mm 1mm; padding: 2mm; }",
     );
     expect(html).toContain("--info-border: #D2D2D2;");
     // Paired rows still pack two label/value pairs per line.
@@ -314,9 +314,9 @@ describe("emitDocument", () => {
       columns: 1,
       math,
     });
-    // The number is a filled badge with white ink and no trailing dot.
-    expect(html).toContain('<span class="number">1</span>');
-    expect(html).not.toContain('<span class="number">1.</span>');
+    // The number is a filled badge with white ink and no trailing dot (letters by default).
+    expect(html).toContain('<span class="number">a</span>');
+    expect(html).not.toContain('<span class="number">a.</span>');
     expect(html).toContain("--badge-bg: #000000;");
     expect(html).toContain("--badge-text: #ffffff;");
     expect(html).toContain(
@@ -353,5 +353,114 @@ describe("emitDocument", () => {
     expect(html).not.toContain("<script>alert");
     expect(html).toContain("size: A4");
     expect(html).toContain("columns-2");
+  });
+
+  it("frames the section title, rules the columns only with options and drops the header rule", () => {
+    const { model } = buildExamModel({
+      spec,
+      profile,
+      items,
+      locale,
+      closing: {},
+      density: density("regular"),
+    });
+    const choiceHtml = emitDocument(model, {
+      theme,
+      density: density("regular"),
+      paper: "letter",
+      columns: 2,
+      math,
+    });
+    expect(choiceHtml).toContain('<body class="columns-2 has-options">');
+    expect(choiceHtml).toContain(
+      ".columns-2.has-options .questions { column-rule: 1px solid var(--rule); }",
+    );
+    expect(choiceHtml).toContain(
+      ".exam-header { border-top: 3px solid var(--accent); padding: 3mm 2mm 2.5mm; }",
+    );
+    expect(choiceHtml).not.toContain("border-top: 3px solid var(--accent); border-bottom:");
+    expect(choiceHtml).toContain(
+      ".section-title { font-family: var(--heading-font); font-weight: 700; border: 1px solid var(--rule); border-radius: 6px;",
+    );
+    expect(choiceHtml).toContain('<div class="section-title">1. Selección única</div>');
+
+    // A plain list of exercises to solve reads better without the divider.
+    const list = {
+      ...model,
+      sections: [
+        {
+          title: null,
+          items: model.sections
+            .flatMap((section) => section.items)
+            .map((item) => ({ ...item, options: [] })),
+        },
+      ],
+    };
+    const listHtml = emitDocument(list, {
+      theme,
+      density: density("regular"),
+      paper: "letter",
+      columns: 2,
+      math,
+    });
+    expect(listHtml).toContain('<body class="columns-2">');
+    expect(listHtml).not.toContain('<body class="columns-2 has-options">');
+  });
+});
+
+describe("numbering schemes", () => {
+  const build = (numbering: "continuous" | "section" | "letters") =>
+    buildExamModel({
+      spec: { ...spec, numbering },
+      profile,
+      items,
+      locale,
+      closing: {},
+      density: density("regular"),
+    }).model;
+
+  it("letters each question per section and numbers the sections", () => {
+    const model = build("letters");
+    expect(model.sections.map((section) => section.number)).toEqual([1, 2]);
+    expect(model.sections[0]?.items.map((item) => item.label)).toEqual(["a", "b", "c"]);
+    expect(model.sections[1]?.items.map((item) => item.label)).toEqual(["a", "b"]);
+    // The global index is preserved for the answer sheet and the rubric.
+    expect(model.sections[1]?.items.map((item) => item.number)).toEqual([4, 5]);
+  });
+
+  it("numbers each question as section.position", () => {
+    const model = build("section");
+    expect(model.sections[0]?.items.map((item) => item.label)).toEqual(["1.1", "1.2", "1.3"]);
+    expect(model.sections[1]?.items.map((item) => item.label)).toEqual(["2.1", "2.2"]);
+  });
+
+  it("keeps a continuous 1..N numbering when asked", () => {
+    const model = build("continuous");
+    const labels = model.sections.flatMap((section) => section.items.map((item) => item.label));
+    expect(labels).toEqual(["1", "2", "3", "4", "5"]);
+  });
+
+  it("defaults to letters when the spec does not say", () => {
+    const { model } = buildExamModel({
+      spec,
+      profile,
+      items,
+      locale,
+      closing: {},
+      density: density("regular"),
+    });
+    expect(model.sections[0]?.items[0]?.label).toBe("a");
+  });
+});
+
+describe("pageFooterHtml", () => {
+  it("builds the Chrome page-number footer from the locale", () => {
+    const footer = pageFooterHtml(locale);
+    expect(footer).toContain('<span class="pageNumber"></span>');
+    expect(footer).toContain('<span class="totalPages"></span>');
+    expect(footer).toContain("Página ");
+    expect(footer).toContain(" de ");
+    expect(footer).not.toContain("{page}");
+    expect(footer).not.toContain("{total}");
   });
 });

@@ -10,6 +10,7 @@ import {
   itemTypes,
   type Level,
   levels,
+  type NumberingScheme,
   type PendingRound,
   type RoundId,
   type TeacherProfile,
@@ -47,6 +48,11 @@ const option = (
 });
 
 const unanswered = (ctx: RoundContext, id: string) => ctx.answers[id] === undefined;
+
+/** The numbering scheme answer; `letters` is the default the interview preselects. */
+function numberingFrom(value: string | undefined): NumberingScheme {
+  return value === "section" || value === "continuous" ? value : "letters";
+}
 
 /** The answer to a text-capable question: its free text when `enter`/`other`/`path` was chosen. */
 export function answerText(answers: Record<string, string>, id: string): string | undefined {
@@ -368,6 +374,18 @@ function round3(ctx: RoundContext): Question[] {
         option("none", "Ninguno", { recommended: true }),
         option("quote", "Una frase célebre"),
         option("bible", "Un versículo bíblico"),
+      ],
+    });
+  }
+  if (unanswered(ctx, "numbering")) {
+    questions.push({
+      id: "numbering",
+      header: "Numeración",
+      question: "¿Cómo se numeran las secciones y las preguntas?",
+      options: [
+        option("letters", "Secciones 1. y preguntas a, b, c", { recommended: true }),
+        option("section", "Secciones 1. y preguntas 1.1, 1.2, 1.3"),
+        option("continuous", "Preguntas 1, 2, 3… de corrido, secciones sin número"),
       ],
     });
   }
@@ -732,6 +750,7 @@ export function buildDraft(
     distribution,
     ...(bank ? { bank } : {}),
     columns: answers.columns === "2" ? 2 : 1,
+    numbering: numberingFrom(answers.numbering),
     maxPages: pages === "auto" ? "auto" : Number(pages),
     durationMinutes: time.durationMinutes,
     instrument: time.instrument,

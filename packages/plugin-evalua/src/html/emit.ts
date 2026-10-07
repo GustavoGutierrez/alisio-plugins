@@ -1,5 +1,6 @@
 import { figureSvg } from "../figures/index.js";
 import type { DensityPreset } from "../layout/presets.js";
+import type { Locale } from "../locales.js";
 import { type Block, escapeHtml, type InlineToken, parseMarkup } from "../markup.js";
 import type {
   AnswerSheetModel,
@@ -128,7 +129,7 @@ function renderItem(item: ItemModel, math: MathRenderer): string {
     item.answerSpaceLines > 0
       ? `<div class="answer-space" style="--answer-lines: ${item.answerSpaceLines}"></div>`
       : "";
-  return `<div class="item"><span class="number">${item.number}</span><span class="ref">${escapeHtml(item.ref)}</span><div class="stem">${renderBlocks(parseMarkup(item.stem), math)}</div>${options}${space}</div>`;
+  return `<div class="item"><span class="number">${escapeHtml(item.label)}</span><span class="ref">${escapeHtml(item.ref)}</span><div class="stem">${renderBlocks(parseMarkup(item.stem), math)}</div>${options}${space}</div>`;
 }
 
 function renderExam(model: ExamModel, options: EmitOptions): string {
@@ -137,7 +138,7 @@ function renderExam(model: ExamModel, options: EmitOptions): string {
       const title =
         section.title === null
           ? ""
-          : `<div class="section-title">${escapeHtml(section.title)}</div>`;
+          : `<div class="section-title">${section.number}. ${escapeHtml(section.title)}</div>`;
       return `${title}${section.items.map((item) => renderItem(item, options.math)).join("")}`;
     })
     .join("");
@@ -213,6 +214,18 @@ function renderBody(model: DocumentModel, options: EmitOptions): string {
 }
 
 /** Emits a full, self-contained HTML document (no network references). */
+/**
+ * The Chrome print footer that numbers the pages (spec 9.1). Chrome replaces the `pageNumber` and
+ * `totalPages` classes at print time; the wording comes from the locale.
+ */
+export function pageFooterHtml(locale: Locale): string {
+  const template = locale.labels.pageOf ?? "Página {page} de {total}";
+  const text = escapeHtml(template)
+    .replace("{page}", '<span class="pageNumber"></span>')
+    .replace("{total}", '<span class="totalPages"></span>');
+  return `<div style="width:100%;padding:0 4mm;font-family:Arial,sans-serif;font-size:8pt;color:#333333;text-align:right;">${text}</div>`;
+}
+
 export function emitDocument(model: DocumentModel, options: EmitOptions): string {
   const css = renderCss({
     theme: options.theme,
@@ -220,7 +233,17 @@ export function emitDocument(model: DocumentModel, options: EmitOptions): string
     paper: options.paper,
     columns: options.columns,
   });
-  const bodyClass = options.columns === 2 ? "columns-2" : "columns-1";
+  const bodyClass = [
+    options.columns === 2 ? "columns-2" : "columns-1",
+    // A vertical rule between the two columns only helps when the items carry answer options; a
+    // plain list of exercises to solve reads better without it.
+    model.kind === "exam" &&
+    model.sections.some((section) => section.items.some((item) => item.options.length > 0))
+      ? "has-options"
+      : "",
+  ]
+    .filter((entry) => entry !== "")
+    .join(" ");
   const title = model.kind === "exam" ? model.header.title : model.title;
   return `<!doctype html>
 <html lang="es">

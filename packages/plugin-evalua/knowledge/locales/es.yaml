@@ -8,6 +8,7 @@ labels:
   student: "Estudiante"
   grade: "Grado"
   date: "Fecha"
+  pageOf: "Página {page} de {total}"
   nota: "Nota / Calificación"
   themeLabel: "TEMA"
   answerSheet: "Hoja de respuestas — uso docente"

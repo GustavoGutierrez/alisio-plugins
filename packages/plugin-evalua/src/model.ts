@@ -5,7 +5,7 @@ import type { DensityPreset } from "./layout/presets.js";
 import type { Locale } from "./locales.js";
 import type { MarkupLine } from "./markup.js";
 import type { ClosingSelection } from "./quotes.js";
-import { type ItemType, itemTypes } from "./types.js";
+import { type ItemType, itemTypes, type NumberingScheme } from "./types.js";
 
 export interface ExamSpecLike {
   title: string;
@@ -17,6 +17,7 @@ export interface ExamSpecLike {
   instrument: string;
   calculator: boolean;
   columns: 1 | 2;
+  numbering?: NumberingScheme;
   introOverride: string | null;
   schoolYear: number;
 }
@@ -51,6 +52,8 @@ export interface InfoRow {
 
 export interface ItemModel {
   number: number;
+  /** The number or letter shown on the sheet, per the numbering scheme (spec 9.1). */
+  label: string;
   ref: string;
   type: ItemType;
   stem: MarkupLine[];
@@ -59,6 +62,8 @@ export interface ItemModel {
 }
 
 export interface SectionModel {
+  /** 1-based section index, shown before the title (spec 9.1). */
+  number: number;
   title: string | null;
   items: ItemModel[];
 }
@@ -214,9 +219,26 @@ function answerSpaceLines(item: ExamItem, density: DensityPreset): number {
   return 0;
 }
 
-function itemModel(item: ExamItem, number: number, density: DensityPreset): ItemModel {
+/** a, b, ... z, aa, ab ... for the `letters` numbering scheme. */
+function letterLabel(index: number): string {
+  let n = index + 1;
+  let out = "";
+  while (n > 0) {
+    out = String.fromCharCode(97 + ((n - 1) % 26)) + out;
+    n = Math.floor((n - 1) / 26);
+  }
+  return out;
+}
+
+function itemModel(
+  item: ExamItem,
+  number: number,
+  label: string,
+  density: DensityPreset,
+): ItemModel {
   return {
     number,
+    label,
     ref: item.ref,
     type: item.type,
     stem: item.stem,
@@ -241,13 +263,24 @@ export function buildExamModel(input: {
 
   const presentTypes = itemTypes.filter((type) => items.some((item) => item.type === type));
   const grouped = presentTypes.length > 1;
+  const numbering = spec.numbering ?? "letters";
   const sections: SectionModel[] = [];
   let number = 1;
-  for (const type of presentTypes) {
+  for (const [index, type] of presentTypes.entries()) {
     const sectionItems = items
       .filter((item) => item.type === type)
-      .map((item) => itemModel(item, number++, density));
+      .map((item, position) => {
+        const global = number++;
+        const label =
+          numbering === "section"
+            ? `${index + 1}.${position + 1}`
+            : numbering === "letters"
+              ? letterLabel(position)
+              : String(global);
+        return itemModel(item, global, label, density);
+      });
     sections.push({
+      number: index + 1,
       title: grouped ? (locale.sections[type] ?? type) : null,
       items: sectionItems,
     });

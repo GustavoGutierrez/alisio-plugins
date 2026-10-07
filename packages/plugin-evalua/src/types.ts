@@ -64,6 +64,9 @@ export interface InterviewState {
 }
 
 /** The exam spec as gathered by the interview, held in state until Gate A (spec 5.2, 7.4). */
+/** How sections and their questions are numbered on the sheet (spec 9.1). */
+export type NumberingScheme = "continuous" | "section" | "letters";
+
 export interface ExamDraft {
   schemaVersion: 1;
   title: string;
@@ -79,6 +82,7 @@ export interface ExamDraft {
   distribution: "same" | "bank";
   bank?: { size: number; variants: number };
   columns: 1 | 2;
+  numbering: NumberingScheme;
   maxPages: "auto" | number;
   durationMinutes: number;
   instrument: Instrument;

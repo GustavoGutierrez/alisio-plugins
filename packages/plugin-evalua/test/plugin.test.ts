@@ -79,7 +79,7 @@ describe("interactive flow", () => {
       ["language", "institution", "teacher_name", "logo"],
       ["topic", "grade", "level", "kind"],
       ["types", "count", "distribution", "columns"],
-      ["pages", "time", "closing"],
+      ["pages", "time", "closing", "numbering"],
     ]);
     for (const request of h.asked) expect(request.questions.length).toBeLessThanOrEqual(4);
     expect(await readFile(join(h.workspace, "evalua", "teacher.yaml"), "utf8")).toContain(
@@ -168,7 +168,7 @@ describe("headless continuation", () => {
 
     await h.run("new", "topic=Fracciones grade=septimo level=basico kind=basic-math");
     await h.run("new", "types=single_choice count=10 distribution=same columns=1");
-    const done = await h.run("new", "pages=auto time=90-pencil closing=none");
+    const done = await h.run("new", "pages=auto time=90-pencil closing=none numbering=letters");
     expect(done).toContain("Gate A");
     const state = await readState(h.workspace);
     expect(state?.draft?.durationMinutes).toBe(90);
