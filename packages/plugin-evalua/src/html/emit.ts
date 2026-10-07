@@ -34,13 +34,21 @@ function renderInline(tokens: readonly InlineToken[], math: MathRenderer): strin
     .join("");
 }
 
-function renderBlocks(blocks: readonly Block[], math: MathRenderer): string {
+/** Hands out one palette slot per figure, so a document spreads the fills instead of repeating them. */
+type ToneCursor = () => number;
+
+function toneCursor(): ToneCursor {
+  let index = 0;
+  return () => index++;
+}
+
+function renderBlocks(blocks: readonly Block[], math: MathRenderer, tone: ToneCursor): string {
   return blocks
     .map((block) => {
       if (block.kind === "paragraph") return `<p>${renderInline(block.inline, math)}</p>`;
       if (block.kind === "display") return `<div class="display">${math(block.value, true)}</div>`;
       if (block.kind === "figure") {
-        return `<figure class="figure">${figureSvg(block.spec)}</figure>`;
+        return `<figure class="figure">${figureSvg(block.spec, tone())}</figure>`;
       }
       const head = block.head.map((cell) => `<th>${renderInline(cell, math)}</th>`).join("");
       const rows = block.rows
@@ -115,31 +123,32 @@ function renderInfo(model: ExamModel): string {
   return `<div class="info-box"><table class="info-table"><tbody>${rows}</tbody></table></div>`;
 }
 
-function renderItem(item: ItemModel, math: MathRenderer): string {
+function renderItem(item: ItemModel, math: MathRenderer, tone: ToneCursor): string {
   const options =
     item.options.length === 0
       ? ""
       : `<div class="options">${item.options
           .map(
             (option) =>
-              `<span class="option"><span class="key">${escapeHtml(option.key)}.</span>${renderBlocks(parseMarkup(option.markup), math)}</span>`,
+              `<span class="option"><span class="key">${escapeHtml(option.key)}.</span>${renderBlocks(parseMarkup(option.markup), math, tone)}</span>`,
           )
           .join("")}</div>`;
   const space =
     item.answerSpaceLines > 0
       ? `<div class="answer-space" style="--answer-lines: ${item.answerSpaceLines}"></div>`
       : "";
-  return `<div class="item"><span class="number">${escapeHtml(item.label)}</span><span class="ref">${escapeHtml(item.ref)}</span><div class="stem">${renderBlocks(parseMarkup(item.stem), math)}</div>${options}${space}</div>`;
+  return `<div class="item"><span class="number">${escapeHtml(item.label)}</span><span class="ref">${escapeHtml(item.ref)}</span><div class="stem">${renderBlocks(parseMarkup(item.stem), math, tone)}</div>${options}${space}</div>`;
 }
 
 function renderExam(model: ExamModel, options: EmitOptions): string {
+  const tone = toneCursor();
   const sections = model.sections
     .map((section) => {
       const title =
         section.title === null
           ? ""
           : `<div class="section-title">${section.number}. ${escapeHtml(section.title)}</div>`;
-      return `${title}${section.items.map((item) => renderItem(item, options.math)).join("")}`;
+      return `${title}${section.items.map((item) => renderItem(item, options.math, tone)).join("")}`;
     })
     .join("");
   const closing =
@@ -158,10 +167,11 @@ ${closing}`;
 }
 
 function renderSheet(model: AnswerSheetModel, options: EmitOptions): string {
+  const tone = toneCursor();
   const rows = model.rows
     .map(
       (row) =>
-        `<tr><td>${row.number}</td><td>${escapeHtml(row.ref)}</td><td>${escapeHtml(row.typeLabel)}</td><td>${renderBlocks(parseMarkup([row.answer]), options.math)}</td><td>${row.points}</td></tr>`,
+        `<tr><td>${row.number}</td><td>${escapeHtml(row.ref)}</td><td>${escapeHtml(row.typeLabel)}</td><td>${renderBlocks(parseMarkup([row.answer]), options.math, tone)}</td><td>${row.points}</td></tr>`,
     )
     .join("");
   const index = model.indexByRef
@@ -176,14 +186,15 @@ ${renderHeader(model.header, options.theme)}
 }
 
 function renderBook(model: SolutionBookModel, options: EmitOptions): string {
+  const tone = toneCursor();
   const entries = model.entries
     .map(
       (entry) => `<div class="solution-entry">
   <h2>${entry.number} · ${escapeHtml(entry.ref)}</h2>
-  ${renderBlocks(parseMarkup(entry.stem), options.math)}
-  <div class="answer">${renderBlocks(parseMarkup([entry.answer]), options.math)}</div>
-  <ol>${entry.solution.map((step) => `<li>${renderBlocks(parseMarkup([step]), options.math)}</li>`).join("")}</ol>
-  ${entry.misconceptions.map((item) => `<p class="misconception">${escapeHtml(item.key)} · ${renderBlocks(parseMarkup([item.text]), options.math)} — ${escapeHtml(item.error)}</p>`).join("")}
+  ${renderBlocks(parseMarkup(entry.stem), options.math, tone)}
+  <div class="answer">${renderBlocks(parseMarkup([entry.answer]), options.math, tone)}</div>
+  <ol>${entry.solution.map((step) => `<li>${renderBlocks(parseMarkup([step]), options.math, tone)}</li>`).join("")}</ol>
+  ${entry.misconceptions.map((item) => `<p class="misconception">${escapeHtml(item.key)} · ${renderBlocks(parseMarkup([item.text]), options.math, tone)} — ${escapeHtml(item.error)}</p>`).join("")}
 </div>`,
     )
     .join("");

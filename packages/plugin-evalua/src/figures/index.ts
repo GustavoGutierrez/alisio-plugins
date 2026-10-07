@@ -54,6 +54,12 @@ function pastelFor(spec: FigureSpec): string {
   return PASTELS[hash % PASTELS.length] ?? PASTELS[0];
 }
 
+/** The palette slot for a running index, wrapping in both directions. */
+function pastelAt(tone: number): string {
+  const index = (((Math.trunc(tone) % PASTELS.length) + PASTELS.length) % PASTELS.length) | 0;
+  return PASTELS[index] ?? PASTELS[0];
+}
+
 const num = (value: unknown, fallback: number): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
 
@@ -320,7 +326,7 @@ function angle(): string {
 }
 
 /** Builds the SVG for a figure; unknown kinds fall back to a labelled placeholder. */
-export function figureSvg(spec: FigureSpec): string {
+export function figureSvg(spec: FigureSpec, tone?: number): string {
   const params = spec.params ?? {};
   let svg: string;
   switch (spec.kind) {
@@ -376,8 +382,11 @@ export function figureSvg(spec: FigureSpec): string {
     svg = svg.replace(/aria-label="[^"]*"/, `aria-label="${esc(spec.label)}"`);
   }
   // Every closed shape inherits the group fill; shapes that carry meaning with their own fill
-  // (the Venn circles, the fraction bar) set it explicitly and win over this.
-  return svg.replace('<g fill="none"', `<g fill="${pastelFor(spec)}"`);
+  // (the Venn circles, the fraction bar) set it explicitly and win over this. A running `tone`
+  // spreads the palette across one document, so a sheet of figures is not five times the same
+  // colour; without one the spec picks its own, which keeps a lone figure stable.
+  const fill = tone === undefined ? pastelFor(spec) : pastelAt(tone);
+  return svg.replace('<g fill="none"', `<g fill="${fill}"`);
 }
 
 export const figureKinds: readonly FigureKind[] = [

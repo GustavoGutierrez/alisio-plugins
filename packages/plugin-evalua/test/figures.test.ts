@@ -36,6 +36,15 @@ describe("deterministic figures", () => {
     expect(tones.size).toBeGreaterThan(1);
   });
 
+  it("walks the palette when the renderer hands out a running tone", () => {
+    const spec = { kind: "square" as const };
+    // Two identical figures in one document must not come out the same colour.
+    expect(figureSvg(spec, 0)).toContain('fill="#FFDA64"');
+    expect(figureSvg(spec, 1)).toContain('fill="#A3D084"');
+    expect(figureSvg(spec, 2)).toContain('fill="#F4B281"');
+    expect(figureSvg(spec, PASTEL_TONES.length)).toBe(figureSvg(spec, 0));
+  });
+
   it("gives the Venn circles their own tones and keeps the fraction bar white", () => {
     const venn = figureSvg({ kind: "venn", params: { sets: 2 } });
     expect(venn).toContain('fill="#FFDA64"');
