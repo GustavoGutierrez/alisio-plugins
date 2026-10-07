@@ -59,6 +59,7 @@ export {
   parseTimeAnswer,
   splitItemTypes,
 } from "./interview.js";
+export { freezeItems, type ItemsFile, itemsSha256, parseItemsFile } from "./items-file.js";
 export {
   checkKatexItem,
   evaluaMathRenderer,
@@ -134,6 +135,13 @@ export {
   type IntroResult,
   type ProfileLike,
 } from "./model.js";
+export {
+  buildPlanProject,
+  buildVersionLog,
+  type GateRecord,
+  type PhaseRecord,
+  type PlanInput,
+} from "./plan.js";
 export {
   copyLogo,
   detectImageKind,
