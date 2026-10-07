@@ -158,6 +158,40 @@ export interface BuildOutput {
 /** Fits the page budget and writes the four documents as HTML, plus PDFs when Chrome is available. */
 export async function buildExam(input: BuildInput): Promise<BuildOutput> {
   const findings: CheckFinding[] = [];
+  const writeFiles = async (
+    outDir: string,
+    entries: readonly (readonly [string, string | Uint8Array])[],
+  ): Promise<string[]> => {
+    await mkdir(outDir, { recursive: true });
+    const files: string[] = [];
+    for (const [name, content] of entries) {
+      const path = join(outDir, name);
+      await writeFile(path, content);
+      files.push(path);
+    }
+    return files;
+  };
+
+  // Without a browser (and no injected printer) the build still writes the print-ready HTML.
+  if (input.executable === "" && input.printer === undefined) {
+    const documents = renderDocuments(input, defaultDensity());
+    findings.push(...documents.findings);
+    findings.push({
+      id: "EVL-LAY-000",
+      severity: "warning",
+      subject: "layout",
+      message:
+        "PDFs need a Chromium-compatible browser (Chrome, Chromium, Brave, Edge, Vivaldi or Opera); the HTML files were written and the page limits were not verified",
+    });
+    const files = await writeFiles(input.outDir, [
+      ["01_examen_estudiante.html", documents.exam],
+      ["02_hoja_respuestas.html", documents.sheet],
+      ["03_solucionario_completo.html", documents.book],
+      ["04_rubrica_calificacion.html", documents.rubric],
+    ]);
+    return { files, findings };
+  }
+
   const printer: PdfPrinter =
     input.printer ??
     ((html) =>

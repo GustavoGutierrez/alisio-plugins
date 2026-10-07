@@ -2,10 +2,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import type { PluginAPI } from "@alisio/sdk";
 import { buildBlueprint } from "./blueprint.js";
+import { buildExam, type PdfPrinter } from "./build.js";
 import { verifyExam } from "./checks.js";
 import { detectChrome } from "./chrome/detect.js";
 import { type Clock, systemClock } from "./clock.js";
-import { type ExamSpec, fromDraft, parseExam, stringifyExam } from "./exam.js";
+import { type ExamSpec, fromDraft, parseExam, stringifyExam, toSpecLike } from "./exam.js";
 import { familyIds } from "./families/index.js";
 import { generateExam } from "./generate.js";
 import {
@@ -18,9 +19,18 @@ import {
   parseAnswerText,
   renderPending,
 } from "./interview.js";
-import { freezeItems, itemsSha256 } from "./items-file.js";
-import { createTopicCatalog, loadKnowledge, shippedKnowledgeDir } from "./knowledge/index.js";
+import { freezeItems, itemsSha256, parseItemsFile } from "./items-file.js";
+import {
+  createTopicCatalog,
+  loadKnowledge,
+  shippedKnowledgeDir,
+  shippedLocalesDir,
+  shippedQuotesDir,
+  shippedThemesDir,
+} from "./knowledge/index.js";
 import type { LevelCalibration, LoadedKnowledge } from "./knowledge/types.js";
+import { loadLocale } from "./locales.js";
+import { buildPlanProject, buildVersionLog } from "./plan.js";
 import {
   copyLogo,
   DEFAULT_SUBJECT,
@@ -28,8 +38,10 @@ import {
   validateProfile,
   writeProfile,
 } from "./profile.js";
+import { loadQuotes, selectClosing } from "./quotes.js";
 import { cleanText } from "./schemas.js";
 import { atomicWrite, emptyState, readState, validateRootName, writeState } from "./storage.js";
+import { loadThemeLayers, resolveTheme } from "./themes.js";
 import type {
   EvaluaState,
   InterviewFlow,
@@ -38,6 +50,7 @@ import type {
   TeacherProfile,
   TopicCatalog,
 } from "./types.js";
+import { VERSION } from "./version.js";
 import {
   allocateExamFolder,
   evaluaRootPath,
@@ -51,6 +64,8 @@ export const DEFAULT_ROOT = "evalua";
 export interface CoordinatorOptions {
   clock?: Clock;
   catalog?: TopicCatalog;
+  /** Test seam: when given, the build uses this printer instead of launching a browser. */
+  printer?: PdfPrinter;
 }
 
 const profileKeys = ["language", "teacher_name", "institution", "logo", "subject"].flatMap(
@@ -71,6 +86,7 @@ export interface ProfileInput {
 export class EvaluaCoordinator {
   private readonly clock: Clock;
   private readonly injectedCatalog: TopicCatalog | undefined;
+  private readonly printer: PdfPrinter | undefined;
   private readonly catalogCache = new Map<string, TopicCatalog>();
 
   constructor(
@@ -79,6 +95,7 @@ export class EvaluaCoordinator {
   ) {
     this.clock = options.clock ?? systemClock;
     this.injectedCatalog = options.catalog;
+    this.printer = options.printer;
   }
 
   /** The knowledge-base catalog for a workspace: injected (tests) or loaded from packs. */
@@ -552,6 +569,126 @@ export class EvaluaCoordinator {
     } catch (error) {
       return {
         text: error instanceof Error ? error.message : "evalua_generate failed",
+        isError: true,
+      };
+    }
+  }
+
+  /** `/evalua:build`: read the approved exam folder and write the documents. */
+  private async buildAt(workspace: string): Promise<string> {
+    const state = await readState(workspace);
+    const active = state?.activeExamId;
+    if (!state || !active) {
+      throw new Error("No approved exam. Run /evalua:approve a and /evalua:generate first.");
+    }
+    const base = await this.rootOf(workspace, state);
+    const found = await this.findExamFolder(base, active);
+    if (!found) throw new Error(`The folder for exam ${active} was not found`);
+    const profile = await readProfile(base);
+    if (!profile) throw new Error("The teacher profile is missing; run /evalua:init");
+    const itemsText = await readFile(join(found.path, "items.json"), "utf8");
+    const items = parseItemsFile(itemsText);
+    if (items.length === 0) throw new Error("items.json has no items; run /evalua:generate first");
+    const knowledge = await this.loadKnowledgeFor(workspace);
+    const calibration = this.calibrationFor(found.spec, knowledge);
+    const blueprint = buildBlueprint({
+      topics: found.spec.topics,
+      level: found.spec.level,
+      calibration,
+      itemTypes: found.spec.itemTypes,
+    });
+    const localeResult = await loadLocale(shippedLocalesDir(), profile.language);
+    if (!localeResult.locale) throw new Error(`The locale "${profile.language}" is missing`);
+    const themes = await loadThemeLayers([{ dir: shippedThemesDir(), layer: "shipped" }]);
+    const resolution = resolveTheme(themes.themes, found.spec.template);
+    if (!resolution.theme) throw new Error(resolution.finding?.message ?? "Unknown template");
+    const quotes = await loadQuotes(shippedQuotesDir());
+    const closing = selectClosing({
+      kind: found.spec.closing.kind,
+      pinned: found.spec.closing.pinned,
+      language: profile.language,
+      keywords: [],
+      examId: found.spec.id,
+      entries: quotes.entries,
+    });
+    const detection = await detectChrome();
+    const result = await buildExam({
+      spec: toSpecLike(found.spec),
+      profile,
+      items,
+      locale: localeResult.locale,
+      theme: resolution.theme,
+      paper: profile.paper,
+      columns: found.spec.columns,
+      blueprint,
+      closing,
+      executable: detection.path ?? "",
+      outDir: found.path,
+      maxPages: found.spec.maxPages,
+      ...(this.printer === undefined ? {} : { printer: this.printer }),
+    });
+    const progress = state.exams[active] ?? { phase: "generated", revision: 1, gates: {} };
+    const planInput = {
+      examId: found.spec.id,
+      title: found.spec.title,
+      theme: found.spec.theme,
+      grade: found.spec.grade,
+      level: found.spec.level,
+      questionCount: found.spec.questionCount,
+      itemTypes: found.spec.itemTypes,
+      packs: found.spec.packs,
+      topics: found.spec.topics,
+      schoolYear: found.spec.schoolYear,
+      revision: progress.revision ?? 1,
+      gates: progress.gates,
+      phases: [
+        { name: "Profile", status: "done" as const },
+        { name: "Intake", status: "done" as const },
+        { name: "Ficha tecnica y blueprint", status: "done" as const },
+        { name: "Item generation", status: "done" as const },
+        { name: "Layout fit", status: "done" as const },
+        { name: "Package", status: "done" as const },
+      ],
+      seeds: [found.spec.id],
+      pluginVersion: VERSION,
+      itemsSha256: itemsSha256(itemsText),
+      ...(result.engineVersion === undefined ? {} : { engine: result.engineVersion }),
+      builtAt: this.now(),
+    };
+    await atomicWrite(
+      join(found.path, "05_control_versiones.md"),
+      buildVersionLog(planInput),
+      0o644,
+    );
+    await atomicWrite(join(found.path, "00_plan_proyecto.md"), buildPlanProject(planInput), 0o644);
+    state.exams[active] = { ...progress, phase: "built" };
+    await this.save(workspace, state);
+    const errors = result.findings.filter((finding) => finding.severity === "error");
+    const warnings = result.findings.filter((finding) => finding.severity === "warning");
+    return [
+      `Built ${items.length} items into ${state.root}/exams/${found.name} (${result.files.length} files).`,
+      detection.path === undefined
+        ? "No browser: HTML only, page limits not verified (EVL-LAY-000)."
+        : `Engine: ${result.engineVersion ?? "unknown"}.`,
+      ...(errors.length > 0
+        ? [`Errors:\n${errors.map((finding) => `- ${finding.id} ${finding.message}`).join("\n")}`]
+        : []),
+      ...(warnings.length > 0 ? [`Warnings: ${warnings.map((w) => w.id).join(", ")}`] : []),
+    ].join("\n");
+  }
+
+  /** `/evalua:build`: build the documents for the active exam. */
+  async buildCommand(_args: string, sessionId?: string): Promise<string> {
+    return this.buildAt(this.workspace(sessionId));
+  }
+
+  /** `evalua_build`: build the documents for the active exam. */
+  async buildTool(workspace: string): Promise<{ text: string; isError: boolean }> {
+    try {
+      return { text: await this.buildAt(workspace), isError: false };
+    } catch (error) {
+      return {
+        text: error instanceof Error ? error.message : "evalua_build failed",
         isError: true,
       };
     }

@@ -2,6 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AskQuestionsRequest, PluginAPI, ToolDefinition } from "@alisio/sdk";
+import type { PdfPrinter } from "../../src/build.js";
 import { fixedClock } from "../../src/clock.js";
 import { registerEvalua } from "../../src/index.js";
 import type { TopicCatalog } from "../../src/types.js";
@@ -23,6 +24,7 @@ export interface HarnessOptions {
   answers?: Answers[];
   workspace?: string;
   catalog?: TopicCatalog;
+  printer?: PdfPrinter;
   now?: string;
 }
 
@@ -72,6 +74,7 @@ export async function harness(options: HarnessOptions = {}) {
   const coordinator = registerEvalua(api, {
     clock: fixedClock(options.now ?? "2026-10-06T12:00:00.000Z"),
     ...(options.catalog ? { catalog: options.catalog } : {}),
+    ...(options.printer ? { printer: options.printer } : {}),
   });
   const run = (name: string, args = "") => {
     const handler = commands.get(name);

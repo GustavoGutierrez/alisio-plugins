@@ -7,10 +7,10 @@
 Evalúa helps a teacher prepare printable school math exams through a short, guided interview, with
 answers and distractors computed by code and a page budget that is measured, never guessed.
 
-> Status: active development. The teacher profile, workspace and interview, the exact math core, the
-> extensible knowledge base, item generation and verification, and the HTML/PDF rendering with the
-> layout fit are implemented and tested. The end-to-end `/evalua:build` command that reads an
-> approved exam folder is the remaining work.
+> Status: v1 feature complete. The profile, workspace and interview, the exact math core, the
+> extensible knowledge base, item generation and verification, and the end-to-end flow (Gate A →
+> generate → build → Gate B) that writes the four documents as HTML and PDF are implemented and
+> tested.
 
 ## Install
 
@@ -67,11 +67,12 @@ Authored items are reviewed independently by `evl-math-reviewer` (read-only) and
 | `/evalua:status` | Shows the profile, any pending round, the draft and the exam folders. |
 | `/evalua:approve a\|b` | Gate A allocates the exam folder and freezes `exam.yaml`; Gate B approves the final package. |
 | `/evalua:generate` | Builds the blueprint, generates and verifies the items and freezes `items.json`. |
+| `/evalua:build` | Reads the approved folder, fits the page budget and writes the exam, answer sheet, solution book and rubric as HTML and PDF. |
 | `/evalua:kb` | Lists the knowledge base: packs, topics and levels. |
 | `/evalua:doctor` | Reports the knowledge-base health and the available print browser. |
 
 Tools for agents: `evalua_profile`, `evalua_answer`, `evalua_status`, `evalua_kb`, `evalua_check`,
-`evalua_exam` and `evalua_generate`.
+`evalua_exam`, `evalua_generate` and `evalua_build`.
 
 Standalone CLI:
 

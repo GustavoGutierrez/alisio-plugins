@@ -8,10 +8,10 @@ Evalúa ayuda a un docente a preparar exámenes de matemáticas imprimibles medi
 breve y guiada, con las respuestas y los distractores calculados por código y un presupuesto de
 páginas que se mide, nunca se adivina.
 
-> Estado: en desarrollo activo. El perfil del docente, el espacio de trabajo y la entrevista, el
-> núcleo matemático exacto, la base de conocimiento extensible, la generación y verificación de
-> ítems, y el renderizado HTML/PDF con el ajuste de página están implementados y probados. Falta el
-> comando `/evalua:build` de extremo a extremo que lee una carpeta de examen aprobada.
+> Estado: v1 completo en funcionalidad. El perfil, el espacio de trabajo y la entrevista, el núcleo
+> matemático exacto, la base de conocimiento extensible, la generación y verificación de ítems, y el
+> flujo de extremo a extremo (Puerta A → generate → build → Puerta B) que escribe los cuatro
+> documentos en HTML y PDF están implementados y probados.
 
 ## Instalación
 
@@ -69,11 +69,12 @@ Los ítems redactados los revisan de forma independiente `evl-math-reviewer` (so
 | `/evalua:status` | Muestra el perfil, la ronda pendiente, el borrador y las carpetas de examen. |
 | `/evalua:approve a\|b` | La Puerta A asigna la carpeta del examen y congela `exam.yaml`; la Puerta B aprueba el paquete final. |
 | `/evalua:generate` | Construye la tabla de especificaciones, genera y verifica los ítems y congela `items.json`. |
+| `/evalua:build` | Lee la carpeta aprobada, ajusta el presupuesto de páginas y escribe el examen, la hoja de respuestas, el solucionario y la rúbrica en HTML y PDF. |
 | `/evalua:kb` | Lista la base de conocimiento: packs, temas y niveles. |
 | `/evalua:doctor` | Reporta la salud de la base de conocimiento y el navegador de impresión disponible. |
 
 Herramientas para agentes: `evalua_profile`, `evalua_answer`, `evalua_status`, `evalua_kb`,
-`evalua_check`, `evalua_exam` y `evalua_generate`.
+`evalua_check`, `evalua_exam`, `evalua_generate` y `evalua_build`.
 
 CLI independiente:
 

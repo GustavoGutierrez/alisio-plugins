@@ -259,6 +259,12 @@ export function registerEvalua(
     "",
     coordinator.generateCommand.bind(coordinator),
   );
+  register(
+    "build",
+    "Read the approved exam folder and write the exam, answer sheet, solution book and rubric (HTML and PDFs)",
+    "",
+    coordinator.buildCommand.bind(coordinator),
+  );
 
   api.tools.register({
     name: "evalua_profile",
@@ -411,6 +417,17 @@ export function registerEvalua(
     effect: "write",
     async execute(_input, context) {
       const result = await coordinator.generateTool(context.workspace);
+      return text(result.text, result.isError);
+    },
+  });
+  api.tools.register({
+    name: "evalua_build",
+    description:
+      "Build the four documents for the active exam: read exam.yaml and items.json, fit the page budget and write the exam, answer sheet, solution book and rubric as HTML and, with a Chromium-compatible browser, as PDFs. Process effect.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    effect: "process",
+    async execute(_input, context) {
+      const result = await coordinator.buildTool(context.workspace);
       return text(result.text, result.isError);
     },
   });

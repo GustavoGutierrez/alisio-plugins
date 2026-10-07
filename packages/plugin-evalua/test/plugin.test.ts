@@ -42,6 +42,7 @@ describe("plugin entry", () => {
     const h = await harness();
     expect([...h.tools.keys()].sort()).toEqual([
       "evalua_answer",
+      "evalua_build",
       "evalua_check",
       "evalua_exam",
       "evalua_generate",
@@ -51,6 +52,7 @@ describe("plugin entry", () => {
     ]);
     expect([...h.commands.keys()].sort()).toEqual([
       "approve",
+      "build",
       "doctor",
       "generate",
       "init",
@@ -358,8 +360,14 @@ describe("knowledge tools", () => {
 });
 
 describe("exam folder flow", () => {
-  it("approves Gate A, generates the items and freezes items.json", async () => {
+  const fakePrinter = async () => ({
+    pdf: Buffer.from("/Type /Page /Count 1"),
+    engineVersion: "Chrome/test",
+  });
+
+  it("approves Gate A, generates, freezes items.json and builds the documents", async () => {
     const h = await harness({
+      printer: fakePrinter,
       answers: [
         PROFILE_ANSWERS,
         {
@@ -377,15 +385,25 @@ describe("exam folder flow", () => {
     const folders = await readdir(join(h.workspace, "evalua", "exams"));
     expect(folders).toHaveLength(1);
     const folder = folders[0] as string;
-    const exam = await readFile(join(h.workspace, "evalua", "exams", folder, "exam.yaml"), "utf8");
+    const examDir = join(h.workspace, "evalua", "exams", folder);
+    const exam = await readFile(join(examDir, "exam.yaml"), "utf8");
     expect(exam).toContain("status: approved-a");
     expect(exam).toContain("algebra/algebraic-expressions");
     const generated = await h.run("generate");
     expect(generated).toMatch(/Generated 10 items/);
-    const frozen = JSON.parse(
-      await readFile(join(h.workspace, "evalua", "exams", folder, "items.json"), "utf8"),
-    ) as { items: unknown[] };
+    const frozen = JSON.parse(await readFile(join(examDir, "items.json"), "utf8")) as {
+      items: unknown[];
+    };
     expect(frozen.items).toHaveLength(10);
+
+    const built = await h.run("build");
+    expect(built).toMatch(/Built 10 items/);
+    const files = await readdir(examDir);
+    expect(files).toContain("01_examen_estudiante.pdf");
+    expect(files).toContain("03_solucionario_completo.pdf");
+    expect(files).toContain("layout-report.json");
+    expect(files).toContain("00_plan_proyecto.md");
+    expect(files).toContain("05_control_versiones.md");
     expect(await h.run("approve", "b")).toMatch(/Gate B approved/);
   });
 });
