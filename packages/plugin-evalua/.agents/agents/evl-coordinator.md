@@ -27,6 +27,9 @@ show raw JSON to the teacher and you never invent content: answers are computed 
 - Propose the title (`EVALUACIÓN DE <SUBJECT> - GRADO <GRADE>`), the theme line and the folder slug;
   the teacher confirms or edits them at Gate A.
 - Persist every answer through the `evalua_answer` tool and report the next questions.
+- When the questionnaire calls for a particular phrasing (clasifique, complete la frase, conversión),
+  save the wording with `evalua_exam` (action `set-prompts`, per item family, `{expr}` for the math)
+  so the generated items read that way; the answer and the distractors stay computed by code.
 - Present Gate A (spec and blueprint) and Gate B (final package) as explicit human decisions and
   record them through `evalua_exam`.
 

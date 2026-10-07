@@ -392,22 +392,42 @@ export function registerEvalua(
   api.tools.register({
     name: "evalua_exam",
     description:
-      "Approve a gate or report the active exam. action approve with gate a allocates the exam folder and freezes exam.yaml after the teacher approves the spec; gate b records the final approval. action status returns the workspace state as JSON.",
+      "Approve a gate, report the active exam, or save agent-authored item instructions. action approve with gate a allocates the exam folder and freezes exam.yaml; action set-prompts saves per-family question templates (with {expr} for the item's math) so generated items are phrased for the questionnaire; action status returns the workspace state as JSON.",
     inputSchema: {
       type: "object",
       properties: {
-        action: { type: "string", enum: ["approve", "status"] },
+        action: { type: "string", enum: ["approve", "status", "set-prompts"] },
         gate: { type: "string", enum: ["a", "b"] },
+        prompts: {
+          type: "object",
+          additionalProperties: { type: "array", items: { type: "string" } },
+        },
       },
       required: ["action"],
       additionalProperties: false,
     },
     effect: "write",
     async execute(input, context) {
-      const action = input.action === "approve" ? "approve" : "status";
+      const action =
+        input.action === "approve"
+          ? "approve"
+          : input.action === "set-prompts"
+            ? "set-prompts"
+            : "status";
+      const rawPrompts = input.prompts;
+      let prompts: Record<string, string[]> | undefined;
+      if (typeof rawPrompts === "object" && rawPrompts !== null && !Array.isArray(rawPrompts)) {
+        prompts = {};
+        for (const [family, value] of Object.entries(rawPrompts)) {
+          if (Array.isArray(value) && value.every((entry) => typeof entry === "string")) {
+            prompts[family] = value as string[];
+          }
+        }
+      }
       const result = await coordinator.examTool(context.workspace, {
         action,
         ...(typeof input.gate === "string" ? { gate: input.gate } : {}),
+        ...(prompts === undefined ? {} : { prompts }),
       });
       return text(result.text, result.isError);
     },

@@ -107,6 +107,8 @@ export interface GenerateInput {
   level: Level;
   calibration: LevelCalibration;
   seed: string;
+  /** Agent-authored instructions per family id; they override a topic source's prompts. */
+  prompts?: Record<string, string[]>;
 }
 
 export interface GenerateResult {
@@ -223,7 +225,7 @@ export function generateExam(input: GenerateInput): GenerateResult {
         for (const source of familySources) {
           const family = familyRegistry[source.family];
           if (family === undefined) continue;
-          const rawPrompts = source.params?.prompts;
+          const rawPrompts = input.prompts?.[source.family] ?? source.params?.prompts;
           const prompts = Array.isArray(rawPrompts)
             ? rawPrompts.filter((entry): entry is string => typeof entry === "string")
             : undefined;

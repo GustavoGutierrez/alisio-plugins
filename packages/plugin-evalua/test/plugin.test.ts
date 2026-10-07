@@ -389,12 +389,21 @@ describe("exam folder flow", () => {
     const exam = await readFile(join(examDir, "exam.yaml"), "utf8");
     expect(exam).toContain("status: approved-a");
     expect(exam).toContain("algebra/algebraic-expressions");
+    const prompts = await h.tool("evalua_exam", {
+      action: "set-prompts",
+      prompts: { "expression-evaluate": ["Evalua el polinomio segun el cuestionario: {expr}"] },
+    });
+    expect(prompts.isError).toBe(false);
     const generated = await h.run("generate");
     expect(generated).toMatch(/Generated 10 items/);
     const frozen = JSON.parse(await readFile(join(examDir, "items.json"), "utf8")) as {
       items: unknown[];
     };
     expect(frozen.items).toHaveLength(10);
+    const overridden = (frozen.items as Array<{ family: string | null; stem: unknown[] }>).find(
+      (entry) => entry.family === "expression-evaluate",
+    );
+    expect(String(overridden?.stem[0])).toContain("Evalua el polinomio segun el cuestionario");
 
     const built = await h.run("build");
     expect(built).toMatch(/Built 10 items/);

@@ -10,6 +10,9 @@
   topic source can override the instruction with agent-authored templates through `params.prompts`,
   where `{expr}` is replaced by the item's math, so the coordinator can phrase the questions for the
   questionnaire it determined.
+- d722121: The coordinator saves those instructions: `evalua_exam` gains `action: "set-prompts"`
+  (agent-authored templates per item family, `{expr}` for the math), `generateExam` applies them to
+  any family, and the answer and distractors stay computed by code.
 
 ## 0.3.0
 

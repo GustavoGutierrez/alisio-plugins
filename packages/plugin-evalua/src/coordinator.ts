@@ -7,7 +7,7 @@ import { verifyExam } from "./checks.js";
 import { detectChrome } from "./chrome/detect.js";
 import { type Clock, systemClock } from "./clock.js";
 import { type ExamSpec, fromDraft, parseExam, stringifyExam, toSpecLike } from "./exam.js";
-import { familyIds } from "./families/index.js";
+import { families, familyIds } from "./families/index.js";
 import { generateExam } from "./generate.js";
 import {
   acceptAnswers,
@@ -508,6 +508,7 @@ export class EvaluaCoordinator {
       level: found.spec.level,
       calibration,
       seed: found.spec.id,
+      ...(found.spec.itemPrompts === undefined ? {} : { prompts: found.spec.itemPrompts }),
     });
     const examFindings = verifyExam({
       items: result.items,
@@ -543,15 +544,22 @@ export class EvaluaCoordinator {
     return this.generateAt(this.workspace(sessionId));
   }
 
-  /** `evalua_exam`: approve a gate or report the active exam. */
+  /** `evalua_exam`: approve a gate, report the active exam, or save item instructions. */
   async examTool(
     workspace: string,
-    input: { action: "approve" | "status"; gate?: string },
+    input: {
+      action: "approve" | "status" | "set-prompts";
+      gate?: string;
+      prompts?: Record<string, string[]>;
+    },
   ): Promise<{ text: string; isError: boolean }> {
     try {
       if (input.action === "approve") {
         const gate = input.gate === "b" ? "b" : "a";
         return { text: await this.approveAt(workspace, gate), isError: false };
+      }
+      if (input.action === "set-prompts") {
+        return { text: await this.setPromptsAt(workspace, input.prompts ?? {}), isError: false };
       }
       return { text: JSON.stringify(await this.statusInfo(workspace), null, 2), isError: false };
     } catch (error) {
@@ -560,6 +568,35 @@ export class EvaluaCoordinator {
         isError: true,
       };
     }
+  }
+
+  /** Saves agent-authored item instructions into the active exam's `exam.yaml`. */
+  private async setPromptsAt(
+    workspace: string,
+    prompts: Record<string, string[]>,
+  ): Promise<string> {
+    const state = await readState(workspace);
+    const active = state?.activeExamId;
+    if (!state || !active) throw new Error("No approved exam. Run /evalua:approve a first.");
+    const base = await this.rootOf(workspace, state);
+    const found = await this.findExamFolder(base, active);
+    if (!found) throw new Error(`The folder for exam ${active} was not found`);
+    const clean: Record<string, string[]> = {};
+    for (const [family, templates] of Object.entries(prompts)) {
+      if (families[family] === undefined) throw new Error(`Unknown item family: ${family}`);
+      const list = (Array.isArray(templates) ? templates : [])
+        .map((entry) => String(entry).trim())
+        .filter((entry) => entry !== "");
+      if (list.length > 0) clean[family] = list;
+    }
+    const spec: ExamSpec = { ...found.spec };
+    if (Object.keys(clean).length > 0) spec.itemPrompts = clean;
+    else delete spec.itemPrompts;
+    await writeFile(join(found.path, "exam.yaml"), stringifyExam(spec), { mode: 0o644 });
+    const saved = Object.keys(clean);
+    return saved.length > 0
+      ? `Saved item instructions for: ${saved.join(", ")}.`
+      : "Cleared item instructions; the families' defaults apply.";
   }
 
   /** `evalua_generate`: run the generation pipeline and freeze items.json. */

@@ -32,3 +32,16 @@ Every item MUST carry a `check` the code can evaluate (`rational-equal`, `poly-e
 `numeric-equal`). An item whose key cannot be machine-checked is refused, or flagged
 `needsTeacherReview` when its type is `open`. You never decide the correct answer: the check does,
 and the `evl-math-reviewer` verifies it independently.
+
+## Wording for generated items
+
+You also phrase the questions the generators produce. Call `evalua_exam` with `action: "set-prompts"`
+and a map of item family to question templates, where `{expr}` is replaced by the item's math:
+
+```json
+{ "like-terms": ["Reduce los términos semejantes: {expr}"],
+  "fraction-simplify": ["Simplifica la fracción {expr} hasta su forma irreducible."] }
+```
+
+The answer and the distractors stay computed by code; you only write the question, according to the
+questionnaire you determined (clasifique, complete la frase, conversión, etc.).

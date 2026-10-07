@@ -20,6 +20,8 @@ export interface ExamSpec extends Omit<ExamDraft, "status"> {
   number: number;
   template: string;
   status: ExamStatus;
+  /** Agent-authored item instructions per family id; `{expr}` is replaced by the item's math. */
+  itemPrompts?: Record<string, string[]>;
 }
 
 export function fromDraft(
@@ -40,6 +42,20 @@ function readItemTypes(value: unknown): Record<ItemType, number> {
   return Object.fromEntries(
     itemTypes.map((type) => [type, Number.isInteger(source[type]) ? (source[type] as number) : 0]),
   ) as Record<ItemType, number>;
+}
+
+function readItemPrompts(value: unknown): Record<string, string[]> | undefined {
+  if (!isRecord(value)) return undefined;
+  const out: Record<string, string[]> = {};
+  for (const [family, templates] of Object.entries(value)) {
+    if (
+      Array.isArray(templates) &&
+      templates.every((entry) => typeof entry === "string" && entry.trim() !== "")
+    ) {
+      out[family] = templates as string[];
+    }
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 export function parseExam(text: string): ExamSpec {
@@ -97,6 +113,9 @@ export function parseExam(text: string): ExamSpec {
       pinned: typeof closing.pinned === "string" ? closing.pinned : null,
     },
     template: typeof parsed.template === "string" ? parsed.template : "classic",
+    ...(readItemPrompts(parsed.itemPrompts) === undefined
+      ? {}
+      : { itemPrompts: readItemPrompts(parsed.itemPrompts) as Record<string, string[]> }),
     schoolYear: Number.isInteger(parsed.schoolYear)
       ? (parsed.schoolYear as number)
       : new Date().getUTCFullYear(),
