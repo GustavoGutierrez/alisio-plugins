@@ -27,7 +27,10 @@ export function knownBrowserPaths(platform: NodeJS.Platform): string[] {
     return [
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
       "/Applications/Chromium.app/Contents/MacOS/Chromium",
+      "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
       "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+      "/Applications/Vivaldi.app/Contents/MacOS/Vivaldi",
+      "/Applications/Opera.app/Contents/MacOS/Opera",
     ];
   }
   if (platform === "win32") {
@@ -35,7 +38,15 @@ export function knownBrowserPaths(platform: NodeJS.Platform): string[] {
       "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe",
       "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe",
       "%LOCALAPPDATA%\\Google\\Chrome\\Application\\chrome.exe",
+      "%ProgramFiles%\\Chromium\\Application\\chrome.exe",
+      "%ProgramFiles%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+      "%LOCALAPPDATA%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
       "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe",
+      "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe",
+      "%LOCALAPPDATA%\\Microsoft\\Edge\\Application\\msedge.exe",
+      "%ProgramFiles%\\Vivaldi\\Application\\vivaldi.exe",
+      "%LOCALAPPDATA%\\Vivaldi\\Application\\vivaldi.exe",
+      "%ProgramFiles%\\Opera\\opera.exe",
     ];
   }
   return [
@@ -45,17 +56,35 @@ export function knownBrowserPaths(platform: NodeJS.Platform): string[] {
     "/usr/bin/chromium-browser",
     "/snap/bin/chromium",
     "/var/lib/flatpak/exports/bin/com.google.Chrome",
+    "/usr/bin/brave-browser",
+    "/usr/bin/brave",
+    "/usr/bin/microsoft-edge",
+    "/usr/bin/microsoft-edge-stable",
+    "/usr/bin/vivaldi",
+    "/usr/bin/vivaldi-stable",
+    "/usr/bin/opera",
   ];
 }
 
 export function pathBrowserNames(platform: NodeJS.Platform): string[] {
-  const names =
-    platform === "win32"
-      ? ["chrome.exe", "msedge.exe"]
-      : platform === "darwin"
-        ? ["google-chrome", "chromium"]
-        : ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"];
-  return names;
+  if (platform === "win32") {
+    return ["chrome.exe", "msedge.exe", "brave.exe", "vivaldi.exe", "opera.exe"];
+  }
+  if (platform === "darwin") {
+    return ["google-chrome", "chromium", "brave-browser", "microsoft-edge", "vivaldi", "opera"];
+  }
+  return [
+    "google-chrome",
+    "google-chrome-stable",
+    "chromium",
+    "chromium-browser",
+    "brave-browser",
+    "brave",
+    "microsoft-edge",
+    "microsoft-edge-stable",
+    "vivaldi",
+    "opera",
+  ];
 }
 
 async function defaultExists(path: string): Promise<boolean> {

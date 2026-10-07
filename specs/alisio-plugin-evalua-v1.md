@@ -625,8 +625,9 @@ color needed for meaning), muted `ref` tags in gray ≥ 45 % black for photocopy
 ### 10.4 Engine availability
 
 Chrome-family detection ported from thesis (`ALISIO_EVALUA_CHROME`, `PUPPETEER_EXECUTABLE_PATH`,
-known paths, `PATH`); nothing is downloaded. Without a browser: `doctor` reports it, `build` writes
-the self-contained print-ready HTML files (still KaTeX-typeset) and returns a clear error that PDFs
+`CHROME_PATH`, known paths, `PATH`); nothing is downloaded. Any Chromium-compatible browser works —
+Google Chrome, Chromium, Brave, Microsoft Edge, Vivaldi or Opera — on Linux, macOS and Windows.
+Without a browser: `doctor` reports it, `build` writes the self-contained print-ready HTML files (still KaTeX-typeset) and returns a clear error that PDFs
 need a Chrome-family browser, without having validated page limits (`EVL-LAY-000` warning). The
 browser runs with a temporary profile, no network (`--host-resolver-rules="MAP * ~NOTFOUND"` plus CDP `Fetch` interception), file access limited to the build dir (only the `Fetch` allow-list can do this; Chrome has no flag for it), a 120 s
 timeout, and is always killed and cleaned.

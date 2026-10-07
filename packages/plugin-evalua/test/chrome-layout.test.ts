@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectChrome, knownBrowserPaths } from "../src/chrome/detect.js";
+import { detectChrome, knownBrowserPaths, pathBrowserNames } from "../src/chrome/detect.js";
 import { buildLayoutReport, choosePreset, countPdfPages } from "../src/layout.js";
 
 describe("detectChrome", () => {
@@ -36,6 +36,33 @@ describe("detectChrome", () => {
   it("reports none when nothing is found", async () => {
     expect(await detectChrome({ platform: "linux", env: {}, ...none })).toEqual({ source: "none" });
     expect(knownBrowserPaths("darwin")[0]).toContain("Google Chrome");
+  });
+
+  it("accepts Brave, Edge, Vivaldi and Opera as Chromium-compatible browsers", async () => {
+    expect(knownBrowserPaths("linux")).toContain("/usr/bin/brave-browser");
+    expect(knownBrowserPaths("linux")).toContain("/usr/bin/microsoft-edge");
+    expect(knownBrowserPaths("darwin").some((path) => path.includes("Brave Browser"))).toBe(true);
+    expect(pathBrowserNames("win32")).toContain("brave.exe");
+
+    const brave = await detectChrome({
+      platform: "linux",
+      env: {},
+      exists: async () => false,
+      pathLookup: async (name) => (name === "brave-browser" ? "/opt/brave/brave" : undefined),
+    });
+    expect(brave).toMatchObject({ path: "/opt/brave/brave", source: "path" });
+
+    const windows = await detectChrome({
+      platform: "win32",
+      env: { ProgramFiles: "C:\\PF" },
+      exists: async (path) =>
+        path === "C:\\PF\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+      pathLookup: async () => undefined,
+    });
+    expect(windows).toMatchObject({
+      path: "C:\\PF\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+      source: "known-path",
+    });
   });
 });
 

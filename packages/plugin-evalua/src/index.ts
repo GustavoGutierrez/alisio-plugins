@@ -10,7 +10,25 @@ export {
   buildBlueprint,
   distribute,
 } from "./blueprint.js";
+export {
+  type BuildInput,
+  type BuildOutput,
+  buildExam,
+  type FitOutput,
+  fitDocuments,
+  type PdfPrinter,
+  type RenderedDocuments,
+  type RenderInput,
+  renderDocuments,
+} from "./build.js";
 export { type ExamCheckInput, verifyExam } from "./checks.js";
+export {
+  CdpError,
+  chromeArgs,
+  type PrintRequest,
+  type PrintResult,
+  printHtmlToPdf,
+} from "./chrome/cdp.js";
 export {
   type ChromeDeps,
   type ChromeDetection,
