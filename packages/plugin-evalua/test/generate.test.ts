@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { type Blueprint, blueprintTotal, buildBlueprint } from "../src/blueprint.js";
 import { verifyExam } from "../src/checks.js";
 import { families, familyIds } from "../src/families/index.js";
-import { type ExamItem, type GenerateResult, generateExam } from "../src/generate.js";
+import { applyPrompts, type ExamItem, type GenerateResult, generateExam } from "../src/generate.js";
 import { shippedKnowledgeDir } from "../src/knowledge/package.js";
 import { loadKnowledge } from "../src/knowledge/registry.js";
 import type { LevelCalibration, LoadedTopic } from "../src/knowledge/types.js";
@@ -99,6 +99,23 @@ describe("generateExam", () => {
     expect(result.findings).toEqual([]);
     expect(result.items).toHaveLength(3);
     for (const item of result.items) expect(item.options).toEqual([]);
+  });
+});
+
+describe("applyPrompts", () => {
+  it("overrides the instruction with an agent template and keeps the math", () => {
+    const family = families["fraction-simplify"];
+    if (!family) throw new Error("fraction-simplify missing");
+    const draft = family.generate({ rng: createRng("x"), level: "basico", calibration });
+    const overridden = applyPrompts(
+      draft,
+      ["Reduce {expr} a su forma irreducible."],
+      createRng("y"),
+    );
+    expect(overridden.stem[0]).toMatch(/^Reduce /);
+    expect(overridden.stem[0]).toMatch(/\$/);
+    expect(overridden.answer).toEqual(draft.answer);
+    expect(applyPrompts(draft, [], createRng("y"))).toBe(draft);
   });
 });
 

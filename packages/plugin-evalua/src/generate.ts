@@ -8,7 +8,7 @@ import {
 import type { CheckFinding } from "./knowledge/report.js";
 import type { FamilySource, LevelCalibration, LoadedTopic, StaticItem } from "./knowledge/types.js";
 import type { MarkupLine } from "./markup.js";
-import { createRng } from "./math/rng.js";
+import { createRng, type Rng } from "./math/rng.js";
 import { canonicalJson } from "./storage.js";
 import type { Cognitive, ItemType, Level } from "./types.js";
 import { checkKeyDistribution, verifyDraft, verifyItem } from "./verify.js";
@@ -77,6 +77,28 @@ function refFor(code: string, item: Omit<ExamItem, "ref">, used: Set<string>): s
 
 function dedupeKey(item: ExamItem): string {
   return `${JSON.stringify(item.stem)}\u0001${item.answer.canonical}`;
+}
+
+/**
+ * Replaces the item's instruction with an agent-authored template, keeping the family's math. The
+ * `{expr}` marker is filled from the `$…$` formulas on the first stem line, so any topic can phrase
+ * its questions its own way (spec: item wording is data) without changing a family.
+ */
+export function applyPrompts(
+  draft: ItemDraft,
+  prompts: readonly string[] | undefined,
+  rng: Rng,
+): ItemDraft {
+  const candidates = (prompts ?? []).filter(
+    (entry) => typeof entry === "string" && entry.trim() !== "",
+  );
+  if (candidates.length === 0) return draft;
+  const template = rng.pick(candidates);
+  if (template === undefined) return draft;
+  const first = draft.stem[0];
+  const math = typeof first === "string" ? (first.match(/\$[^$]*\$/g)?.join(" ") ?? "") : "";
+  const instruction = template.replace(/\{expr\}/g, math);
+  return { ...draft, stem: [instruction, ...draft.stem.slice(1)] };
 }
 
 export interface GenerateInput {
@@ -205,13 +227,14 @@ export function generateExam(input: GenerateInput): GenerateResult {
           const prompts = Array.isArray(rawPrompts)
             ? rawPrompts.filter((entry): entry is string => typeof entry === "string")
             : undefined;
-          const draft = family.generate({
+          let draft = family.generate({
             rng: createRng(seedString),
             level: input.level,
             calibration: input.calibration,
             ...(source.params === undefined ? {} : { params: source.params }),
             ...(prompts === undefined || prompts.length === 0 ? {} : { prompts }),
           });
+          draft = applyPrompts(draft, prompts, createRng(`${seedString}|prompt`));
           const options = adaptOptions(draft, cell.type);
           if (options === undefined) continue;
           if (verifyDraft(draft, family, input.level, input.calibration).length > 0) continue;

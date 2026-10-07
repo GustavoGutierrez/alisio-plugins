@@ -43,6 +43,7 @@ export { EvaluaCoordinator } from "./coordinator.js";
 export { families, familyIds, getFamily } from "./families/index.js";
 export { type FigureKind, type FigureSpec, figureKinds, figureSvg } from "./figures/index.js";
 export {
+  applyPrompts,
   type ExamItem,
   type GenerateInput,
   type GenerateResult,
