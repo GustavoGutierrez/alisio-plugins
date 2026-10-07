@@ -68,27 +68,50 @@ function renderHeader(header: HeaderModel, theme: Theme): string {
 }
 
 function renderInfo(model: ExamModel): string {
-  const pairs: InfoRow[][] = [];
-  for (let index = 0; index < model.info.length; index += 2) {
-    pairs.push(model.info.slice(index, index + 2));
+  // Rows that own their line break the pairing; the rest pack two label/value pairs per line.
+  const lines: InfoRow[][] = [];
+  let pending: InfoRow[] = [];
+  const flush = (): void => {
+    if (pending.length > 0) {
+      lines.push(pending);
+      pending = [];
+    }
+  };
+  for (const row of model.info) {
+    if (row.full === true) {
+      flush();
+      lines.push([row]);
+      continue;
+    }
+    pending.push(row);
+    if (pending.length === 2) flush();
   }
-  const rows = pairs
-    .map((pair, index) => {
-      let cells = pair
-        .map(
-          (row) =>
-            `<td class="label">${escapeHtml(row.label)}</td><td class="value">${escapeHtml(row.value)}</td>`,
-        )
-        .join("");
-      if (pair.length === 1) cells += `<td class="label"></td><td class="value"></td>`;
+  flush();
+
+  const rows = lines
+    .map((line, index) => {
+      const [first] = line;
+      let cells: string;
+      if (line.length === 1 && first !== undefined && first.full === true) {
+        const classes = first.nowrap === true ? "value nowrap" : "value";
+        cells = `<td class="label">${escapeHtml(first.label)}</td><td class="${classes}" colspan="3">${escapeHtml(first.value)}</td>`;
+      } else {
+        cells = line
+          .map(
+            (row) =>
+              `<td class="label">${escapeHtml(row.label)}</td><td class="value">${escapeHtml(row.value)}</td>`,
+          )
+          .join("");
+        if (line.length === 1) cells += `<td class="label"></td><td class="value"></td>`;
+      }
       const nota =
         index === 0
-          ? `<td class="nota" rowspan="${pairs.length}"><span class="nota-label">${escapeHtml(model.notaLabel)}</span><span class="nota-box"></span></td>`
+          ? `<td class="nota" rowspan="${lines.length}"><span class="nota-label">${escapeHtml(model.notaLabel)}</span><span class="nota-box"></span></td>`
           : "";
       return `<tr>${cells}${nota}</tr>`;
     })
     .join("");
-  return `<table class="info-table"><tbody>${rows}</tbody></table>`;
+  return `<div class="info-box"><table class="info-table"><tbody>${rows}</tbody></table></div>`;
 }
 
 function renderItem(item: ItemModel, math: MathRenderer): string {
@@ -105,7 +128,7 @@ function renderItem(item: ItemModel, math: MathRenderer): string {
     item.answerSpaceLines > 0
       ? `<div class="answer-space" style="--answer-lines: ${item.answerSpaceLines}"></div>`
       : "";
-  return `<div class="item"><span class="number">${item.number}.</span><span class="ref">${escapeHtml(item.ref)}</span><div class="stem">${renderBlocks(parseMarkup(item.stem), math)}</div>${options}${space}</div>`;
+  return `<div class="item"><span class="number">${item.number}</span><span class="ref">${escapeHtml(item.ref)}</span><div class="stem">${renderBlocks(parseMarkup(item.stem), math)}</div>${options}${space}</div>`;
 }
 
 function renderExam(model: ExamModel, options: EmitOptions): string {

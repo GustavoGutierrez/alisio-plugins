@@ -40,6 +40,13 @@ export interface HeaderModel {
 export interface InfoRow {
   label: string;
   value: string;
+  /**
+   * When true the row owns its line and its value spans the whole row width instead of pairing
+   * with the next row, so a long value (the teacher or student name) fits on one line.
+   */
+  full?: boolean;
+  /** When true the value never wraps, so a fill-in mask stays on one line. */
+  nowrap?: boolean;
 }
 
 export interface ItemModel {
@@ -137,10 +144,12 @@ export interface IntroResult {
 const MAX_INTRO_WORDS = 70;
 
 function formatDuration(locale: Locale, minutes: number): string {
-  if (minutes >= 60 && minutes % 60 === 0) {
-    return locale.duration.hours.replace("{n}", String(minutes / 60));
-  }
-  return locale.duration.minutes.replace("{n}", String(minutes));
+  const asHours = minutes >= 60 && minutes % 60 === 0;
+  const n = asHours ? minutes / 60 : minutes;
+  const { duration } = locale;
+  const plural = asHours ? duration.hours : duration.minutes;
+  const singular = asHours ? duration.hour : duration.minute;
+  return (n === 1 ? (singular ?? plural) : plural).replace("{n}", String(n));
 }
 
 /** Builds the intro paragraph from the locale template, dropping clauses (spec 9.2). */
@@ -191,17 +200,8 @@ function header(spec: ExamSpecLike, profile: ProfileLike, locale: Locale): Heade
   };
 }
 
-/** A fill-in date mask, in the order of the language: day/month/year (es) or month/day/year (en). */
-function dateMask(locale: Locale): string {
-  const en = locale.language.startsWith("en");
-  const day = locale.labels.dateDay ?? (en ? "Day" : "Día");
-  const month = locale.labels.dateMonth ?? (en ? "Month" : "Mes");
-  const year = locale.labels.dateYear ?? (en ? "Year" : "Año");
-  const dayPart = `${day}: ____`;
-  const monthPart = `${month}: ____`;
-  const yearPart = `${year}: ______`;
-  return (en ? [monthPart, dayPart, yearPart] : [dayPart, monthPart, yearPart]).join("  /  ");
-}
+/** The fill-in date mask: three blanks on one line, so the whole mask fits inside its cell. */
+const DATE_MASK = "____ / ____ / ____";
 
 function answerSpaceLines(item: ExamItem, density: DensityPreset): number {
   const seconds = item.estimatedSeconds;
@@ -256,11 +256,11 @@ export function buildExamModel(input: {
   const info: InfoRow[] = [
     { label: locale.labels.year ?? "Año lectivo", value: String(spec.schoolYear) },
     { label: locale.labels.subject ?? "Asignatura", value: profile.subject },
-    { label: locale.labels.teacher ?? "Docente", value: profile.teacherName ?? "" },
+    { label: locale.labels.teacher ?? "Docente", value: profile.teacherName ?? "", full: true },
     { label: locale.labels.period ?? "Periodo", value: "" },
-    { label: locale.labels.student ?? "Estudiante", value: "" },
     { label: locale.labels.grade ?? "Grado", value: spec.grade },
-    { label: locale.labels.date ?? "Fecha", value: dateMask(locale) },
+    { label: locale.labels.student ?? "Estudiante", value: "", full: true },
+    { label: locale.labels.date ?? "Fecha", value: DATE_MASK, full: true, nowrap: true },
   ];
 
   const closing: ClosingModel | null = input.closing.entry

@@ -12,3 +12,6 @@ tokens:
   headerStyle: band
   refColor: "#4a6b8a"
   notaBorder: "#1f4e79"
+  infoBorder: "#D2D2D2"
+  badgeBg: "#000000"
+  badgeText: "#ffffff"

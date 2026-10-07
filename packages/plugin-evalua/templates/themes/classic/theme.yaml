@@ -12,3 +12,6 @@ tokens:
   headerStyle: plain
   refColor: "#6b6b6b"
   notaBorder: "#1a1a1a"
+  infoBorder: "#D2D2D2"
+  badgeBg: "#000000"
+  badgeText: "#ffffff"

@@ -103,6 +103,13 @@ describe("buildIntro", () => {
     expect(buildIntro(locale, { ...spec, calculator: true }).text).toContain("calculadora");
   });
 
+  it("uses the singular unit for one hour and one minute", () => {
+    expect(buildIntro(locale, { ...spec, durationMinutes: 60 }).text).toContain("1 hora,");
+    expect(buildIntro(locale, { ...spec, durationMinutes: 1 }).text).toContain("1 minuto");
+    expect(buildIntro(locale, { ...spec, durationMinutes: 120 }).text).toContain("2 horas");
+    expect(buildIntro(locale, { ...spec, durationMinutes: 90 }).text).toContain("90 minutos");
+  });
+
   it("warns when the intro passes 70 words", () => {
     const long = Array.from({ length: 75 }, () => "palabra").join(" ");
     const result = buildIntro(locale, { ...spec, introOverride: long });
@@ -131,6 +138,48 @@ describe("document models", () => {
     expect(numbers).toEqual([1, 2, 3, 4, 5]);
     expect(model.sections[1]?.items[0]?.answerSpaceLines).toBeGreaterThanOrEqual(6);
     expect(model.closing).toBeNull();
+  });
+
+  it("gives the teacher, student and date rows their own full-width line", () => {
+    const { model } = buildExamModel({
+      spec,
+      profile,
+      items,
+      locale,
+      closing: {},
+      density: density("comfortable"),
+    });
+    expect(model.info.map((row) => row.label)).toEqual([
+      "Año lectivo",
+      "Asignatura",
+      "Docente",
+      "Periodo",
+      "Grado",
+      "Estudiante",
+      "Fecha",
+    ]);
+    // Only the wide rows carry the flag, so the paired rows keep their plain { label, value } shape.
+    expect(model.info.filter((row) => row.full === true).map((row) => row.label)).toEqual([
+      "Docente",
+      "Estudiante",
+      "Fecha",
+    ]);
+    expect(model.info.filter((row) => row.full === undefined)).toHaveLength(4);
+  });
+
+  it("uses a single-line date mask that fits in one cell", () => {
+    const { model } = buildExamModel({
+      spec,
+      profile,
+      items,
+      locale,
+      closing: {},
+      density: density("comfortable"),
+    });
+    const date = model.info.find((row) => row.label === "Fecha");
+    expect(date?.value).toBe("____ / ____ / ____");
+    expect(date?.value).not.toContain("\n");
+    expect(date?.nowrap).toBe(true);
   });
 
   it("builds the answer sheet with a by-ref index and the total points", () => {
@@ -201,6 +250,87 @@ describe("emitDocument", () => {
     expect(html).not.toContain("@import");
     expect(html).toContain(items[0]?.ref ?? "");
     expect(html).toContain("La matemática es bella.");
+  });
+
+  it("frames the info table in a rounded gray box and spans the wide rows", () => {
+    const { model } = buildExamModel({
+      spec,
+      profile,
+      items,
+      locale,
+      closing: {},
+      density: density("regular"),
+    });
+    const html = emitDocument(model, {
+      theme,
+      density: density("regular"),
+      paper: "letter",
+      columns: 1,
+      math,
+    });
+    // The rounded, gray frame that keeps the table clear of the page edge.
+    expect(html).toContain('<div class="info-box"><table class="info-table">');
+    expect(html).toContain(
+      ".info-box { border: 1px solid var(--info-border); border-radius: 16px; margin: 3mm 4mm; padding: 2mm; }",
+    );
+    expect(html).toContain("--info-border: #D2D2D2;");
+    // Paired rows still pack two label/value pairs per line.
+    expect(html).toContain(
+      '<td class="label">Año lectivo</td><td class="value">2026</td><td class="label">Asignatura</td><td class="value">Matemáticas</td>',
+    );
+    expect(html).toContain(
+      '<td class="label">Periodo</td><td class="value"></td><td class="label">Grado</td><td class="value">Séptimo</td>',
+    );
+    // The wide rows own the whole line, up to the grade box.
+    expect(html).toContain('<td class="label">Docente</td><td class="value" colspan="3"></td>');
+    expect(html).toContain('<td class="label">Estudiante</td><td class="value" colspan="3"></td>');
+    expect(html).toContain(
+      '<td class="label">Fecha</td><td class="value nowrap" colspan="3">____ / ____ / ____</td>',
+    );
+  });
+
+  it("badges the item number and frames the intro and the closing", () => {
+    const { model } = buildExamModel({
+      spec,
+      profile,
+      items,
+      locale,
+      closing: {
+        entry: {
+          id: "x",
+          kind: "quote",
+          text: "La matemática es bella.",
+          source: "s",
+          tags: [],
+          language: "es",
+        },
+      },
+      density: density("regular"),
+    });
+    const html = emitDocument(model, {
+      theme,
+      density: density("regular"),
+      paper: "letter",
+      columns: 1,
+      math,
+    });
+    // The number is a filled badge with white ink and no trailing dot.
+    expect(html).toContain('<span class="number">1</span>');
+    expect(html).not.toContain('<span class="number">1.</span>');
+    expect(html).toContain("--badge-bg: #000000;");
+    expect(html).toContain("--badge-text: #ffffff;");
+    expect(html).toContain(
+      ".item .number { display: inline-block; min-width: 5.6mm; padding: 0.3mm 1.2mm; margin-right: 1.6mm; border-radius: 3px; background: var(--badge-bg); color: var(--badge-text);",
+    );
+    // The intro and the closing sit inside their own rounded frame.
+    expect(html).toContain('<p class="intro">');
+    expect(html).toContain(
+      ".intro { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm;",
+    );
+    expect(html).toContain('<div class="closing">La matemática es bella.');
+    expect(html).toContain(
+      ".closing { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm;",
+    );
   });
 
   it("escapes item and intro text so content cannot inject markup", () => {

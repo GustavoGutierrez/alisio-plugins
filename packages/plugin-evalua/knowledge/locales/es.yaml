@@ -8,9 +8,6 @@ labels:
   student: "Estudiante"
   grade: "Grado"
   date: "Fecha"
-  dateDay: "Día"
-  dateMonth: "Mes"
-  dateYear: "Año"
   nota: "Nota / Calificación"
   themeLabel: "TEMA"
   answerSheet: "Hoja de respuestas — uso docente"
@@ -37,6 +34,8 @@ intro:
 duration:
   hours: "{n} horas"
   minutes: "{n} minutos"
+  hour: "{n} hora"
+  minute: "{n} minuto"
 instrument:
   pencil: "lápiz"
   pen: "bolígrafo"

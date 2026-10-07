@@ -26,6 +26,9 @@ export function renderCss({ theme, density, paper, columns }: CssOptions): strin
   --rule: ${token("ruleColor", "#333333")};
   --ref: ${token("refColor", "#6b6b6b")};
   --nota-border: ${token("notaBorder", "#1a1a1a")};
+  --info-border: ${token("infoBorder", "#D2D2D2")};
+  --badge-bg: ${token("badgeBg", "#000000")};
+  --badge-text: ${token("badgeText", "#ffffff")};
   --header-bg: ${token("headerBg", "transparent")};
   --header-text: ${token("headerText", "#1a1a1a")};
   --columns: ${columns};
@@ -49,19 +52,21 @@ body {
 .exam-header .title { font-family: var(--heading-font); font-weight: 700; font-size: 1.05em; margin-top: 1mm; letter-spacing: 0.02em; }
 .exam-header .theme { font-family: var(--heading-font); margin-top: 0.8mm; font-size: 0.95em; }
 .exam-header.band .institution, .exam-header.band .title, .exam-header.band .theme { color: var(--header-text); }
-.info-table { width: 100%; border-collapse: collapse; margin: 3mm 0; table-layout: fixed; }
+.info-box { border: 1px solid var(--info-border); border-radius: 16px; margin: 3mm 4mm; padding: 2mm; }
+.info-table { width: 100%; border-collapse: collapse; margin: 0; table-layout: fixed; }
 .info-table td { border: 1px solid var(--rule); padding: 1.4mm 2mm; vertical-align: middle; }
 .info-table .label { font-family: var(--heading-font); font-weight: 700; width: 15%; background: var(--accent-soft); }
 .info-table .value { width: 22%; }
+.info-table .value.nowrap { white-space: nowrap; }
 .info-table .nota { width: 26%; text-align: center; vertical-align: middle; }
 .info-table .nota-label { display: block; font-family: var(--heading-font); font-weight: 700; }
 .info-table .nota-box { display: block; height: 15mm; border: 1.5px solid var(--nota-border); margin-top: 1mm; }
-.intro { margin: 3mm 0; text-align: justify; }
+.intro { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm; margin: 3mm 0; text-align: justify; }
 .section-title { font-family: var(--heading-font); font-weight: 700; margin: var(--item-gap) 0 1mm; break-after: avoid; }
 .item { margin-bottom: var(--item-gap); break-inside: avoid; }
 .item .stem { display: block; }
 .item .ref { color: var(--ref); font-size: 0.85em; margin-left: 1mm; }
-.item .number { font-weight: 700; margin-right: 1mm; }
+.item .number { display: inline-block; min-width: 5.6mm; padding: 0.3mm 1.2mm; margin-right: 1.6mm; border-radius: 3px; background: var(--badge-bg); color: var(--badge-text); font-family: var(--heading-font); font-weight: 700; font-size: 0.95em; text-align: center; }
 .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1mm 6mm; margin: 1mm 0 0 6mm; }
 .options.inline { display: block; }
 .option .key { font-weight: 700; margin-right: 1mm; }
@@ -72,7 +77,7 @@ table.grid { border-collapse: collapse; margin: 1mm 0; }
 table.grid th, table.grid td { border: 1px solid var(--rule); padding: 1mm 2mm; }
 .figure { margin: 2mm 0; text-align: center; break-inside: avoid; }
 .figure .figure-svg { max-width: 100%; height: auto; }
-.closing { margin-top: 6mm; text-align: center; font-style: italic; break-inside: avoid; }
+.closing { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm; margin-top: 6mm; text-align: center; font-style: italic; break-inside: avoid; }
 .closing .author { display: block; margin-top: 1mm; font-style: normal; font-size: 0.9em; }
 .sheet-table { width: 100%; border-collapse: collapse; }
 .sheet-table th, .sheet-table td { border: 1px solid var(--rule); padding: 1mm 2mm; }

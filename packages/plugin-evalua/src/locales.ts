@@ -17,7 +17,7 @@ export interface Locale {
     clarity: string;
     calculator: string;
   };
-  duration: { hours: string; minutes: string };
+  duration: { hours: string; minutes: string; hour?: string; minute?: string };
   instrument: Record<string, string>;
   rubric: Record<string, string>;
 }
@@ -106,7 +106,12 @@ export function parseLocale(
       clarity: intro.clarity ?? "",
       calculator: intro.calculator ?? "",
     },
-    duration: { hours: duration.hours ?? "", minutes: duration.minutes ?? "" },
+    duration: {
+      hours: duration.hours ?? "",
+      minutes: duration.minutes ?? "",
+      ...(duration.hour === undefined ? {} : { hour: duration.hour }),
+      ...(duration.minute === undefined ? {} : { minute: duration.minute }),
+    },
     instrument,
     rubric,
   };
