@@ -53,10 +53,9 @@ export interface CoordinatorOptions {
   catalog?: TopicCatalog;
 }
 
-const profileKeys = ["teacher_name", "institution", "logo", "subject"].flatMap((key) => [
-  key,
-  `${key}:text`,
-]);
+const profileKeys = ["language", "teacher_name", "institution", "logo", "subject"].flatMap(
+  (key) => [key, `${key}:text`],
+);
 
 export interface ProfileInput {
   teacherName?: string;
@@ -710,12 +709,21 @@ export class EvaluaCoordinator {
     }
     const subject =
       answers.subject === "math" ? DEFAULT_SUBJECT : pick("subject", current?.subject);
+    const language =
+      answers.language === "keep"
+        ? (current?.language ?? "es")
+        : answers.language === "en"
+          ? "en"
+          : answers.language === "other"
+            ? (answers["language:text"] ?? "es")
+            : "es";
     try {
       const profile = validateProfile({
         ...current,
         teacherName: pick("teacher_name", current?.teacherName),
         institution: pick("institution", current?.institution),
         subject,
+        language,
         ...(logo ? { logo } : { logo: undefined }),
       });
       await mkdir(base, { recursive: true, mode: 0o755 });

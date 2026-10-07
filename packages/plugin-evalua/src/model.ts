@@ -24,6 +24,7 @@ export interface ExamSpecLike {
 export interface ProfileLike {
   institution: string;
   subject: string;
+  teacherName?: string;
   logo?: string;
 }
 
@@ -75,6 +76,7 @@ export interface AnswerSheetRow {
   number: number;
   ref: string;
   type: ItemType;
+  typeLabel: string;
   answer: string;
   points: number;
 }
@@ -242,6 +244,7 @@ export function buildExamModel(input: {
   const info: InfoRow[] = [
     { label: locale.labels.year ?? "Año lectivo", value: String(spec.schoolYear) },
     { label: locale.labels.subject ?? "Asignatura", value: profile.subject },
+    { label: locale.labels.teacher ?? "Docente", value: profile.teacherName ?? "" },
     { label: locale.labels.period ?? "Periodo", value: "" },
     { label: locale.labels.student ?? "Estudiante", value: "" },
     { label: locale.labels.grade ?? "Grado", value: spec.grade },
@@ -287,6 +290,7 @@ export function buildAnswerSheetModel(input: {
     number: index + 1,
     ref: item.ref,
     type: item.type,
+    typeLabel: locale.sections[item.type] ?? item.type,
     answer: item.answer.display,
     points: item.points,
   }));

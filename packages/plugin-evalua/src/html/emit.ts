@@ -114,7 +114,7 @@ function renderSheet(model: AnswerSheetModel, options: EmitOptions): string {
   const rows = model.rows
     .map(
       (row) =>
-        `<tr><td>${row.number}</td><td>${escapeHtml(row.ref)}</td><td>${escapeHtml(row.type)}</td><td>${escapeHtml(row.answer)}</td><td>${row.points}</td></tr>`,
+        `<tr><td>${row.number}</td><td>${escapeHtml(row.ref)}</td><td>${escapeHtml(row.typeLabel)}</td><td>${renderBlocks(parseMarkup([row.answer]), options.math)}</td><td>${row.points}</td></tr>`,
     )
     .join("");
   const index = model.indexByRef
@@ -134,9 +134,9 @@ function renderBook(model: SolutionBookModel, options: EmitOptions): string {
       (entry) => `<div class="solution-entry">
   <h2>${entry.number} · ${escapeHtml(entry.ref)}</h2>
   ${renderBlocks(parseMarkup(entry.stem), options.math)}
-  <p class="answer">${escapeHtml(entry.answer)}</p>
-  <ol>${entry.solution.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
-  ${entry.misconceptions.map((item) => `<p class="misconception">${escapeHtml(item.key)} · ${escapeHtml(item.text)} — ${escapeHtml(item.error)}</p>`).join("")}
+  <div class="answer">${renderBlocks(parseMarkup([entry.answer]), options.math)}</div>
+  <ol>${entry.solution.map((step) => `<li>${renderBlocks(parseMarkup([step]), options.math)}</li>`).join("")}</ol>
+  ${entry.misconceptions.map((item) => `<p class="misconception">${escapeHtml(item.key)} · ${renderBlocks(parseMarkup([item.text]), options.math)} — ${escapeHtml(item.error)}</p>`).join("")}
 </div>`,
     )
     .join("");

@@ -38,7 +38,7 @@ function check(questions: ReturnType<typeof buildRound>) {
 describe("profile round", () => {
   it("asks the four profile questions in one round", () => {
     const questions = buildRound("profile", { answers: {}, catalog: emptyCatalog });
-    expect(questions.map((q) => q.id)).toEqual(["teacher_name", "institution", "logo", "subject"]);
+    expect(questions.map((q) => q.id)).toEqual(["language", "institution", "teacher_name", "logo"]);
     check(questions);
   });
 
@@ -47,7 +47,7 @@ describe("profile round", () => {
       answers: { teacher_name: "enter", "teacher_name:text": "Ana" },
       catalog: emptyCatalog,
     });
-    expect(questions.map((q) => q.id)).toEqual(["institution", "logo", "subject"]);
+    expect(questions.map((q) => q.id)).toEqual(["language", "institution", "logo"]);
   });
 
   it("edit mode preselects current values with a recommended keep option", () => {
@@ -55,6 +55,7 @@ describe("profile round", () => {
       answers: {},
       catalog: emptyCatalog,
       current: {
+        language: "es",
         teacherName: "Ana",
         institution: "Demo",
         subject: "Matemáticas",
@@ -63,7 +64,9 @@ describe("profile round", () => {
     });
     check(questions);
     expect(questions[0]?.options[0]).toMatchObject({ value: "keep", recommended: true });
-    expect(questions[0]?.options[0]?.label).toContain("Ana");
+    const teacher = questions.find((q) => q.id === "teacher_name");
+    expect(teacher?.options[0]?.value).toBe("keep");
+    expect(teacher?.options[0]?.label).toContain("Ana");
   });
 });
 

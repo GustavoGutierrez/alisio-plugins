@@ -1,0 +1,31 @@
+id: rational-numbers
+name:
+  es: "Conjunto de los números racionales (Q)"
+code: RAC
+grades: ["Séptimo", "Octavo"]
+prerequisites: [fractions]
+objectives:
+  - id: represent-rationals
+    text:
+      es: "Reconoce, representa y ubica números racionales en la recta numérica."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: operate-rationals
+    text:
+      es: "Opera con números racionales en forma fraccionaria y decimal."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: compare-rationals
+    text:
+      es: "Compara y ordena números racionales."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [racional, números racionales, conjunto Q, fracción, decimal]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: fraction-simplify, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: fraction-ops, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: decimal-ops, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: rational-compare, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: percent, levels: [basico, intermedio, avanzado, genio] }

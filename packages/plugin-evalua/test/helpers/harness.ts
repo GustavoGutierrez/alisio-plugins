@@ -109,12 +109,12 @@ export async function harness(options: HarnessOptions = {}) {
 }
 
 export const PROFILE_ANSWERS: Answers = {
-  teacher_name: "enter",
-  "teacher_name:text": "Ana Perez",
+  language: "es",
   institution: "enter",
   "institution:text": "Instituto Cristiano Demo",
+  teacher_name: "enter",
+  "teacher_name:text": "Ana Perez",
   logo: "none",
-  subject: "math",
 };
 export const ROUND1: Answers = {
   topic: "enter",

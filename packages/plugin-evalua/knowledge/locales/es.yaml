@@ -3,6 +3,7 @@ language: es
 labels:
   year: "Año lectivo"
   subject: "Asignatura"
+  teacher: "Docente"
   period: "Periodo"
   student: "Estudiante"
   grade: "Grado"

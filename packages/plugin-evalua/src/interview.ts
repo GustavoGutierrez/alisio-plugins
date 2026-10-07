@@ -75,12 +75,14 @@ function typed(
     question,
     options: keep
       ? [
-          option("keep", `Keep the current value: ${keep}`, { recommended: true }),
-          option("enter", "Type a new value", { placeholder }),
+          option("keep", `Conservar el valor actual: ${keep}`, { recommended: true }),
+          option("enter", "Escribir un valor nuevo", { placeholder }),
         ]
       : [
-          option("enter", "Type it here", { recommended: true, placeholder }),
-          option("stop", "Stop for now", { description: "Pause the interview; nothing is saved." }),
+          option("enter", "Escríbelo aquí", { recommended: true, placeholder }),
+          option("stop", "Detener por ahora", {
+            description: "Pausa la entrevista; no se guarda nada.",
+          }),
         ],
   };
 }
@@ -88,55 +90,61 @@ function typed(
 function profileQuestions(ctx: RoundContext): Question[] {
   const current = ctx.current;
   const questions: Question[] = [];
-  if (unanswered(ctx, "teacher_name")) {
-    questions.push(
-      typed(
-        "teacher_name",
-        "Teacher",
-        "What is the teacher's name?",
-        "Full name",
-        current?.teacherName,
-      ),
-    );
+  if (unanswered(ctx, "language")) {
+    const keep = current?.language
+      ? [
+          option("keep", `Conservar el idioma actual: ${current.language}`, {
+            recommended: true,
+          }),
+        ]
+      : [];
+    questions.push({
+      id: "language",
+      header: "Idioma",
+      question: "¿En qué idioma quieres el examen y las preguntas?",
+      options: [
+        ...keep,
+        option("es", "Español", { recommended: keep.length === 0 }),
+        option("en", "English"),
+        option("other", "Otro idioma", { placeholder: "Código de idioma, por ejemplo pt" }),
+      ],
+    });
   }
   if (unanswered(ctx, "institution")) {
     questions.push(
       typed(
         "institution",
-        "Institution",
-        "What is the educational institution?",
-        "Institution name",
+        "Institución",
+        "¿Cuál es el nombre de la institución educativa?",
+        "Nombre de la institución",
         current?.institution,
+      ),
+    );
+  }
+  if (unanswered(ctx, "teacher_name")) {
+    questions.push(
+      typed(
+        "teacher_name",
+        "Docente",
+        "¿Cuál es el nombre del docente?",
+        "Nombre completo",
+        current?.teacherName,
       ),
     );
   }
   if (unanswered(ctx, "logo")) {
     const keep = current?.logo
-      ? [option("keep", `Keep the current logo (${current.logo})`, { recommended: true })]
+      ? [option("keep", `Conservar el logo actual (${current.logo})`, { recommended: true })]
       : [];
     questions.push({
       id: "logo",
       header: "Logo",
-      question: "Do you want the institution logo on the exams? (PNG, JPEG or WebP, up to 2 MB)",
+      question:
+        "¿Quieres el logo de la institución en los exámenes? (PNG, JPEG o WebP, hasta 2 MB)",
       options: [
         ...keep,
-        option("none", "No logo", { recommended: keep.length === 0 }),
-        option("path", "Provide a file path", { placeholder: "Path to the logo image" }),
-      ],
-    });
-  }
-  if (unanswered(ctx, "subject")) {
-    const keep = current?.subject
-      ? [option("keep", `Keep the current subject: ${current.subject}`, { recommended: true })]
-      : [];
-    questions.push({
-      id: "subject",
-      header: "Subject",
-      question: "Which subject are the exams for?",
-      options: [
-        ...keep,
-        option("math", "Matemáticas", { recommended: keep.length === 0 }),
-        option("other", "Another subject", { placeholder: "Subject name" }),
+        option("none", "Sin logo", { recommended: keep.length === 0 }),
+        option("path", "Indicar la ruta de un archivo", { placeholder: "Ruta de la imagen" }),
       ],
     });
   }
@@ -152,14 +160,14 @@ function topicQuestion(ctx: RoundContext): Question {
   if (options.length === 0) {
     return typed(
       "topic",
-      "Topic",
-      "What is the exam about?",
-      "For example: fractions, linear equations",
+      "Tema",
+      "¿De qué trata el examen?",
+      "Por ejemplo: fracciones, ecuaciones lineales",
       undefined,
     );
   }
-  options.push(option("enter", "Another topic", { placeholder: "Describe the topic" }));
-  return { id: "topic", header: "Topic", question: "What is the exam about?", options };
+  options.push(option("enter", "Otro tema", { placeholder: "Describe el tema" }));
+  return { id: "topic", header: "Tema", question: "¿De qué trata el examen?", options };
 }
 
 function topicValue(answers: Record<string, string>): string | undefined {
@@ -174,31 +182,33 @@ function round1(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "grade")) {
     questions.push({
       id: "grade",
-      header: "Grade",
-      question: "Which grade is the exam for?",
+      header: "Grado",
+      question: "¿Para qué grado es el examen?",
       options: [
         option("sexto", "Sexto"),
         option("septimo", "Séptimo", { recommended: true }),
         option("octavo", "Octavo"),
-        option("other", "Another grade", { placeholder: "For example: Noveno" }),
+        option("other", "Otro grado", { placeholder: "Por ejemplo: Noveno" }),
       ],
     });
   }
   if (unanswered(ctx, "level")) {
     questions.push({
       id: "level",
-      header: "Level",
-      question: "Which level?",
+      header: "Nivel",
+      question: "¿Qué nivel?",
       options: [
         option("basico", "Básico", {
           recommended: true,
-          description: "Direct, routine, single concept.",
+          description: "Directo, rutinario, un solo concepto.",
         }),
         option("intermedio", "Intermedio", {
-          description: "Routine with 2 to 3 steps, mixed concepts.",
+          description: "Rutinario con 2 a 3 pasos, conceptos combinados.",
         }),
-        option("avanzado", "Avanzado", { description: "Multi-step, modeling and justification." }),
-        option("genio", "Genio", { description: "Non-routine, olympiad-style reasoning." }),
+        option("avanzado", "Avanzado", { description: "Varios pasos, modelado y justificación." }),
+        option("genio", "Genio", {
+          description: "No rutinario, tipo olimpiada, mucho razonamiento.",
+        }),
       ],
     });
   }
@@ -208,13 +218,13 @@ function round1(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "kind") && packs.length > 1 && !resolved) {
     questions.push({
       id: "kind",
-      header: "Knowledge base",
-      question: "Which knowledge base should the exam draw from?",
+      header: "Base de conocimiento",
+      question: "¿De qué base de conocimiento debe tomar el examen?",
       options: [
         ...packs
           .slice(0, 2)
           .map((pack, index) => option(pack.value, pack.label, { recommended: index === 0 })),
-        option("mixed", "Mixed topics"),
+        option("mixed", "Temas mixtos"),
       ],
     });
   }
@@ -226,15 +236,15 @@ function round2(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "types")) {
     questions.push({
       id: "types",
-      header: "Item types",
-      question: "Which item types should the exam include?",
+      header: "Tipos de ítems",
+      question: "¿Qué tipos de ítems debe incluir el examen?",
       multiSelect: true,
       options: [
         option("single_choice", "Selección única", { recommended: true }),
         option("multiple_choice", "Selección múltiple"),
         option("open", "Abiertas"),
         option("practice", "Ejercicio de práctica", {
-          description: "Solve with the full procedure.",
+          description: "Resolver con todo el procedimiento.",
         }),
       ],
     });
@@ -242,33 +252,33 @@ function round2(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "count")) {
     questions.push({
       id: "count",
-      header: "Questions",
-      question: "How many questions?",
+      header: "Preguntas",
+      question: "¿Cuántas preguntas?",
       options: [
         option("10", "10", { recommended: true }),
         option("15", "15"),
         option("20", "20"),
-        option("other", "Another number", { placeholder: "Number of questions (1 to 100)" }),
+        option("other", "Otra cantidad", { placeholder: "Número de preguntas (1 a 100)" }),
       ],
     });
   }
   if (unanswered(ctx, "distribution") && countOf(ctx.answers) !== 1) {
     questions.push({
       id: "distribution",
-      header: "Distribution",
-      question: "Same exam for everyone, or random draws from a bank?",
+      header: "Distribución",
+      question: "¿El mismo examen para todos o sorteos aleatorios de un banco?",
       options: [
-        option("same", "Same questions in the same order", { recommended: true }),
-        option("bank", "Bank with random draws per exam"),
+        option("same", "Las mismas preguntas en el mismo orden", { recommended: true }),
+        option("bank", "Banco con sorteos aleatorios por examen"),
       ],
     });
   }
   if (unanswered(ctx, "columns")) {
     questions.push({
       id: "columns",
-      header: "Columns",
-      question: "How many question columns?",
-      options: [option("1", "One", { recommended: true }), option("2", "Two")],
+      header: "Columnas",
+      question: "¿Cuántas columnas de preguntas?",
+      options: [option("1", "Una", { recommended: true }), option("2", "Dos")],
     });
   }
   return questions;
@@ -288,28 +298,30 @@ function round2b(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "bank_size")) {
     questions.push({
       id: "bank_size",
-      header: "Bank size",
-      question: "How many items should the bank hold?",
+      header: "Tamaño del banco",
+      question: "¿Cuántos ítems debe tener el banco?",
       options: [
-        option("default", `${sizes.standard} items (3 times the exam length)`, {
+        option("default", `${sizes.standard} ítems (3 veces la longitud del examen)`, {
           recommended: true,
         }),
         ...(sizes.double !== undefined && sizes.double !== sizes.standard
-          ? [option("double", `${sizes.double} items (2 times the exam length)`)]
+          ? [option("double", `${sizes.double} ítems (2 veces la longitud del examen)`)]
           : []),
-        option("other", "Another size", { placeholder: `Number of items (at least ${count + 5})` }),
+        option("other", "Otro tamaño", {
+          placeholder: `Número de ítems (al menos ${count + 5})`,
+        }),
       ],
     });
   }
   if (unanswered(ctx, "variants")) {
     questions.push({
       id: "variants",
-      header: "Variants",
-      question: "How many exam variants (A, B, ...) should be drawn?",
+      header: "Variantes",
+      question: "¿Cuántas variantes (A, B, ...) se deben sortear?",
       options: [
-        option("2", "2 variants", { recommended: true }),
-        option("3", "3 variants"),
-        option("other", "Another number", { placeholder: "Number of variants (1 to 8)" }),
+        option("2", "2 variantes", { recommended: true }),
+        option("3", "3 variantes"),
+        option("other", "Otra cantidad", { placeholder: "Número de variantes (1 a 8)" }),
       ],
     });
   }
@@ -321,28 +333,28 @@ function round3(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "pages")) {
     questions.push({
       id: "pages",
-      header: "Pages",
-      question: "Page limit?",
+      header: "Páginas",
+      question: "¿Límite de páginas?",
       options: [
-        option("auto", "Fewest legible pages", { recommended: true }),
-        option("1", "1 page"),
-        option("2", "2 pages"),
-        option("other", "Another number", { placeholder: "Maximum pages (1 to 20)" }),
+        option("auto", "Las mínimas legibles", { recommended: true }),
+        option("1", "1 página"),
+        option("2", "2 páginas"),
+        option("other", "Otra cantidad", { placeholder: "Máximo de páginas (1 a 20)" }),
       ],
     });
   }
   if (unanswered(ctx, "time")) {
     questions.push({
       id: "time",
-      header: "Time",
-      question: "Time and instrument?",
+      header: "Tiempo",
+      question: "¿Tiempo e instrumento?",
       options: [
-        option("120-pencil", "2 hours, pencil", { recommended: true }),
-        option("90-pencil", "90 minutes, pencil"),
-        option("60-pen", "1 hour, pen"),
-        option("other", "Something else", {
+        option("120-pencil", "2 horas, lápiz", { recommended: true }),
+        option("90-pencil", "90 minutos, lápiz"),
+        option("60-pen", "1 hora, bolígrafo"),
+        option("other", "Otra opción", {
           placeholder:
-            "Minutes, pencil or pen, calculator yes or no (for example: 90 pen calculator)",
+            "Minutos, lápiz o bolígrafo, calculadora sí o no (por ejemplo: 90 bolígrafo calculadora)",
         }),
       ],
     });
@@ -350,12 +362,12 @@ function round3(ctx: RoundContext): Question[] {
   if (unanswered(ctx, "closing")) {
     questions.push({
       id: "closing",
-      header: "Closing",
-      question: "Closing text after the last question?",
+      header: "Cierre",
+      question: "¿Texto de cierre después de la última pregunta?",
       options: [
-        option("none", "None", { recommended: true }),
-        option("quote", "A famous phrase"),
-        option("bible", "A Bible verse"),
+        option("none", "Ninguno", { recommended: true }),
+        option("quote", "Una frase célebre"),
+        option("bible", "Un versículo bíblico"),
       ],
     });
   }
@@ -565,9 +577,9 @@ export function parseAnswerText(
 
 export function renderPending(pending: PendingRound, command: string): string {
   const lines = [
-    `Evalua interview, round ${pending.round}`,
-    `Answer with ${command} using id=value pairs (separated by spaces), or one JSON object.`,
-    "Free text goes in <id>:text=... for options marked (text); several choices are comma-separated.",
+    `Entrevista de Evalúa, ronda ${pending.round}`,
+    `Responde con ${command} usando pares id=valor (separados por espacios), o un objeto JSON.`,
+    "El texto libre va en <id>:text=... para las opciones marcadas (text); varias opciones se separan con comas.",
     "",
   ];
   pending.questions.forEach((question, index) => {

@@ -74,7 +74,7 @@ describe("interactive flow", () => {
     const h = await harness({ answers: [PROFILE_ANSWERS, ROUND1, ROUND2, ROUND3] });
     const message = await h.run("new");
     expect(h.asked.map((r) => r.questions.map((q) => q.id))).toEqual([
-      ["teacher_name", "institution", "logo", "subject"],
+      ["language", "institution", "teacher_name", "logo"],
       ["topic", "grade", "level", "kind"],
       ["types", "count", "distribution", "columns"],
       ["pages", "time", "closing"],
@@ -159,7 +159,7 @@ describe("headless continuation", () => {
 
     const second = await h.run(
       "new",
-      "teacher_name=enter teacher_name:text=Ana Perez institution=enter institution:text=Instituto Demo logo=none subject=math",
+      "language=es institution=enter institution:text=Instituto Demo teacher_name=enter teacher_name:text=Ana Perez logo=none",
     );
     expect(await exists(join(h.workspace, "evalua", "teacher.yaml"))).toBe(true);
     expect(second).toContain("topic");
@@ -180,12 +180,12 @@ describe("headless continuation", () => {
     expect(wrong.isError).toBe(true);
     const ok = await h.tool("evalua_answer", {
       answers: {
-        teacher_name: "enter",
-        "teacher_name:text": "Ana",
+        language: "es",
         institution: "enter",
         "institution:text": "Demo",
+        teacher_name: "enter",
+        "teacher_name:text": "Ana",
         logo: "none",
-        subject: "math",
       },
     });
     expect(ok.isError).toBe(false);
@@ -225,7 +225,7 @@ describe("init", () => {
     const again = await h.run("init");
     expect(h.asked).toHaveLength(1);
     expect(again).toContain("already");
-    h.queue({ teacher_name: "keep", institution: "keep", logo: "keep", subject: "keep" });
+    h.queue({ language: "keep", institution: "keep", teacher_name: "keep", logo: "keep" });
     await h.run("init", "--edit");
     expect(h.asked).toHaveLength(2);
     expect(h.asked[1]?.questions[0]?.options[0]?.value).toBe("keep");
@@ -267,7 +267,7 @@ describe("status", () => {
       pendingRound: "profile",
       draft: false,
     });
-    expect(tool.pendingQuestionIds).toEqual(["teacher_name", "institution", "logo", "subject"]);
+    expect(tool.pendingQuestionIds).toEqual(["language", "institution", "teacher_name", "logo"]);
   });
 
   it("lists exam folders found on disk and the draft summary", async () => {
