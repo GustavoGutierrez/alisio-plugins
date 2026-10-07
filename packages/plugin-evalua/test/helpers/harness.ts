@@ -121,6 +121,7 @@ export const ROUND1: Answers = {
   "topic:text": "Números racionales",
   grade: "septimo",
   level: "basico",
+  kind: "basic-math",
 };
 export const ROUND2: Answers = {
   types: ["single_choice", "practice"],

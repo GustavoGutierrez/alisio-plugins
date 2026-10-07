@@ -1,0 +1,19 @@
+id: rational-expressions
+name:
+  es: "Expresiones racionales"
+code: RAE
+grades: ["Noveno"]
+prerequisites: [algebra/factoring]
+objectives:
+  - id: simplify-rational
+    text:
+      es: "Simplifica expresiones racionales algebraicas."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [expresión racional, simplificar, factor común, restricción]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: rational-expression, levels: [basico, intermedio, avanzado, genio] }

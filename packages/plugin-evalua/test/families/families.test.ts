@@ -30,7 +30,7 @@ describe.each(familyIds)("%s", (id) => {
           level,
           calibration: limits,
         });
-        expect(draft.answer.canonical, context).toBe(family.solve(draft.problem).toString());
+        expect(draft.answer.canonical, context).toBe(String(family.solve(draft.problem)));
         expect(draft.options, context).toHaveLength(4);
         const values = draft.options.map((option) => option.value);
         expect(new Set(values).size, context).toBe(4);

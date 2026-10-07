@@ -1,0 +1,19 @@
+id: linear-inequalities
+name:
+  es: "Inecuaciones lineales"
+code: INE
+grades: ["Octavo", "Noveno"]
+prerequisites: [algebra/linear-equations]
+objectives:
+  - id: solve-inequality
+    text:
+      es: "Resuelve inecuaciones lineales y expresa el conjunto solución."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [inecuación, desigualdad, intervalo, frontera]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: linear-inequality, levels: [basico, intermedio, avanzado, genio] }

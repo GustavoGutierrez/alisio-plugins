@@ -1,0 +1,19 @@
+id: radicals
+name:
+  es: "Radicales y potencias"
+code: RAD
+grades: ["Octavo", "Noveno"]
+prerequisites: [basic-math/powers-roots]
+objectives:
+  - id: integer-powers-roots
+    text:
+      es: "Calcula potencias enteras y raíces exactas."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [radical, raíz, potencia, exponente]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: powers-roots, levels: [basico, intermedio, avanzado, genio] }

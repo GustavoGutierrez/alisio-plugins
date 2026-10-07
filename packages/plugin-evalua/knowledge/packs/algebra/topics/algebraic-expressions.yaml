@@ -1,0 +1,24 @@
+id: algebraic-expressions
+name:
+  es: "Expresiones algebraicas y términos semejantes"
+code: EXA
+grades: ["Séptimo", "Octavo"]
+prerequisites: [basic-math/integers]
+objectives:
+  - id: evaluate-expression
+    text:
+      es: "Evalúa una expresión algebraica para un valor dado."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: combine-like-terms
+    text:
+      es: "Reduce términos semejantes."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [expresión, variable, término semejante, evaluar]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: expression-evaluate, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: like-terms, levels: [basico, intermedio, avanzado, genio] }

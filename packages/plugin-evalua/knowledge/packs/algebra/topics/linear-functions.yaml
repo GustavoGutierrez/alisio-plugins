@@ -1,0 +1,19 @@
+id: linear-functions
+name:
+  es: "Función lineal"
+code: FUN
+grades: ["Octavo", "Noveno"]
+prerequisites: [algebra/linear-equations]
+objectives:
+  - id: slope-between-points
+    text:
+      es: "Calcula la pendiente de la recta que pasa por dos puntos."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [pendiente, recta, función lineal, razón de cambio]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: linear-function, levels: [basico, intermedio, avanzado, genio] }

@@ -12,10 +12,10 @@ async function catalog() {
 describe("topic catalog", () => {
   it("lists packs and topics from the knowledge base", async () => {
     const source = await catalog();
-    expect(source.packs()).toEqual([{ value: "basic-math", label: "Matemática básica" }]);
+    expect(source.packs().map((entry) => entry.value)).toEqual(["algebra", "basic-math"]);
     const suggestions = source.suggestions("Séptimo");
     expect(suggestions.map((entry) => entry.value)).toContain("basic-math/fractions");
-    expect(suggestions.every((entry) => entry.value.startsWith("basic-math/"))).toBe(true);
+    expect(suggestions.map((entry) => entry.value)).toContain("algebra/algebraic-expressions");
   });
 
   it("filters suggestions by grade", async () => {
@@ -29,6 +29,7 @@ describe("topic catalog", () => {
     const source = await catalog();
     expect(source.resolvePack("basic-math/fractions")).toBe("basic-math");
     expect(source.resolvePack("fractions")).toBe("basic-math");
+    expect(source.resolvePack("algebraic-expressions")).toBe("algebra");
     expect(source.resolvePack("porcentaje")).toBe("basic-math");
     expect(source.resolvePack("unknown thing")).toBeUndefined();
   });

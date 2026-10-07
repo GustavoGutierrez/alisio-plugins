@@ -59,7 +59,7 @@ describe("interactive flow", () => {
     const message = await h.run("new");
     expect(h.asked.map((r) => r.questions.map((q) => q.id))).toEqual([
       ["teacher_name", "institution", "logo", "subject"],
-      ["topic", "grade", "level"],
+      ["topic", "grade", "level", "kind"],
       ["types", "count", "distribution", "columns"],
       ["pages", "time", "closing"],
     ]);
@@ -110,10 +110,15 @@ describe("interactive flow", () => {
 
   it("uses the command argument as the topic and skips that question", async () => {
     const h = await harness({
-      answers: [PROFILE_ANSWERS, { grade: "octavo", level: "intermedio" }, ROUND2, ROUND3],
+      answers: [
+        PROFILE_ANSWERS,
+        { grade: "octavo", level: "intermedio", kind: "basic-math" },
+        ROUND2,
+        ROUND3,
+      ],
     });
     await h.run("new", "Ecuaciones lineales");
-    expect(h.asked[1]?.questions.map((q) => q.id)).toEqual(["grade", "level"]);
+    expect(h.asked[1]?.questions.map((q) => q.id)).toEqual(["grade", "level", "kind"]);
     expect((await readState(h.workspace))?.draft?.theme).toBe("ECUACIONES LINEALES");
   });
 
@@ -143,7 +148,7 @@ describe("headless continuation", () => {
     expect(await exists(join(h.workspace, "evalua", "teacher.yaml"))).toBe(true);
     expect(second).toContain("topic");
 
-    await h.run("new", "topic=Fracciones grade=septimo level=basico");
+    await h.run("new", "topic=Fracciones grade=septimo level=basico kind=basic-math");
     await h.run("new", "types=single_choice count=10 distribution=same columns=1");
     const done = await h.run("new", "pages=auto time=90-pencil closing=none");
     expect(done).toContain("Gate A");

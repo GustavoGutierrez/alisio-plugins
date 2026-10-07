@@ -1,0 +1,24 @@
+id: polynomials
+name:
+  es: "Operaciones con polinomios"
+code: POL
+grades: ["Octavo", "Noveno"]
+prerequisites: [algebra/algebraic-expressions]
+objectives:
+  - id: add-subtract-multiply
+    text:
+      es: "Suma, resta y multiplica polinomios."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: special-products
+    text:
+      es: "Reconoce y desarrolla productos notables."
+    levels: [intermedio, avanzado, genio]
+keywords: [polinomio, grado, producto notable, binomio]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: polynomial-ops, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: special-products, levels: [basico, intermedio, avanzado, genio] }

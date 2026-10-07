@@ -1,0 +1,19 @@
+id: linear-systems
+name:
+  es: "Sistemas de dos ecuaciones lineales"
+code: SIS
+grades: ["Noveno"]
+prerequisites: [algebra/linear-equations]
+objectives:
+  - id: solve-2x2
+    text:
+      es: "Resuelve un sistema 2x2 por eliminación o sustitución."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [sistema, eliminación, sustitución, solución]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: linear-system-2x2, levels: [basico, intermedio, avanzado, genio] }

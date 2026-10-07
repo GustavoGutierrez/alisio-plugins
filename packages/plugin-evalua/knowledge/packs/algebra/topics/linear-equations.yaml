@@ -1,0 +1,31 @@
+id: linear-equations
+name:
+  es: "Ecuaciones lineales de una variable"
+code: ECU
+grades: ["Séptimo", "Octavo", "Noveno"]
+prerequisites: [algebra/algebraic-expressions]
+objectives:
+  - id: solve-both-sides
+    text:
+      es: "Resuelve ecuaciones con términos en ambos lados."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: model-word-problem
+    text:
+      es: "Modela y resuelve un problema con una ecuación lineal."
+    levels: [intermedio, avanzado, genio]
+keywords: [ecuación, incógnita, despejar, problema]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: linear-equation, levels: [basico, intermedio, avanzado, genio] }
+  - kind: family
+    family: word-problem-linear
+    levels: [basico, intermedio, avanzado, genio]
+    params:
+      templates:
+        - "El costo total fue de {c} pesos. Con un cargo fijo de {b} pesos y cada cuaderno a {a} pesos, ¿cuántos cuadernos se compraron?"
+        - "En una bodega hay {c} cajas. Partiendo de {b} cajas y agregando {a} por viaje, ¿cuántos viajes se hicieron?"
+        - "Un ahorro llegó a {c} pesos. Se partió de {b} pesos y se ahorró {a} pesos por semana, ¿cuántas semanas pasaron?"

@@ -155,8 +155,8 @@ describe("shipped basic-math pack", () => {
     });
     expect(knowledge.report.results).toEqual([]);
     expect(knowledge.report.ok).toBe(true);
-    expect(knowledge.packs.map((pack) => pack.id)).toEqual(["basic-math"]);
-    const pack = knowledge.packs[0];
+    expect(knowledge.packs.map((pack) => pack.id)).toEqual(["algebra", "basic-math"]);
+    const pack = knowledge.packs.find((entry) => entry.id === "basic-math");
     expect(pack?.levels.basico.steps).toEqual([1, 2]);
     expect(pack?.levels.genio.coefficientRange).toEqual([-60, 60]);
     const fullIds = knowledge.topics.map((topic) => topic.fullId);
@@ -182,23 +182,29 @@ describe("layering and collisions (EVL-KB-002)", () => {
     });
     expect(ids(knowledge.report)).toContain("EVL-KB-002");
     expect(knowledge.report.ok).toBe(false);
-    expect(knowledge.packs).toHaveLength(1);
-    expect(knowledge.packs[0]?.code).toBe("BAS");
+    const basicMath = knowledge.packs.find((entry) => entry.id === "basic-math");
+    expect(basicMath?.code).toBe("BAS");
+    expect(knowledge.packs).toHaveLength(2);
   });
 
   it("replaces a shipped pack when overrides is true", async () => {
     const root = await scratchDir();
-    await writePack(root, "basic-math", packFile("basic-math", "BAS", { overrides: true }), {
-      "custom-topic.yaml": familyTopic("custom-topic", "CUS", "integer-ops"),
-    });
+    await writePack(
+      root,
+      "algebra",
+      packFile("algebra", "ALG", { overrides: true, requires: ["basic-math"] }),
+      { "custom-topic.yaml": familyTopic("custom-topic", "CUS", "integer-ops") },
+    );
     const knowledge = await loadKnowledge({
       shippedDir: shippedKnowledgeDir(),
       workspaceDirs: [root],
       families: familyIds,
     });
     expect(knowledge.report.ok).toBe(true);
-    expect(knowledge.packs[0]?.layer).toBe("workspace");
-    expect(knowledge.topics.map((topic) => topic.id)).toEqual(["custom-topic"]);
+    const algebra = knowledge.packs.find((entry) => entry.id === "algebra");
+    expect(algebra?.layer).toBe("workspace");
+    const overridden = knowledge.topics.filter((topic) => topic.packId === "algebra");
+    expect(overridden.map((topic) => topic.id)).toEqual(["custom-topic"]);
   });
 
   it("rejects a duplicate pack code across packs", async () => {

@@ -1,0 +1,19 @@
+id: quadratic-equations
+name:
+  es: "Ecuaciones cuadráticas"
+code: CUA
+grades: ["Noveno"]
+prerequisites: [algebra/factoring]
+objectives:
+  - id: solve-quadratic
+    text:
+      es: "Resuelve ecuaciones cuadráticas por factorización o fórmula general."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [cuadrática, raíz, discriminante, fórmula general]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: quadratic-equation, levels: [basico, intermedio, avanzado, genio] }

@@ -1,4 +1,5 @@
 import type { LevelCalibration } from "../knowledge/types.js";
+import type { Poly } from "../math/poly.js";
 import type { Rational } from "../math/rational.js";
 import type { Rng } from "../math/rng.js";
 import type { ItemType, Level } from "../types.js";
@@ -36,9 +37,12 @@ export interface FamilyContext {
   params?: Record<string, unknown>;
 }
 
+/** The canonical answer of a family: a rational, a polynomial, or a canonical text (e.g. `x<2`). */
+export type CanonicalAnswer = Rational | Poly | string;
+
 export interface Family {
   id: string;
   generate(context: FamilyContext): ItemDraft;
   /** Recomputes the canonical answer from `problem`, independently of `generate`. */
-  solve(problem: Record<string, unknown>): Rational;
+  solve(problem: Record<string, unknown>): CanonicalAnswer;
 }

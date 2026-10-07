@@ -1,0 +1,19 @@
+id: factoring
+name:
+  es: "Factorización"
+code: FAC
+grades: ["Octavo", "Noveno"]
+prerequisites: [algebra/polynomials]
+objectives:
+  - id: factor-trinomial
+    text:
+      es: "Factoriza trinomios de la forma x² + bx + c."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [factor, raíz, trinomio, producto]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: factoring, levels: [basico, intermedio, avanzado, genio] }

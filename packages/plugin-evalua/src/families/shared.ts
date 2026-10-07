@@ -1,5 +1,6 @@
 import type { LevelCalibration } from "../knowledge/types.js";
-import { latexRational } from "../math/latex.js";
+import { latexPoly, latexRational } from "../math/latex.js";
+import { Poly } from "../math/poly.js";
 import { Rational } from "../math/rational.js";
 import type { Rng } from "../math/rng.js";
 
@@ -59,6 +60,39 @@ export function perturb(
 /** Keeps the last `target` lines, so the final answer is always present. */
 export function fitPool(pool: string[], target: number): string[] {
   return pool.slice(-target);
+}
+
+/** A solution of `pickSteps` lines drawn from a genuine pool (which must have >= 8 lines). */
+export function pooled(pool: string[], rng: Rng, calibration: LevelCalibration): string[] {
+  return pool.slice(-Math.min(pickSteps(rng, calibration), pool.length));
+}
+
+/** The canonical value and LaTeX display of a polynomial option. */
+export function polyValue(poly: Poly): string {
+  return poly.toString();
+}
+
+export function polyDisplay(poly: Poly): string {
+  return `$${latexPoly(poly)}$`;
+}
+
+/** Builds a univariate polynomial in x from ascending coefficients. */
+export function polyOfX(coefficients: readonly number[]): Poly {
+  let out = Poly.zero;
+  coefficients.forEach((coefficient, index) => {
+    if (coefficient !== 0) {
+      out = out.add(Poly.constant(Rational.of(coefficient)).mul(Poly.variable("x").pow(index)));
+    }
+  });
+  return out;
+}
+
+/** Text for a linear expression `m x + n` with unambiguous signs. */
+export function linearText(m: number, n: number): string {
+  const variable = m === 0 ? "" : m === 1 ? "x" : m === -1 ? "-x" : `${m}x`;
+  if (n === 0) return variable === "" ? "0" : variable;
+  if (variable === "") return `${n}`;
+  return `${variable} ${n < 0 ? "-" : "+"} ${Math.abs(n)}`;
 }
 
 /** Balanced base-10 decimal text for a rational whose denominator only has 2s and 5s. */
