@@ -1,5 +1,28 @@
 # @alisio/plugin-evalua
 
+## 0.7.0
+
+### Minor Changes
+
+- 2a30178: Primary school and the two missing MEN "pensamientos" are now covered. A new `primary-math` pack
+  (grades Primero to Quinto) with `whole-number-operations` and `measurement` topics, plus a
+  `statistics` topic for Sexto to Noveno, backed by five new item families: addition and subtraction of
+  whole numbers, multiplication, division (exact and with a remainder), measurement conversions across
+  the decimal metric system and time, and mean/median/mode over a small data set.
+
+### Patch Changes
+
+- 2a30178: Geometric figures are filled with soft tones again. Every figure picks one of five print-safe pastels
+  (`#FFDA64`, `#A3D084`, `#F4B281`, `#E3E3E3`, `#8FA9DA`) from its own spec, so a figure keeps its colour
+  across rebuilds and two different figures rarely match. The Venn circles keep their own tones with a
+  translucent overlap and the fraction bar keeps its white bar so its shading still carries the
+  fraction. Fixes two defects the fill exposed: a measured circle radius was read as pixels, so
+  `radius: 4` drew a dot, and the cone was not a closed silhouette, so its fill distorted the shape.
+- 2a30178: Two interview fixes. A slash-command answer whose ids do not belong to the pending round no longer
+  resets the interview: it now reports which ids were sent, which round is pending and that nothing was
+  reset. And the coordinator instructions now state that a round is answered only with what the teacher
+  actually said, and that an option marked `(text)` must always carry its `id:text=` value.
+
 ## 0.6.6
 
 ### Patch Changes
