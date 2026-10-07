@@ -327,7 +327,10 @@ describe("/laya:setup --uninstall", () => {
     ui.askQuestions.mockResolvedValueOnce({ "laya-uninstall-confirm": "remove" });
     expect(await handlers.setup("--uninstall")).toMatch(/started/i);
     await runtime.jobs.whenIdle();
-    await expect(stat(join(runtime.paths.runtime, "runtime.json"))).rejects.toThrow();
+    // The removal of the runtime directory is asynchronous, so poll instead of racing whenIdle().
+    await vi.waitFor(async () => {
+      await expect(stat(join(runtime.paths.runtime, "runtime.json"))).rejects.toThrow();
+    });
     expect(runtime.installed.kind).toBe("none");
   });
 
