@@ -175,6 +175,41 @@ describe("headless continuation", () => {
     expect(state?.interview?.pending).toBeUndefined();
   });
 
+  it("never resets the interview when the answer belongs to another round", async () => {
+    const h = await harness({ interactive: false });
+    await h.run("new");
+    await h.run(
+      "new",
+      "language=es institution=enter institution:text=Instituto Demo teacher_name=enter teacher_name:text=Ana Perez logo=none",
+    );
+    await h.run("new", "Figuras geométricas y sus medidas");
+    const before = await readState(h.workspace);
+    expect(before?.interview?.answers?.topic).toBeDefined();
+
+    const message = await h.run("new", "count=other");
+    expect(message).toContain("not part of the pending round");
+    expect(message).toContain("count");
+    expect(message).toContain("Nothing was reset");
+
+    const after = await readState(h.workspace);
+    expect(after?.interview?.answers?.topic).toBe(before?.interview?.answers?.topic);
+    expect(after?.interview?.completedRounds).toEqual(before?.interview?.completedRounds);
+  });
+
+  it("rejects an option that needs free text when the text is missing", async () => {
+    const h = await harness({ interactive: false });
+    await h.run("new");
+    await h.run(
+      "new",
+      "language=es institution=enter institution:text=Instituto Demo teacher_name=enter teacher_name:text=Ana Perez logo=none",
+    );
+    await h.run("new", "Figuras geométricas y sus medidas");
+    await h.run("new", "grade=septimo level=basico kind=basic-math");
+    const message = await h.run("new", "count=other");
+    expect(message).toContain('count: option "other" needs free text');
+    expect(message).toContain("count");
+  });
+
   it("evalua_answer persists answers for the pending round and reports the next one", async () => {
     const h = await harness({ interactive: false });
     await h.run("new");
@@ -349,7 +384,7 @@ describe("knowledge tools", () => {
       packs: { id: string; topics: string[] }[];
     };
     expect(kb.ok).toBe(true);
-    expect(kb.packs.map((pack) => pack.id)).toEqual(["algebra", "basic-math"]);
+    expect(kb.packs.map((pack) => pack.id)).toEqual(["algebra", "basic-math", "primary-math"]);
     expect(kb.packs[1]?.topics).toContain("basic-math/fractions");
     const check = JSON.parse((await h.tool("evalua_check")).text) as { ok: boolean };
     expect(check.ok).toBe(true);

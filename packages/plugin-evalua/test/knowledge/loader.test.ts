@@ -155,7 +155,11 @@ describe("shipped basic-math pack", () => {
     });
     expect(knowledge.report.results).toEqual([]);
     expect(knowledge.report.ok).toBe(true);
-    expect(knowledge.packs.map((pack) => pack.id)).toEqual(["algebra", "basic-math"]);
+    expect(knowledge.packs.map((pack) => pack.id)).toEqual([
+      "algebra",
+      "basic-math",
+      "primary-math",
+    ]);
     const pack = knowledge.packs.find((entry) => entry.id === "basic-math");
     expect(pack?.levels.basico.steps).toEqual([1, 2]);
     expect(pack?.levels.genio.coefficientRange).toEqual([-60, 60]);
@@ -184,7 +188,7 @@ describe("layering and collisions (EVL-KB-002)", () => {
     expect(knowledge.report.ok).toBe(false);
     const basicMath = knowledge.packs.find((entry) => entry.id === "basic-math");
     expect(basicMath?.code).toBe("BAS");
-    expect(knowledge.packs).toHaveLength(2);
+    expect(knowledge.packs).toHaveLength(3);
   });
 
   it("replaces a shipped pack when overrides is true", async () => {

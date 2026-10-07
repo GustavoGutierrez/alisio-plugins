@@ -40,6 +40,20 @@ function wrap(width: number, height: number, body: string, label?: string): stri
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img"${aria} class="figure-svg"><g fill="none" stroke="#000" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">${body}</g></svg>`;
 }
 
+/** Soft fills for the figure faces. Print-safe: every one of them reads as a light tone on paper. */
+const PASTELS = ["#FFDA64", "#A3D084", "#F4B281", "#E3E3E3", "#8FA9DA"] as const;
+
+/** FNV-1a over the figure signature, so the same spec always draws in the same colour. */
+function pastelFor(spec: FigureSpec): string {
+  const signature = `${spec.kind}|${spec.label ?? ""}|${JSON.stringify(spec.params ?? {})}`;
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < signature.length; index += 1) {
+    hash ^= signature.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return PASTELS[hash % PASTELS.length] ?? PASTELS[0];
+}
+
 const num = (value: unknown, fallback: number): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
 
@@ -124,13 +138,13 @@ function venn(params: Record<string, unknown>): string {
   const r = 62;
   let body = "";
   if (three) {
-    body += `<circle cx="110" cy="70" r="${r}"/>`;
-    body += `<circle cx="190" cy="70" r="${r}"/>`;
-    body += `<circle cx="150" cy="118" r="${r}"/>`;
+    body += `<circle cx="110" cy="70" r="${r}" fill="${PASTELS[0]}" fill-opacity="0.55"/>`;
+    body += `<circle cx="190" cy="70" r="${r}" fill="${PASTELS[1]}" fill-opacity="0.55"/>`;
+    body += `<circle cx="150" cy="118" r="${r}" fill="${PASTELS[4]}" fill-opacity="0.55"/>`;
     body += text(66, 40, "A") + text(226, 40, "B") + text(146, 172, "C");
   } else {
-    body += `<circle cx="100" cy="90" r="${r}"/>`;
-    body += `<circle cx="160" cy="90" r="${r}"/>`;
+    body += `<circle cx="100" cy="90" r="${r}" fill="${PASTELS[0]}" fill-opacity="0.55"/>`;
+    body += `<circle cx="160" cy="90" r="${r}" fill="${PASTELS[1]}" fill-opacity="0.55"/>`;
     body += text(58, 50, "A") + text(196, 50, "B");
   }
   const names = labels(params.labels);
@@ -200,10 +214,18 @@ function quadrilateral(
   );
 }
 
+/** A measured radius (a length from the problem) is scaled into the drawing; a larger value is
+ * already a pixel size. */
+function circleRadius(value: unknown): number {
+  const raw = num(value, 10);
+  if (raw <= 10) return 30 + raw * 3;
+  return Math.max(30, Math.min(75, raw));
+}
+
 function circleFigure(params: Record<string, unknown>): string {
   const width = 200;
   const height = 180;
-  const r = num(params.radius, 60);
+  const r = circleRadius(params.radius);
   const body =
     `<circle cx="100" cy="90" r="${r}"/>` +
     line(100, 90, 100 + r, 90) +
@@ -240,7 +262,8 @@ function cylinder(): string {
 }
 
 function cone(): string {
-  const body = `${line(110, 30, 40, 150) + line(110, 30, 180, 150)}<path d="M40 150 A70 20 0 0 0 180 150"/>`;
+  // One closed silhouette (sides + front arc), so the pastel fill reads as a solid cone.
+  const body = `<path d="M40 150 L110 30 L180 150 A70 20 0 0 1 40 150 Z"/>`;
   return wrap(220, 190, body, "Cone");
 }
 
@@ -254,14 +277,15 @@ function fractionBar(params: Record<string, unknown>): string {
   const barWidth = width - 60;
   const barHeight = 40;
   const cell = barWidth / parts;
-  let body = `<rect x="${left}" y="${top}" width="${barWidth}" height="${barHeight}"/>`;
+  // The bar stays white: the shading is what carries the fraction, so it keeps its own fill.
+  let body = `<rect x="${left}" y="${top}" width="${barWidth}" height="${barHeight}" fill="#ffffff"/>`;
   for (let index = 1; index < parts; index += 1) {
     body += line(left + index * cell, top, left + index * cell, top + barHeight);
   }
   for (let index = 0; index < shaded; index += 1) {
-    body += `<rect x="${left + index * cell}" y="${top}" width="${cell}" height="${barHeight}" fill="#cfcfcf" stroke="none"/>`;
+    body += `<rect x="${left + index * cell}" y="${top}" width="${cell}" height="${barHeight}" fill="${PASTELS[0]}" stroke="none"/>`;
   }
-  body += `<rect x="${left}" y="${top}" width="${barWidth}" height="${barHeight}"/>`;
+  body += `<rect x="${left}" y="${top}" width="${barWidth}" height="${barHeight}" fill="none"/>`;
   return wrap(width, height, body, `${shaded} of ${parts}`);
 }
 
@@ -280,8 +304,8 @@ function barChart(params: Record<string, unknown>): string {
     const barHeight = ((base - 30) * value) / max;
     const x = left + index * slot + slot * 0.2;
     const w = slot * 0.6;
-    body += `<rect x="${x.toFixed(1)}" y="${(base - barHeight).toFixed(1)}" width="${w.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="#cfcfcf"/>`;
     body += `<rect x="${x.toFixed(1)}" y="${(base - barHeight).toFixed(1)}" width="${w.toFixed(1)}" height="${barHeight.toFixed(1)}"/>`;
+    body += `<rect x="${x.toFixed(1)}" y="${(base - barHeight).toFixed(1)}" width="${w.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="none"/>`;
   });
   return wrap(width, height, body, "Bar chart");
 }
@@ -351,7 +375,9 @@ export function figureSvg(spec: FigureSpec): string {
   if (spec.label !== undefined && spec.label.trim() !== "") {
     svg = svg.replace(/aria-label="[^"]*"/, `aria-label="${esc(spec.label)}"`);
   }
-  return svg;
+  // Every closed shape inherits the group fill; shapes that carry meaning with their own fill
+  // (the Venn circles, the fraction bar) set it explicitly and win over this.
+  return svg.replace('<g fill="none"', `<g fill="${pastelFor(spec)}"`);
 }
 
 export const figureKinds: readonly FigureKind[] = [

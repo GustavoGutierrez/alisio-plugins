@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: primary-math
+version: 1
+name:
+  es: "Matemática primaria"
+  en: "Primary math"
+code: PRI
+requires: []
+extends: null
+overrides: false
+levels:
+  basico:
+    steps: [1, 2]
+    coefficientRange: [1, 20]
+    cognitiveMix: { recall: 60, apply: 35, reason: 5 }
+    secondsPerItem: 45
+  intermedio:
+    steps: [2, 3]
+    coefficientRange: [1, 100]
+    cognitiveMix: { recall: 45, apply: 45, reason: 10 }
+    secondsPerItem: 75
+  avanzado:
+    steps: [3, 5]
+    coefficientRange: [1, 1000]
+    cognitiveMix: { recall: 30, apply: 50, reason: 20 }
+    secondsPerItem: 120
+  genio:
+    steps: [4, 6]
+    coefficientRange: [1, 9999]
+    cognitiveMix: { recall: 15, apply: 45, reason: 40 }
+    secondsPerItem: 180

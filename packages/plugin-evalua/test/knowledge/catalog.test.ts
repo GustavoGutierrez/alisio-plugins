@@ -12,7 +12,11 @@ async function catalog() {
 describe("topic catalog", () => {
   it("lists packs and topics from the knowledge base", async () => {
     const source = await catalog();
-    expect(source.packs().map((entry) => entry.value)).toEqual(["algebra", "basic-math"]);
+    expect(source.packs().map((entry) => entry.value)).toEqual([
+      "algebra",
+      "basic-math",
+      "primary-math",
+    ]);
     const suggestions = source.suggestions("Séptimo");
     expect(suggestions.map((entry) => entry.value)).toContain("basic-math/fractions");
     expect(suggestions.map((entry) => entry.value)).toContain("algebra/algebraic-expressions");

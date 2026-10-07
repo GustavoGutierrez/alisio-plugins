@@ -1,4 +1,6 @@
+import { addSubtract } from "./add-subtract.js";
 import { decimalOps } from "./decimal-ops.js";
+import { division } from "./division.js";
 import { expressionEvaluate } from "./expression-evaluate.js";
 import { factoring } from "./factoring.js";
 import { fractionOps } from "./fraction-ops.js";
@@ -11,7 +13,9 @@ import { linearEquation } from "./linear-equation.js";
 import { linearFunction } from "./linear-function.js";
 import { linearInequality } from "./linear-inequality.js";
 import { linearSystem2x2 } from "./linear-system-2x2.js";
+import { measurement } from "./measurement.js";
 import { mixedNumbers } from "./mixed-numbers.js";
+import { multiplication } from "./multiplication.js";
 import { orderOfOperations } from "./order-of-operations.js";
 import { percent } from "./percent.js";
 import { polynomialOps } from "./polynomial-ops.js";
@@ -22,6 +26,7 @@ import { quadraticEquation } from "./quadratic-equation.js";
 import { rationalCompare } from "./rational-compare.js";
 import { rationalExpression } from "./rational-expression.js";
 import { specialProducts } from "./special-products.js";
+import { statistics } from "./statistics.js";
 import type { Family } from "./types.js";
 import { wordProblemLinear } from "./word-problem-linear.js";
 
@@ -52,6 +57,11 @@ export const families: Record<string, Family> = {
   [linearFunction.id]: linearFunction,
   [wordProblemLinear.id]: wordProblemLinear,
   [geometry.id]: geometry,
+  [addSubtract.id]: addSubtract,
+  [multiplication.id]: multiplication,
+  [division.id]: division,
+  [measurement.id]: measurement,
+  [statistics.id]: statistics,
 };
 
 export const familyIds: readonly string[] = Object.keys(families).sort();

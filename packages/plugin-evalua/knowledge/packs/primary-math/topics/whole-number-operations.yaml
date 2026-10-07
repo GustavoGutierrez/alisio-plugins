@@ -1,0 +1,29 @@
+id: whole-number-operations
+name:
+  es: "Operaciones con números naturales y valor posicional"
+code: WNO
+grades: ["Primero", "Segundo", "Tercero", "Cuarto", "Quinto"]
+prerequisites: []
+objectives:
+  - id: add-subtract-naturals
+    text:
+      es: "Suma y resta números naturales de dos y tres términos sin obtener resultados negativos."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: multiply-naturals
+    text:
+      es: "Multiplica números naturales con las tablas y con el algoritmo por descomposición."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: divide-naturals
+    text:
+      es: "Divide números naturales e interpreta el cociente y el residuo."
+    levels: [intermedio, avanzado, genio]
+keywords: [suma, resta, multiplicación, división, cociente, residuo, número natural, valor posicional]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: add-subtract, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: multiplication, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: division, levels: [intermedio, avanzado, genio] }

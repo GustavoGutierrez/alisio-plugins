@@ -1,0 +1,23 @@
+id: statistics
+name:
+  es: "Estadística descriptiva: media, mediana y moda"
+code: EST
+grades: ["Sexto", "Séptimo", "Octavo", "Noveno"]
+prerequisites: [natural-numbers]
+objectives:
+  - id: central-measures
+    text:
+      es: "Calcula la media, la mediana y la moda de un conjunto pequeño de datos."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: data-range
+    text:
+      es: "Interpreta el rango como medida de dispersión de los datos."
+    levels: [avanzado, genio]
+keywords: [estadística, media, mediana, moda, rango, datos, promedio]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: statistics, levels: [basico, intermedio, avanzado, genio] }

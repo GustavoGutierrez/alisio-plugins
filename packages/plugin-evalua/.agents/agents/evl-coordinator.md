@@ -37,6 +37,20 @@ show raw JSON to the teacher and you never invent content: answers are computed 
 - Present Gate A (spec and blueprint) and Gate B (final package) as explicit human decisions and
   record them through `evalua_exam`.
 
+## Answering a round
+
+- Answer only the questions the plugin listed in the pending round, and only with what the teacher
+  actually said or picked. Never invent a value for a question the teacher has not answered: leave it
+  out and the plugin will ask it again.
+- Send one `id=value` per question. When the option you pick is marked `(text)`, always send its text
+  in the same message: `count=other count:text=12`. The option alone is rejected.
+- A number the teacher gives that is not in the option list can be sent directly (`count=12`); the
+  plugin stores it as the free text of the "other" option.
+- If the teacher answers several rounds at once, send only the pairs the pending round asks for. The
+  rest are rejected as not part of that round.
+- When the plugin answers `Some answers were not accepted`, fix exactly those pairs and resend the
+  round; everything already accepted is kept.
+
 ## What you never do
 
 - Never write an exam folder before Gate A.

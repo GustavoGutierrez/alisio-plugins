@@ -11,10 +11,12 @@ import { families, familyIds } from "./families/index.js";
 import { generateExam } from "./generate.js";
 import {
   acceptAnswers,
+  answerIdsIn,
   buildDraft,
   buildRound,
   emptyCatalog,
   flattenAnswers,
+  looksLikeAnswers,
   nextRound,
   parseAnswerText,
   renderPending,
@@ -186,11 +188,15 @@ export class EvaluaCoordinator {
     let state = await readState(workspace);
     const pending = state?.interview?.pending;
     if (state && pending) {
-      const answers = parseAnswerText(
-        args,
-        pending.questions.map((question) => question.id),
-      );
+      const ids = pending.questions.map((question) => question.id);
+      const answers = parseAnswerText(args, ids);
       if (answers) return this.applyAnswers(workspace, state, answers, true);
+      // The teacher described a topic, so keep the current interview untouched instead of resetting
+      // it: an answer that names no pending id is a mismatch, not a new exam.
+      if (looksLikeAnswers(args)) {
+        const sent = answerIdsIn(args);
+        return `Those answers (${sent.join(", ")}) are not part of the pending round (${pending.round}). Pending questions: ${ids.join(", ")}. Nothing was reset; resend them with those ids.`;
+      }
       if (!args.trim() && state.interview?.flow === "new")
         return this.advance(workspace, state, true);
     }
@@ -758,9 +764,16 @@ export class EvaluaCoordinator {
       state,
       await this.catalogFor(workspace, state),
     );
-    if (errors.length > 0 && remaining.length > 0)
-      return this.park(workspace, state, pending.round, remaining, errors);
-    if (errors.length > 0) return `Some answers were not accepted:\n- ${errors.join("\n- ")}`;
+    // An id from another round is the most common misstep: say which round is actually pending
+    // instead of leaving a bare "unknown question id" that reads like a plugin failure.
+    const described = errors.map((error) =>
+      error.startsWith("Unknown question id: ")
+        ? `${error.slice("Unknown question id: ".length)} is not part of round ${pending.round}; answer only the questions listed below`
+        : error,
+    );
+    if (described.length > 0 && remaining.length > 0)
+      return this.park(workspace, state, pending.round, remaining, described);
+    if (described.length > 0) return `Some answers were not accepted:\n- ${described.join("\n- ")}`;
     return this.advance(workspace, state, mayAsk);
   }
 

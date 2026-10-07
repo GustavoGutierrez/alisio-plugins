@@ -1,0 +1,23 @@
+id: measurement
+name:
+  es: "Medición y conversión de unidades"
+code: MED
+grades: ["Tercero", "Cuarto", "Quinto"]
+prerequisites: [whole-number-operations]
+objectives:
+  - id: convert-units
+    text:
+      es: "Convierte medidas de longitud, masa, capacidad y tiempo entre unidades."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: choose-unit
+    text:
+      es: "Reconoce la unidad adecuada y la relación entre unidades del sistema métrico decimal."
+    levels: [basico, intermedio]
+keywords: [medida, conversión, longitud, masa, capacidad, tiempo, metro, litro, kilogramo]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: false
+  practice: true
+sources:
+  - { kind: family, family: measurement, levels: [basico, intermedio, avanzado, genio] }

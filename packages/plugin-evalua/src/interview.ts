@@ -553,6 +553,33 @@ export function flattenAnswers(
  * JSON object. Returns undefined when the text contains no known id, so callers can treat it as
  * a plain description.
  */
+const answerPairStart = /^[A-Za-z_][A-Za-z0-9_]*(?::text)?=/;
+
+/**
+ * True when the text opens with an `id=value` pair, i.e. the caller meant to answer a round. Used to
+ * tell a mismatched answer apart from a plain topic description, so a mismatch never resets the
+ * interview.
+ */
+export function looksLikeAnswers(text: string): boolean {
+  const first =
+    text
+      .trim()
+      .replace(/^--\s*/, "")
+      .split(/\s+/)[0] ?? "";
+  return answerPairStart.test(first);
+}
+
+/** The ids named by the `id=value` pairs in the text, in order of appearance. */
+export function answerIdsIn(text: string): string[] {
+  const source = text.trim().replace(/^--\s*/, "");
+  const found: string[] = [];
+  for (const match of source.matchAll(/(?:^|\s)([A-Za-z_][A-Za-z0-9_]*)(?::text)?=/g)) {
+    const id = match[1] as string;
+    if (!found.includes(id)) found.push(id);
+  }
+  return found;
+}
+
 export function parseAnswerText(
   text: string,
   ids: readonly string[],
