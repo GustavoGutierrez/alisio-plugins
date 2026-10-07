@@ -67,6 +67,11 @@ async function defaultExists(path: string): Promise<boolean> {
   }
 }
 
+/** Expands Windows `%VAR%` placeholders (e.g. `%ProgramFiles%`) so known paths resolve. */
+export function expandEnv(path: string, env: NodeJS.ProcessEnv): string {
+  return path.replace(/%([^%]+)%/g, (_match, name: string) => env[name] ?? "");
+}
+
 async function defaultPathLookup(
   name: string,
   env: NodeJS.ProcessEnv,
@@ -93,7 +98,8 @@ export async function detectChrome(overrides: Partial<ChromeDeps> = {}): Promise
     }
   }
   for (const path of knownBrowserPaths(platform)) {
-    if (await exists(path)) return { path, source: "known-path", detail: path };
+    const expanded = expandEnv(path, env);
+    if (await exists(expanded)) return { path: expanded, source: "known-path", detail: expanded };
   }
   for (const name of pathBrowserNames(platform)) {
     const found = await pathLookup(name);
