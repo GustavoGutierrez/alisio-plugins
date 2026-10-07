@@ -6,6 +6,13 @@
  * file only owns the surface, the layout and the motion.
  */
 
+/* The closing panel is dark and full-bleed, exactly like the footer below it, so the default home
+ * margin would open a strip of page background between the two. Close it: the panel and the footer
+ * read as one surface. */
+.VPHome:has(.home-closing) {
+  margin-bottom: 0;
+}
+
 .home-closing {
   position: relative;
   isolation: isolate;
@@ -28,13 +35,19 @@
   opacity: 0.32;
 }
 
-/* The scrim that keeps the copy legible over the artwork. */
+/* The scrim that keeps the copy legible over the artwork. Its last stop lands on the footer colour
+ * so the panel and the footer meet without a seam. */
 .home-closing::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: linear-gradient(180deg, rgba(2, 14, 28, 0.86) 0%, rgba(2, 14, 28, 0.94) 100%);
+  background-image: linear-gradient(
+    180deg,
+    rgba(2, 14, 28, 0.86) 0%,
+    rgba(2, 14, 28, 0.9) 55%,
+    rgba(3, 28, 54, 0.98) 100%
+  );
 }
 
 .home-closing__inner {
