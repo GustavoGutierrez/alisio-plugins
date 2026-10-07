@@ -201,6 +201,28 @@ describe("document models", () => {
     expect(refs).toEqual([...refs].sort());
   });
 
+  it("writes the specification summary in the locale, never as internal ids", () => {
+    const sheet = buildAnswerSheetModel({
+      spec,
+      profile,
+      items,
+      locale,
+      blueprint: buildBlueprint({
+        topics: ["basic-math/integers"],
+        level: "basico",
+        calibration,
+        itemTypes: spec.itemTypes,
+      }),
+      topicNames: { "basic-math/integers": "Números enteros" },
+    });
+    expect(sheet.totalLabel).toBe("Total de puntos");
+    expect(sheet.blueprintSummary.length).toBeGreaterThan(0);
+    for (const line of sheet.blueprintSummary) {
+      expect(line).not.toMatch(/basic-math\/|single_choice|multiple_choice|recall|apply|reason/);
+      expect(line).toMatch(/Números enteros · (recordar|aplicar|razonar) · /);
+    }
+  });
+
   it("builds the solution book with named misconceptions and the rubric for graded items", () => {
     const book = buildSolutionBookModel({ spec, profile, items, locale });
     expect(book.entries).toHaveLength(5);
@@ -372,7 +394,7 @@ describe("emitDocument", () => {
       columns: 2,
       math,
     });
-    expect(choiceHtml).toContain('<body class="columns-2 has-options">');
+    expect(choiceHtml).toContain('<body class="columns-2 doc-exam has-options">');
     expect(choiceHtml).toContain(
       ".columns-2.has-options .questions { column-rule: 1px solid var(--rule); }",
     );
@@ -404,8 +426,8 @@ describe("emitDocument", () => {
       columns: 2,
       math,
     });
-    expect(listHtml).toContain('<body class="columns-2">');
-    expect(listHtml).not.toContain('<body class="columns-2 has-options">');
+    expect(listHtml).toContain('<body class="columns-2 doc-exam">');
+    expect(listHtml).not.toContain('<body class="columns-2 doc-exam has-options">');
   });
 });
 

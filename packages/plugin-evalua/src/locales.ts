@@ -20,6 +20,8 @@ export interface Locale {
   duration: { hours: string; minutes: string; hour?: string; minute?: string };
   instrument: Record<string, string>;
   rubric: Record<string, string>;
+  /** Human wording for the cognitive levels of the blueprint (recall, apply, reason). */
+  cognitive: Record<string, string>;
 }
 
 const MAX_BYTES = 128 * 1024;
@@ -82,6 +84,7 @@ export function parseLocale(
   const duration = readStringMap(parsed.duration, subject, "duration", collector);
   const instrument = readStringMap(parsed.instrument, subject, "instrument", collector);
   const rubric = readStringMap(parsed.rubric, subject, "rubric", collector);
+  const cognitive = readStringMap(parsed.cognitive, subject, "cognitive", collector);
   const intro = readStringMap(parsed.intro, subject, "intro", collector);
   for (const required of ["base", "procedure", "selection", "clarity", "calculator"]) {
     if (intro[required] === undefined) {
@@ -114,6 +117,7 @@ export function parseLocale(
     },
     instrument,
     rubric,
+    cognitive,
   };
 }
 

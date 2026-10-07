@@ -25,6 +25,7 @@ import { freezeItems, itemsSha256, parseItemsFile } from "./items-file.js";
 import {
   createTopicCatalog,
   loadKnowledge,
+  localized,
   shippedKnowledgeDir,
   shippedLocalesDir,
   shippedQuotesDir,
@@ -665,6 +666,12 @@ export class EvaluaCoordinator {
       columns: found.spec.columns,
       blueprint,
       closing,
+      topicNames: Object.fromEntries(
+        knowledge.topics.map((topic) => [
+          topic.fullId,
+          localized(topic.name, profile.language) || topic.fullId,
+        ]),
+      ),
       executable: detection.path ?? "",
       outDir: found.path,
       maxPages: found.spec.maxPages,

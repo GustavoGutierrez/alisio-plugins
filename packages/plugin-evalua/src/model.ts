@@ -99,6 +99,8 @@ export interface AnswerSheetModel {
   header: HeaderModel;
   rows: AnswerSheetRow[];
   totalPoints: number;
+  /** The locale's wording for the total line, so nothing teacher-facing is hardcoded. */
+  totalLabel: string;
   indexByRef: { ref: string; number: number }[];
   blueprintSummary: string[];
 }
@@ -329,8 +331,10 @@ export function buildAnswerSheetModel(input: {
   items: readonly ExamItem[];
   locale: Locale;
   blueprint: Blueprint;
+  /** Display name per topic full id, so the summary never shows the internal id. */
+  topicNames?: Record<string, string>;
 }): AnswerSheetModel {
-  const { spec, profile, items, locale, blueprint } = input;
+  const { spec, profile, items, locale, blueprint, topicNames } = input;
   const rows = items.map((item, index) => ({
     number: index + 1,
     ref: item.ref,
@@ -345,12 +349,18 @@ export function buildAnswerSheetModel(input: {
     header: header(spec, profile, locale),
     rows,
     totalPoints: items.reduce((acc, item) => acc + item.points, 0),
+    totalLabel: locale.labels.totalPoints ?? "Total de puntos",
     indexByRef: rows
       .map((row) => ({ ref: row.ref, number: row.number }))
       .sort((a, b) => a.ref.localeCompare(b.ref)),
-    blueprintSummary: blueprint.cells.map(
-      (cell) => `${cell.topic} · ${cell.cognitive} · ${cell.type}: ${cell.count}`,
-    ),
+    blueprintSummary: blueprint.cells.map((cell) => {
+      // The teacher reads this, so nothing raw: the topic's own name, the cognitive level and the
+      // item type in the locale, never the internal ids.
+      const topic = topicNames?.[cell.topic] ?? cell.topic;
+      const cognitive = locale.cognitive[cell.cognitive] ?? cell.cognitive;
+      const type = locale.sections[cell.type] ?? cell.type;
+      return `${topic} · ${cognitive} · ${type}: ${cell.count}`;
+    }),
   };
 }
 

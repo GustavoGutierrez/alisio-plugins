@@ -43,6 +43,8 @@ export interface RenderInput {
   columns: 1 | 2;
   blueprint: Blueprint;
   closing: ClosingSelection;
+  /** Display name per topic full id, so teacher-facing summaries never show the internal id. */
+  topicNames?: Record<string, string>;
 }
 
 export interface RenderedDocuments {
@@ -90,6 +92,7 @@ export function renderDocuments(input: RenderInput, density = defaultDensity()):
     items: input.items,
     locale: input.locale,
     blueprint: input.blueprint,
+    ...(input.topicNames === undefined ? {} : { topicNames: input.topicNames }),
   });
   const book = buildSolutionBookModel({
     spec: input.spec,

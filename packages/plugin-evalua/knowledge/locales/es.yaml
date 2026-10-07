@@ -26,6 +26,10 @@ sections:
   multiple_choice: "Selección múltiple"
   open: "Preguntas abiertas"
   practice: "Ejercicios de práctica"
+cognitive:
+  recall: "recordar"
+  apply: "aplicar"
+  reason: "razonar"
 intro:
   base: "Este examen cuenta con {n} preguntas. El tiempo máximo para resolverlo es de {duration}, a {instrument}."
   procedure: "Los ejercicios sin procedimiento no son válidos."

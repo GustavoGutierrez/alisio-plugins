@@ -175,14 +175,17 @@ function renderSheet(model: AnswerSheetModel, options: EmitOptions): string {
     )
     .join("");
   const index = model.indexByRef
-    .map((entry) => `<tr><td>${escapeHtml(entry.ref)}</td><td>${entry.number}</td></tr>`)
+    .map(
+      (entry) =>
+        `<span class="sheet-index__item">${escapeHtml(entry.ref)} · ${entry.number}</span>`,
+    )
     .join("");
   return `<h1>${escapeHtml(model.title)}</h1>
 ${renderHeader(model.header, options.theme)}
 <table class="sheet-table"><thead><tr><th>#</th><th>Ref.</th><th>Tipo</th><th>Respuesta</th><th>Puntos</th></tr></thead><tbody>${rows}</tbody></table>
-<p>Total: ${model.totalPoints}</p>
-<table class="sheet-table"><tbody>${index}</tbody></table>
-<ul>${model.blueprintSummary.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
+<p class="sheet-total">${escapeHtml(model.totalLabel)}: ${model.totalPoints}</p>
+<div class="sheet-index">${index}</div>
+<ul class="sheet-summary">${model.blueprintSummary.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
 }
 
 function renderBook(model: SolutionBookModel, options: EmitOptions): string {
@@ -246,6 +249,7 @@ export function emitDocument(model: DocumentModel, options: EmitOptions): string
   });
   const bodyClass = [
     options.columns === 2 ? "columns-2" : "columns-1",
+    `doc-${model.kind}`,
     // A vertical rule between the two columns only helps when the items carry answer options; a
     // plain list of exercises to solve reads better without it.
     model.kind === "exam" &&

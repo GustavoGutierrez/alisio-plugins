@@ -80,8 +80,20 @@ table.grid th, table.grid td { border: 1px solid var(--rule); padding: 1mm 2mm; 
 .figure .figure-svg { max-width: 100%; height: auto; }
 .closing { border: 1px solid var(--rule); border-radius: 16px; padding: 2.5mm 3mm; margin: 3mm 1mm; background-color: var(--closing-bg); text-align: center; font-style: italic; break-inside: avoid; }
 .closing .author { display: block; margin-top: 1mm; font-style: normal; font-size: 0.9em; }
-.sheet-table { width: 100%; border-collapse: collapse; }
-.sheet-table th, .sheet-table td { border: 1px solid var(--rule); padding: 1mm 2mm; }
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 0.94em; }
+.sheet-table th, .sheet-table td { border: 1px solid var(--rule); padding: 0.55mm 1.6mm; }
+/* Cell content arrives as a paragraph; its margins would double every row height. */
+.sheet-table p { margin: 0; }
+/* The teacher's sheet is a working document: it fits one page, so the index and the specification
+ * summary run in two columns and the heading stays small. */
+.doc-sheet h1 { margin: 0 0 2mm; font-size: 1.3em; }
+.doc-sheet .exam-header { padding: 1.5mm 2mm; }
+.doc-sheet .exam-header .institution { font-size: 1.02em; }
+.sheet-total { margin: 1.5mm 0; font-size: 0.95em; }
+.sheet-index { column-count: 2; column-gap: 8mm; font-size: 0.92em; }
+.sheet-index__item { display: block; }
+.sheet-summary { column-count: 2; column-gap: 8mm; margin: 2mm 0 0; padding-left: 5mm; font-size: 0.92em; }
+.sheet-summary li { margin: 0; }
 .solution-entry { margin-bottom: var(--item-gap); break-inside: avoid; }
 .solution-entry .answer { font-weight: 700; }
 .misconception { font-size: 0.9em; color: var(--ref); }
