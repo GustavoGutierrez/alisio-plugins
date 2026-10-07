@@ -247,6 +247,18 @@ export function registerEvalua(
     "",
     coordinator.doctor.bind(coordinator),
   );
+  register(
+    "approve",
+    "Gate A: allocate the exam folder and freeze exam.yaml; Gate B: approve the final package",
+    "a|b",
+    coordinator.approveCommand.bind(coordinator),
+  );
+  register(
+    "generate",
+    "Build the blueprint, generate and verify the items and freeze items.json for the active exam",
+    "",
+    coordinator.generateCommand.bind(coordinator),
+  );
 
   api.tools.register({
     name: "evalua_profile",
@@ -365,6 +377,40 @@ export function registerEvalua(
     effect: "read",
     async execute(_input, context) {
       const result = await coordinator.checkTool(context.workspace);
+      return text(result.text, result.isError);
+    },
+  });
+  api.tools.register({
+    name: "evalua_exam",
+    description:
+      "Approve a gate or report the active exam. action approve with gate a allocates the exam folder and freezes exam.yaml after the teacher approves the spec; gate b records the final approval. action status returns the workspace state as JSON.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: { type: "string", enum: ["approve", "status"] },
+        gate: { type: "string", enum: ["a", "b"] },
+      },
+      required: ["action"],
+      additionalProperties: false,
+    },
+    effect: "write",
+    async execute(input, context) {
+      const action = input.action === "approve" ? "approve" : "status";
+      const result = await coordinator.examTool(context.workspace, {
+        action,
+        ...(typeof input.gate === "string" ? { gate: input.gate } : {}),
+      });
+      return text(result.text, result.isError);
+    },
+  });
+  api.tools.register({
+    name: "evalua_generate",
+    description:
+      "Run the deterministic generation pipeline for the active exam: build the blueprint, generate and verify the items and freeze items.json. Write effect; errors block the build.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    effect: "write",
+    async execute(_input, context) {
+      const result = await coordinator.generateTool(context.workspace);
       return text(result.text, result.isError);
     },
   });

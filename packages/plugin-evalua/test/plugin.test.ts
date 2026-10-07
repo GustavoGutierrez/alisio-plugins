@@ -43,15 +43,27 @@ describe("plugin entry", () => {
     expect([...h.tools.keys()].sort()).toEqual([
       "evalua_answer",
       "evalua_check",
+      "evalua_exam",
+      "evalua_generate",
       "evalua_kb",
       "evalua_profile",
       "evalua_status",
     ]);
-    expect([...h.commands.keys()].sort()).toEqual(["doctor", "init", "kb", "new", "status"]);
+    expect([...h.commands.keys()].sort()).toEqual([
+      "approve",
+      "doctor",
+      "generate",
+      "init",
+      "kb",
+      "new",
+      "status",
+    ]);
     expect(h.resources).toEqual({ agents: 1, skills: 1 });
     expect(h.tools.get("evalua_status")?.effect).toBe("read");
     expect(h.tools.get("evalua_kb")?.effect).toBe("read");
     expect(h.tools.get("evalua_check")?.effect).toBe("read");
+    expect(h.tools.get("evalua_exam")?.effect).toBe("write");
+    expect(h.tools.get("evalua_generate")?.effect).toBe("write");
     expect(h.tools.get("evalua_profile")?.effect).toBe("write");
     expect(h.tools.get("evalua_answer")?.effect).toBe("write");
   });
@@ -342,5 +354,38 @@ describe("knowledge tools", () => {
     expect(await h.run("kb")).toContain("basic-math");
     expect(await h.run("doctor")).toMatch(/Knowledge base: ok/);
     expect(await h.run("doctor")).toMatch(/Browser:/);
+  });
+});
+
+describe("exam folder flow", () => {
+  it("approves Gate A, generates the items and freezes items.json", async () => {
+    const h = await harness({
+      answers: [
+        PROFILE_ANSWERS,
+        {
+          topic: "algebra/algebraic-expressions",
+          grade: "septimo",
+          level: "basico",
+          kind: "algebra",
+        },
+        ROUND2,
+        ROUND3,
+      ],
+    });
+    await h.run("new");
+    expect(await h.run("approve", "a")).toMatch(/Gate A approved/);
+    const folders = await readdir(join(h.workspace, "evalua", "exams"));
+    expect(folders).toHaveLength(1);
+    const folder = folders[0] as string;
+    const exam = await readFile(join(h.workspace, "evalua", "exams", folder, "exam.yaml"), "utf8");
+    expect(exam).toContain("status: approved-a");
+    expect(exam).toContain("algebra/algebraic-expressions");
+    const generated = await h.run("generate");
+    expect(generated).toMatch(/Generated 10 items/);
+    const frozen = JSON.parse(
+      await readFile(join(h.workspace, "evalua", "exams", folder, "items.json"), "utf8"),
+    ) as { items: unknown[] };
+    expect(frozen.items).toHaveLength(10);
+    expect(await h.run("approve", "b")).toMatch(/Gate B approved/);
   });
 });

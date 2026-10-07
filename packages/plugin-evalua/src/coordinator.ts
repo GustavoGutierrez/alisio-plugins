@@ -1,9 +1,13 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import type { PluginAPI } from "@alisio/sdk";
+import { buildBlueprint } from "./blueprint.js";
+import { verifyExam } from "./checks.js";
 import { detectChrome } from "./chrome/detect.js";
 import { type Clock, systemClock } from "./clock.js";
+import { type ExamSpec, fromDraft, parseExam, stringifyExam } from "./exam.js";
 import { familyIds } from "./families/index.js";
+import { generateExam } from "./generate.js";
 import {
   acceptAnswers,
   buildDraft,
@@ -14,7 +18,9 @@ import {
   parseAnswerText,
   renderPending,
 } from "./interview.js";
+import { freezeItems, itemsSha256 } from "./items-file.js";
 import { createTopicCatalog, loadKnowledge, shippedKnowledgeDir } from "./knowledge/index.js";
+import type { LevelCalibration, LoadedKnowledge } from "./knowledge/types.js";
 import {
   copyLogo,
   DEFAULT_SUBJECT,
@@ -23,7 +29,7 @@ import {
   writeProfile,
 } from "./profile.js";
 import { cleanText } from "./schemas.js";
-import { emptyState, readState, validateRootName, writeState } from "./storage.js";
+import { atomicWrite, emptyState, readState, validateRootName, writeState } from "./storage.js";
 import type {
   EvaluaState,
   InterviewFlow,
@@ -32,7 +38,13 @@ import type {
   TeacherProfile,
   TopicCatalog,
 } from "./types.js";
-import { evaluaRootPath, examFolderName, listExamFolders, nextExamNumber } from "./workspace.js";
+import {
+  allocateExamFolder,
+  evaluaRootPath,
+  examFolderName,
+  listExamFolders,
+  nextExamNumber,
+} from "./workspace.js";
 
 export const DEFAULT_ROOT = "evalua";
 
@@ -385,6 +397,165 @@ export class EvaluaCoordinator {
         ? "PDFs need a Chrome-family browser (Chrome, Chromium, Brave, Edge, Vivaldi or Opera); the HTML output still works."
         : "PDF output is available.",
     ].join("\n");
+  }
+
+  // ---- exam folder flow (Gate A, generate) -------------------------------------------------
+
+  private async findExamFolder(
+    base: string,
+    id: string,
+  ): Promise<{ name: string; path: string; spec: ExamSpec } | undefined> {
+    for (const name of await listExamFolders(base)) {
+      try {
+        const text = await readFile(join(base, "exams", name, "exam.yaml"), "utf8");
+        const spec = parseExam(text);
+        if (spec.id === id) return { name, path: join(base, "exams", name), spec };
+      } catch {
+        // a folder without a readable exam.yaml is skipped
+      }
+    }
+    return undefined;
+  }
+
+  private calibrationFor(spec: ExamSpec, knowledge: LoadedKnowledge): LevelCalibration {
+    const pack =
+      knowledge.packs.find((entry) => spec.packs.includes(entry.id)) ??
+      knowledge.packs.find((entry) =>
+        entry.topics.some((topic) => spec.topics.includes(topic.fullId)),
+      ) ??
+      knowledge.packs[0];
+    if (!pack) throw new Error("The knowledge base has no pack to calibrate the level");
+    return pack.levels[spec.level];
+  }
+
+  private async approveAt(workspace: string, gate: string): Promise<string> {
+    const state = await readState(workspace);
+    if (!state) throw new Error("No Evalua workspace here. Run /evalua:new first.");
+    const base = await this.rootOf(workspace, state);
+    if (gate === "b") {
+      const active = state.activeExamId;
+      const progress = active ? state.exams[active] : undefined;
+      if (!active || !progress) throw new Error("There is no active exam to approve");
+      state.exams[active] = {
+        ...progress,
+        phase: "approved-b",
+        gates: { ...progress.gates, b: { decision: "approved", at: this.now() } },
+      };
+      await this.save(workspace, state);
+      return "Gate B approved: the final package is approved.";
+    }
+    const draft = state.draft;
+    if (!draft) throw new Error("There is no draft exam to approve. Run /evalua:new first.");
+    const folder = await allocateExamFolder(workspace, base, draft.slug, state.lastExamNumber);
+    const id = `e${String(folder.number).padStart(2, "0")}`;
+    const spec = fromDraft(draft, { id, number: folder.number });
+    await writeFile(join(folder.path, "exam.yaml"), stringifyExam(spec), { mode: 0o644 });
+    state.activeExamId = id;
+    state.lastExamNumber = folder.number;
+    state.exams[id] = {
+      phase: "approved-a",
+      revision: 1,
+      gates: { a: { decision: "approved", at: this.now() } },
+    };
+    delete state.draft;
+    await this.save(workspace, state);
+    return `Gate A approved. Exam folder: ${state.root}/exams/${folder.name}. Run /evalua:generate to build the items.`;
+  }
+
+  /** `/evalua:approve a|b`: Gate A allocates the folder and freezes exam.yaml; Gate B closes it. */
+  async approveCommand(args: string, sessionId?: string): Promise<string> {
+    const gate = args.trim().toLowerCase();
+    if (gate !== "a" && gate !== "b") throw new Error("Usage: /evalua:approve a|b");
+    return this.approveAt(this.workspace(sessionId), gate);
+  }
+
+  private async generateAt(workspace: string): Promise<string> {
+    const state = await readState(workspace);
+    const active = state?.activeExamId;
+    if (!state || !active) {
+      throw new Error("No approved exam. Run /evalua:new and /evalua:approve a first.");
+    }
+    const base = await this.rootOf(workspace, state);
+    const found = await this.findExamFolder(base, active);
+    if (!found) throw new Error(`The folder for exam ${active} was not found`);
+    const knowledge = await this.loadKnowledgeFor(workspace);
+    const calibration = this.calibrationFor(found.spec, knowledge);
+    const blueprint = buildBlueprint({
+      topics: found.spec.topics,
+      level: found.spec.level,
+      calibration,
+      itemTypes: found.spec.itemTypes,
+    });
+    const result = generateExam({
+      blueprint,
+      topics: knowledge.topics,
+      level: found.spec.level,
+      calibration,
+      seed: found.spec.id,
+    });
+    const examFindings = verifyExam({
+      items: result.items,
+      blueprint,
+      questionCount: found.spec.questionCount,
+      itemTypes: found.spec.itemTypes,
+      mode: found.spec.distribution,
+    });
+    const errors = [...result.findings, ...examFindings].filter(
+      (finding) => finding.severity === "error",
+    );
+    if (errors.length > 0) {
+      return `Generation blocked:\n${errors
+        .map((finding) => `- ${finding.id} ${finding.subject}: ${finding.message}`)
+        .join("\n")}`;
+    }
+    const frozen = freezeItems(result.items);
+    await atomicWrite(join(found.path, "items.json"), frozen, 0o644);
+    const progress = state.exams[active];
+    if (progress) {
+      state.exams[active] = {
+        ...progress,
+        phase: "generated",
+        revision: (progress.revision ?? 0) + 1,
+      };
+    }
+    await this.save(workspace, state);
+    return `Generated ${result.items.length} items for ${active} (items.json SHA-256 ${itemsSha256(frozen).slice(0, 12)}).`;
+  }
+
+  /** `/evalua:generate`: blueprint + generate + verify + freeze items.json. */
+  async generateCommand(_args: string, sessionId?: string): Promise<string> {
+    return this.generateAt(this.workspace(sessionId));
+  }
+
+  /** `evalua_exam`: approve a gate or report the active exam. */
+  async examTool(
+    workspace: string,
+    input: { action: "approve" | "status"; gate?: string },
+  ): Promise<{ text: string; isError: boolean }> {
+    try {
+      if (input.action === "approve") {
+        const gate = input.gate === "b" ? "b" : "a";
+        return { text: await this.approveAt(workspace, gate), isError: false };
+      }
+      return { text: JSON.stringify(await this.statusInfo(workspace), null, 2), isError: false };
+    } catch (error) {
+      return {
+        text: error instanceof Error ? error.message : "evalua_exam failed",
+        isError: true,
+      };
+    }
+  }
+
+  /** `evalua_generate`: run the generation pipeline and freeze items.json. */
+  async generateTool(workspace: string): Promise<{ text: string; isError: boolean }> {
+    try {
+      return { text: await this.generateAt(workspace), isError: false };
+    } catch (error) {
+      return {
+        text: error instanceof Error ? error.message : "evalua_generate failed",
+        isError: true,
+      };
+    }
   }
 
   // ---- interview engine -------------------------------------------------------------------
