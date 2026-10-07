@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-evalua",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Guides teachers through a short interview and keeps the teacher profile, workspace and exam numbering for printable school math exams.",
   "keywords": [
     "alisio-plugin",
