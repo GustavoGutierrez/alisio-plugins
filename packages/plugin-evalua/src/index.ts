@@ -11,6 +11,14 @@ export {
   distribute,
 } from "./blueprint.js";
 export { type ExamCheckInput, verifyExam } from "./checks.js";
+export {
+  type ChromeDeps,
+  type ChromeDetection,
+  detectChrome,
+  ENV_OVERRIDES,
+  knownBrowserPaths,
+  pathBrowserNames,
+} from "./chrome/detect.js";
 export { type Clock, fixedClock, schoolYear, systemClock } from "./clock.js";
 export { EvaluaCoordinator } from "./coordinator.js";
 export { families, familyIds, getFamily } from "./families/index.js";
@@ -65,6 +73,16 @@ export {
   presetById,
   withinFloors,
 } from "./layout/presets.js";
+export {
+  buildLayoutReport,
+  choosePreset,
+  countPdfPages,
+  type FitFailure,
+  type FitInput,
+  type FitResult,
+  type LayoutReport,
+  type PageCount,
+} from "./layout.js";
 export { type Locale, type LocaleCatalogue, loadLocale, parseLocale } from "./locales.js";
 export {
   type Block,
