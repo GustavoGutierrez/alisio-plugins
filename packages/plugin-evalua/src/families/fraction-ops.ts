@@ -78,7 +78,7 @@ export const fractionOps: Family = {
       family: "fraction-ops",
       level,
       type: "single_choice",
-      stem: [`$${fractionBody(a)} ${symbol(operator)} ${fractionBody(b)}$`],
+      stem: [`Calcula y simplifica: $${fractionBody(a)} ${symbol(operator)} ${fractionBody(b)}$`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

@@ -216,7 +216,7 @@ function ellipseFigure(): string {
   return wrap(
     220,
     160,
-    `<ellipse cx="110" cy="80" rx="80" ry="50"/>` + line(30, 80, 190, 80) + line(110, 30, 110, 130),
+    `<ellipse cx="110" cy="80" rx="80" ry="50"/>${line(30, 80, 190, 80)}${line(110, 30, 110, 130)}`,
     "Ellipse",
   );
 }
@@ -240,8 +240,7 @@ function cylinder(): string {
 }
 
 function cone(): string {
-  const body =
-    line(110, 30, 40, 150) + line(110, 30, 180, 150) + `<path d="M40 150 A70 20 0 0 0 180 150"/>`;
+  const body = `${line(110, 30, 40, 150) + line(110, 30, 180, 150)}<path d="M40 150 A70 20 0 0 0 180 150"/>`;
   return wrap(220, 190, body, "Cone");
 }
 

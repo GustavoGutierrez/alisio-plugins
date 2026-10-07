@@ -67,7 +67,7 @@ export const factoring: Family = {
       family: "factoring",
       level,
       type: "single_choice",
-      stem: [`$${latexPoly(answer)}$`],
+      stem: [`Factoriza el trinomio: $${latexPoly(answer)}$`],
       options,
       answer: { canonical: polyValue(answer), display: `$${factorX(p)}${factorX(q)}$` },
       solution,

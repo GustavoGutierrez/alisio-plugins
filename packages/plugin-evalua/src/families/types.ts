@@ -36,6 +36,8 @@ export interface FamilyContext {
   level: Level;
   calibration: LevelCalibration;
   params?: Record<string, unknown>;
+  /** Agent-authored instruction templates for this family (topic data); `{expr}` is the math. */
+  prompts?: readonly string[];
 }
 
 /** The canonical answer of a family: a rational, a polynomial, or a canonical text (e.g. `x<2`). */

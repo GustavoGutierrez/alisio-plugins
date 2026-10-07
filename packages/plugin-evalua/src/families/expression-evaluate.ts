@@ -53,7 +53,10 @@ export const expressionEvaluate: Family = {
       family: "expression-evaluate",
       level,
       type: "single_choice",
-      stem: [`$P(x) = ${latexPoly(polynomial)}$`, `$P(${x}) = ?$`],
+      stem: [
+        `Evalúa el polinomio $P(x) = ${latexPoly(polynomial)}$ en $x = ${x}$.`,
+        `$P(${x}) = ?$`,
+      ],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

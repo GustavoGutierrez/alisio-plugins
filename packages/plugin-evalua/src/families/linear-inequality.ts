@@ -78,7 +78,7 @@ export const linearInequality: Family = {
       family: "linear-inequality",
       level,
       type: "single_choice",
-      stem: [`$${linearText(a, b)} ${latexRelation(relation)} ${c}$`],
+      stem: [`Resuelve la inecuación: $${linearText(a, b)} ${latexRelation(relation)} ${c}$`],
       options,
       answer: {
         canonical,

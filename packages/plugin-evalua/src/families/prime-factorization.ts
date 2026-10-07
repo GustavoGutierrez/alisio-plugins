@@ -57,7 +57,7 @@ export const primeFactorization: Family = {
       family: "prime-factorization",
       level,
       type: "single_choice",
-      stem: [`$${n} = ${p} \\times \\square$`],
+      stem: [`Completa la factorización prima: $${n} = ${p} \\times \\square$`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

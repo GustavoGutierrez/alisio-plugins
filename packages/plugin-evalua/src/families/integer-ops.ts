@@ -95,7 +95,7 @@ export const integerOps: Family = {
       level,
       type: "single_choice",
       stem: [
-        `$${ops.map((entry, index) => `${index === 0 ? latexRational(Rational.of(start)) : ""} ${symbol(entry.op)} ${latexRational(Rational.of(entry.value))}`).join("")}$`,
+        `Calcula respetando los signos: $${ops.map((entry, index) => `${index === 0 ? latexRational(Rational.of(start)) : ""} ${symbol(entry.op)} ${latexRational(Rational.of(entry.value))}`).join("")}$`,
       ],
       options,
       answer: { canonical: acc.toString(), display: money(acc) },

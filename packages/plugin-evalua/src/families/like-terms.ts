@@ -70,7 +70,7 @@ export const likeTerms: Family = {
       family: "like-terms",
       level,
       type: "single_choice",
-      stem: [`$${first} ${second}$`],
+      stem: [`Reduce los términos semejantes: $${first} ${second}$`],
       options,
       answer: { canonical: polyValue(answer), display: polyDisplay(answer) },
       solution,

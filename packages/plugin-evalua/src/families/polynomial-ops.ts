@@ -75,7 +75,7 @@ export const polynomialOps: Family = {
       level,
       type: "single_choice",
       stem: [
-        `$\\left(${latexPoly(p)}\\right) ${operator === "*" ? "\\cdot" : operator} \\left(${latexPoly(q)}\\right)$`,
+        `Efectúa la operación: $\\left(${latexPoly(p)}\\right) ${operator === "*" ? "\\cdot" : operator} \\left(${latexPoly(q)}\\right)$`,
       ],
       options,
       answer: { canonical: polyValue(answer), display: polyDisplay(answer) },

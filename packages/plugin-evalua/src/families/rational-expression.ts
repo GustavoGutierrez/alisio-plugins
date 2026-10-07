@@ -61,7 +61,9 @@ export const rationalExpression: Family = {
       family: "rational-expression",
       level,
       type: "single_choice",
-      stem: [`$\\dfrac{${latexPoly(numerator)}}{${latexPoly(divisor)}}$`],
+      stem: [
+        `Simplifica la expresión racional: $\\dfrac{${latexPoly(numerator)}}{${latexPoly(divisor)}}$`,
+      ],
       options,
       answer: { canonical: polyValue(quotient), display: polyDisplay(quotient) },
       solution,

@@ -32,7 +32,7 @@ export const wordProblemLinear: Family = {
       : rangeValue(rng, bounded, { allowZero: true });
     const c = a * root + b;
     const answer = Rational.of(c - b, a);
-    const fallback = `$${a}x ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}$`;
+    const fallback = `Plantea y resuelve: $${a}x ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}$`;
     const stem = render(hasTemplates ? rng.pick(templates) : fallback, { a, b, c });
     const pool = [
       `Read the problem and choose the unknown.`,

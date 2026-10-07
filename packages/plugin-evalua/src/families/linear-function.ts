@@ -53,7 +53,12 @@ export const linearFunction: Family = {
       family: "linear-function",
       level,
       type: "single_choice",
-      stem: [`$A(${x1}, ${y1})$`, `$B(${x2}, ${y2})$`, `$m = ?$`],
+      stem: [
+        "Calcula la pendiente de la recta que pasa por:",
+        `$A(${x1}, ${y1})$`,
+        `$B(${x2}, ${y2})$`,
+        `$m = ?$`,
+      ],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

@@ -50,7 +50,7 @@ export const percent: Family = {
       family: "percent",
       level,
       type: "single_choice",
-      stem: [`$${percentValue}\\% \\cdot ${base}$`],
+      stem: [`Calcula el porcentaje: $${percentValue}\\% \\cdot ${base}$`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

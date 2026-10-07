@@ -67,6 +67,24 @@ export function pooled(pool: string[], rng: Rng, calibration: LevelCalibration):
   return pool.slice(-Math.min(pickSteps(rng, calibration), pool.length));
 }
 
+/**
+ * The item instruction: an agent-authored template when one is provided (per topic, spec: data),
+ * otherwise the family default. `{expr}` is replaced by the item's math so any exam can phrase the
+ * question its own way without changing code.
+ */
+export function prompt(
+  rng: Rng,
+  prompts: readonly string[] | undefined,
+  fallback: string,
+  expr: string,
+): string {
+  const candidates = (prompts ?? []).filter(
+    (entry) => typeof entry === "string" && entry.trim() !== "",
+  );
+  const template = candidates.length > 0 ? (rng.pick(candidates) ?? fallback) : fallback;
+  return template.replace(/\{expr\}/g, expr);
+}
+
 /** The canonical value and LaTeX display of a polynomial option. */
 export function polyValue(poly: Poly): string {
   return poly.toString();

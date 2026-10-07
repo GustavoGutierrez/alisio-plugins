@@ -76,7 +76,7 @@ export const quadraticEquation: Family = {
       level,
       type: "single_choice",
       stem: [
-        `$${a}x^{2} ${b < 0 ? "-" : "+"} ${Math.abs(b)}x ${c < 0 ? "-" : "+"} ${Math.abs(c)} = 0$`,
+        `Resuelve la ecuación cuadrática: $${a}x^{2} ${b < 0 ? "-" : "+"} ${Math.abs(b)}x ${c < 0 ? "-" : "+"} ${Math.abs(c)} = 0$`,
       ],
       options,
       answer: { canonical, display: `$x = ${r1},\\ x = ${r2}$` },

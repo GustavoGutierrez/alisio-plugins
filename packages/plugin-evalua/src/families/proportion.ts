@@ -59,7 +59,7 @@ export const proportion: Family = {
       family: "proportion",
       level,
       type: "single_choice",
-      stem: [`$\\dfrac{${a}}{${b}} = \\dfrac{x}{${c}}$`],
+      stem: [`Halla el valor de $x$ en la proporción: $\\dfrac{${a}}{${b}} = \\dfrac{x}{${c}}$`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

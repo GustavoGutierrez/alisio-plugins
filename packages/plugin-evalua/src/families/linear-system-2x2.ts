@@ -114,6 +114,7 @@ export const linearSystem2x2: Family = {
       level,
       type: "single_choice",
       stem: [
+        "Resuelve el sistema de ecuaciones:",
         `$${a1}x ${b1 < 0 ? "-" : "+"} ${Math.abs(b1)}y = ${c1}$`,
         `$${a2}x ${b2 < 0 ? "-" : "+"} ${Math.abs(b2)}y = ${c2}$`,
       ],

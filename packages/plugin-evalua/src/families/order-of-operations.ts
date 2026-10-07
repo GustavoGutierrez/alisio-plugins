@@ -118,7 +118,7 @@ export const orderOfOperations: Family = {
       family: "order-of-operations",
       level,
       type: "single_choice",
-      stem: [expression(problem)],
+      stem: [`Calcula respetando la jerarquía de las operaciones: ${expression(problem)}`],
       options,
       answer: { canonical: value.toString(), display: money(value) },
       solution: lines,

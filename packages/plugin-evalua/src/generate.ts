@@ -201,11 +201,16 @@ export function generateExam(input: GenerateInput): GenerateResult {
         for (const source of familySources) {
           const family = familyRegistry[source.family];
           if (family === undefined) continue;
+          const rawPrompts = source.params?.prompts;
+          const prompts = Array.isArray(rawPrompts)
+            ? rawPrompts.filter((entry): entry is string => typeof entry === "string")
+            : undefined;
           const draft = family.generate({
             rng: createRng(seedString),
             level: input.level,
             calibration: input.calibration,
             ...(source.params === undefined ? {} : { params: source.params }),
+            ...(prompts === undefined || prompts.length === 0 ? {} : { prompts }),
           });
           const options = adaptOptions(draft, cell.type);
           if (options === undefined) continue;

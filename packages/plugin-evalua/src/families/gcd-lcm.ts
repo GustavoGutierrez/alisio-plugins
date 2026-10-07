@@ -92,12 +92,13 @@ export const gcdLcm: Family = {
         ...perturb(answer),
       ],
     );
-    const command = mode === "lcm" ? "\\mathrm{lcm}" : "\\gcd";
     return {
       family: "gcd-lcm",
       level,
       type: "single_choice",
-      stem: [`$${command}(${a}, ${b})$`],
+      stem: [
+        `Halla el ${mode === "lcm" ? "mínimo común múltiplo" : "máximo común divisor"} de $${a}$ y $${b}$.`,
+      ],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

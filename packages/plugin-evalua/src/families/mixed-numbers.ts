@@ -63,7 +63,9 @@ export const mixedNumbers: Family = {
       family: "mixed-numbers",
       level,
       type: "single_choice",
-      stem: [`$${sign < 0 ? "-" : ""}\\dfrac{${Math.abs(n)}}{${d}}$`],
+      stem: [
+        `Escribe como número mixto la fracción $${sign < 0 ? "-" : ""}\\dfrac{${Math.abs(n)}}{${d}}$`,
+      ],
       options,
       answer: { canonical: answer.toString(), display: `$${mixedText(n, d)}$` },
       solution,

@@ -80,7 +80,7 @@ export const fractionSimplify: Family = {
       family: "fraction-simplify",
       level,
       type: "single_choice",
-      stem: [`$${fraction(n, d)}$`],
+      stem: [`Simplifica la fracción $${fraction(n, d)}$ hasta su forma irreducible.`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

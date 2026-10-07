@@ -74,7 +74,9 @@ export const decimalOps: Family = {
       family: "decimal-ops",
       level,
       type: "single_choice",
-      stem: [`$${decimalString(a)} ${symbol(operator)} ${decimalString(b)}$`],
+      stem: [
+        `Calcula con decimales: $${decimalString(a)} ${symbol(operator)} ${decimalString(b)}$`,
+      ],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

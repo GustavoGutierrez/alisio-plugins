@@ -61,7 +61,9 @@ export const rationalCompare: Family = {
       family: "rational-compare",
       level,
       type: "single_choice",
-      stem: [`$\\max\\left(${latexRational(a)}, ${latexRational(b)}\\right)$`],
+      stem: [
+        `¿Cuál de los dos números es mayor? $\\max\\left(${latexRational(a)}, ${latexRational(b)}\\right)$`,
+      ],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

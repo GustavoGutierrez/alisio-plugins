@@ -52,7 +52,7 @@ export const linearEquation: Family = {
       family: "linear-equation",
       level,
       type: "single_choice",
-      stem: [`$${linearText(a, b)} = ${linearText(c, d)}$`],
+      stem: [`Resuelve la ecuación: $${linearText(a, b)} = ${linearText(c, d)}$`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution: pooledSolution,
