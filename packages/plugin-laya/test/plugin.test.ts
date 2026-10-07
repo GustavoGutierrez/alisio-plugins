@@ -18,11 +18,21 @@ import { createHttpTransport } from "../src/transport/http.js";
 
 const fakeServer = fileURLToPath(new URL("./fixtures/fake-laya-serve.mjs", import.meta.url));
 let dir: string;
+const plugins: ReturnType<typeof createLayaPlugin>[] = [];
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), "alisio-laya-plugin-"));
 });
 afterEach(async () => {
-  await rm(dir, { recursive: true, force: true });
+  // Dispose every plugin (stopping its server) before deleting the temp dir, so a background write
+  // cannot race the removal (ENOTEMPTY).
+  for (const plugin of plugins.splice(0)) {
+    try {
+      await plugin.dispose?.();
+    } catch {
+      // a plugin that is already disposed is fine
+    }
+  }
+  await rm(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
 });
 
 interface FakeHost {
@@ -232,7 +242,7 @@ describe("activation end to end against the fake server", () => {
   };
 
   function plug(mode = "slow-start:400", extraEnv: Record<string, string> = {}) {
-    return createLayaPlugin({
+    const plugin = createLayaPlugin({
       env: { ...env(), ...extraEnv },
       home: dir,
       exitHook: false,
@@ -253,6 +263,8 @@ describe("activation end to end against the fake server", () => {
           stopGraceMs: 300,
         }),
     });
+    plugins.push(plugin);
+    return plugin;
   }
 
   it("cold start falls back with not_ready (never blocking), then answers once warm; deactivate stops it", async () => {

@@ -9,11 +9,21 @@ import type { Runner } from "../src/runtime/runner.js";
 import { LayaRuntime, type ServerSupervisor } from "../src/runtime.js";
 
 let dir: string;
+const runtimes: LayaRuntime[] = [];
 beforeEach(async () => {
   dir = await mkdtemp(join(tmpdir(), "alisio-laya-cmd-"));
 });
 afterEach(async () => {
-  await rm(dir, { recursive: true, force: true });
+  // Dispose every runtime (which waits for its setup job and stops the server) before deleting the
+  // temp dir, so a background write cannot race the removal (ENOTEMPTY).
+  for (const runtime of runtimes.splice(0)) {
+    try {
+      await runtime.dispose();
+    } catch {
+      // a runtime that is already disposed is fine
+    }
+  }
+  await rm(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
 });
 
 const throwingRunner: Runner = {
@@ -53,6 +63,7 @@ async function setup(over: Partial<CommandDeps> = {}, env: Record<string, string
     makeSupervisor: () => sup,
   });
   await runtime.init();
+  runtimes.push(runtime);
   const ui = {
     interactive: vi.fn(() => true),
     askQuestions: vi.fn(
