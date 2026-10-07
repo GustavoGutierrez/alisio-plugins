@@ -30,6 +30,10 @@ features:
 
 <PluginCatalog />
 
+<HomeClosing>
+
+<div class="home-closing__cta reveal">
+
 ## Cómo se instalan los plugins
 
 `alisio install` añade un paquete npm al directorio global de plugins de Alisio y registra el nombre
@@ -43,6 +47,12 @@ alisio plugins list
 El mismo comando acepta una versión explícita (`npm:@alisio/plugin-wayfinder@0.1.1`) y la opción
 `--update` actualiza un plugin instalado conservando su nombre.
 
+</div>
+
+<div class="home-closing__items">
+
+<div class="closing-card closing-card--feature reveal">
+
 ## Qué puede hacer un plugin
 
 Un plugin es un módulo ES cuyo export por defecto es un objeto de plugin. Puede registrar
@@ -54,11 +64,19 @@ La documentación upstream de plugins de Alisio es la referencia canónica del S
 La [guía de desarrollo](./developing-plugins) de este catálogo cubre el empaquetado y la publicación
 de las entradas listadas aquí.
 
+</div>
+
+<div class="closing-card closing-card--trust reveal">
+
 ## Confianza y seguridad
 
 Los plugins ejecutan código en proceso con tus privilegios de usuario. El campo `effect` de Alisio
 describe qué hace una capacidad; **no** es un sandbox. Lee el repositorio y el paquete antes de
 instalar un plugin de terceros.
+
+</div>
+
+<div class="closing-card closing-card--links reveal">
 
 ## Más información
 
@@ -66,5 +84,10 @@ instalar un plugin de terceros.
 - [Desarrollar plugins](./developing-plugins) — la guía de autoría de este repositorio, con el
   contrato completo, el empaquetado y la publicación.
 
-Los recursos de marca de este sitio provienen de la documentación de Alisio y se usan bajo la
-licencia MIT.
+</div>
+
+</div>
+
+<p class="home-closing__note">Los recursos de marca de este sitio provienen de la documentación de Alisio y se usan bajo la licencia MIT.</p>
+
+</HomeClosing>

@@ -2,6 +2,8 @@ import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import "./styles/vars.css";
 import "./styles/catalog.css";
+import "./styles/home-closing.css";
+import HomeClosing from "./components/HomeClosing.vue";
 import InstallCommand from "./components/InstallCommand.vue";
 import PluginBadges from "./components/PluginBadges.vue";
 import PluginCard from "./components/PluginCard.vue";
@@ -22,6 +24,7 @@ export default {
   Layout: SiteLayout,
   enhanceApp({ app }) {
     app.component("InstallCommand", InstallCommand);
+    app.component("HomeClosing", HomeClosing);
     app.component("PluginBadges", PluginBadges);
     app.component("PluginCard", PluginCard);
     app.component("PluginCatalog", PluginCatalog);

@@ -30,6 +30,10 @@ features:
 
 <PluginCatalog />
 
+<HomeClosing>
+
+<div class="home-closing__cta reveal">
+
 ## How plugins are installed
 
 `alisio install` adds an npm package to Alisio's global plugins directory and records the package
@@ -43,6 +47,12 @@ alisio plugins list
 The same command works with an explicit version (`npm:@alisio/plugin-wayfinder@0.1.1`) and the
 `--update` flag refreshes an installed plugin while keeping its name.
 
+</div>
+
+<div class="home-closing__items">
+
+<div class="closing-card closing-card--feature reveal">
+
 ## What a plugin can do
 
 A plugin is an ES module whose default export is a plugin object. It can register tools, slash
@@ -53,11 +63,19 @@ The upstream Alisio plugin documentation is the canonical SDK and `PluginAPI` re
 catalog's [developing guide](./developing-plugins) covers the packaging and publishing workflow for
 entries listed here.
 
+</div>
+
+<div class="closing-card closing-card--trust reveal">
+
 ## Trust and security
 
 Plugins execute code in-process with your user privileges. Alisio's `effect` field describes what a
 capability does; it is **not** a sandbox. Read the repository and the package before installing a
 third-party plugin.
+
+</div>
+
+<div class="closing-card closing-card--links reveal">
 
 ## Learn more
 
@@ -65,5 +83,10 @@ third-party plugin.
 - [Developing plugins](./developing-plugins) — the authoring guide for this repository, including the
   full plugin contract, packaging and publishing.
 
-Brand assets on this site come from the Alisio documentation site and are used under the MIT
-License.
+</div>
+
+</div>
+
+<p class="home-closing__note">Brand assets on this site come from the Alisio documentation site and are used under the MIT License.</p>
+
+</HomeClosing>

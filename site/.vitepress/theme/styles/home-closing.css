@@ -1,0 +1,286 @@
+/**
+ * The closing panel of the landing page.
+ *
+ * It carries the Alisio background image at low opacity behind a frosted call to action and three
+ * reference cards. The copy itself lives in the page markdown, so both languages stay in sync; this
+ * file only owns the surface, the layout and the motion.
+ */
+
+.home-closing {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* Full-bleed out of the centred `.vp-doc` container, the same way the hero is. */
+  margin: 80px calc(50% - 50vw) 0;
+  padding: 72px 24px 64px;
+  background-color: var(--alisio-deep-navy);
+}
+
+/* Semi-transparent artwork: the panel colour still reads as the section surface. */
+.home-closing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: url("/assets/footer-background.jpg");
+  background-position: center;
+  background-size: cover;
+  opacity: 0.32;
+}
+
+/* The scrim that keeps the copy legible over the artwork. */
+.home-closing::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(180deg, rgba(2, 14, 28, 0.86) 0%, rgba(2, 14, 28, 0.94) 100%);
+}
+
+.home-closing__inner {
+  max-width: 1152px;
+  margin: 0 auto;
+}
+
+.home-closing h2 {
+  margin: 0 0 14px;
+  padding-top: 0;
+  border-top: 0;
+  color: var(--alisio-panel-text);
+}
+
+.home-closing p,
+.home-closing li {
+  color: var(--alisio-panel-text-muted);
+}
+
+.home-closing a {
+  color: var(--alisio-panel-text);
+}
+
+/* Final call to action: the install instructions, centred and frosted. */
+.home-closing__cta {
+  max-width: 760px;
+  margin: 0 auto 56px;
+  padding: 36px 32px 32px;
+  border: 1px solid rgba(237, 249, 255, 0.16);
+  border-radius: 16px;
+  background-color: rgba(237, 249, 255, 0.07);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 24px 60px rgba(2, 14, 28, 0.5);
+  text-align: center;
+}
+
+.home-closing__cta h2 {
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+/* The shared gradient rule under every `h2` is centred under the CTA title. */
+.home-closing__cta h2::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-closing__cta p {
+  max-width: 62ch;
+  margin: 0 auto 20px;
+}
+
+/* The command block reads as a terminal strip inside the frosted card. */
+.home-closing__cta div[class*="language-"] {
+  margin: 0 auto;
+  border: 1px solid rgba(237, 249, 255, 0.14);
+  border-radius: 12px;
+  background-color: rgba(2, 14, 28, 0.55);
+}
+
+.home-closing__cta div[class*="language-"] pre {
+  text-align: left;
+}
+
+.home-closing__cta div[class*="language-"] code {
+  color: var(--alisio-panel-text);
+}
+
+/* Reference tiles, laid out as a bento: one feature tile spanning two rows next to two stacked
+ * tiles. Each tile declares its own span in the page markdown, so the layout follows the content
+ * rather than a hard-coded child order. */
+.home-closing__items {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.closing-card {
+  position: relative;
+  overflow: hidden;
+  padding: 26px 24px;
+  border: 1px solid rgba(237, 249, 255, 0.14);
+  border-radius: 16px;
+  background-color: rgba(237, 249, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+/* A faint sheen that only shows on hover, so the tiles stay quiet at rest. */
+.closing-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--alisio-gradient-brand);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.closing-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(96, 224, 249, 0.45);
+  background-color: rgba(237, 249, 255, 0.09);
+}
+
+.closing-card:hover::before {
+  opacity: 0.06;
+}
+
+.closing-card > * {
+  position: relative;
+}
+
+/* Bento spans: a wide feature tile beside a narrow one, closed by a full-width links strip. */
+.closing-card--feature {
+  grid-column: span 4;
+  background-color: rgba(237, 249, 255, 0.07);
+}
+
+.closing-card--trust {
+  grid-column: span 2;
+}
+
+.closing-card--links {
+  grid-column: span 6;
+}
+
+.closing-card--feature h2 {
+  font-size: 21px;
+}
+
+.closing-card--links ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding-left: 0;
+}
+
+/* The whole row is the target, so the title and its gloss read as one item. */
+.closing-card--links li {
+  list-style: none;
+  padding: 12px 14px;
+  border: 1px solid rgba(237, 249, 255, 0.14);
+  border-radius: 10px;
+  background-color: rgba(2, 14, 28, 0.35);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.closing-card--links li:hover {
+  border-color: rgba(96, 224, 249, 0.5);
+  background-color: rgba(2, 14, 28, 0.55);
+}
+
+.closing-card--links li a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.closing-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+@media (min-width: 960px) and (max-width: 1199px) {
+  .closing-card--feature {
+    grid-column: span 6;
+  }
+
+  .closing-card--trust,
+  .closing-card--links {
+    grid-column: span 3;
+  }
+
+  .closing-card--links ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.home-closing__note {
+  margin: 28px 0 0;
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 959px) {
+  .home-closing {
+    padding: 56px 20px 48px;
+  }
+
+  .home-closing__cta {
+    margin-bottom: 40px;
+    padding: 28px 20px 24px;
+  }
+
+  .home-closing__items {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .closing-card--feature,
+  .closing-card--trust,
+  .closing-card--links {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .closing-card--links ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Reveal on scroll, armed only when the visitor allows motion. */
+.home-closing.is-armed .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease;
+}
+
+.home-closing.is-visible .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.home-closing.is-visible .closing-card:nth-child(2) {
+  transition-delay: 0.08s;
+}
+
+.home-closing.is-visible .closing-card:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closing-card {
+    transition: none;
+  }
+
+  .closing-card:hover {
+    transform: none;
+  }
+}
