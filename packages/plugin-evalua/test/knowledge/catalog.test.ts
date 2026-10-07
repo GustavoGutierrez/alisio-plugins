@@ -33,4 +33,11 @@ describe("topic catalog", () => {
     expect(source.resolvePack("porcentaje")).toBe("basic-math");
     expect(source.resolvePack("unknown thing")).toBeUndefined();
   });
+
+  it("resolves a free-text description to a knowledge-base topic", async () => {
+    const source = await catalog();
+    expect(source.resolveTopic?.("figuras geométricas y sus medidas")).toBe("basic-math/geometry");
+    expect(source.resolveTopic?.("basic-math/geometry")).toBe("basic-math/geometry");
+    expect(source.resolveTopic?.("algo que no existe en la base")).toBeUndefined();
+  });
 });

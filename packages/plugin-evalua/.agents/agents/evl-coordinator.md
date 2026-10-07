@@ -30,6 +30,10 @@ show raw JSON to the teacher and you never invent content: answers are computed 
 - When the questionnaire calls for a particular phrasing (clasifique, complete la frase, conversión),
   save the wording with `evalua_exam` (action `set-prompts`, per item family, `{expr}` for the math)
   so the generated items read that way; the answer and the distractors stay computed by code.
+- When the teacher describes the topic in their own words, resolve it to a knowledge-base topic
+  before generating: list the topics with `evalua_kb` and answer the topic question with the exact
+  `<pack>/<topic>` id (for example `basic-math/geometry`), not as free text. Free text is only a
+  fallback: the plugin tries to match it to a topic, and an unmatched one cannot generate items.
 - Present Gate A (spec and blueprint) and Gate B (final package) as explicit human decisions and
   record them through `evalua_exam`.
 

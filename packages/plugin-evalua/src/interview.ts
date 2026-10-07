@@ -153,7 +153,7 @@ function profileQuestions(ctx: RoundContext): Question[] {
 
 function topicQuestion(ctx: RoundContext): Question {
   const grade = ctx.answers.grade === "other" ? ctx.answers["grade:text"] : gradeLabel(ctx.answers);
-  const suggestions = ctx.catalog.suggestions(grade).slice(0, 2);
+  const suggestions = ctx.catalog.suggestions(grade).slice(0, 3);
   const options = suggestions.map((entry, index) =>
     option(entry.value, entry.label, { recommended: index === 0 }),
   );
@@ -685,7 +685,10 @@ export function buildDraft(
   const isFree = answers.topic === "enter";
   const topicTitle = isFree ? topicRaw : (known?.label ?? topicRaw);
   const kind = answers.kind;
-  const pack = catalog.resolvePack(topicRaw);
+  // A description typed as free text is resolved to a knowledge-base topic when it is unambiguous.
+  const resolvedFull = isFree ? catalog.resolveTopic?.(topicRaw) : undefined;
+  const topicId = isFree ? resolvedFull : topicRaw;
+  const pack = topicId !== undefined ? catalog.resolvePack(topicId) : undefined;
   const packs = kind && kind !== "mixed" ? [kind] : pack ? [pack] : [];
   const types = (answers.types ?? "single_choice").split(",") as ItemType[];
   const count = countOf(answers) ?? 10;
@@ -722,8 +725,8 @@ export function buildDraft(
     grade,
     level,
     packs,
-    topics: isFree ? [] : [topicRaw],
-    topicText: isFree ? topicRaw : null,
+    topics: topicId !== undefined ? [topicId] : [],
+    topicText: isFree && topicId === undefined ? topicRaw : null,
     itemTypes: splitItemTypes(count, types),
     questionCount: count,
     distribution,

@@ -363,4 +363,30 @@ describe("draft", () => {
     expect(draft.grade).toBe("Décimo");
     expect(draft.title).toBe("EVALUACIÓN DE ÁLGEBRA - GRADO DÉCIMO");
   });
+
+  it("resolves a free-text topic to a knowledge-base topic", () => {
+    const resolving: TopicCatalog = {
+      ...catalog,
+      resolveTopic: (text) =>
+        text.toLowerCase().includes("racionales") ? "basic-math/rational-numbers" : undefined,
+    };
+    const resolved = buildDraft(
+      { ...answers, topic: "enter", "topic:text": "El conjunto de los números racionales" },
+      profile,
+      fixedClock("2026-01-01T00:00:00.000Z"),
+      resolving,
+    );
+    expect(resolved.topics).toEqual(["basic-math/rational-numbers"]);
+    expect(resolved.packs).toEqual(["basic-math"]);
+    expect(resolved.topicText).toBeNull();
+
+    const unresolved = buildDraft(
+      { ...answers, "topic:text": "tema inventado sin coincidencias" },
+      profile,
+      fixedClock("2026-01-01T00:00:00.000Z"),
+      resolving,
+    );
+    expect(unresolved.topics).toEqual([]);
+    expect(unresolved.topicText).toBe("tema inventado sin coincidencias");
+  });
 });

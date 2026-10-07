@@ -35,5 +35,46 @@ export function createTopicCatalog(knowledge: LoadedKnowledge): TopicCatalog {
       );
       return matches.length === 1 ? matches[0]?.packId : undefined;
     },
+    resolveTopic: (text) => {
+      const clean = text.trim();
+      if (clean === "") return undefined;
+      const direct = byFullId.get(clean);
+      if (direct !== undefined) return direct.fullId;
+      if (bareCount.get(clean) === 1) {
+        const found = topics.find((entry) => entry.id === clean);
+        if (found !== undefined) return found.fullId;
+      }
+      const needle = clean.toLowerCase();
+      const needleWords = [...new Set(needle.split(/[^\p{L}\p{N}]+/u).filter(Boolean))];
+      const matchesWord = (a: string, b: string): boolean => {
+        if (a === b) return true;
+        const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a];
+        return shorter.length >= 5 && longer.startsWith(shorter);
+      };
+      const scored = topics
+        .map((entry) => {
+          const labelWords = localized(entry.name)
+            .toLowerCase()
+            .split(/[^\p{L}\p{N}]+/u)
+            .filter(Boolean);
+          let score = 0;
+          for (const word of needleWords) {
+            if (labelWords.some((label) => matchesWord(label, word))) score += 1;
+          }
+          for (const keyword of entry.keywords) {
+            const key = keyword.toLowerCase();
+            if (needle === key) score += 3;
+            else if (key.includes(" ") && needle.includes(key)) score += 3;
+            else if (needleWords.length <= 3 && needleWords.includes(key)) score += 2;
+          }
+          return { fullId: entry.fullId, score };
+        })
+        .filter((entry) => entry.score >= 2)
+        .sort((a, b) => b.score - a.score);
+      const best = scored[0];
+      if (best === undefined) return undefined;
+      const tie = scored.filter((entry) => entry.score === best.score);
+      return tie.length === 1 ? best.fullId : undefined;
+    },
   };
 }

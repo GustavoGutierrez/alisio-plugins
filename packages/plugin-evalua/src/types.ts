@@ -42,6 +42,8 @@ export interface TopicCatalog {
   packs(): CatalogOption[];
   /** The pack a topic answer belongs to, or undefined when it is ambiguous or unknown. */
   resolvePack(topic: string): string | undefined;
+  /** Resolves a free-text description to a known topic full id, when it is unambiguous. */
+  resolveTopic?(text: string): string | undefined;
 }
 
 export interface PendingRound {
