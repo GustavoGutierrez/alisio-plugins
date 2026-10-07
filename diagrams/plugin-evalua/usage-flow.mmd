@@ -1,0 +1,15 @@
+flowchart TD
+  start(["/evalua:new (nothing configured yet)"]) --> profile["Profile round: language, institution, teacher, logo"]
+  profile --> r1["Round 1: topic, grade, level, knowledge base"]
+  r1 --> r2["Round 2: item types, count, same/bank, columns"]
+  r2 --> r2b["Round 2b: bank size and variants (only for bank)"]
+  r2b --> r3["Round 3: page limit, time and instrument, closing text"]
+  r3 --> draft["Draft (ficha tecnica) kept in state"]
+  draft --> gateA{"Gate A: teacher approves the spec"}
+  gateA -->|approved| folder["Exam folder NN-slug + exam.yaml"]
+  gateA -->|changes| r1
+  folder --> generate["/evalua:generate: blueprint, items, checks"]
+  generate --> items["items.json frozen"]
+  items --> build["/evalua:build: HTML + PDFs, page fit"]
+  build --> gateB{"Gate B: teacher approves the package"}
+  gateB --> done([Printable exam, answer sheet, solution book, rubric])

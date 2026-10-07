@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant T as Teacher
+  participant C as evl-coordinator
+  participant K as Knowledge base
+  participant G as Generator
+  participant V as EVL checks
+  T->>C: "exam on rational numbers, 7th grade"
+  C->>K: topics matching the grade
+  K-->>C: basic-math/rational-numbers
+  C->>T: confirm level, item types, count, page limit
+  T-->>C: Gate A approved
+  C->>G: build blueprint (topic x cognitive x type)
+  G->>V: verify each candidate
+  V-->>G: pass, or redraw (bounded)
+  G-->>C: items.json frozen with stable references
+  C->>T: answer sheet, solution book and rubric
+  Note over C,T: evl-math-reviewer and evl-language-reviewer check authored items only

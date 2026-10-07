@@ -3,6 +3,6 @@
   "root": false,
   "extends": "//",
   "files": {
-    "includes": ["**", "!!**/dist", "!!**/node_modules", "!!templates/html/vendor"]
+    "includes": ["**", "!!**/dist", "!!**/node_modules", "!!assets", "!!templates/html/vendor"]
   }
 }

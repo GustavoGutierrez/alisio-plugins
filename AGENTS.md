@@ -38,8 +38,9 @@
   that the two must be updated together, and is updated in the same change. Spanish is neutral and
   professional.
 - **Bilingual package READMEs (exception, owner-approved):** `packages/plugin-thesis/README.md` /
-  `README.es.md`, `packages/plugin-swarm/README.md` / `README.es.md` and
-  `packages/plugin-frontsmith/README.md` / `README.es.md`, under the same pairing rules as the
+  `README.es.md`, `packages/plugin-swarm/README.md` / `README.es.md`,
+  `packages/plugin-frontsmith/README.md` / `README.es.md` and
+  `packages/plugin-evalua/README.md` / `README.es.md`, under the same pairing rules as the
   repo-level docs. Usage samples under
   `packages/plugin-thesis/samples/` may be written in the language of the thesis they illustrate.
 - **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this file, all source,

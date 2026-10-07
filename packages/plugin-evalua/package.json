@@ -34,9 +34,11 @@
   "files": [
     "dist",
     ".agents",
+    "assets",
     "knowledge",
     "templates",
     "README.md",
+    "README.es.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "cover.webp"

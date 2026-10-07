@@ -1,16 +1,8 @@
----
-title: "Evalua"
-description: "Guides teachers through a short interview for printable school math exams and keeps the teacher profile, workspace and exam numbering."
-pageClass: "plugin-detail"
----
-
-<PluginDetail slug="evalua" />
-
-![Evalúa](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-evalua/cover.webp)
+![Evalúa](./cover.webp)
 
 # @alisio/plugin-evalua
 
-> Léelo en [inglés](https://github.com/GustavoGutierrez/alisio-plugins/blob/HEAD/packages/plugin-evalua/README.md). Ambos README se mantienen sincronizados y deben actualizarse juntos.
+> Léelo en [inglés](./README.md). Ambos README se mantienen sincronizados y deben actualizarse juntos.
 
 Evalúa ayuda a un docente a preparar exámenes de matemáticas imprimibles mediante una entrevista
 breve y guiada, con las respuestas y los distractores calculados por código y un presupuesto de
@@ -35,7 +27,7 @@ Habla con el coordinador; empieza por el idioma, luego la institución, el docen
 opcional, y crea el espacio de trabajo sobre la marcha. Después pide el examen en tres rondas
 cortas. Nada se escribe en disco antes de la Puerta A, la aprobación del docente.
 
-![Flujo de uso: de /evalua:new por las tres rondas de la entrevista y la Puerta A hasta los ítems generados y los PDF](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-evalua/assets/usage-flow.svg)
+![Flujo de uso: de /evalua:new por las tres rondas de la entrevista y la Puerta A hasta los ítems generados y los PDF](./assets/usage-flow.svg)
 
 La entrevista pregunta solo lo que aún no sabe:
 
@@ -48,7 +40,7 @@ La entrevista pregunta solo lo que aún no sabe:
 | 3 — impresión y tono | límite de páginas (las mínimas legibles, 1, 2 o la cantidad que escribas), tiempo e instrumento, texto de cierre |
 
 También puedes usarlo sin interfaz: la ronda pendiente se guarda en el estado del espacio de trabajo
-y continúas con `/evalua:new id=valor ...` (el texto libre va en `:text=...`).
+y continúas con `/evalua:new id=valor ...` (el texto libre va en `<id>:text=...`).
 
 ### Cómo se genera y se revisa un examen
 
@@ -57,7 +49,7 @@ candidatos salen primero de las familias de ítems y luego de los ítems estáti
 candidato se verifica por código antes de congelarse; un candidato que falla se vuelve a sortear
 (con límite) y una casilla que no se puede llenar se reporta.
 
-![Flujo de generación y revisión](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-evalua/assets/review-pipeline.svg)
+![Flujo de generación y revisión](./assets/review-pipeline.svg)
 
 ## Agentes
 
@@ -66,7 +58,7 @@ redacta una respuesta matemática: las familias, los solvers y el catálogo son 
 Los ítems redactados los revisan de forma independiente `evl-math-reviewer` (solo lectura) y
 `evl-language-reviewer` (solo lectura); el revisor nunca ve el razonamiento del autor.
 
-![Flujo de agentes](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-evalua/assets/agent-flow.svg)
+![Flujo de agentes](./assets/agent-flow.svg)
 
 ## Comandos y herramientas
 
@@ -99,7 +91,7 @@ alisio-evalua doctor   # salud de la base de conocimiento y navegador
   mismo orden.
 - **Base de conocimiento extensible.** Packs YAML versionados declaran temas, calibración por nivel
   y fuentes (familias de ítems o ítems estáticos de banco). Un pack de workspace en
-  `/knowledge-packs/` extiende o reemplaza uno empaquetado sin tocar código. El cargador
+  `<root>/knowledge-packs/` extiende o reemplaza uno empaquetado sin tocar código. El cargador
   aplica `EVL-KB-001..007`.
 - **Generación y verificación.** Una tabla de especificaciones determinista guía los candidatos por
   familias y luego banco, con un bucle de resorteo acotado, deduplicación y referencias estables;
@@ -109,7 +101,7 @@ alisio-evalua doctor   # salud de la base de conocimiento y navegador
   densidad mide páginas reales y elige el preset más legible que cumpla el presupuesto, fallando de
   forma explícita con `EVL-LAY-001` cuando no puede.
 - **Temas.** Se envían tres temas por datos (`classic`, `blue`, `dark`), elegidos por
-  `exam.yaml.template` y extensibles desde `templates/themes//`.
+  `exam.yaml.template` y extensibles desde `templates/themes/<id>/`.
 - **Textos de cierre.** Un catálogo con fuente (frases célebres y versículos de la Reina-Valera 1909
   en dominio público) más una capa de citas de workspace para textos del docente; nada se escribe de
   memoria.

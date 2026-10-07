@@ -1,0 +1,10 @@
+flowchart TD
+  teacher([Teacher]) --> coordinator["evl-coordinator (primary)"]
+  coordinator -->|"interview, gates"| tools["evalua_* tools"]
+  coordinator --> designer["evl-assessment-designer"]
+  coordinator --> author["evl-item-author"]
+  author --> mathReviewer["evl-math-reviewer (read-only)"]
+  author --> languageReviewer["evl-language-reviewer (read-only)"]
+  tools --> knowledge["knowledge base + exact solvers"]
+  mathReviewer --> tools
+  languageReviewer --> tools
