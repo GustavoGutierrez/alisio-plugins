@@ -22,3 +22,4 @@ site/.vitepress/dist/
 
 .atl/*
 .playwright-mcp/*
+math.md
