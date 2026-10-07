@@ -46,10 +46,10 @@ export const fractionSimplify: Family = {
       `$${n} = ${factorText(n)}$`,
       `$${d} = ${factorText(d)}$`,
       `$\\gcd(${n}, ${d}) = ${common}$`,
-      `Divide the numerator by ${common}: $${n} \\div ${common} = ${reducedNumerator}$`,
-      `Divide the denominator by ${common}: $${d} \\div ${common} = ${reducedDenominator}$`,
-      `Check: $\\gcd(${reducedNumerator}, ${reducedDenominator}) = 1$`,
-      "The fraction is in lowest terms.",
+      `Divide el numerador entre ${common}: $${n} \\div ${common} = ${reducedNumerator}$`,
+      `Divide el denominador entre ${common}: $${d} \\div ${common} = ${reducedDenominator}$`,
+      `Comprueba: $\\gcd(${reducedNumerator}, ${reducedDenominator}) = 1$`,
+      "La fracción está en su forma irreducible.",
       `$${latexRational(answer)}$`,
     ];
     const target = rng.int(Math.max(1, calibration.steps[0]), Math.max(1, calibration.steps[1]));

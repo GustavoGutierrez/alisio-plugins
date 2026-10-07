@@ -17,13 +17,13 @@ export const percent: Family = {
     const answer = Rational.of(percentValue).mul(Rational.of(base)).div(Rational.of(100));
     const times = Rational.of(percentValue * base);
     const pool = [
-      `Write the percent as a fraction: $${percentValue}\\% = \\dfrac{${percentValue}}{100}$`,
-      `Multiply that fraction by ${base}.`,
-      `Combine: $\\dfrac{${percentValue}}{100} \\cdot ${base}$.`,
-      "Simplify the fraction.",
-      "Divide both numerator and denominator by their gcd.",
-      "Check the result by estimating.",
-      "The result is:",
+      `Escribe el porcentaje como fracción: $${percentValue}\\% = \\dfrac{${percentValue}}{100}$`,
+      `Multiplica esa fracción por ${base}.`,
+      `Combina: $\\dfrac{${percentValue}}{100} \\cdot ${base}$.`,
+      "Simplifica la fracción.",
+      "Divide el numerador y el denominador entre su mcd.",
+      "Comprueba el resultado estimando.",
+      "El resultado es:",
       `$${latexRational(answer)}$`,
     ];
     const target = rng.int(Math.max(1, calibration.steps[0]), Math.max(1, calibration.steps[1]));

@@ -27,13 +27,13 @@ export const mixedNumbers: Family = {
     const n = sign * (whole * d + remainder);
     const answer = Rational.of(n, d);
     const pool = [
-      `Divide the numerator by the denominator: $${Math.abs(n)} \\div ${d}$.`,
-      `The quotient is the whole part: $${whole}$.`,
-      `The remainder is $${remainder}$.`,
-      `The fractional part is $\\dfrac{${remainder}}{${d}}$.`,
-      `So $\\dfrac{${Math.abs(n)}}{${d}} = ${mixedText(n, d)}$.`,
-      `Check: $${whole} \\cdot ${d} + ${remainder} = ${Math.abs(n)}$.`,
-      `Keep the sign of the numerator.`,
+      `Divide el numerador entre el denominador: $${Math.abs(n)} \\div ${d}$.`,
+      `El cociente es la parte entera: $${whole}$.`,
+      `El residuo es $${remainder}$.`,
+      `La parte fraccionaria es $\\dfrac{${remainder}}{${d}}$.`,
+      `Entonces $\\dfrac{${Math.abs(n)}}{${d}} = ${mixedText(n, d)}$.`,
+      `Comprueba: $${whole} \\cdot ${d} + ${remainder} = ${Math.abs(n)}$.`,
+      `Conserva el signo del numerador.`,
       `$${mixedText(n, d)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

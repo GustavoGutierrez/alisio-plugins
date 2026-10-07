@@ -23,13 +23,13 @@ export const proportion: Family = {
     const c = positiveValue(rng, calibration.coefficientRange);
     const answer = Rational.of(a * c, b);
     const pool = [
-      `The proportion is $\\dfrac{${a}}{${b}} = \\dfrac{x}{${c}}$.`,
-      `Cross multiply: $${a} \\cdot ${c} = ${b} \\cdot x$.`,
+      `La proporción es $\\dfrac{${a}}{${b}} = \\dfrac{x}{${c}}$.`,
+      `Multiplica en cruz: $${a} \\cdot ${c} = ${b} \\cdot x$.`,
       `$${a * c} = ${b} x$`,
-      `Divide both sides by ${b}.`,
+      `Divide ambos lados entre ${b}.`,
       `$x = \\dfrac{${a * c}}{${b}}$`,
-      `Simplify the fraction.`,
-      `Check that the two ratios are equal.`,
+      `Simplifica la fracción.`,
+      `Comprueba que las dos razones sean iguales.`,
       `$${answer.toString()}$`,
     ];
     const solution = pooled(pool, rng, calibration);

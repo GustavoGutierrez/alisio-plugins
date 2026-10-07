@@ -24,13 +24,13 @@ export const linearEquation: Family = {
     const solution = solveLinear(Rational.of(a - c), Rational.of(b - d));
     const answer = solution.kind === "one" ? solution.root : Rational.zero;
     const pool = [
-      `Move every term with x to one side and the numbers to the other.`,
+      `Pasa los términos con x a un lado y los números al otro.`,
       `$${linearText(a, b)} = ${linearText(c, d)}$`,
       `$${linearText(a - c, b - d)} = 0$`,
-      `Add the opposite of the constant term.`,
-      `Divide both sides by the coefficient of x.`,
+      `Suma el opuesto del término constante.`,
+      `Divide ambos lados entre el coeficiente de x.`,
       `$${a - c}\\,x = ${d - b}$`,
-      `Check by substituting the value back.`,
+      `Comprueba sustituyendo el valor.`,
       `$${answer.toString()}$`,
     ];
     const pooledSolution = pooled(pool, rng, calibration);

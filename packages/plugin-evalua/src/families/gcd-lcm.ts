@@ -35,17 +35,17 @@ function pool(a: number, b: number, mode: Mode, result: number): string[] {
   const details =
     mode === "gcd"
       ? [
-          `Common primes: $${common === "" ? "1" : common}$`,
-          "Take the smallest exponent of every common prime.",
-          "Multiply the shared primes.",
-          `Check: $${a} \\div ${result}$ and $${b} \\div ${result}$ are integers.`,
-          "$\\gcd$ is the greatest common divisor.",
+          `Primos comunes: $${common === "" ? "1" : common}$`,
+          "Toma el menor exponente de cada primo común.",
+          "Multiplica los primos comunes.",
+          `Comprueba: $${a} \\div ${result}$ y $${b} \\div ${result}$ son enteros.`,
+          "$\\gcd$ es el máximo común divisor.",
         ]
       : [
-          `Take every prime with its largest exponent: $${united}$`,
-          "Multiply all of them.",
-          `Check: ${result} is a multiple of both ${a} and ${b}.`,
-          "$\\mathrm{lcm}$ is the least common multiple.",
+          `Toma cada primo con su mayor exponente: $${united}$`,
+          "Multiplícalos todos.",
+          `Comprueba: ${result} es múltiplo de ${a} y de ${b}.`,
+          "$\\mathrm{lcm}$ es el mínimo común múltiplo.",
         ];
   return [
     `$${a} = ${factorText(a)}$`,

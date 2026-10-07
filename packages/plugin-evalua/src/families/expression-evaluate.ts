@@ -25,13 +25,13 @@ export const expressionEvaluate: Family = {
     const answer = polynomial.evaluate({ x: Rational.of(x) });
     const atNegative = polynomial.evaluate({ x: Rational.of(-x) });
     const pool = [
-      `Substitute $x = ${x}$ in $P(x) = ${latexPoly(polynomial)}$.`,
-      `Replace every $x$ by ${x}.`,
-      `Compute the powers of ${x}.`,
-      `Multiply each coefficient by its power.`,
-      `Add the resulting terms.`,
-      `Watch the sign of the odd powers.`,
-      `Check the arithmetic.`,
+      `Sustituye $x = ${x}$ en $P(x) = ${latexPoly(polynomial)}$.`,
+      `Reemplaza cada $x$ por ${x}.`,
+      `Calcula las potencias de ${x}.`,
+      "Multiplica cada coeficiente por su potencia.",
+      "Suma los términos obtenidos.",
+      "Cuida el signo de las potencias impares.",
+      "Revisa la aritmética.",
       `$${answer.toString()}$`,
     ];
     const solution = pooled(pool, rng, calibration);

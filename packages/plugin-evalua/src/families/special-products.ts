@@ -25,13 +25,13 @@ export const specialProducts: Family = {
       const a = rangeValue(rng, calibration.coefficientRange);
       const answer = polyOfX([a * a, 2 * a, 1]);
       const pool = [
-        `A square of a binomial is the product of the binomial with itself.`,
+        `El cuadrado de un binomio es el producto del binomio por sí mismo.`,
         `$${factorX(a)}^{2} = ${factorX(a)}${factorX(a)}$`,
-        `Square the first term: $x^2$.`,
-        `Twice the product of the terms: $2 \\cdot x \\cdot ${a}$.`,
-        `Square the second term: $${a * a}$.`,
-        `Combine the three terms.`,
-        `The middle term is always even here.`,
+        `Eleva al cuadrado el primer término: $x^2$.`,
+        `El doble del producto de los términos: $2 \\cdot x \\cdot ${a}$.`,
+        `Eleva al cuadrado el segundo término: $${a * a}$.`,
+        `Combina los tres términos.`,
+        `El término del medio siempre es par aquí.`,
         `$${latexPoly(answer)}$`,
       ];
       const solution = pooled(pool, rng, calibration);
@@ -83,13 +83,13 @@ export const specialProducts: Family = {
     const b = rangeValue(rng, calibration.coefficientRange);
     const answer = polyOfX([a * b, a + b, 1]);
     const pool = [
-      `Multiply the two binomials term by term.`,
+      `Multiplica los dos binomios término a término.`,
       `$${factorX(a)}${factorX(b)}$`,
-      `First terms: $x \\cdot x = x^2$.`,
-      `Outer and inner terms: $${a}x + ${b}x = ${a + b}x$.`,
-      `Last terms: $${a} \\cdot ${b} = ${a * b}$.`,
-      `Combine like terms.`,
-      `The middle coefficient is the sum of the constants.`,
+      `Primeros términos: $x \\cdot x = x^2$.`,
+      `Términos externos e internos: $${a}x + ${b}x = ${a + b}x$.`,
+      `Últimos términos: $${a} \\cdot ${b} = ${a * b}$.`,
+      `Combina los términos semejantes.`,
+      `El coeficiente del medio es la suma de las constantes.`,
       `$${latexPoly(answer)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

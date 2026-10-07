@@ -30,13 +30,13 @@ export const quadraticEquation: Family = {
     const c = r1 * r2;
     const canonical = canonicalFrom(a, b, c);
     const pool = [
-      `Identify the coefficients: $a = ${a}$, $b = ${b}$, $c = ${c}$.`,
-      `Use the quadratic formula $x = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$.`,
-      `Discriminant: $b^2 - 4ac = ${b * b - 4 * a * c}$.`,
-      `Apply the formula.`,
-      `The two roots are $${r1}$ and $${r2}$.`,
-      `Check each root by substitution.`,
-      `A product of zero gives the roots directly.`,
+      `Identifica los coeficientes: $a = ${a}$, $b = ${b}$, $c = ${c}$.`,
+      `Usa la fórmula general $x = \\dfrac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$.`,
+      `Discriminante: $b^2 - 4ac = ${b * b - 4 * a * c}$.`,
+      `Aplica la fórmula.`,
+      `Las dos raíces son $${r1}$ y $${r2}$.`,
+      `Comprueba cada raíz por sustitución.`,
+      `Un producto igual a cero da las raíces directamente.`,
       `$x = ${r1},\\ x = ${r2}$`,
     ];
     const solution = pooled(pool, rng, calibration);

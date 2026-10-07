@@ -45,13 +45,13 @@ export const fractionOps: Family = {
     const operator = rng.pick(["+", "-", "*", "/"] as const);
     const answer = combine(a, b, operator);
     const pool = [
-      `Find a common denominator for ${a.d} and ${b.d}.`,
-      `Rewrite $${fractionBody(a)}$ and $${fractionBody(b)}$ with that denominator.`,
-      "Multiply the numerator and denominator by the same factor.",
-      `Perform the operation: $${latexRational(Rational.of(a.n, a.d))} ${symbol(operator)} ${latexRational(Rational.of(b.n, b.d))}$.`,
-      "Simplify the resulting fraction.",
-      "Check that the result cannot be reduced further.",
-      "The result is in lowest terms.",
+      `Halla un denominador común para ${a.d} y ${b.d}.`,
+      `Reescribe $${fractionBody(a)}$ y $${fractionBody(b)}$ con ese denominador.`,
+      "Multiplica el numerador y el denominador por el mismo factor.",
+      `Realiza la operación: $${latexRational(Rational.of(a.n, a.d))} ${symbol(operator)} ${latexRational(Rational.of(b.n, b.d))}$.`,
+      "Simplifica la fracción resultante.",
+      "Comprueba que el resultado no se puede reducir más.",
+      "El resultado está en su forma irreducible.",
       `$${latexRational(answer)}$`,
     ];
     const target = rng.int(Math.max(1, calibration.steps[0]), Math.max(1, calibration.steps[1]));

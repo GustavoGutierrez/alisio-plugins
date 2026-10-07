@@ -20,13 +20,13 @@ export const likeTerms: Family = {
     const first = `${a < 0 ? "-" : ""}${Math.abs(a)}x`;
     const second = `${b < 0 ? "-" : "+"} ${Math.abs(b)}x`;
     const pool = [
-      "The terms are like terms: both have the same variable x.",
-      "Only the coefficients are combined.",
+      "Los términos son semejantes: ambos tienen la misma variable x.",
+      "Solo se combinan los coeficientes.",
       `$${a} + ${b} = ${a + b}$`,
-      `Keep the variable unchanged.`,
+      "Mantén la variable sin cambios.",
       `$${a}x + ${b}x = ${a + b}x$`,
-      "The exponent of x does not change.",
-      "Check the signs of the coefficients.",
+      "El exponente de x no cambia.",
+      "Revisa los signos de los coeficientes.",
       `$${a + b}x$`,
     ];
     const solution = pooled(pool, rng, calibration);

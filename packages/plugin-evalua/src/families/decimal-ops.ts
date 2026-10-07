@@ -37,13 +37,13 @@ export const decimalOps: Family = {
     const operator = rng.pick(["+", "-", "*"] as const);
     const answer = combine(a, b, operator);
     const pool = [
-      `Align the decimal points of ${decimalString(a)} and ${decimalString(b)}.`,
-      "Write both numbers with the same number of decimal places.",
-      "Operate as if they were whole numbers.",
-      `Multiply $${decimalString(a)} ${symbol(operator)} ${decimalString(b)}$.`,
-      "Count the decimal places in the factors.",
-      "Place the decimal point in the result.",
-      "The result is:",
+      `Alinea los puntos decimales de ${decimalString(a)} y ${decimalString(b)}.`,
+      "Escribe ambos números con la misma cantidad de cifras decimales.",
+      "Opera como si fueran números enteros.",
+      `Realiza la operación: $${decimalString(a)} ${symbol(operator)} ${decimalString(b)}$.`,
+      "Cuenta las cifras decimales de los factores.",
+      "Coloca el punto decimal en el resultado.",
+      "El resultado es:",
       `$${decimalString(answer)}$`,
     ];
     const target = rng.int(Math.max(1, calibration.steps[0]), Math.max(1, calibration.steps[1]));

@@ -22,12 +22,12 @@ export const primeFactorization: Family = {
     const answer = Rational.of(q);
     const pool = [
       `$${n} = ${factorsText(n)}$`,
-      `The known prime is $${p}$.`,
+      `El primo conocido es $${p}$.`,
       `$${n} \\div ${p} = ${q}$`,
       `$${q} = ${factorsText(q)}$`,
-      `Check: $${p} \\times ${q} = ${n}$.`,
-      `The missing factor is ${q}.`,
-      `The complete factorization is $${n} = ${factorsText(n)}$.`,
+      `Comprueba: $${p} \\times ${q} = ${n}$.`,
+      `El factor que falta es ${q}.`,
+      `La factorización completa es $${n} = ${factorsText(n)}$.`,
       `$${n} = ${p} \\times ${q}$`,
     ];
     const solution = pooled(pool, rng, calibration);

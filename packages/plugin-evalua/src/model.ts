@@ -191,6 +191,18 @@ function header(spec: ExamSpecLike, profile: ProfileLike, locale: Locale): Heade
   };
 }
 
+/** A fill-in date mask, in the order of the language: day/month/year (es) or month/day/year (en). */
+function dateMask(locale: Locale): string {
+  const en = locale.language.startsWith("en");
+  const day = locale.labels.dateDay ?? (en ? "Day" : "Día");
+  const month = locale.labels.dateMonth ?? (en ? "Month" : "Mes");
+  const year = locale.labels.dateYear ?? (en ? "Year" : "Año");
+  const dayPart = `${day}: ____`;
+  const monthPart = `${month}: ____`;
+  const yearPart = `${year}: ______`;
+  return (en ? [monthPart, dayPart, yearPart] : [dayPart, monthPart, yearPart]).join("  /  ");
+}
+
 function answerSpaceLines(item: ExamItem, density: DensityPreset): number {
   const seconds = item.estimatedSeconds;
   if (item.type === "practice") {
@@ -248,7 +260,7 @@ export function buildExamModel(input: {
     { label: locale.labels.period ?? "Periodo", value: "" },
     { label: locale.labels.student ?? "Estudiante", value: "" },
     { label: locale.labels.grade ?? "Grado", value: spec.grade },
-    { label: locale.labels.date ?? "Fecha", value: "" },
+    { label: locale.labels.date ?? "Fecha", value: dateMask(locale) },
   ];
 
   const closing: ClosingModel | null = input.closing.entry

@@ -21,13 +21,13 @@ export const powersRoots: Family = {
       const exponent = rng.int(2, Math.max(2, Math.min(4, max)));
       const answer = Rational.of(base).pow(exponent);
       const pool = [
-        `A power is a repeated product.`,
-        `$${base}^{${exponent}}$ means ${exponent} factors of ${base}.`,
+        `Una potencia es un producto repetido.`,
+        `$${base}^{${exponent}}$ significa ${exponent} factores de ${base}.`,
         `$${Array.from({ length: exponent }, () => base).join(" \\cdot ")}$`,
-        `Multiply step by step.`,
+        `Multiplica paso a paso.`,
         `$${base}^{${exponent}} = ${answer.toString()}$`,
-        `Check the number of factors.`,
-        `The result is positive for an even exponent.`,
+        `Comprueba el número de factores.`,
+        `El resultado es positivo si el exponente es par.`,
         `$${answer.toString()}$`,
       ];
       const solution = pooled(pool, rng, calibration);
@@ -72,13 +72,13 @@ export const powersRoots: Family = {
     const radicand = root * root;
     const answer = Rational.of(root);
     const pool = [
-      `We look for a number whose square is ${radicand}.`,
-      `Try small squares: $2^2=4$, $3^2=9$, ...`,
+      `Buscamos un número cuyo cuadrado sea ${radicand}.`,
+      `Prueba con cuadrados pequeños: $2^2=4$, $3^2=9$, ...`,
       `$${root}^2 = ${radicand}$`,
-      `So the square root is ${root}.`,
-      `Check: $${root} \\times ${root} = ${radicand}$.`,
-      `The square root is exact.`,
-      `A square root asks for the side of a square of area ${radicand}.`,
+      `Entonces la raíz cuadrada es ${root}.`,
+      `Comprueba: $${root} \\times ${root} = ${radicand}$.`,
+      `La raíz cuadrada es exacta.`,
+      `La raíz cuadrada pide el lado de un cuadrado de área ${radicand}.`,
       `$${answer.toString()}$`,
     ];
     const solution = pooled(pool, rng, calibration);

@@ -42,17 +42,17 @@ export const polynomialOps: Family = {
     const answer = combine(p, q, operator);
     const numericValues = [...pCoefficients, ...qCoefficients];
     const pool = [
-      `Write both polynomials in descending degree order.`,
-      `$${latexPoly(p)}$ and $${latexPoly(q)}$`,
+      `Escribe ambos polinomios en orden decreciente de grado.`,
+      `$${latexPoly(p)}$ y $${latexPoly(q)}$`,
       operator === "*"
-        ? "Multiply every term of the first by every term of the second."
-        : "Align like terms before operating.",
+        ? "Multiplica cada término del primero por cada término del segundo."
+        : "Alinea los términos semejantes antes de operar.",
       operator === "*"
-        ? "Add the exponents of x in each product."
-        : "Combine the coefficients of like terms.",
-      "Keep the sign of each term.",
-      "Reduce like terms.",
-      "Check the degree of the result.",
+        ? "Suma los exponentes de x en cada producto."
+        : "Combina los coeficientes de los términos semejantes.",
+      "Conserva el signo de cada término.",
+      "Reduce los términos semejantes.",
+      "Comprueba el grado del resultado.",
       `$${latexPoly(answer)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

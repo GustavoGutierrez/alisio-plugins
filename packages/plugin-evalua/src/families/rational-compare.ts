@@ -33,13 +33,13 @@ export const rationalCompare: Family = {
     const answer = a.compare(b) >= 0 ? a : b;
     const smaller = a.compare(b) >= 0 ? b : a;
     const pool = [
-      `Write both fractions with a common denominator.`,
+      `Escribe ambas fracciones con un denominador común.`,
       `$${latexRational(a)} = \\dfrac{${a.n * b.d}}{${a.d * b.d}}$`,
       `$${latexRational(b)} = \\dfrac{${b.n * a.d}}{${b.d * a.d}}$`,
-      `Compare the numerators $${a.n * b.d}$ and $${b.n * a.d}$.`,
-      `The greater numerator gives the greater fraction.`,
-      `Watch the sign: a negative fraction is smaller than a positive one.`,
-      `The greater value is $${latexRational(answer)}$.`,
+      `Compara los numeradores $${a.n * b.d}$ y $${b.n * a.d}$.`,
+      `El numerador mayor da la fracción mayor.`,
+      `Cuida el signo: una fracción negativa es menor que una positiva.`,
+      `El valor mayor es $${latexRational(answer)}$.`,
       `$${latexRational(answer)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

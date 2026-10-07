@@ -40,16 +40,22 @@ body {
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
-.exam-header { text-align: center; padding-bottom: 2mm; border-bottom: 1px solid var(--rule); }
-.exam-header.band { background: var(--header-bg); color: var(--header-text); padding: 3mm; }
-.exam-header .logo { max-height: 18mm; float: left; }
-.exam-header .institution { font-family: var(--heading-font); font-weight: 700; font-size: 1.15em; text-transform: uppercase; }
-.exam-header .title { font-family: var(--heading-font); font-weight: 700; margin-top: 1mm; }
-.exam-header .theme { font-family: var(--heading-font); margin-top: 0.5mm; }
-.info-table { width: 100%; border-collapse: collapse; margin: 3mm 0; }
-.info-table td { border: 1px solid var(--rule); padding: 1.2mm 2mm; }
-.info-table .label { font-family: var(--heading-font); font-weight: 700; width: 22%; }
-.nota { border: 2px solid var(--nota-border); padding: 2mm; text-align: center; }
+.exam-header { border-top: 3px solid var(--accent); border-bottom: 1px solid var(--rule); padding: 3mm 2mm 2.5mm; }
+.exam-header.band { background: var(--header-bg); color: var(--header-text); border-color: var(--header-bg); padding: 3.5mm 3mm; }
+.exam-header .header-top { display: flex; align-items: center; justify-content: center; gap: 4mm; }
+.exam-header .logo { max-height: 18mm; max-width: 34mm; object-fit: contain; }
+.exam-header .header-text { text-align: center; }
+.exam-header .institution { font-family: var(--heading-font); font-weight: 700; font-size: 1.15em; letter-spacing: 0.04em; text-transform: uppercase; }
+.exam-header .title { font-family: var(--heading-font); font-weight: 700; font-size: 1.05em; margin-top: 1mm; letter-spacing: 0.02em; }
+.exam-header .theme { font-family: var(--heading-font); margin-top: 0.8mm; font-size: 0.95em; }
+.exam-header.band .institution, .exam-header.band .title, .exam-header.band .theme { color: var(--header-text); }
+.info-table { width: 100%; border-collapse: collapse; margin: 3mm 0; table-layout: fixed; }
+.info-table td { border: 1px solid var(--rule); padding: 1.4mm 2mm; vertical-align: middle; }
+.info-table .label { font-family: var(--heading-font); font-weight: 700; width: 15%; background: var(--accent-soft); }
+.info-table .value { width: 22%; }
+.info-table .nota { width: 26%; text-align: center; vertical-align: middle; }
+.info-table .nota-label { display: block; font-family: var(--heading-font); font-weight: 700; }
+.info-table .nota-box { display: block; height: 15mm; border: 1.5px solid var(--nota-border); margin-top: 1mm; }
 .intro { margin: 3mm 0; text-align: justify; }
 .section-title { font-family: var(--heading-font); font-weight: 700; margin: var(--item-gap) 0 1mm; break-after: avoid; }
 .item { margin-bottom: var(--item-gap); break-inside: avoid; }

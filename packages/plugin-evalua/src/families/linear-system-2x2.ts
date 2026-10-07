@@ -53,13 +53,13 @@ export const linearSystem2x2: Family = {
     const { x, y } = cramer(problem);
     const canonical = `x=${x.toString()};y=${y.toString()}`;
     const pool = [
-      `Write both equations together.`,
+      `Escribe las dos ecuaciones juntas.`,
       `$${a1}x ${b1 < 0 ? "-" : "+"} ${Math.abs(b1)}y = ${c1}$`,
       `$${a2}x ${b2 < 0 ? "-" : "+"} ${Math.abs(b2)}y = ${c2}$`,
-      `Eliminate one variable by adding or subtracting the equations.`,
-      `Solve the resulting one-variable equation.`,
-      `Substitute back to find the other variable.`,
-      `Check the solution in both equations.`,
+      `Elimina una variable sumando o restando las ecuaciones.`,
+      `Resuelve la ecuación de una variable que resulta.`,
+      `Sustituye para hallar la otra variable.`,
+      `Comprueba la solución en ambas ecuaciones.`,
       `$x = ${x.toString()},\\ y = ${y.toString()}$`,
     ];
     const solution = pooled(pool, rng, calibration);

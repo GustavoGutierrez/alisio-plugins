@@ -16,13 +16,13 @@ export const rationalExpression: Family = {
     const divisor = polyOfX([-r, 1]);
     const numerator = quotient.mul(divisor);
     const pool = [
-      `Factor the numerator if possible.`,
+      `Factoriza el numerador si es posible.`,
       `$${latexPoly(numerator)}$`,
-      `The denominator is $${latexPoly(divisor)}$.`,
-      `Look for the common factor $${latexPoly(divisor)}$.`,
-      `Divide numerator and denominator by that factor.`,
-      `The quotient is $${latexPoly(quotient)}$.`,
-      `State the restriction that the denominator is not zero.`,
+      `El denominador es $${latexPoly(divisor)}$.`,
+      `Busca el factor común $${latexPoly(divisor)}$.`,
+      `Divide el numerador y el denominador entre ese factor.`,
+      `El cociente es $${latexPoly(quotient)}$.`,
+      `Indica la restricción de que el denominador no sea cero.`,
       `$${latexPoly(quotient)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

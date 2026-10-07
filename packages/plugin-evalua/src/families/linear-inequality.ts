@@ -32,15 +32,15 @@ export const linearInequality: Family = {
     const effective = a > 0 ? relation : flip(relation);
     const canonical = `x${effective}${boundary.toString()}`;
     const pool = [
-      `Solve like an equation first: $${linearText(a, b)} = ${c}$.`,
+      `Resuelve primero como una ecuación: $${linearText(a, b)} = ${c}$.`,
       `$${linearText(a, b)} ${latexRelation(relation)} ${c}$`,
       `$${a}x ${latexRelation(relation)} ${c - b}$`,
       a > 0
-        ? `The coefficient of x is positive, so the relation does not change.`
-        : `Dividing by a negative number flips the relation.`,
-      `Divide both sides by ${a}.`,
-      `The boundary value is $${latexRational(boundary)}$.`,
-      `Check a value on each side of the boundary.`,
+        ? `El coeficiente de x es positivo, así que la relación no cambia.`
+        : `Al dividir entre un número negativo, la relación se invierte.`,
+      `Divide ambos lados entre ${a}.`,
+      `El valor frontera es $${latexRational(boundary)}$.`,
+      `Comprueba un valor a cada lado de la frontera.`,
       `$${latexRelation(effective)} ${latexRational(boundary)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

@@ -35,13 +35,13 @@ export const wordProblemLinear: Family = {
     const fallback = `Plantea y resuelve: $${a}x ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}$`;
     const stem = render(hasTemplates ? rng.pick(templates) : fallback, { a, b, c });
     const pool = [
-      `Read the problem and choose the unknown.`,
-      `Translate the words into an equation.`,
-      `The equation is ${fallback}.`,
-      `Subtract ${b} from both sides.`,
+      `Lee el problema y elige la incógnita.`,
+      `Traduce el enunciado a una ecuación.`,
+      `La ecuación es ${fallback}.`,
+      `Resta ${b} en ambos lados.`,
       `$${a}x = ${c - b}$`,
-      `Divide both sides by ${a}.`,
-      `Check the answer in the original sentence.`,
+      `Divide ambos lados entre ${a}.`,
+      `Comprueba la respuesta en el enunciado original.`,
       `$${answer.toString()}$`,
     ];
     const solution = pooled(pool, rng, calibration);

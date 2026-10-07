@@ -31,13 +31,13 @@ export const factoring: Family = {
     const c = p * q;
     const answer = polyOfX([c, b, 1]);
     const pool = [
-      `Look for two numbers that multiply to ${c} and add to ${b}.`,
-      `The pairs for ${c} include the signs that give the product.`,
+      `Busca dos números que multiplicados den ${c} y sumados den ${b}.`,
+      `Entre las parejas de factores de ${c}, elige los signos que dan el producto.`,
       `$${p} \\cdot ${q} = ${c}$`,
       `$${p} + ${q} = ${b}$`,
-      `So the factors are $${factorX(p)}$ and $${factorX(q)}$.`,
-      `Expand to check: $${latexPoly(answer)}$.`,
-      `The middle term is the sum and the constant is the product.`,
+      `Entonces los factores son $${factorX(p)}$ y $${factorX(q)}$.`,
+      `Desarrolla para comprobar: $${latexPoly(answer)}$.`,
+      "El término del medio es la suma y el término constante es el producto.",
       `$${factorX(p)}${factorX(q)}$`,
     ];
     const solution = pooled(pool, rng, calibration);

@@ -6,6 +6,7 @@ import type {
   DocumentModel,
   ExamModel,
   HeaderModel,
+  InfoRow,
   ItemModel,
   RubricModel,
   SolutionBookModel,
@@ -55,21 +56,39 @@ function renderHeader(header: HeaderModel, theme: Theme): string {
   const band = theme.tokens.headerStyle === "band" ? " band" : "";
   const logo =
     header.logo === undefined ? "" : `<img class="logo" src="${escapeHtml(header.logo)}" alt="">`;
-  return `<header class="exam-header${band}">${logo}
-  <div class="institution">${escapeHtml(header.institution)}</div>
-  <div class="title">${escapeHtml(header.title)}</div>
-  <div class="theme">${escapeHtml(header.themeLine)}</div>
+  return `<header class="exam-header${band}">
+  <div class="header-top">${logo}
+    <div class="header-text">
+      <div class="institution">${escapeHtml(header.institution)}</div>
+      <div class="title">${escapeHtml(header.title)}</div>
+      <div class="theme">${escapeHtml(header.themeLine)}</div>
+    </div>
+  </div>
 </header>`;
 }
 
 function renderInfo(model: ExamModel): string {
-  const rows = model.info
-    .map(
-      (row) =>
-        `<tr><td class="label">${escapeHtml(row.label)}</td><td>${escapeHtml(row.value)}</td></tr>`,
-    )
+  const pairs: InfoRow[][] = [];
+  for (let index = 0; index < model.info.length; index += 2) {
+    pairs.push(model.info.slice(index, index + 2));
+  }
+  const rows = pairs
+    .map((pair, index) => {
+      let cells = pair
+        .map(
+          (row) =>
+            `<td class="label">${escapeHtml(row.label)}</td><td class="value">${escapeHtml(row.value)}</td>`,
+        )
+        .join("");
+      if (pair.length === 1) cells += `<td class="label"></td><td class="value"></td>`;
+      const nota =
+        index === 0
+          ? `<td class="nota" rowspan="${pairs.length}"><span class="nota-label">${escapeHtml(model.notaLabel)}</span><span class="nota-box"></span></td>`
+          : "";
+      return `<tr>${cells}${nota}</tr>`;
+    })
     .join("");
-  return `<table class="info-table"><tbody>${rows}<tr><td class="label">${escapeHtml(model.notaLabel)}</td><td class="nota"></td></tr></tbody></table>`;
+  return `<table class="info-table"><tbody>${rows}</tbody></table>`;
 }
 
 function renderItem(item: ItemModel, math: MathRenderer): string {

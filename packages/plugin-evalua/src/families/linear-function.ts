@@ -20,13 +20,13 @@ export const linearFunction: Family = {
     const y2 = rangeValue(rng, calibration.coefficientRange, { allowZero: true });
     const answer = Rational.of(y2 - y1, x2 - x1);
     const pool = [
-      `The slope through two points is the change in y over the change in x.`,
+      `La pendiente entre dos puntos es el cambio en y sobre el cambio en x.`,
       `$m = \\dfrac{y_2 - y_1}{x_2 - x_1}$`,
       `$m = \\dfrac{${y2} - (${y1})}{${x2} - (${x1})}$`,
-      `Compute the numerator: $${y2 - y1}$.`,
-      `Compute the denominator: $${x2 - x1}$.`,
-      `Divide and simplify the fraction.`,
-      `A positive slope rises from left to right.`,
+      `Calcula el numerador: $${y2 - y1}$.`,
+      `Calcula el denominador: $${x2 - x1}$.`,
+      `Divide y simplifica la fracción.`,
+      `Una pendiente positiva sube de izquierda a derecha.`,
       `$${answer.toString()}$`,
     ];
     const solution = pooled(pool, rng, calibration);
