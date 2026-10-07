@@ -1,3 +1,4 @@
+import type { FigureBlock, MarkupLine } from "../markup.js";
 import { levels as allLevels, type ItemType, itemTypes, type Level } from "../types.js";
 import type { CheckCollector, Severity } from "./report.js";
 import type {
@@ -447,6 +448,30 @@ function readOptions(
   return options;
 }
 
+function readStemArray(
+  value: unknown,
+  subject: string,
+  collector: CheckCollector,
+): MarkupLine[] | undefined {
+  if (!Array.isArray(value) || value.length === 0) {
+    collector.error(KB_SCHEMA, subject, "stem must be a non-empty list");
+    return undefined;
+  }
+  const out: MarkupLine[] = [];
+  value.forEach((entry, index) => {
+    if (typeof entry === "string") {
+      out.push(entry);
+      return;
+    }
+    if (isRecord(entry) && isRecord(entry.figure) && typeof entry.figure.kind === "string") {
+      out.push(entry as unknown as FigureBlock);
+      return;
+    }
+    collector.error(KB_SCHEMA, subject, `stem[${index}] must be text or a figure block`);
+  });
+  return out.length === value.length ? out : undefined;
+}
+
 export function validateStaticItem(
   input: unknown,
   subject: string,
@@ -462,10 +487,7 @@ export function validateStaticItem(
   if (typeof input.level !== "string" || !(allLevels as readonly string[]).includes(input.level)) {
     collector.error(KB_SCHEMA, subject, `static item level must be one of ${allLevels.join(", ")}`);
   }
-  const stem = readStringArray(input.stem, subject, "stem", collector, { required: true });
-  if (stem !== undefined && stem.length === 0) {
-    collector.error(KB_SCHEMA, subject, "stem must have at least one line");
-  }
+  const stem = readStemArray(input.stem, subject, collector);
   const solution = readStringArray(input.solution, subject, "solution", collector, {
     required: true,
   });

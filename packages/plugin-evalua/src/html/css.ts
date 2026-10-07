@@ -64,6 +64,8 @@ body {
 .math { white-space: nowrap; }
 table.grid { border-collapse: collapse; margin: 1mm 0; }
 table.grid th, table.grid td { border: 1px solid var(--rule); padding: 1mm 2mm; }
+.figure { margin: 2mm 0; text-align: center; break-inside: avoid; }
+.figure .figure-svg { max-width: 100%; height: auto; }
 .closing { margin-top: 6mm; text-align: center; font-style: italic; break-inside: avoid; }
 .closing .author { display: block; margin-top: 1mm; font-style: normal; font-size: 0.9em; }
 .sheet-table { width: 100%; border-collapse: collapse; }

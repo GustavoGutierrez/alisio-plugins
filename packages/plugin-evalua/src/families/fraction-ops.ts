@@ -11,9 +11,9 @@ interface Fraction {
   d: number;
 }
 
-function fractionText(value: Fraction): string {
+function fractionBody(value: Fraction): string {
   const sign = value.n < 0 ? "-" : "";
-  return `$${sign}\\dfrac{${Math.abs(value.n)}}{${value.d}}$`;
+  return `${sign}\\dfrac{${Math.abs(value.n)}}{${value.d}}`;
 }
 
 function combine(left: Fraction, right: Fraction, operator: Operator): Rational {
@@ -46,7 +46,7 @@ export const fractionOps: Family = {
     const answer = combine(a, b, operator);
     const pool = [
       `Find a common denominator for ${a.d} and ${b.d}.`,
-      `Rewrite ${fractionText(a)} and ${fractionText(b)} with that denominator.`,
+      `Rewrite $${fractionBody(a)}$ and $${fractionBody(b)}$ with that denominator.`,
       "Multiply the numerator and denominator by the same factor.",
       `Perform the operation: $${latexRational(Rational.of(a.n, a.d))} ${symbol(operator)} ${latexRational(Rational.of(b.n, b.d))}$.`,
       "Simplify the resulting fraction.",
@@ -78,7 +78,7 @@ export const fractionOps: Family = {
       family: "fraction-ops",
       level,
       type: "single_choice",
-      stem: [`${fractionText(a)} ${symbol(operator)} ${fractionText(b)}`],
+      stem: [`$${fractionBody(a)} ${symbol(operator)} ${fractionBody(b)}$`],
       options,
       answer: { canonical: answer.toString(), display: money(answer) },
       solution,

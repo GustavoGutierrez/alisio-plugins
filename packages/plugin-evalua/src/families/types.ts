@@ -1,4 +1,5 @@
 import type { LevelCalibration } from "../knowledge/types.js";
+import type { MarkupLine } from "../markup.js";
 import type { Poly } from "../math/poly.js";
 import type { Rational } from "../math/rational.js";
 import type { Rng } from "../math/rng.js";
@@ -18,7 +19,7 @@ export interface ItemDraft {
   family: string;
   level: Level;
   type: ItemType;
-  stem: string[];
+  stem: MarkupLine[];
   options: DistractorOption[];
   answer: { canonical: string; display: string };
   solution: string[];

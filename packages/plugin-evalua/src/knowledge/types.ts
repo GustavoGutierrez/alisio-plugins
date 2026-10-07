@@ -1,3 +1,4 @@
+import type { MarkupLine } from "../markup.js";
 import type { ItemType, Level } from "../types.js";
 
 export type Layer = "shipped" | "workspace";
@@ -74,7 +75,7 @@ export interface StaticItem {
   type: ItemType;
   level: Level;
   cognitive?: string;
-  stem: string[];
+  stem: MarkupLine[];
   options?: StaticOption[];
   answer: { canonical: string; display: string };
   solution: string[];

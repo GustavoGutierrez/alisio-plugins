@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import type { ExamItem } from "./generate.js";
 import type { CheckFinding } from "./knowledge/report.js";
-import { parseMarkup, tokenizeInline } from "./markup.js";
+import { type InlineToken, type MarkupLine, parseMarkup, tokenizeInline } from "./markup.js";
 
 /**
  * Server-side math (spec 10.2). The vendored KaTeX UMD bundle is evaluated once in an isolated
@@ -88,17 +88,23 @@ interface Fragment {
   display: boolean;
 }
 
-function fragmentsOf(lines: readonly string[]): Fragment[] {
+function fragmentsOf(lines: readonly MarkupLine[]): Fragment[] {
   const fragments: Fragment[] = [];
+  const addInline = (tokens: readonly InlineToken[]): void => {
+    for (const token of tokens) {
+      if (token.kind === "math") fragments.push({ tex: token.value, display: false });
+    }
+  };
   for (const block of parseMarkup(lines)) {
     if (block.kind === "display") {
       fragments.push({ tex: block.value, display: true });
-      continue;
+    } else if (block.kind === "paragraph") {
+      addInline(block.inline);
+    } else if (block.kind === "table") {
+      for (const cell of block.head.flat()) addInline([cell]);
+      for (const row of block.rows) for (const cell of row.flat()) addInline([cell]);
     }
-    const inline = block.kind === "paragraph" ? block.inline : block.head.flat();
-    for (const token of inline) {
-      if (token.kind === "math") fragments.push({ tex: token.value, display: false });
-    }
+    // figure blocks carry no math
   }
   return fragments;
 }

@@ -1,0 +1,23 @@
+id: geometry
+name:
+  es: "Geometría y figuras"
+code: GEO
+grades: ["Sexto", "Séptimo", "Octavo"]
+prerequisites: [natural-numbers]
+objectives:
+  - id: read-figures
+    text:
+      es: "Interpreta figuras: diagramas de conjuntos, formas geométricas y gráficas."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: compute-measures
+    text:
+      es: "Calcula medidas básicas a partir de una figura (perímetro, área, fracción)."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [figura, conjunto, triángulo, perímetro, fracción, diagrama, plano cartesiano]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: bank, file: items/geometry.yaml }

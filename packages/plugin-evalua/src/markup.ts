@@ -3,18 +3,26 @@
  * table block objects. The renderer tokenizes it itself; text is HTML-escaped at emit time.
  */
 
+import type { FigureSpec } from "./figures/index.js";
+
 export interface TableBlock {
   table: { head: string[]; rows: string[][] };
 }
 
-export type MarkupLine = string | TableBlock;
+/** A block that embeds a deterministic figure (spec: figures). */
+export interface FigureBlock {
+  figure: FigureSpec;
+}
+
+export type MarkupLine = string | TableBlock | FigureBlock;
 
 export type InlineToken = { kind: "text"; value: string } | { kind: "math"; value: string };
 
 export type Block =
   | { kind: "paragraph"; inline: InlineToken[] }
   | { kind: "display"; value: string }
-  | { kind: "table"; head: InlineToken[][]; rows: InlineToken[][][] };
+  | { kind: "table"; head: InlineToken[][]; rows: InlineToken[][][] }
+  | { kind: "figure"; spec: FigureSpec };
 
 const inlinePattern = /\$([^$]+)\$/g;
 const displayPattern = /^\s*\$\$([\s\S]+?)\$\$\s*$/;
@@ -39,13 +47,23 @@ export function tokenizeInline(text: string): InlineToken[] {
 }
 
 function isTableBlock(line: MarkupLine): line is TableBlock {
-  return typeof line !== "string" && Array.isArray(line.table?.head);
+  return (
+    typeof line !== "string" && "table" in line && Array.isArray((line as TableBlock).table?.head)
+  );
 }
 
-/** Parses markup lines into blocks: paragraphs, display math and tables. */
+function isFigureBlock(line: MarkupLine): line is FigureBlock {
+  return typeof line !== "string" && typeof (line as FigureBlock).figure?.kind === "string";
+}
+
+/** Parses markup lines into blocks: paragraphs, display math, tables and figures. */
 export function parseMarkup(lines: readonly MarkupLine[]): Block[] {
   const blocks: Block[] = [];
   for (const line of lines) {
+    if (isFigureBlock(line)) {
+      blocks.push({ kind: "figure", spec: line.figure });
+      continue;
+    }
     if (isTableBlock(line)) {
       blocks.push({
         kind: "table",

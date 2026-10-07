@@ -7,6 +7,7 @@ import {
 } from "./families/index.js";
 import type { CheckFinding } from "./knowledge/report.js";
 import type { FamilySource, LevelCalibration, LoadedTopic, StaticItem } from "./knowledge/types.js";
+import type { MarkupLine } from "./markup.js";
 import { createRng } from "./math/rng.js";
 import { canonicalJson } from "./storage.js";
 import type { Cognitive, ItemType, Level } from "./types.js";
@@ -21,7 +22,7 @@ export interface ExamItem {
   type: ItemType;
   level: Level;
   cognitive: Cognitive;
-  stem: string[];
+  stem: MarkupLine[];
   options: DistractorOption[];
   answer: { canonical: string; display: string };
   solution: string[];
@@ -75,7 +76,7 @@ function refFor(code: string, item: Omit<ExamItem, "ref">, used: Set<string>): s
 }
 
 function dedupeKey(item: ExamItem): string {
-  return `${item.stem.join("\u0000")}\u0001${item.answer.canonical}`;
+  return `${JSON.stringify(item.stem)}\u0001${item.answer.canonical}`;
 }
 
 export interface GenerateInput {

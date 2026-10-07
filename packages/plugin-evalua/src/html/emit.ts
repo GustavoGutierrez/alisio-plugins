@@ -1,3 +1,4 @@
+import { figureSvg } from "../figures/index.js";
 import type { DensityPreset } from "../layout/presets.js";
 import { type Block, escapeHtml, type InlineToken, parseMarkup } from "../markup.js";
 import type {
@@ -36,6 +37,9 @@ function renderBlocks(blocks: readonly Block[], math: MathRenderer): string {
     .map((block) => {
       if (block.kind === "paragraph") return `<p>${renderInline(block.inline, math)}</p>`;
       if (block.kind === "display") return `<div class="display">${math(block.value, true)}</div>`;
+      if (block.kind === "figure") {
+        return `<figure class="figure">${figureSvg(block.spec)}</figure>`;
+      }
       const head = block.head.map((cell) => `<th>${renderInline(cell, math)}</th>`).join("");
       const rows = block.rows
         .map(

@@ -121,6 +121,11 @@ alisio-evalua doctor   # salud de la base de conocimiento y navegador
   forma explícita con `EVL-LAY-001` cuando no puede. Una auditoría in-page revisa desbordamiento
   horizontal, cajas solapadas, texto bajo el piso, ajuste de fórmulas y espacio de respuesta
   (`EVL-LAY-002`, `EVL-LAY-004`).
+- **Figuras.** Se generan por código figuras SVG deterministas en escala de grises y se incrustan en
+  los ítems con un bloque `figure`: diagramas de conjuntos (Venn), planos cartesianos, triángulos,
+  cuadrados, rectángulos, polígonos regulares, circunferencias, elipses, prismas, cilindros, conos,
+  rectas numéricas, barras de fracción, gráficas de barras y ángulos. Una pregunta puede mostrar un
+  diagrama sin asset externo ni red.
 - **Temas.** Se envían tres temas por datos (`classic`, `blue`, `dark`), elegidos por
   `exam.yaml.template` y extensibles desde `templates/themes/<id>/`.
 - **Textos de cierre.** Un catálogo con fuente (frases célebres y versículos de la Reina-Valera 1909

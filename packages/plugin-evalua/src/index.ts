@@ -41,6 +41,7 @@ export {
 export { type Clock, fixedClock, schoolYear, systemClock } from "./clock.js";
 export { EvaluaCoordinator } from "./coordinator.js";
 export { families, familyIds, getFamily } from "./families/index.js";
+export { type FigureKind, type FigureSpec, figureKinds, figureSvg } from "./figures/index.js";
 export {
   type ExamItem,
   type GenerateInput,

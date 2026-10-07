@@ -40,7 +40,7 @@ export const decimalOps: Family = {
       `Align the decimal points of ${decimalString(a)} and ${decimalString(b)}.`,
       "Write both numbers with the same number of decimal places.",
       "Operate as if they were whole numbers.",
-      `Multiply ${decimalString(a)} ${symbol(operator)} ${decimalString(b)}.`,
+      `Multiply $${decimalString(a)} ${symbol(operator)} ${decimalString(b)}$.`,
       "Count the decimal places in the factors.",
       "Place the decimal point in the result.",
       "The result is:",

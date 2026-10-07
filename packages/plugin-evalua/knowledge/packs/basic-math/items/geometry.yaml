@@ -1,0 +1,63 @@
+- id: geometry-venn-union
+  type: single_choice
+  level: basico
+  cognitive: apply
+  stem:
+    - "Observa el diagrama de conjuntos."
+    - figure:
+        kind: venn
+        label: "Dos conjuntos A y B que se superponen"
+        params: { sets: 2 }
+    - "Si A tiene 5 elementos, B tiene 4 y comparten 2, ¿cuántos elementos tiene $A \\cup B$?"
+  options:
+    - { key: A, text: "7", correct: true, error: "none" }
+    - { key: B, text: "9", correct: false, error: "added-without-the-overlap" }
+    - { key: C, text: "11", correct: false, error: "counted-the-overlap-twice" }
+    - { key: D, text: "2", correct: false, error: "used-only-the-intersection" }
+  answer: { canonical: "7", display: "7" }
+  solution:
+    - "$|A \\cup B| = |A| + |B| - |A \\cap B|$"
+    - "$5 + 4 - 2 = 7$"
+  check: { kind: rational-equal, value: "7" }
+- id: geometry-triangle-perimeter
+  type: single_choice
+  level: basico
+  cognitive: apply
+  stem:
+    - "El triángulo de la figura es equilátero y cada lado mide 6 cm."
+    - figure:
+        kind: triangle
+        label: "Triángulo equilátero"
+        params: { variant: equilateral }
+    - "¿Cuál es su perímetro?"
+  options:
+    - { key: A, text: "18 cm", correct: true, error: "none" }
+    - { key: B, text: "12 cm", correct: false, error: "used-two-sides" }
+    - { key: C, text: "36 cm", correct: false, error: "multiplied-instead-of-added" }
+    - { key: D, text: "6 cm", correct: false, error: "used-one-side" }
+  answer: { canonical: "18", display: "18" }
+  solution:
+    - "Un triángulo equilátero tiene tres lados iguales."
+    - "$6 + 6 + 6 = 18$"
+  check: { kind: rational-equal, value: "18" }
+- id: geometry-fraction-bar
+  type: single_choice
+  level: basico
+  cognitive: apply
+  stem:
+    - "La barra está dividida en 5 partes iguales y 3 están sombreadas."
+    - figure:
+        kind: fraction-bar
+        label: "Barra dividida en cinco partes, tres sombreadas"
+        params: { parts: 5, shaded: 3 }
+    - "¿Qué fracción está sombreada?"
+  options:
+    - { key: A, text: "$\\dfrac{3}{5}$", correct: true, error: "none" }
+    - { key: B, text: "$\\dfrac{5}{3}$", correct: false, error: "inverted-fraction" }
+    - { key: C, text: "$\\dfrac{2}{5}$", correct: false, error: "counted-unshaded" }
+    - { key: D, text: "$\\dfrac{3}{8}$", correct: false, error: "added-parts" }
+  answer: { canonical: "3/5", display: "$\\dfrac{3}{5}$" }
+  solution:
+    - "Hay 3 partes sombreadas de 5 en total."
+    - "La fracción es $\\dfrac{3}{5}$."
+  check: { kind: rational-equal, value: "3/5" }
