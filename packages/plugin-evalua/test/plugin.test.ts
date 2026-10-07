@@ -38,16 +38,20 @@ describe("plugin entry", () => {
     });
   });
 
-  it("registers the Phase 1 tools and commands and no resource directories", async () => {
+  it("registers the Phase 1 tools and commands and the resource directories", async () => {
     const h = await harness();
     expect([...h.tools.keys()].sort()).toEqual([
       "evalua_answer",
+      "evalua_check",
+      "evalua_kb",
       "evalua_profile",
       "evalua_status",
     ]);
-    expect([...h.commands.keys()].sort()).toEqual(["init", "new", "status"]);
-    expect(h.resources).toEqual({ agents: 0, skills: 0 });
+    expect([...h.commands.keys()].sort()).toEqual(["doctor", "init", "kb", "new", "status"]);
+    expect(h.resources).toEqual({ agents: 1, skills: 1 });
     expect(h.tools.get("evalua_status")?.effect).toBe("read");
+    expect(h.tools.get("evalua_kb")?.effect).toBe("read");
+    expect(h.tools.get("evalua_check")?.effect).toBe("read");
     expect(h.tools.get("evalua_profile")?.effect).toBe("write");
     expect(h.tools.get("evalua_answer")?.effect).toBe("write");
   });
@@ -320,5 +324,23 @@ describe("evalua_profile", () => {
     const result = await h.tool("evalua_profile", { action: "set", subject: "Algebra" });
     expect(result.isError).toBe(true);
     expect(result.text).toMatch(/teacherName/);
+  });
+});
+
+describe("knowledge tools", () => {
+  it("evalua_kb lists the packs, evalua_check returns a clean report and doctor reports", async () => {
+    const h = await harness();
+    const kb = JSON.parse((await h.tool("evalua_kb")).text) as {
+      ok: boolean;
+      packs: { id: string; topics: string[] }[];
+    };
+    expect(kb.ok).toBe(true);
+    expect(kb.packs.map((pack) => pack.id)).toEqual(["algebra", "basic-math"]);
+    expect(kb.packs[1]?.topics).toContain("basic-math/fractions");
+    const check = JSON.parse((await h.tool("evalua_check")).text) as { ok: boolean };
+    expect(check.ok).toBe(true);
+    expect(await h.run("kb")).toContain("basic-math");
+    expect(await h.run("doctor")).toMatch(/Knowledge base: ok/);
+    expect(await h.run("doctor")).toMatch(/Browser:/);
   });
 });

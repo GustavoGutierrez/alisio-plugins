@@ -1,5 +1,6 @@
 import { type CommandContext, definePlugin, type PluginAPI, type ToolResult } from "@alisio/sdk";
 import { type CoordinatorOptions, EvaluaCoordinator } from "./coordinator.js";
+import { resourcePaths } from "./resources.js";
 import { VERSION } from "./version.js";
 
 export {
@@ -195,6 +196,8 @@ export function registerEvalua(
   options: CoordinatorOptions = {},
 ): EvaluaCoordinator {
   const coordinator = new EvaluaCoordinator(api, options);
+  api.resources.agents(resourcePaths.agents);
+  api.resources.skills(resourcePaths.skills);
   const register = (
     name: string,
     description: string,
@@ -223,6 +226,18 @@ export function registerEvalua(
     "Show the profile, pending interview round, draft and exam folders",
     "",
     coordinator.status.bind(coordinator),
+  );
+  register(
+    "kb",
+    "List the knowledge base: packs, topics, levels and any validation findings",
+    "",
+    coordinator.kbCommand.bind(coordinator),
+  );
+  register(
+    "doctor",
+    "Report the knowledge base health and the available print browser",
+    "",
+    coordinator.doctor.bind(coordinator),
   );
 
   api.tools.register({
@@ -321,6 +336,28 @@ export function registerEvalua(
       } catch (error) {
         return text(error instanceof Error ? error.message : "evalua_status failed", true);
       }
+    },
+  });
+  api.tools.register({
+    name: "evalua_kb",
+    description:
+      "List the knowledge base as JSON: the packs, their topics, their levels and any validation findings. Read-only; use it to see what the interview can offer.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    effect: "read",
+    async execute(_input, context) {
+      const result = await coordinator.kbTool(context.workspace);
+      return text(result.text, result.isError);
+    },
+  });
+  api.tools.register({
+    name: "evalua_check",
+    description:
+      "Run the deterministic knowledge-base checks (EVL-KB-001..007) and return the report as JSON. Read-only; errors block the next phase.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    effect: "read",
+    async execute(_input, context) {
+      const result = await coordinator.checkTool(context.workspace);
+      return text(result.text, result.isError);
     },
   });
   return coordinator;

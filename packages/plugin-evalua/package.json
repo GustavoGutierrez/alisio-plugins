@@ -30,6 +30,7 @@
   },
   "files": [
     "dist",
+    ".agents",
     "knowledge",
     "templates",
     "README.md",

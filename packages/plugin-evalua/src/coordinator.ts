@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import type { PluginAPI } from "@alisio/sdk";
+import { detectChrome } from "./chrome/detect.js";
 import { type Clock, systemClock } from "./clock.js";
 import { familyIds } from "./families/index.js";
 import {
@@ -313,6 +314,77 @@ export class EvaluaCoordinator {
     } catch (error) {
       return { text: (error as Error).message, isError: true };
     }
+  }
+
+  // ---- knowledge and doctor tools ----------------------------------------------------------
+
+  private async loadKnowledgeFor(workspace: string) {
+    const state = (await readState(workspace)) ?? emptyState(DEFAULT_ROOT, this.now());
+    const base = await this.rootOf(workspace, state);
+    return loadKnowledge({
+      shippedDir: shippedKnowledgeDir(),
+      workspaceDirs: [join(base, "knowledge-packs")],
+      families: familyIds,
+    });
+  }
+
+  /** `evalua_kb`: list packs, topics and levels from the knowledge base. */
+  async kbTool(workspace: string): Promise<{ text: string; isError: boolean }> {
+    try {
+      const knowledge = await this.loadKnowledgeFor(workspace);
+      const summary = {
+        ok: knowledge.report.ok,
+        packs: knowledge.packs.map((pack) => ({
+          id: pack.id,
+          code: pack.code,
+          layer: pack.layer,
+          levels: Object.keys(pack.levels),
+          topics: pack.topics.map((topic) => topic.fullId),
+        })),
+        findings: knowledge.report.results,
+      };
+      return { text: JSON.stringify(summary, null, 2), isError: false };
+    } catch (error) {
+      return { text: error instanceof Error ? error.message : "evalua_kb failed", isError: true };
+    }
+  }
+
+  /** `/evalua:kb`: print the knowledge base summary. */
+  async kbCommand(_args: string, sessionId?: string): Promise<string> {
+    const workspace = this.workspace(sessionId);
+    const result = await this.kbTool(workspace);
+    return result.text;
+  }
+
+  /** `evalua_check`: run the deterministic knowledge-base checks and return the report. */
+  async checkTool(workspace: string): Promise<{ text: string; isError: boolean }> {
+    try {
+      const knowledge = await this.loadKnowledgeFor(workspace);
+      return { text: JSON.stringify(knowledge.report, null, 2), isError: false };
+    } catch (error) {
+      return {
+        text: error instanceof Error ? error.message : "evalua_check failed",
+        isError: true,
+      };
+    }
+  }
+
+  /** `/evalua:doctor`: report the knowledge base and the available print browser. */
+  async doctor(_args: string, sessionId?: string): Promise<string> {
+    const workspace = this.workspace(sessionId);
+    const detection = await detectChrome();
+    const knowledge = await this.loadKnowledgeFor(workspace);
+    const errors = knowledge.report.results.filter(
+      (finding) => finding.severity === "error",
+    ).length;
+    return [
+      `Knowledge base: ${knowledge.report.ok ? "ok" : `${errors} error(s)`}`,
+      `Packs: ${knowledge.packs.map((pack) => pack.id).join(", ") || "none"}`,
+      `Browser: ${detection.path ?? "not found"} (${detection.source})`,
+      detection.path === undefined
+        ? "PDFs need a Chrome-family browser (Chrome, Chromium, Brave, Edge, Vivaldi or Opera); the HTML output still works."
+        : "PDF output is available.",
+    ].join("\n");
   }
 
   // ---- interview engine -------------------------------------------------------------------
