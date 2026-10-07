@@ -1,0 +1,44 @@
+schemaVersion: 1
+language: es
+labels:
+  year: "Año lectivo"
+  subject: "Asignatura"
+  period: "Periodo"
+  student: "Estudiante"
+  grade: "Grado"
+  date: "Fecha"
+  nota: "Nota / Calificación"
+  themeLabel: "TEMA"
+  answerSheet: "Hoja de respuestas — uso docente"
+  solutionBook: "Solucionario completo"
+  rubric: "Rúbrica de calificación"
+  points: "Puntos"
+  totalPoints: "Total de puntos"
+  ref: "Ref."
+  indexByRef: "Índice por referencia"
+  misconception: "Error asociado"
+  needsTeacherReview: "Requiere revisión del docente"
+  blueprintSummary: "Resumen de la tabla de especificaciones"
+sections:
+  single_choice: "Selección única"
+  multiple_choice: "Selección múltiple"
+  open: "Preguntas abiertas"
+  practice: "Ejercicios de práctica"
+intro:
+  base: "Este examen cuenta con {n} preguntas. El tiempo máximo para resolverlo es de {duration}, a {instrument}."
+  procedure: "Los ejercicios sin procedimiento no son válidos."
+  selection: "Marca con cuidado las opciones de selección."
+  clarity: "Resuelve de forma clara."
+  calculator: "Se permite el uso de calculadora."
+duration:
+  hours: "{n} horas"
+  minutes: "{n} minutos"
+instrument:
+  pencil: "lápiz"
+  pen: "bolígrafo"
+  any: "cualquier instrumento"
+rubric:
+  setup: "Planteamiento correcto"
+  procedure: "Procedimiento completo"
+  result: "Resultado correcto"
+  units: "Unidades y notación"

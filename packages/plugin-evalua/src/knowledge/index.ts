@@ -1,6 +1,11 @@
 export { createTopicCatalog } from "./catalog.js";
 export { evaluateItemCheck } from "./check-item.js";
-export { shippedKnowledgeDir, shippedQuotesDir, shippedThemesDir } from "./package.js";
+export {
+  shippedKnowledgeDir,
+  shippedLocalesDir,
+  shippedQuotesDir,
+  shippedThemesDir,
+} from "./package.js";
 export {
   defaultKnowledgeLimits,
   type KnowledgeLimits,

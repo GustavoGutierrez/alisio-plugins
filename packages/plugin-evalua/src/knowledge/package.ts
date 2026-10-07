@@ -17,3 +17,8 @@ export function shippedQuotesDir(): string {
 export function shippedThemesDir(): string {
   return fileURLToPath(new URL("../../templates/themes/", import.meta.url));
 }
+
+/** The shipped locale directory (`knowledge/locales`). */
+export function shippedLocalesDir(): string {
+  return fileURLToPath(new URL("../../knowledge/locales/", import.meta.url));
+}

@@ -42,6 +42,7 @@ export {
   loadKnowledge,
   type PackMeta,
   shippedKnowledgeDir,
+  shippedLocalesDir,
   shippedQuotesDir,
   shippedThemesDir,
   type Topic,
