@@ -18,3 +18,63 @@
   source: "Atribuido a Gauss; citado en Sartorius, Gauss zum Gedächtniss (1856)."
   tags: [knowledge, wisdom]
   language: es
+- id: roger-bacon-door-key
+  text: "Las matemáticas son la puerta y la llave de las ciencias."
+  author: "Roger Bacon"
+  source: "Roger Bacon, Opus Majus (1267)."
+  tags: [knowledge, logic]
+  language: es
+- id: roger-bacon-knowledge
+  text: "Las cosas de este mundo no se pueden conocer sin el conocimiento de las matemáticas."
+  author: "Roger Bacon"
+  source: "Roger Bacon, Opus Majus, parte 4 (1267)."
+  tags: [knowledge, wisdom]
+  language: es
+- id: russell-supreme-beauty
+  text: "Las matemáticas poseen no solo la verdad, sino cierta belleza suprema: una belleza fría y austera, como la de una escultura."
+  author: "Bertrand Russell"
+  source: "Bertrand Russell, Mística y lógica (1918)."
+  tags: [wisdom, knowledge]
+  language: es
+- id: plato-academy-door
+  text: "Que no entre quien no sepa geometría."
+  author: "Platón"
+  source: "Inscripción en la Academia de Platón, recogida por la tradición."
+  tags: [knowledge, logic]
+  language: es
+- id: galileo-measure
+  text: "Medid lo que sea medible, y haced medible lo que no lo sea."
+  author: "Galileo Galilei"
+  source: "Atribuida a Galileo Galilei; citada por Hermann Weyl."
+  tags: [logic, diligence]
+  language: es
+- id: cantor-freedom
+  text: "La esencia de la matemática está en su libertad."
+  author: "Georg Cantor"
+  source: "Georg Cantor, Grundlagen einer allgemeinen Mannigfaltigkeitslehre (1883)."
+  tags: [wisdom, logic]
+  language: es
+- id: hardy-patterns
+  text: "Un matemático, como un pintor o un poeta, es un hacedor de patrones."
+  author: "G. H. Hardy"
+  source: "G. H. Hardy, Apología de un matemático (1940)."
+  tags: [logic, wisdom]
+  language: es
+- id: poincare-same-name
+  text: "Las matemáticas son el arte de dar el mismo nombre a cosas diferentes."
+  author: "Henri Poincaré"
+  source: "Henri Poincaré, Ciencia y método (1908)."
+  tags: [logic, knowledge]
+  language: es
+- id: hilbert-we-will-know
+  text: "Debemos saber; sabremos."
+  author: "David Hilbert"
+  source: "David Hilbert, discurso de clausura del congreso de Königsberg (1930)."
+  tags: [diligence, perseverance]
+  language: es
+- id: descartes-divide
+  text: "Dividir cada dificultad en tantas partes como sea posible para resolverla mejor."
+  author: "René Descartes"
+  source: "René Descartes, Discurso del método, Parte II (1637)."
+  tags: [logic, diligence]
+  language: es

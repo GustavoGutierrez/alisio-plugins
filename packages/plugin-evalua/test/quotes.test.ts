@@ -32,6 +32,15 @@ describe("quotes catalogue", () => {
       expect(entry.source).toContain("spaRV1909");
     }
   });
+
+  it("ships thirteen sourced famous quotes for basic math and algebra", () => {
+    const quotes = entries.filter((entry) => entry.kind === "quote");
+    expect(quotes).toHaveLength(13);
+    for (const entry of quotes) {
+      expect(entry.author).toBeTruthy();
+      expect(entry.source.trim().length).toBeGreaterThan(0);
+    }
+  });
 });
 
 describe("selectClosing", () => {

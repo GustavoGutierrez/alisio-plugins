@@ -573,8 +573,9 @@ horas", "90 minutos"), ordinals for grades, option letters. Adding a language is
 - Candidate Bible references to transcribe and verify: Proverbios 2:6, 3:13, 4:7, Eclesiastés 9:10,
   Colosenses 3:23, Santiago 1:5.
 - The agents may propose pinning but may not author text outside the catalogue or the teacher's own.
-- Shipped v1 catalogue: three sourced famous quotes and the twenty-two Reina-Valera 1909 verses from
-  §9.4, transcribed verbatim from eBible.org's public-domain `spaRV1909` release (source recorded per
+- Shipped v1 catalogue: thirteen sourced famous quotes and the twenty-two Reina-Valera 1909 verses
+  from §9.4, transcribed verbatim from eBible.org's public-domain `spaRV1909` release (source
+  recorded per
   entry). A workspace quotes layer (`<root>/quotes/*.yaml`, precedence workspace > shipped) lets a
   teacher add their own closing texts — including a copyrighted version they are licensed to use —
   without the package shipping them.
@@ -1123,8 +1124,8 @@ and passed on the rerun.
 - `src/checks.ts`: `EVL-EXM-001..004`.
 - `src/quotes.ts`: the closing catalogue loader, a deterministic tag-overlap selection with a
   `sha256(examId + id)` tie-break, teacher text and pinned ids, and a **workspace quotes layer**
-  (`loadQuotesLayers`, precedence workspace > shipped). Shipped: three sourced famous quotes and 22
-  Reina-Valera 1909 verses transcribed from eBible.org's public-domain `spaRV1909` release.
+  (`loadQuotesLayers`, precedence workspace > shipped). Shipped: thirteen sourced famous quotes and
+  22 Reina-Valera 1909 verses transcribed from eBible.org's public-domain `spaRV1909` release.
 
 **Decisions and deviations**
 
