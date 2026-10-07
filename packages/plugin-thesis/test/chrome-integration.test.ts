@@ -184,6 +184,11 @@ describe.skipIf(!chromeAvailable)("Chrome fallback PDF of the sample-es thesis (
   );
 
   it("refuses PDF/A (needs Typst) and leaves no Chrome profile behind", async () => {
+    // Snapshot unrelated leftovers so a stale profile from an interrupted run cannot poison this
+    // assertion; only a profile this build would create counts.
+    const before = new Set(
+      (await readdir(tmpdir())).filter((name) => name.startsWith("alisio-thesis-chrome-")),
+    );
     const root = await sampleThesis();
     const outcome = await buildThesis({
       root,
@@ -194,8 +199,8 @@ describe.skipIf(!chromeAvailable)("Chrome fallback PDF of the sample-es thesis (
       registry: createDefaultRegistry(),
     } as never);
     expect(outcome.ok).toBe(false);
-    const leftovers = (await readdir(tmpdir())).filter((name) =>
-      name.startsWith("alisio-thesis-chrome-"),
+    const leftovers = (await readdir(tmpdir())).filter(
+      (name) => name.startsWith("alisio-thesis-chrome-") && !before.has(name),
     );
     expect(leftovers).toEqual([]);
   }, 60_000);
