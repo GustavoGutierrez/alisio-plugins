@@ -21,6 +21,8 @@ export {
   generateExam,
   MAX_SLOT_ATTEMPTS,
 } from "./generate.js";
+export { type CssOptions, renderCss } from "./html/css.js";
+export { type EmitOptions, emitDocument, type MathRenderer } from "./html/emit.js";
 export {
   acceptAnswers,
   buildDraft,
@@ -30,6 +32,14 @@ export {
   parseTimeAnswer,
   splitItemTypes,
 } from "./interview.js";
+export {
+  checkKatexItem,
+  evaluaMathRenderer,
+  katexCss,
+  katexVendorPath,
+  type MathResult,
+  renderMath,
+} from "./katex.js";
 export {
   type CheckFinding,
   type CheckReport,
@@ -55,6 +65,7 @@ export {
   presetById,
   withinFloors,
 } from "./layout/presets.js";
+export { type Locale, type LocaleCatalogue, loadLocale, parseLocale } from "./locales.js";
 export {
   type Block,
   escapeHtml,
@@ -74,6 +85,18 @@ export {
   solveLinear,
   solveQuadratic,
 } from "./math/solvers.js";
+export {
+  buildAnswerSheetModel,
+  buildExamModel,
+  buildIntro,
+  buildRubricModel,
+  buildSolutionBookModel,
+  type DocumentModel,
+  type ExamModel,
+  type ExamSpecLike,
+  type IntroResult,
+  type ProfileLike,
+} from "./model.js";
 export {
   copyLogo,
   detectImageKind,

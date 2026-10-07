@@ -21,6 +21,8 @@ export interface EmitOptions {
   paper: "letter" | "a4";
   columns: 1 | 2;
   math: MathRenderer;
+  /** Extra CSS appended after the theme stylesheet (e.g. the inlined KaTeX CSS). */
+  extraCss?: string;
 }
 
 function renderInline(tokens: readonly InlineToken[], math: MathRenderer): string {
@@ -181,6 +183,7 @@ export function emitDocument(model: DocumentModel, options: EmitOptions): string
 <title>${escapeHtml(title)}</title>
 <style>
 ${css}
+${options.extraCss ?? ""}
 </style>
 </head>
 <body class="${bodyClass}">
