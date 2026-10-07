@@ -115,11 +115,14 @@ export interface PrintRequest {
   executable: string;
   html: string;
   timeoutMs?: number;
+  /** When given, evaluated in the page before printing; its value is returned as `audit`. */
+  auditScript?: string;
 }
 
 export interface PrintResult {
   pdf: Uint8Array;
   engineVersion: string;
+  audit?: unknown;
 }
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
@@ -190,6 +193,19 @@ export async function printHtmlToPdf(request: PrintRequest): Promise<PrintResult
     });
     await client.send("Page.navigate", { url: pathToFileURL(pagePath).href }, sessionId);
     await withTimeout(loaded, timeoutMs, "Page.loadEventFired");
+    let audit: unknown;
+    if (request.auditScript !== undefined) {
+      const evaluated = (await withTimeout(
+        client.send(
+          "Runtime.evaluate",
+          { expression: request.auditScript, returnByValue: true },
+          sessionId,
+        ),
+        timeoutMs,
+        "Runtime.evaluate",
+      )) as { result?: { value?: unknown } };
+      audit = evaluated.result?.value;
+    }
     const printed = (await withTimeout(
       client.send(
         "Page.printToPDF",
@@ -202,6 +218,7 @@ export async function printHtmlToPdf(request: PrintRequest): Promise<PrintResult
     return {
       pdf: Buffer.from(printed.data, "base64"),
       engineVersion: version.product ?? "unknown",
+      ...(audit === undefined ? {} : { audit }),
     };
   } finally {
     await cleanup();

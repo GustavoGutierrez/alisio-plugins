@@ -85,6 +85,7 @@ export {
   shippedThemesDir,
   type Topic,
 } from "./knowledge/index.js";
+export { type AuditReport, auditFindings, auditScript, parseAuditReport } from "./layout/audit.js";
 export {
   type DensityPreset,
   densityLadder,

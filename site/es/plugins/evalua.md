@@ -24,10 +24,14 @@ páginas que se mide, nunca se adivina.
 ## Instalación
 
 ```sh
-alisio plugins install @alisio/plugin-evalua
+alisio install npm:@alisio/plugin-evalua
 ```
 
 Requiere Node 22.16 o superior y `@alisio/sdk` `>=0.3.0 <0.7.0`.
+
+Para actualizar los plugins instalados: `alisio install --update` (todos) o
+`alisio install npm:@alisio/plugin-evalua --update` (solo este). Para desarrollo local,
+`npm install --save-dev @alisio/plugin-evalua` y luego `alisio --plugin @alisio/plugin-evalua`.
 
 ## Cómo se usa
 
@@ -108,7 +112,9 @@ alisio-evalua doctor   # salud de la base de conocimiento y navegador
 - **Renderizado y ajuste.** Un modelo de documento tipado alimenta un emisor HTML autocontenido
   (KaTeX en el servidor, incrustado, sin red) y `printToPDF` de la familia Chrome; una escalera de
   densidad mide páginas reales y elige el preset más legible que cumpla el presupuesto, fallando de
-  forma explícita con `EVL-LAY-001` cuando no puede.
+  forma explícita con `EVL-LAY-001` cuando no puede. Una auditoría in-page revisa desbordamiento
+  horizontal, cajas solapadas, texto bajo el piso, ajuste de fórmulas y espacio de respuesta
+  (`EVL-LAY-002`, `EVL-LAY-004`).
 - **Temas.** Se envían tres temas por datos (`classic`, `blue`, `dark`), elegidos por
   `exam.yaml.template` y extensibles desde `templates/themes//`.
 - **Textos de cierre.** Un catálogo con fuente (frases célebres y versículos de la Reina-Valera 1909

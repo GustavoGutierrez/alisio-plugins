@@ -23,10 +23,14 @@ answers and distractors computed by code and a page budget that is measured, nev
 ## Install
 
 ```sh
-alisio plugins install @alisio/plugin-evalua
+alisio install npm:@alisio/plugin-evalua
 ```
 
 Requires Node 22.16 or newer and `@alisio/sdk` `>=0.3.0 <0.7.0`.
+
+To refresh installed plugins: `alisio install --update` (all of them) or
+`alisio install npm:@alisio/plugin-evalua --update` (this one). For local development,
+`npm install --save-dev @alisio/plugin-evalua` then `alisio --plugin @alisio/plugin-evalua`.
 
 ## How to use it
 
@@ -104,7 +108,8 @@ alisio-evalua doctor   # knowledge health and the print browser
 - **Rendering and fit.** A typed document model feeds a self-contained HTML emitter (server-side
   KaTeX inlined, no network) and Chrome-family `printToPDF`; a density ladder measures real page
   counts and picks the most legible preset that meets the budget, failing explicitly with
-  `EVL-LAY-001` when it cannot.
+  `EVL-LAY-001` when it cannot. An in-page audit checks horizontal overflow, overlapping boxes,
+  text below the floor, formula fit and answer space (`EVL-LAY-002`, `EVL-LAY-004`).
 - **Themes.** Three data-driven themes ship (`classic`, `blue`, `dark`), selected by
   `exam.yaml.template` and extensible from `templates/themes//`.
 - **Closing texts.** A sourced catalogue (famous quotes and public-domain Reina-Valera 1909 verses)

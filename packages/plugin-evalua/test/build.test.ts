@@ -185,4 +185,21 @@ describe("buildExam", () => {
     const files = await readdir(outDir);
     expect(files.filter((name) => name.endsWith(".pdf"))).toHaveLength(0);
   });
+
+  it("reports EVL-LAY-002 when the in-page audit finds an overflow", async () => {
+    const outDir = await scratchDir();
+    const auditing: PdfPrinter = async () => ({
+      pdf: syntheticPdf(2),
+      engineVersion: "Chrome/test",
+      audit: { overflow: ["item"], overlap: [], minSize: [], mathScaled: [], answerSpace: [] },
+    });
+    const result = await buildExam({
+      ...renderInput(),
+      executable: "/scratch/p/chrome",
+      outDir,
+      maxPages: "auto",
+      printer: auditing,
+    });
+    expect(result.findings.map((finding) => finding.id)).toContain("EVL-LAY-002");
+  });
 });

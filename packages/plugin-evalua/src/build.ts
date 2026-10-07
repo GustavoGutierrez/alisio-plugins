@@ -6,7 +6,8 @@ import type { ExamItem } from "./generate.js";
 import { emitDocument } from "./html/emit.js";
 import { evaluaMathRenderer, katexCss } from "./katex.js";
 import type { CheckFinding } from "./knowledge/report.js";
-import { type DensityPreset, densityLadder } from "./layout/presets.js";
+import { auditFindings, auditScript, parseAuditReport } from "./layout/audit.js";
+import { type DensityPreset, densityLadder, legibilityFloors } from "./layout/presets.js";
 import {
   buildLayoutReport,
   choosePreset,
@@ -28,7 +29,9 @@ import type { Theme } from "./themes.js";
 
 /** Builds the four documents and fits the page budget (spec 10.1, 11.3). */
 
-export type PdfPrinter = (html: string) => Promise<{ pdf: Uint8Array; engineVersion: string }>;
+export type PdfPrinter = (
+  html: string,
+) => Promise<{ pdf: Uint8Array; engineVersion: string; audit?: unknown }>;
 
 export interface RenderInput {
   spec: ExamSpecLike;
@@ -119,6 +122,7 @@ export interface FitInput {
 export interface FitOutput {
   chosen: FitResult;
   pageCounts: Map<string, number>;
+  audits: Map<string, unknown>;
   engineVersion?: string;
 }
 
@@ -126,15 +130,18 @@ export interface FitOutput {
 export async function fitDocuments(input: FitInput): Promise<FitOutput> {
   const ladder = input.ladder ?? densityLadder;
   const pageCounts = new Map<string, number>();
+  const audits = new Map<string, unknown>();
   let engineVersion: string | undefined;
   for (const preset of ladder) {
     const result = await input.printer(input.htmlForPreset(preset));
     engineVersion ??= result.engineVersion;
     pageCounts.set(preset.id, countPdfPages(result.pdf).leafPages);
+    if (result.audit !== undefined) audits.set(preset.id, result.audit);
   }
   return {
     chosen: choosePreset({ pageCounts, maxPages: input.maxPages, ladder }),
     pageCounts,
+    audits,
     ...(engineVersion === undefined ? {} : { engineVersion }),
   };
 }
@@ -198,8 +205,13 @@ export async function buildExam(input: BuildInput): Promise<BuildOutput> {
       printHtmlToPdf({
         executable: input.executable,
         html,
+        auditScript: auditScript(legibilityFloors),
         ...(input.timeoutMs === undefined ? {} : { timeoutMs: input.timeoutMs }),
-      }).then((result) => ({ pdf: result.pdf, engineVersion: result.engineVersion })));
+      }).then((result) => ({
+        pdf: result.pdf,
+        engineVersion: result.engineVersion,
+        ...(result.audit === undefined ? {} : { audit: result.audit }),
+      })));
 
   const fit = await fitDocuments({
     htmlForPreset: (preset) => renderDocuments(input, preset).exam,
@@ -216,6 +228,11 @@ export async function buildExam(input: BuildInput): Promise<BuildOutput> {
   }
 
   const preset = fit.chosen.preset ?? defaultDensity();
+  const chosenAudit = fit.chosen.preset ? fit.audits.get(fit.chosen.preset.id) : undefined;
+  if (chosenAudit !== undefined) {
+    const report = parseAuditReport(chosenAudit);
+    if (report) findings.push(...auditFindings(report));
+  }
   const documents = renderDocuments(input, preset);
   findings.push(...documents.findings);
 
