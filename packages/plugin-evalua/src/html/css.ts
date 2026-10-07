@@ -27,6 +27,7 @@ export function renderCss({ theme, density, paper, columns }: CssOptions): strin
   --ref: ${token("refColor", "#6b6b6b")};
   --nota-border: ${token("notaBorder", "#1a1a1a")};
   --info-border: ${token("infoBorder", "#D2D2D2")};
+  --closing-bg: ${token("closingBg", "#D2D2D2")};
   --badge-bg: ${token("badgeBg", "#000000")};
   --badge-text: ${token("badgeText", "#ffffff")};
   --header-bg: ${token("headerBg", "transparent")};
@@ -61,7 +62,7 @@ body {
 .info-table .nota { width: 26%; text-align: center; vertical-align: middle; }
 .info-table .nota-label { display: block; font-family: var(--heading-font); font-weight: 700; }
 .info-table .nota-box { display: block; height: 15mm; border: 1.5px solid var(--nota-border); margin-top: 1mm; }
-.intro { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm; margin: 3mm 0; text-align: justify; }
+.intro { border: 1px solid var(--rule); border-radius: 16px; padding: 2.5mm 3mm; margin: 3mm 1mm; text-align: justify; }
 .section-title { font-family: var(--heading-font); font-weight: 700; border: 1px solid var(--rule); border-radius: 6px; padding: 1.2mm 2.5mm; margin: var(--item-gap) 0 1.5mm; break-after: avoid; }
 .item { margin-bottom: var(--item-gap); break-inside: avoid; }
 .item .stem { display: block; }
@@ -77,7 +78,7 @@ table.grid { border-collapse: collapse; margin: 1mm 0; }
 table.grid th, table.grid td { border: 1px solid var(--rule); padding: 1mm 2mm; }
 .figure { margin: 2mm 0; text-align: center; break-inside: avoid; }
 .figure .figure-svg { max-width: 100%; height: auto; }
-.closing { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm; margin-top: 6mm; text-align: center; font-style: italic; break-inside: avoid; }
+.closing { border: 1px solid var(--rule); border-radius: 16px; padding: 2.5mm 3mm; margin: 3mm 1mm; background-color: var(--closing-bg); text-align: center; font-style: italic; break-inside: avoid; }
 .closing .author { display: block; margin-top: 1mm; font-style: normal; font-size: 0.9em; }
 .sheet-table { width: 100%; border-collapse: collapse; }
 .sheet-table th, .sheet-table td { border: 1px solid var(--rule); padding: 1mm 2mm; }

@@ -325,12 +325,13 @@ describe("emitDocument", () => {
     // The intro and the closing sit inside their own rounded frame.
     expect(html).toContain('<p class="intro">');
     expect(html).toContain(
-      ".intro { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm;",
+      ".intro { border: 1px solid var(--rule); border-radius: 16px; padding: 2.5mm 3mm; margin: 3mm 1mm; text-align: justify; }",
     );
     expect(html).toContain('<div class="closing">La matemática es bella.');
     expect(html).toContain(
-      ".closing { border: 1px solid var(--rule); border-radius: 8px; padding: 2.5mm 3mm;",
+      ".closing { border: 1px solid var(--rule); border-radius: 16px; padding: 2.5mm 3mm; margin: 3mm 1mm; background-color: var(--closing-bg);",
     );
+    expect(html).toContain("--closing-bg: #D2D2D2;");
   });
 
   it("escapes item and intro text so content cannot inject markup", () => {

@@ -15,6 +15,7 @@ tokens:
   refColor: "#4d4d4d"
   notaBorder: "#111111"
   infoBorder: "#D2D2D2"
+  closingBg: "#D2D2D2"
   badgeBg: "#000000"
   badgeText: "#ffffff"
   headerBg: "#111111"
