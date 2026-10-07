@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-laya",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Local Laya decision provider for Alisio: fast select, boolean and ordinal decisions from a managed, isolated Laya server, with explicit-consent setup and no data leaving the machine.",
   "keywords": [
     "alisio-plugin",

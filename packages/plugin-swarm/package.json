@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-swarm",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Runs a handoff-driven swarm of specialised agents, each in its own git worktree, with durable handoffs, deterministic quality gates and a human approval gate.",
   "keywords": [
     "alisio-plugin",

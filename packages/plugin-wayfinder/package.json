@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-wayfinder",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Coordinates a resumable specification-driven development workflow by delegating bounded phases to fresh Alisio child sessions and persisting validated artifacts in the workspace.",
   "keywords": [
     "alisio-plugin",

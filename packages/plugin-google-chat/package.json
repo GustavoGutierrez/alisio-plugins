@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-google-chat",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Google Chat tools for Alisio with two independent, fail-closed authentication modes, read-first defaults, and untrusted-content framing.",
   "keywords": [
     "alisio-plugin",
