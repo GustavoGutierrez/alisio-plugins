@@ -28,6 +28,9 @@
       "import": "./dist/index.js"
     }
   },
+  "bin": {
+    "alisio-evalua": "dist/cli.js"
+  },
   "files": [
     "dist",
     ".agents",
