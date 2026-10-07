@@ -89,6 +89,22 @@ describe("generateExam", () => {
     expect(canonicalJson(a.items)).not.toBe(canonicalJson(c.items));
   });
 
+  it("uses bank items (their reference is assigned at freeze, not required by verifyItem)", () => {
+    const bankOnly = buildBlueprint({
+      topics: ["basic-math/natural-numbers"],
+      level: "basico" as const,
+      calibration,
+      itemTypes: { ...emptyTypes(), single_choice: 2 },
+    });
+    const result = generate(bankOnly, "bank");
+    expect(result.findings).toEqual([]);
+    expect(result.items).toHaveLength(2);
+    for (const item of result.items) {
+      expect(item.source).toBe("bank");
+      expect(item.ref).toMatch(/^[A-Z]{2,4}-[0-9A-F]{4,6}$/);
+    }
+  });
+
   it("reports EVL-ITM-009 when no source can fill a type", () => {
     const result = generate(makeBlueprint({ ...emptyTypes(), multiple_choice: 2 }), "e01");
     expect(result.findings.map((finding) => finding.id)).toContain("EVL-ITM-009");

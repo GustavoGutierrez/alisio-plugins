@@ -9,6 +9,14 @@
   into `exam.yaml`; and `generateExam` applies them to any family while the answer and the distractors
   stay computed by code. The `evl-coordinator` and `evl-item-author` agents now propose the wording for
   the questionnaire they determined, so any exam topic can read as the questions the teacher wants.
+- Geometry family: the `geometry` family now generates figure-based items (area and perimeter of
+  squares, rectangles and equilateral triangles, and counting polygon sides), and the `basic-math`
+  geometry topic uses it, so a geometry exam generates items with SVG figures out of the box.
+- Fix: `verifyItem` no longer required a reference on a not-yet-frozen item, so static bank items were
+  all rejected (their reference is assigned at freeze and validated at the exam level, `EVL-EXM-002`);
+  bank-backed topics now generate again. Exams may be large: the interview accepts up to 100 questions,
+  a bank of up to 400 items and up to 8 variants, and the fitter handles any page count (1 to 20 or the
+  fewest legible pages).
 
 ## 0.4.0
 

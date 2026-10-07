@@ -4,6 +4,7 @@ import { factoring } from "./factoring.js";
 import { fractionOps } from "./fraction-ops.js";
 import { fractionSimplify } from "./fraction-simplify.js";
 import { gcdLcm } from "./gcd-lcm.js";
+import { geometry } from "./geometry.js";
 import { integerOps } from "./integer-ops.js";
 import { likeTerms } from "./like-terms.js";
 import { linearEquation } from "./linear-equation.js";
@@ -50,6 +51,7 @@ export const families: Record<string, Family> = {
   [quadraticEquation.id]: quadraticEquation,
   [linearFunction.id]: linearFunction,
   [wordProblemLinear.id]: wordProblemLinear,
+  [geometry.id]: geometry,
 };
 
 export const familyIds: readonly string[] = Object.keys(families).sort();

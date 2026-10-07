@@ -20,4 +20,5 @@ supports:
   open: true
   practice: false
 sources:
+  - { kind: family, family: geometry, levels: [basico, intermedio, avanzado, genio] }
   - { kind: bank, file: items/geometry.yaml }

@@ -110,8 +110,10 @@ export function verifyItem(item: ExamItem): CheckFinding[] {
   if (item.solution.length === 0 || item.answer.canonical === "") {
     findings.push(finding("EVL-ITM-008", subject, "missing solution steps or answer"));
   }
-  if (item.ref === "" || item.level === undefined) {
-    findings.push(finding("EVL-ITM-008", subject, "missing reference or level"));
+  // The reference is assigned when the item is frozen (see `place` in generate) and is validated at
+  // the exam level (`EVL-EXM-002`), so `verifyItem` must not require it on a not-yet-placed item.
+  if (item.level === undefined) {
+    findings.push(finding("EVL-ITM-008", subject, "missing level"));
   }
   if (item.source === "authored" && item.check.kind === "none") {
     findings.push(finding("EVL-ITM-010", subject, "authored item without a machine-checkable key"));
