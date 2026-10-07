@@ -43,8 +43,26 @@ export {
   type PackMeta,
   shippedKnowledgeDir,
   shippedQuotesDir,
+  shippedThemesDir,
   type Topic,
 } from "./knowledge/index.js";
+export {
+  type DensityPreset,
+  densityLadder,
+  type HeaderStyle,
+  legibilityFloors,
+  presetById,
+  withinFloors,
+} from "./layout/presets.js";
+export {
+  type Block,
+  escapeHtml,
+  type InlineToken,
+  type MarkupLine,
+  parseMarkup,
+  type TableBlock,
+  tokenizeInline,
+} from "./markup.js";
 export { latexPoly, latexRational } from "./math/latex.js";
 export { Poly } from "./math/poly.js";
 export { Rational } from "./math/rational.js";
@@ -86,6 +104,15 @@ export {
   validateState,
   writeState,
 } from "./storage.js";
+export {
+  DOC_THEME,
+  loadThemeLayers,
+  parseThemeFile,
+  resolveTheme,
+  type Theme,
+  type ThemeLayer,
+  type ThemesCatalogue,
+} from "./themes.js";
 export * from "./types.js";
 export { checkKeyDistribution, verifyDraft, verifyItem } from "./verify.js";
 export {

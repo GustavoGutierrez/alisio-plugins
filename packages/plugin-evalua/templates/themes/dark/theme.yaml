@@ -1,0 +1,19 @@
+# Dark theme: high-contrast, print-safe. It uses dark ink and a dark header band with light
+# text, but avoids large solid fills so it stays legible and economical on paper.
+schemaVersion: 1
+id: dark
+name:
+  es: "Oscuro (alto contraste, apto para impresión)"
+  en: "Dark"
+tokens:
+  bodyFont: "'Source Serif 4', Georgia, serif"
+  headingFont: "'Source Sans 3', Arial, sans-serif"
+  accent: "#111111"
+  accentSoft: "#dedede"
+  ruleColor: "#111111"
+  headerStyle: band
+  refColor: "#4d4d4d"
+  notaBorder: "#111111"
+  headerBg: "#111111"
+  headerText: "#ffffff"
+  muted: "#5a5a5a"

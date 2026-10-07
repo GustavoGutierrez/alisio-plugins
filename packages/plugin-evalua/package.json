@@ -31,6 +31,7 @@
   "files": [
     "dist",
     "knowledge",
+    "templates",
     "README.md",
     "LICENSE",
     "cover.webp"

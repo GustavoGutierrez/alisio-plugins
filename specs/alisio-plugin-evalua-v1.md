@@ -636,10 +636,12 @@ timeout, and is always killed and cleaned.
 The four documents can be typeset in more than one visual design, selected per exam and extended
 by data without touching code.
 
-- Two themes ship in v1: **`classic`** (default) is sober and formal, black-and-white-safe, with the
-  Source Serif/Sans pairing of §10.3 and no colour needed for meaning; **`blue`** is print-friendly
-  with a restrained blue accent for headers, rules and the Nota box, still legible in grayscale
-  (the accent never carries meaning alone). Both honour the §11.2 floors unchanged.
+- Three themes ship in v1: **`classic`** (default) is sober and formal, black-and-white-safe, with
+  the Source Serif/Sans pairing of §10.3 and no colour needed for meaning; **`blue`** is print-friendly
+  with a restrained blue accent for headers, rules and the Nota box, still legible in grayscale;
+  **`dark`** is high-contrast dark (dark ink and a dark header band with light text) that avoids
+  large solid fills so it stays legible and economical on paper. The accent never carries meaning
+  alone, and all three honour the §11.2 floors unchanged.
 - A theme is **data**: a `theme.yaml` with a schema (id, name, and a token map of CSS custom
   properties such as body font, accent colour, rule weight, header style) plus optional small
   markup variants. The HTML emitter consumes the tokens; it is the only code that knows CSS.
@@ -889,7 +891,7 @@ catalogue from `math.md` §3 Phase 5, checks), `evl-math-review`, `evl-language-
 | 1 Skeleton and profile | package scaffold, resources, storage, profile, workspace numbering, interview rounds, state | profile asked once; folder numbering tests; `pnpm check` green |
 | 2 Math core and KB | `math/`, knowledge loader and validation, `basic-math` pack, first families | EVL-KB-* and property tests green; extension fixture passes |
 | 3 Algebra, items, blueprint | `algebra` pack, all v1 families, blueprint, generate/verify/freeze, bank draws, quotes catalogue | EVL-ITM-* and EVL-EXM-* green; determinism tests green |
-| 4 Rendering and fit | markup, KaTeX, HTML emitters, CDP, ladder, audit, four documents, themes (`classic`, `blue`) and the theme loader | one-page fixture fits with real Chrome; themes selectable and extensible by data; EVL-LAY-* and EVL-DOC-005 tests; performance measured |
+| 4 Rendering and fit | markup, KaTeX, HTML emitters, CDP, ladder, audit, four documents, themes (`classic`, `blue`, `dark`) and the theme loader | one-page fixture fits with real Chrome; themes selectable and extensible by data; EVL-LAY-* and EVL-DOC-005 tests; performance measured |
 | 5 Coordinator and agents | `evl-*` agents and skills, tools, commands, plan/RACI/acta, gates A and B, CLI | end-to-end fake-session test from empty workspace to approved package |
 | 6 Docs and release | README, cover, diagrams, site page (EN + ES per language policy), changeset | `pnpm check` green; `pnpm diagrams:check` after diagrams |
 
@@ -1091,9 +1093,9 @@ passed on the isolated run (337 tests) and on the final full run.
   `leak:check` scans tracked files only, the new untracked files were also grepped for local paths
   and credential shapes (none).
 - Spec change (owner request, 2026-10-06): new 10.5 "Themes (templates)" and the Phase 4 deliverable
-  now require two data-driven themes, `classic` (default, sober/formal) and `blue` (print-friendly),
-  selected by `exam.yaml.template` and extensible from `templates/themes/<id>/` with no code change;
-  an unknown id is `EVL-DOC-005`.
+  now require three data-driven themes, `classic` (default, sober/formal), `blue` (print-friendly)
+  and `dark` (high-contrast, print-safe), selected by `exam.yaml.template` and extensible from
+  `templates/themes/<id>/` with no code change; an unknown id is `EVL-DOC-005`.
 
 ### 18.4 Phase 3 (as built, uncommitted)
 

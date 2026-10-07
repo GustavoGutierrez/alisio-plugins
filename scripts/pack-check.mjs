@@ -324,6 +324,15 @@ for (const [dir, manifest] of packageDirs) {
         if (!files.includes(packedPath)) fail(`packed tarball missing ${packedPath}`);
       }
     }
+
+    // Document themes are data too; every template file must travel in the tarball.
+    const templatesDir = join(dir, "templates");
+    if (await exists(templatesDir)) {
+      for (const relative of await collectFiles(templatesDir)) {
+        const packedPath = `package/templates/${relative}`;
+        if (!files.includes(packedPath)) fail(`packed tarball missing ${packedPath}`);
+      }
+    }
     console.log(`OK ${manifest.name}@${manifest.version}`);
   } finally {
     await rm(temp, { recursive: true, force: true });

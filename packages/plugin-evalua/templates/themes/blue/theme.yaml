@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: blue
+name:
+  es: "Azul (apropiado para impresión)"
+  en: "Blue"
+tokens:
+  bodyFont: "'Source Serif 4', Georgia, serif"
+  headingFont: "'Source Sans 3', Arial, sans-serif"
+  accent: "#1f4e79"
+  accentSoft: "#eaf1f8"
+  ruleColor: "#1f4e79"
+  headerStyle: band
+  refColor: "#4a6b8a"
+  notaBorder: "#1f4e79"

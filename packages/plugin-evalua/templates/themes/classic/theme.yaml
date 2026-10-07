@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: classic
+name:
+  es: "Clásico (sobrio y formal)"
+  en: "Classic"
+tokens:
+  bodyFont: "'Source Serif 4', Georgia, serif"
+  headingFont: "'Source Sans 3', Arial, sans-serif"
+  accent: "#1a1a1a"
+  accentSoft: "#ececec"
+  ruleColor: "#333333"
+  headerStyle: plain
+  refColor: "#6b6b6b"
+  notaBorder: "#1a1a1a"

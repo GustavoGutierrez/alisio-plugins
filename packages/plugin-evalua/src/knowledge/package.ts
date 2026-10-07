@@ -12,3 +12,8 @@ export function shippedKnowledgeDir(): string {
 export function shippedQuotesDir(): string {
   return fileURLToPath(new URL("../../knowledge/quotes/", import.meta.url));
 }
+
+/** The shipped document themes directory (`templates/themes`). */
+export function shippedThemesDir(): string {
+  return fileURLToPath(new URL("../../templates/themes/", import.meta.url));
+}
