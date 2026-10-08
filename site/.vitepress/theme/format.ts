@@ -12,6 +12,7 @@ const CATEGORY_LABELS: Record<string, { en: string; es: string }> = {
   mcp: { en: "MCP", es: "MCP" },
   storage: { en: "Storage", es: "Almacenamiento" },
   ui: { en: "UI", es: "Interfaz" },
+  "icon-theme": { en: "Icon theme", es: "Tema de iconos" },
   decisions: { en: "Decisions", es: "Decisiones" },
 };
 

@@ -65,8 +65,9 @@ test("knownCategories keeps known values in canonical order", () => {
     "ui",
   ]);
   assert.deepEqual(knownCategories(undefined), []);
-  assert.equal(PLUGIN_CATEGORIES.length, 12);
+  assert.equal(PLUGIN_CATEGORIES.length, 13);
   assert.deepEqual(knownCategories(["decisions", "ui"]), ["ui", "decisions"]);
+  assert.deepEqual(knownCategories(["bogus", "icon-theme"]), ["icon-theme"]);
 });
 
 test("isInside rejects paths that escape the root", () => {

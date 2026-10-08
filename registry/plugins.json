@@ -1,5 +1,10 @@
 {
   "$schema": "./plugins.schema.json",
   "schemaVersion": 1,
-  "plugins": []
+  "plugins": [
+    {
+      "package": "@alisio/plugin-material-icons",
+      "categories": ["icon-theme", "ui"]
+    }
+  ]
 }

@@ -299,7 +299,9 @@ async function localEntry(dir, manifest, previousByName, registryEntry, options)
     homepage: typeof manifest.homepage === "string" ? manifest.homepage : null,
     bugs: typeof manifest.bugs?.url === "string" ? manifest.bugs.url : null,
     npmUrl,
-    categories: knownCategories(plugin?.categories),
+    categories: registryEntry?.categories
+      ? knownCategories(registryEntry.categories)
+      : knownCategories(plugin?.categories),
     keywords: Array.isArray(manifest.keywords) ? manifest.keywords : [],
     unpackedSize,
     dependencyCount: countDependencies(manifest.dependencies),
