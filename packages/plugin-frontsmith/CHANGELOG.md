@@ -1,5 +1,12 @@
 # @alisio/plugin-frontsmith
 
+## 0.2.2
+
+### Patch Changes
+
+- 9e7e20f: Update the `@alisio/sdk` dependency to `^0.5.0` (peer) and `0.5.0` (dev) across every plugin. The API
+  surface used is unchanged: typecheck and the full test suite stay green with the new SDK.
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-frontsmith",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Runs a gated frontend engineering workflow with specialist agents, deterministic rule packs, architecture, accessibility and token checks, and a reproducible visual-fidelity pipeline.",
   "keywords": [
     "alisio-plugin",

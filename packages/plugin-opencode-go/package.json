@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-opencode-go",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "OpenCode Go model provider for Alisio: fail-closed Responses, Chat Completions and Anthropic Messages routing over the unauthenticated OpenCode Go catalog.",
   "keywords": [
     "alisio-plugin",
