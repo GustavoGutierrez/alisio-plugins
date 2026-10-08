@@ -204,7 +204,12 @@ export class OpenCodeGatewayProvider implements ModelProvider {
       throw new Error(`${this.displayName} model catalog failed: HTTP ${response.status}`);
     const body = (await response.json()) as { data?: Array<Record<string, unknown>> };
     return (body.data ?? []).flatMap((entry) => {
-      if (typeof entry.id !== "string" || !this.classify(entry.id)) return [];
+      if (typeof entry.id !== "string") return [];
+      const family = this.classify(entry.id);
+      // A session-bound provider only offers its own protocol: the chat model selector must not
+      // offer a model of another family, or the run fails with "start a fresh session". A catalog
+      // provider (no model) lists every family so a profile's model can still be chosen.
+      if (!family || (this.protocol && family !== this.protocol)) return [];
       const context = [entry.context_window, entry.context_length].find(
         (value): value is number => typeof value === "number" && value > 0,
       );

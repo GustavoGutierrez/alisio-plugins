@@ -103,6 +103,30 @@ describe("OpenCode Go provider", () => {
     }).rejects.toThrow("Unsupported OpenCode Go model family");
   });
 
+  it("offers only the bound protocol to a session provider, every family to the catalog", async () => {
+    const fetchMock = vi.fn(async () =>
+      Response.json({
+        data: [
+          { id: "deepseek-v4-pro" },
+          { id: "muse-spark-1.2-contributor" },
+          { id: "minimax-m3" },
+        ],
+      }),
+    ) as unknown as typeof fetch;
+    // A catalog provider (no model) lists every known family, so a profile's model can be chosen.
+    const catalog = openCodeGo("", fetchMock);
+    expect((await catalog.listModels(AbortSignal.timeout(1000))).map((m) => m.id)).toEqual([
+      "opencode-go/deepseek-v4-pro",
+      "opencode-go/muse-spark-1.2-contributor",
+      "opencode-go/minimax-m3",
+    ]);
+    // Bound to a chat model, only chat models are offered: no cross-protocol pick can break a run.
+    const chat = openCodeGo("deepseek-v4-flash", fetchMock);
+    expect((await chat.listModels(AbortSignal.timeout(1000))).map((m) => m.id)).toEqual([
+      "opencode-go/deepseek-v4-pro",
+    ]);
+  });
+
   it.each([
     [
       "glm-5.3",

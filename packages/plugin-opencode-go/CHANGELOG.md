@@ -1,5 +1,13 @@
 # @alisio/plugin-opencode-go
 
+## 0.1.6
+
+### Patch Changes
+
+- List only the models of the provider's own protocol: a session bound to `chat` no longer offers
+  `responses`/`messages` models in the chat model selector, which previously failed with
+  "Model X uses responses, but this session is bound to chat; start a fresh session".
+
 ## 0.1.5
 
 ### Patch Changes
