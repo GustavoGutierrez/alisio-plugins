@@ -1,0 +1,54 @@
+{
+  "name": "@alisio/plugin-material-icons",
+  "version": "0.5.1",
+  "description": "Material Icon Theme for the Alisio web UI: a self-contained icon-theme provider with the vendored Material Icon Theme SVGs and VSCode-style manifest.",
+  "keywords": [
+    "alisio-plugin",
+    "icons",
+    "icon-theme",
+    "material-icon-theme",
+    "ui"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-material-icons"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-material-icons#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "LICENSE.material-icon-theme",
+    "icons",
+    "material-icons.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": "^0.5.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.5.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

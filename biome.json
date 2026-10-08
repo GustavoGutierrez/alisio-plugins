@@ -8,6 +8,8 @@
       "!!**/node_modules",
       "!!packages/*/assets",
       "!!assets",
+      "!!packages/plugin-material-icons/icons",
+      "!!packages/plugin-material-icons/material-icons.json",
       "!!site/.vitepress/data/plugins.json"
     ]
   },
