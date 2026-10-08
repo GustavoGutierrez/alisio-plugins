@@ -40,14 +40,15 @@ export function relativeTime(iso: string, now: number, lang = "en"): string {
   const suffix = spanish ? "hace" : "ago";
   const label = (unit: { en: (v: number) => string; es: (v: number) => string }, value: number) =>
     spanish ? unit.es(value) : unit.en(value);
-  if (seconds < 60) return spanish ? `${suffix} ${label(RELATIVE_UNITS[0], 0)}` : `<1m ${suffix}`;
+  if (seconds < 60) return spanish ? `${suffix} <1 min` : `<1m ${suffix}`;
   for (let index = 0; index < RELATIVE_UNITS.length; index += 1) {
     const unit = RELATIVE_UNITS[index];
     if (seconds < unit.seconds) {
-      const divisor = index === 0 ? 60 : RELATIVE_UNITS[index - 1].seconds;
-      return spanish
-        ? `${suffix} ${label(unit, Math.floor(seconds / divisor))}`
-        : `${label(unit, Math.floor(seconds / divisor))} ${suffix}`;
+      // `unit` is the first threshold the elapsed time does NOT reach, so the value belongs to the
+      // previous scale: minutes below an hour, hours below a day, days below a month.
+      const scale = index === 0 ? unit : RELATIVE_UNITS[index - 1];
+      const value = Math.floor(seconds / scale.seconds);
+      return spanish ? `${suffix} ${label(scale, value)}` : `${label(scale, value)} ${suffix}`;
     }
   }
   const months = Math.floor(seconds / 2592000);
