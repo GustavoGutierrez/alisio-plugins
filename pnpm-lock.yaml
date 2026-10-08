@@ -33,8 +33,8 @@ importers:
   packages/plugin-atlassian:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -45,8 +45,8 @@ importers:
   packages/plugin-brave-search:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -57,8 +57,8 @@ importers:
   packages/plugin-context7:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -73,8 +73,8 @@ importers:
         version: 7.23.0
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -89,8 +89,8 @@ importers:
         version: 2.9.1
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -105,8 +105,8 @@ importers:
         version: 7.29.9
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -117,8 +117,8 @@ importers:
   packages/plugin-google-chat:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -129,8 +129,8 @@ importers:
   packages/plugin-laya:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -141,8 +141,8 @@ importers:
   packages/plugin-literature-research:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -157,8 +157,8 @@ importers:
         version: 7.23.0
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -169,8 +169,8 @@ importers:
   packages/plugin-opencode:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -181,8 +181,8 @@ importers:
   packages/plugin-opencode-go:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -197,8 +197,8 @@ importers:
         version: 7.23.0
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -209,8 +209,8 @@ importers:
   packages/plugin-swarm:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -221,8 +221,8 @@ importers:
   packages/plugin-telemetry:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -255,8 +255,8 @@ importers:
         version: 2.9.1
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -267,8 +267,8 @@ importers:
   packages/plugin-wayfinder:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -279,8 +279,8 @@ importers:
   packages/plugin-web-search:
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.4.5
-        version: 0.4.5
+        specifier: 0.5.0
+        version: 0.5.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -366,8 +366,8 @@ packages:
     resolution: {integrity: sha512-YYHLEs5rC6oRTFwT7bJaKBR9NSFzikeVHGAT1ffATmUQzR8XqyhHXjoieAUoR7fBU6I5cfy1FVeh5GoRgriuzA==, tarball: https://registry.npmjs.org/@algolia/requester-node-http/-/requester-node-http-5.59.0.tgz}
     engines: {node: '>= 14.0.0'}
 
-  '@alisio/sdk@0.4.5':
-    resolution: {integrity: sha512-1D/FRAtqyGRW8qbsUqidpAAmTGCAvJ4qNRoJhH5Bkra85VjlN4E7qlrhnw9WJee4o/67ouCZMVpqTj80I9vZow==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.4.5.tgz}
+  '@alisio/sdk@0.5.0':
+    resolution: {integrity: sha512-XiOPhtR6B5PnIDPRGE78AqglHm0I4SwusL16AqR5a8OSH/A6lL1b0i/zl4WHESR7axVYPto1Rkl7N3P6d1uIaQ==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.5.0.tgz}
     engines: {node: '>=22.16'}
 
   '@babel/helper-string-parser@7.29.7':
@@ -2194,7 +2194,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.59.0
 
-  '@alisio/sdk@0.4.5': {}
+  '@alisio/sdk@0.5.0': {}
 
   '@babel/helper-string-parser@7.29.7': {}
 
