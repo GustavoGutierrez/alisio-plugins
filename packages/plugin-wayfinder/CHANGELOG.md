@@ -1,5 +1,12 @@
 # @alisio/plugin-wayfinder
 
+## 0.2.3
+
+### Patch Changes
+
+- c06361a: Update the `@alisio/sdk` dependency to `^0.5.1` (peer) and `0.5.1` (dev) across every plugin. The API
+  surface used is unchanged: typecheck and the full check stay green with the new SDK.
+
 ## 0.2.2
 
 ### Patch Changes

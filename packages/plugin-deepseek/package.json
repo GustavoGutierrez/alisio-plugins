@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-deepseek",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Dedicated DeepSeek model provider for Alisio: Chat Completions and Responses with metadata-rich catalog discovery and context windows.",
   "keywords": [
     "alisio-plugin",

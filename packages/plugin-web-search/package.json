@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-web-search",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Privacy-conscious, provider-neutral web search tools for Alisio.",
   "keywords": [
     "alisio-plugin",

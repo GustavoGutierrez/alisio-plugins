@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-openai",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Official OpenAI Responses API model provider for Alisio.",
   "keywords": [
     "alisio-plugin",
