@@ -1,0 +1,40 @@
+{
+  "id": "heart-pair",
+  "version": 1,
+  "label": { "es": "Par de corazones", "en": "Heart pair" },
+  "tags": ["love"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M50 86 C32 72 20 60 20 46 C20 33 28 25 38 25 C43 25 47 28 50 33 C53 28 57 25 62 25 C72 25 80 33 80 46 C80 60 68 72 50 86 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "path",
+      "d": "M78 18 C75 14 69 15 69 20 C69 24 73 28 78 32 C83 28 87 24 87 20 C87 15 81 14 78 18 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    { "kind": "circle", "cx": 16, "cy": 72, "r": 3.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 86, "cy": 60, "r": 3, "fill": "$secondary" },
+    {
+      "kind": "path",
+      "d": "M16 22 L18.5 27.5 L24 30 L18.5 32.5 L16 38 L13.5 32.5 L8 30 L13.5 27.5 Z",
+      "fill": "$accent"
+    },
+    {
+      "kind": "path",
+      "d": "M88 77 L90 81 L94 83 L90 85 L88 89 L86 85 L82 83 L86 81 Z",
+      "fill": "$accent"
+    },
+    {
+      "kind": "path",
+      "d": "M12 46 L13.5 50.5 L18 52 L13.5 53.5 L12 58 L10.5 53.5 L6 52 L10.5 50.5 Z",
+      "fill": "$accent"
+    }
+  ]
+}

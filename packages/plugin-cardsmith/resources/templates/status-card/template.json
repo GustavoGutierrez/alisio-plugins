@@ -1,0 +1,122 @@
+{
+  "id": "status-card",
+  "version": 1,
+  "family": "dynamic",
+  "label": { "es": "Tarjeta de estado", "en": "Status card" },
+  "description": {
+    "es": "Título, estado y detalle operativo con sello QR de seguimiento.",
+    "en": "Title, status and operational detail with a tracking QR stamp."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.09, "w": 0.66, "h": 0.18 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "status",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.3, "w": 0.3, "h": 0.09 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4
+        },
+        {
+          "key": "detail",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.42, "w": 0.6, "h": 0.28 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 4,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "owner",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.76, "w": 0.4, "h": 0.07 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 3
+        },
+        {
+          "key": "updatedLabel",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.85, "w": 0.5, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "qr": { "box": { "x": 0.78, "y": 0.62, "w": 0.14, "h": 0.21 } }
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.08, "w": 0.84, "h": 0.17 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6.5
+        },
+        {
+          "key": "status",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.28, "w": 0.4, "h": 0.07 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4
+        },
+        {
+          "key": "detail",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.38, "w": 0.84, "h": 0.28 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 4,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "owner",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.7, "w": 0.5, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 3
+        },
+        {
+          "key": "updatedLabel",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.78, "w": 0.5, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "qr": { "box": { "x": 0.74, "y": 0.74, "w": 0.17, "h": 0.17 } }
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "required": true, "maxChars": 90, "overflow": "warn" },
+    { "key": "status", "type": "text", "required": true, "maxChars": 40, "overflow": "warn" },
+    { "key": "detail", "type": "text", "maxChars": 160, "overflow": "warn" },
+    { "key": "owner", "type": "text", "maxChars": 60, "overflow": "warn" },
+    { "key": "updatedLabel", "type": "text", "maxChars": 40, "overflow": "warn" }
+  ],
+  "defaultPalette": "alisio-ocean",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": true, "illustration": false, "images": false }
+}

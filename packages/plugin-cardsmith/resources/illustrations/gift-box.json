@@ -1,0 +1,71 @@
+{
+  "id": "gift-box",
+  "version": 1,
+  "label": { "es": "Caja de regalo", "en": "Gift box" },
+  "tags": ["kawaii", "birthday"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "rect",
+      "x": 18,
+      "y": 48,
+      "w": 64,
+      "h": 40,
+      "radius": 2,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "rect",
+      "x": 14,
+      "y": 34,
+      "w": 72,
+      "h": 14,
+      "radius": 3,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "rect",
+      "x": 44,
+      "y": 34,
+      "w": 12,
+      "h": 54,
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M50 34 C40 36 32 28 36 20 C40 12 50 16 50 26 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M50 34 C60 36 68 28 64 20 C60 12 50 16 50 26 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 31,
+      "r": 5,
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M84 24 L86 29 L91 31 L86 33 L84 38 L82 33 L77 31 L82 29 Z",
+      "fill": "$secondary"
+    },
+    { "kind": "circle", "cx": 26, "cy": 80, "r": 2, "fill": "$accent" },
+    { "kind": "circle", "cx": 74, "cy": 68, "r": 2, "fill": "$accent" }
+  ]
+}

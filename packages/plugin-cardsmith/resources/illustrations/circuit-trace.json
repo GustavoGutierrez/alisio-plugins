@@ -1,0 +1,67 @@
+{
+  "id": "circuit-trace",
+  "version": 1,
+  "label": { "es": "Circuito impreso", "en": "Circuit trace" },
+  "tags": ["technical"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "rect",
+      "x": 34,
+      "y": 34,
+      "w": 32,
+      "h": 32,
+      "radius": 4,
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    { "kind": "rect", "x": 40, "y": 40, "w": 20, "h": 20, "stroke": "$text", "strokeWidth": 1.5 },
+    {
+      "kind": "path",
+      "d": "M42 34 L42 26 M50 34 L50 26 M58 34 L58 26 M42 66 L42 74 M50 66 L50 74 M58 66 L58 74 M34 42 L26 42 M34 58 L26 58 M66 42 L74 42 M66 58 L74 58",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    { "kind": "path", "d": "M10 10 L10 42 L26 42", "stroke": "$primary", "strokeWidth": 3.5 },
+    { "kind": "path", "d": "M90 10 L90 58 L74 58", "stroke": "$primary", "strokeWidth": 3.5 },
+    { "kind": "path", "d": "M10 90 L10 74 L42 74", "stroke": "$primary", "strokeWidth": 3.5 },
+    { "kind": "path", "d": "M90 90 L90 74 L58 74", "stroke": "$primary", "strokeWidth": 3.5 },
+    {
+      "kind": "circle",
+      "cx": 10,
+      "cy": 10,
+      "r": 4.5,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 90,
+      "cy": 10,
+      "r": 4.5,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 10,
+      "cy": 90,
+      "r": 4.5,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 90,
+      "cy": 90,
+      "r": 4.5,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    }
+  ]
+}

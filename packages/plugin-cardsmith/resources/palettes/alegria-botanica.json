@@ -1,0 +1,18 @@
+{
+  "id": "alegria-botanica",
+  "version": 1,
+  "label": { "es": "Alegría botánica", "en": "Botanical joy" },
+  "tokens": {
+    "background": "#FFF6ED",
+    "text": "#181818",
+    "primary": "#F600A9",
+    "secondary": "#00A884",
+    "accent": "#FFC400"
+  },
+  "textOn": {
+    "background": ["text"],
+    "primary": ["text"],
+    "secondary": ["text"],
+    "accent": ["text"]
+  }
+}

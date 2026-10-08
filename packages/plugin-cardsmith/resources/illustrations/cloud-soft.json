@@ -1,0 +1,28 @@
+{
+  "id": "cloud-soft",
+  "version": 1,
+  "label": { "es": "Nube suave", "en": "Soft cloud" },
+  "tags": ["kawaii"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M22 68 C12 68 6 60 6 52 C6 44 12 38 20 38 C22 28 30 22 40 22 C50 22 58 28 60 36 C62 34 66 32 70 32 C80 32 88 40 88 50 C88 60 80 68 70 68 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    { "kind": "path", "d": "M36 50 Q40 55 44 50", "stroke": "$text", "strokeWidth": 2.5 },
+    { "kind": "path", "d": "M56 50 Q60 55 64 50", "stroke": "$text", "strokeWidth": 2.5 },
+    { "kind": "path", "d": "M44 58 Q50 63 56 58", "stroke": "$text", "strokeWidth": 2.5 },
+    { "kind": "circle", "cx": 32, "cy": 80, "r": 2.5, "fill": "$primary" },
+    { "kind": "circle", "cx": 50, "cy": 87, "r": 2.5, "fill": "$primary" },
+    { "kind": "circle", "cx": 68, "cy": 80, "r": 2.5, "fill": "$primary" },
+    {
+      "kind": "path",
+      "d": "M82 10 L84 15 L89 17 L84 19 L82 24 L80 19 L75 17 L80 15 Z",
+      "fill": "$secondary"
+    },
+    { "kind": "circle", "cx": 14, "cy": 18, "r": 3, "fill": "$secondary" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "star-burst",
+  "version": 1,
+  "label": { "es": "Estrella radiante", "en": "Star burst" },
+  "tags": ["decoration"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M96 50 L66.6 43.1 L82.5 17.5 L56.9 33.4 L50 4 L43.1 33.4 L17.5 17.5 L33.4 43.1 L4 50 L33.4 56.9 L17.5 82.5 L43.1 66.6 L50 96 L56.9 66.6 L82.5 82.5 L66.6 56.9 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 50,
+      "r": 9,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    { "kind": "circle", "cx": 31, "cy": 31, "r": 2.5, "fill": "$primary" },
+    { "kind": "circle", "cx": 69, "cy": 31, "r": 2.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 69, "cy": 69, "r": 2.5, "fill": "$primary" },
+    { "kind": "circle", "cx": 31, "cy": 69, "r": 2.5, "fill": "$secondary" }
+  ]
+}

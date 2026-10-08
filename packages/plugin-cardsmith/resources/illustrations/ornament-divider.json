@@ -1,0 +1,34 @@
+{
+  "id": "ornament-divider",
+  "version": 1,
+  "label": { "es": "Ornamento divisor", "en": "Ornament divider" },
+  "tags": ["formal", "decoration"],
+  "viewBox": [0, 0, 100, 24],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M50 5 L56 12 L50 19 L44 12 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M43 12 C35 5 25 5 16 11 C24 19 34 19 43 12 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 1.2
+    },
+    {
+      "kind": "path",
+      "d": "M57 12 C65 5 75 5 84 11 C76 19 66 19 57 12 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 1.2
+    },
+    { "kind": "circle", "cx": 11, "cy": 12, "r": 2.5, "fill": "$accent" },
+    { "kind": "circle", "cx": 89, "cy": 12, "r": 2.5, "fill": "$accent" },
+    { "kind": "circle", "cx": 34, "cy": 5.5, "r": 1.6, "fill": "$primary" },
+    { "kind": "circle", "cx": 66, "cy": 5.5, "r": 1.6, "fill": "$primary" }
+  ]
+}

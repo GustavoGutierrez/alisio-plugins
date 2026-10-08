@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Cardsmith</title>
+  <desc id="desc">A fanned stack of three rounded cards — an illustrated greeting card with a retro sunset, an ivory certificate with a gold seal and a QR code, and a dark analytics card with blue bar charts — over a deep ocean-blue background with palette swatches and sparkles.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071c2c"/>
+      <stop offset="1" stop-color="#0e3350"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#14507a" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#14507a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <ellipse cx="800" cy="360" rx="640" ry="440" fill="url(#glow)"/>
+  <circle cx="290" cy="190" r="250" fill="#d64293" opacity="0.06"/>
+  <circle cx="1330" cy="220" r="280" fill="#01a5f7" opacity="0.06"/>
+
+  <!-- Left card: ivory certificate -->
+  <g transform="translate(470 372) rotate(-11)">
+    <rect x="-210" y="-270" width="420" height="560" rx="34" fill="#04121f" opacity="0.5"/>
+    <rect x="-210" y="-280" width="420" height="560" rx="34" fill="#fffcf5" stroke="#e8dcc2" stroke-width="3"/>
+    <rect x="-184" y="-254" width="368" height="508" rx="18" fill="none" stroke="#264a66" stroke-width="5"/>
+    <rect x="-168" y="-238" width="336" height="476" rx="12" fill="none" stroke="#b59048" stroke-width="2.5"/>
+    <circle cx="0" cy="-150" r="34" fill="none" stroke="#b59048" stroke-width="7"/>
+    <path d="M0 -167 L15 -150 L0 -133 L-15 -150 Z" fill="#264a66"/>
+    <rect x="-108" y="-98" width="216" height="20" rx="10" fill="#264a66"/>
+    <rect x="-70" y="-64" width="140" height="10" rx="5" fill="#b59048"/>
+    <path d="M-150 -28 H-28" stroke="#b59048" stroke-width="3"/>
+    <path d="M28 -28 H150" stroke="#b59048" stroke-width="3"/>
+    <path d="M0 -38 L10 -28 L0 -18 L-10 -28 Z" fill="#b59048"/>
+    <g fill="#264a66" opacity="0.22">
+      <rect x="-140" y="0" width="280" height="11" rx="5.5"/>
+      <rect x="-125" y="30" width="250" height="11" rx="5.5"/>
+      <rect x="-140" y="60" width="280" height="11" rx="5.5"/>
+      <rect x="-95" y="90" width="190" height="11" rx="5.5"/>
+    </g>
+    <g>
+      <rect x="-156" y="126" width="72" height="72" rx="6" fill="#ffffff" stroke="#264a66" stroke-width="3"/>
+      <rect x="-146" y="136" width="20" height="20" fill="none" stroke="#264a66" stroke-width="5"/>
+      <rect x="-141" y="141" width="10" height="10" fill="#264a66"/>
+      <rect x="-108" y="136" width="20" height="20" fill="none" stroke="#264a66" stroke-width="5"/>
+      <rect x="-103" y="141" width="10" height="10" fill="#264a66"/>
+      <rect x="-146" y="174" width="20" height="20" fill="none" stroke="#264a66" stroke-width="5"/>
+      <rect x="-141" y="179" width="10" height="10" fill="#264a66"/>
+      <rect x="-108" y="172" width="9" height="9" fill="#264a66"/>
+      <rect x="-94" y="186" width="8" height="8" fill="#264a66"/>
+      <rect x="-120" y="190" width="8" height="8" fill="#264a66"/>
+    </g>
+  </g>
+
+  <!-- Right card: dark analytics chart -->
+  <g transform="translate(1130 377) rotate(10.5)">
+    <rect x="-210" y="-270" width="420" height="560" rx="34" fill="#04121f" opacity="0.5"/>
+    <rect x="-210" y="-280" width="420" height="560" rx="34" fill="#071c2c" stroke="#143a5c" stroke-width="3"/>
+    <rect x="-92" y="-232" width="184" height="16" rx="8" fill="#1e4e6e"/>
+    <rect x="-92" y="-204" width="110" height="10" rx="5" fill="#1e4e6e" opacity="0.7"/>
+    <g stroke="#123a57" stroke-width="2" stroke-dasharray="6 10">
+      <path d="M-130 -10 H160"/>
+      <path d="M-130 50 H160"/>
+      <path d="M-130 110 H160"/>
+    </g>
+    <g>
+      <rect x="-120" y="100" width="30" height="66" rx="6" fill="#01a5f7"/>
+      <rect x="-78" y="58" width="30" height="108" rx="6" fill="#60e0f9"/>
+      <rect x="-36" y="78" width="30" height="88" rx="6" fill="#01a5f7"/>
+      <rect x="6" y="22" width="30" height="144" rx="6" fill="#60e0f9"/>
+      <rect x="48" y="48" width="30" height="118" rx="6" fill="#01a5f7"/>
+      <rect x="90" y="-10" width="30" height="176" rx="6" fill="#60e0f9"/>
+    </g>
+    <path d="M-130 170 H160" stroke="#1e4e6e" stroke-width="4" stroke-linecap="round"/>
+    <g>
+      <rect x="-108" y="199" width="16" height="16" rx="4" fill="#01a5f7"/>
+      <rect x="-90" y="202" width="170" height="10" rx="5" fill="#123a57"/>
+      <rect x="-108" y="225" width="16" height="16" rx="4" fill="#60e0f9"/>
+      <rect x="-90" y="228" width="130" height="10" rx="5" fill="#123a57"/>
+    </g>
+  </g>
+
+  <!-- Center card: illustrated greeting card -->
+  <g transform="translate(800 368)">
+    <rect x="-210" y="-270" width="420" height="560" rx="34" fill="#04121f" opacity="0.5"/>
+    <rect x="-210" y="-280" width="420" height="560" rx="34" fill="#fbf1df" stroke="#e7d7b8" stroke-width="3"/>
+    <path d="M-168 88 A168 168 0 0 1 168 88 Z" fill="#e95026"/>
+    <path d="M-132 88 A132 132 0 0 1 132 88 Z" fill="#d64293"/>
+    <path d="M-96 88 A96 96 0 0 1 96 88 Z" fill="#f8c53f"/>
+    <path d="M-60 88 A60 60 0 0 1 60 88 Z" fill="#8d8d35"/>
+    <g fill="#8d8d35">
+      <path d="M-128 -78 L-124 -66 L-112 -62 L-124 -58 L-128 -46 L-132 -58 L-144 -62 L-132 -66 Z" opacity="0.8"/>
+      <path d="M126 -158 L129 -149 L138 -146 L129 -143 L126 -134 L123 -143 L114 -146 L123 -149 Z" opacity="0.6"/>
+    </g>
+    <circle cx="58" cy="-128" r="9" fill="#d64293" opacity="0.85"/>
+    <path d="M-180 118 C-150 98 -120 98 -90 118 C-60 138 -30 138 0 118 C30 98 60 98 90 118 C120 138 150 138 180 118" fill="none" stroke="#8d8d35" stroke-width="7" stroke-linecap="round"/>
+    <path d="M-180 148 C-150 128 -120 128 -90 148 C-60 168 -30 168 0 148 C30 128 60 128 90 148 C120 168 150 168 180 148" fill="none" stroke="#8d8d35" stroke-width="7" stroke-linecap="round" opacity="0.45"/>
+    <g transform="translate(0 172)">
+      <circle cx="-7" cy="-9" r="9" fill="#e95026"/>
+      <circle cx="7" cy="-9" r="9" fill="#e95026"/>
+      <path d="M-15 -6 L15 -6 L0 12 Z" fill="#e95026"/>
+    </g>
+    <rect x="-90" y="200" width="180" height="13" rx="6.5" fill="#d64293"/>
+    <rect x="-60" y="228" width="120" height="13" rx="6.5" fill="#f8c53f"/>
+  </g>
+
+  <!-- Sparkles -->
+  <g fill="#f4fbff">
+    <path d="M180 168 L185 183 L200 188 L185 193 L180 208 L175 193 L160 188 L175 183 Z" opacity="0.45"/>
+    <path d="M1425 146 L1429 158 L1441 162 L1429 166 L1425 178 L1421 166 L1409 162 L1421 158 Z" opacity="0.4"/>
+    <path d="M258 640 L262 652 L274 656 L262 660 L258 672 L254 660 L242 656 L254 652 Z" opacity="0.35"/>
+    <path d="M1348 620 L1352 632 L1364 636 L1352 640 L1348 652 L1344 640 L1332 636 L1344 632 Z" opacity="0.35"/>
+  </g>
+  <circle cx="152" cy="452" r="7" fill="#f8c53f" opacity="0.6"/>
+  <circle cx="1452" cy="470" r="6" fill="#60e0f9" opacity="0.55"/>
+  <circle cx="330" cy="120" r="5" fill="#d64293" opacity="0.5"/>
+  <circle cx="1270" cy="98" r="4" fill="#f4fbff" opacity="0.4"/>
+
+  <!-- Palette swatches -->
+  <g>
+    <circle cx="696" cy="716" r="20" fill="#f600a9" opacity="0.12"/>
+    <circle cx="696" cy="716" r="12" fill="#f600a9"/>
+    <circle cx="748" cy="716" r="20" fill="#00a884" opacity="0.12"/>
+    <circle cx="748" cy="716" r="12" fill="#00a884"/>
+    <circle cx="800" cy="716" r="20" fill="#ffc400" opacity="0.12"/>
+    <circle cx="800" cy="716" r="12" fill="#ffc400"/>
+    <circle cx="852" cy="716" r="20" fill="#01a5f7" opacity="0.12"/>
+    <circle cx="852" cy="716" r="12" fill="#01a5f7"/>
+    <circle cx="904" cy="716" r="20" fill="#ec3b49" opacity="0.12"/>
+    <circle cx="904" cy="716" r="12" fill="#ec3b49"/>
+  </g>
+
+  <text x="800" y="798" fill="#f4fbff" font-family="sans-serif" font-size="80" font-weight="700" text-anchor="middle">CARDSMITH</text>
+  <text x="800" y="850" fill="#a8c6da" font-family="sans-serif" font-size="30" text-anchor="middle">cards · certificates · charts — rendered locally</text>
+</svg>

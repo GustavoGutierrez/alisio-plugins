@@ -1,0 +1,81 @@
+{
+  "id": "flower-happy",
+  "version": 1,
+  "label": { "es": "Flor alegre", "en": "Happy flower" },
+  "tags": ["kawaii", "nature"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    { "kind": "path", "d": "M50 88 C50 72 48 60 50 44", "stroke": "$secondary", "strokeWidth": 5 },
+    {
+      "kind": "path",
+      "d": "M50 70 C38 66 32 58 34 50 C44 52 50 60 50 70 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M50 62 C62 58 68 50 66 42 C56 44 50 52 50 62 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 20,
+      "r": 11,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 64,
+      "cy": 31,
+      "r": 11,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 59,
+      "cy": 49,
+      "r": 11,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 41,
+      "cy": 49,
+      "r": 11,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 36,
+      "cy": 31,
+      "r": 11,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 34,
+      "r": 9,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    { "kind": "circle", "cx": 46, "cy": 32, "r": 1.8, "fill": "$text" },
+    { "kind": "circle", "cx": 54, "cy": 32, "r": 1.8, "fill": "$text" },
+    { "kind": "path", "d": "M45 38 Q50 42 55 38", "stroke": "$text", "strokeWidth": 2 }
+  ]
+}

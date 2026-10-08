@@ -1,0 +1,129 @@
+{
+  "id": "retro-message",
+  "version": 1,
+  "family": "social",
+  "label": { "es": "Mensaje retro", "en": "Retro message" },
+  "description": {
+    "es": "Título fuerte y mensaje sobre bandas de ondas con un sol protagonista.",
+    "en": "Bold title and message over wave bands with a sun protagonist."
+  },
+  "layouts": {
+    "square": {
+      "decor": [{ "assetId": "waves-retro", "box": { "x": 0, "y": 0.66, "w": 1, "h": 0.34 } }],
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.07, "w": 0.84, "h": 0.15 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "tag",
+          "role": "bodyStrong",
+          "box": { "x": 0.3, "y": 0.23, "w": 0.4, "h": 0.05 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "message",
+          "role": "body",
+          "box": { "x": 0.12, "y": 0.3, "w": 0.76, "h": 0.13 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3.4
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.36, "y": 0.44, "w": 0.28, "h": 0.21 },
+        "defaultId": "sun-smile"
+      }
+    },
+    "portrait": {
+      "decor": [{ "assetId": "waves-retro", "box": { "x": 0, "y": 0.7, "w": 1, "h": 0.3 } }],
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.07, "w": 0.84, "h": 0.15 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "tag",
+          "role": "bodyStrong",
+          "box": { "x": 0.28, "y": 0.23, "w": 0.44, "h": 0.045 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "message",
+          "role": "body",
+          "box": { "x": 0.12, "y": 0.29, "w": 0.76, "h": 0.12 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.34, "y": 0.42, "w": 0.32, "h": 0.24 },
+        "defaultId": "sun-smile"
+      }
+    },
+    "landscape": {
+      "decor": [{ "assetId": "waves-retro", "box": { "x": 0, "y": 0.62, "w": 0.52, "h": 0.38 } }],
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.09, "w": 0.56, "h": 0.22 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 8
+        },
+        {
+          "key": "message",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.33, "w": 0.52, "h": 0.16 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3.2
+        },
+        {
+          "key": "tag",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.51, "w": 0.3, "h": 0.07 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.64, "y": 0.1, "w": 0.28, "h": 0.36 },
+        "defaultId": "sun-smile"
+      }
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "required": true, "maxChars": 60, "overflow": "warn" },
+    { "key": "message", "type": "text", "maxChars": 160, "overflow": "warn" },
+    { "key": "tag", "type": "text", "maxChars": 40, "overflow": "warn" }
+  ],
+  "defaultPalette": "retro-calido",
+  "defaultFontPair": "playful",
+  "supports": { "qr": false, "illustration": true, "images": false },
+  "accentIllustrations": ["sun-smile", "waves-retro", "sparkle-cluster"]
+}

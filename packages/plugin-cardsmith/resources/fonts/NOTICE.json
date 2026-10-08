@@ -1,0 +1,142 @@
+[
+  {
+    "file": "resources/fonts/PatrickHand-Regular.ttf",
+    "sha256": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc",
+    "bytes": 214772,
+    "source": "https://raw.githubusercontent.com/google/fonts/90abd17b4f97671435798b6147b698aa9087612f/ofl/patrickhand/PatrickHand-Regular.ttf",
+    "commit": "90abd17b4f97671435798b6147b698aa9087612f",
+    "family": "Patrick Hand",
+    "license": "OFL-1.1",
+    "modification": "none"
+  },
+  {
+    "file": "resources/fonts/Chewy-Regular.ttf",
+    "sha256": "7cf75ea288f82fd20badea8ab4da7a656a96a7277c170811e813b3d3d6294147",
+    "bytes": 41248,
+    "source": "https://raw.githubusercontent.com/google/fonts/577b1ca8c24482dfa78cfdcf6efc84c5a427ef15/apache/chewy/Chewy-Regular.ttf",
+    "commit": "577b1ca8c24482dfa78cfdcf6efc84c5a427ef15",
+    "family": "Chewy",
+    "license": "Apache-2.0",
+    "modification": "none"
+  },
+  {
+    "file": "resources/fonts/Caveat-Regular.ttf",
+    "sha256": "435eac6d23656f00a35e0cfcaf0426cdad5985b987378a5a2dfcd26b7a34bfd1",
+    "bytes": 266080,
+    "source": "https://raw.githubusercontent.com/google/fonts/a85fc09e44c70c7159761adfdc9d5dd007792c15/ofl/caveat/Caveat%5Bwght%5D.ttf",
+    "commit": "a85fc09e44c70c7159761adfdc9d5dd007792c15",
+    "family": "Caveat",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer wght=400"
+  },
+  {
+    "file": "resources/fonts/Caveat-Bold.ttf",
+    "sha256": "2335dc798ccfe5f21120919a3e653eec282b77cc36a9ca59528f915c60095e3e",
+    "bytes": 266468,
+    "source": "https://raw.githubusercontent.com/google/fonts/a85fc09e44c70c7159761adfdc9d5dd007792c15/ofl/caveat/Caveat%5Bwght%5D.ttf",
+    "commit": "a85fc09e44c70c7159761adfdc9d5dd007792c15",
+    "family": "Caveat",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer wght=700"
+  },
+  {
+    "file": "resources/fonts/CormorantGaramond-Regular.ttf",
+    "sha256": "d91cfc6c9216856e882e8dd0a6e21ad7c776a4b8729ed30598bcf2d50604948d",
+    "bytes": 774016,
+    "source": "https://raw.githubusercontent.com/google/fonts/5fcfd99f2fa4422991d29f4adae3f2f4b774f058/ofl/cormorantgaramond/CormorantGaramond%5Bwght%5D.ttf",
+    "commit": "5fcfd99f2fa4422991d29f4adae3f2f4b774f058",
+    "family": "Cormorant Garamond",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer wght=400"
+  },
+  {
+    "file": "resources/fonts/CormorantGaramond-SemiBold.ttf",
+    "sha256": "a511c292d40c148ad4b480d5ecf76adc2155debbc0b276a9a478c0f7e6d0deb4",
+    "bytes": 774032,
+    "source": "https://raw.githubusercontent.com/google/fonts/5fcfd99f2fa4422991d29f4adae3f2f4b774f058/ofl/cormorantgaramond/CormorantGaramond%5Bwght%5D.ttf",
+    "commit": "5fcfd99f2fa4422991d29f4adae3f2f4b774f058",
+    "family": "Cormorant Garamond",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer wght=600"
+  },
+  {
+    "file": "resources/fonts/Inter-Regular.ttf",
+    "sha256": "0267b706331f8744502b0a132b1d86c71b738caea934aafc7f33ce4e11ec8d6a",
+    "bytes": 341396,
+    "source": "https://raw.githubusercontent.com/google/fonts/e1d6480102fed30739fead0faee463101f892c8f/ofl/inter/Inter%5Bopsz,wght%5D.ttf",
+    "commit": "e1d6480102fed30739fead0faee463101f892c8f",
+    "family": "Inter",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer opsz=14 wght=400"
+  },
+  {
+    "file": "resources/fonts/Inter-SemiBold.ttf",
+    "sha256": "ee61cf6892d0257271432e88166da1638bf5d33c84a23d1fab67413ee55ae3d3",
+    "bytes": 342660,
+    "source": "https://raw.githubusercontent.com/google/fonts/e1d6480102fed30739fead0faee463101f892c8f/ofl/inter/Inter%5Bopsz,wght%5D.ttf",
+    "commit": "e1d6480102fed30739fead0faee463101f892c8f",
+    "family": "Inter",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer opsz=14 wght=600"
+  },
+  {
+    "file": "resources/fonts/Inter-Bold.ttf",
+    "sha256": "bd4733e3401d328ccd1dcfa9a7fc4716eee2ad8756202aac074ec271f80ba79e",
+    "bytes": 343104,
+    "source": "https://raw.githubusercontent.com/google/fonts/e1d6480102fed30739fead0faee463101f892c8f/ofl/inter/Inter%5Bopsz,wght%5D.ttf",
+    "commit": "e1d6480102fed30739fead0faee463101f892c8f",
+    "family": "Inter",
+    "license": "OFL-1.1",
+    "modification": "static instance via fonttools varLib.instancer opsz=14 wght=700"
+  },
+  {
+    "file": "resources/fonts/licenses/patrickhand-OFL.txt",
+    "sha256": "377f4f9c19e935228552478eb68cc2ed82910988a60ba60e2ac73b09f32d02d1",
+    "bytes": 4376,
+    "source": "https://raw.githubusercontent.com/google/fonts/90abd17b4f97671435798b6147b698aa9087612f/ofl/patrickhand/OFL.txt",
+    "commit": "90abd17b4f97671435798b6147b698aa9087612f",
+    "family": "Patrick Hand",
+    "license": "OFL-1.1",
+    "modification": "none"
+  },
+  {
+    "file": "resources/fonts/licenses/chewy-LICENSE.txt",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "bytes": 11358,
+    "source": "https://raw.githubusercontent.com/google/fonts/90abd17b4f97671435798b6147b698aa9087612f/apache/chewy/LICENSE.txt",
+    "commit": "90abd17b4f97671435798b6147b698aa9087612f",
+    "family": "Chewy",
+    "license": "Apache-2.0",
+    "modification": "none"
+  },
+  {
+    "file": "resources/fonts/licenses/caveat-OFL.txt",
+    "sha256": "1f9d81d094273d82f3898a1ee8b598a717d050ecbf5ff7bede105b704880157b",
+    "bytes": 4385,
+    "source": "https://raw.githubusercontent.com/google/fonts/52c319f5d50c762f3d5730ccc78aeac8167abbb7/ofl/caveat/OFL.txt",
+    "commit": "52c319f5d50c762f3d5730ccc78aeac8167abbb7",
+    "family": "Caveat",
+    "license": "OFL-1.1",
+    "modification": "none"
+  },
+  {
+    "file": "resources/fonts/licenses/cormorantgaramond-OFL.txt",
+    "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956",
+    "bytes": 4387,
+    "source": "https://raw.githubusercontent.com/google/fonts/6a386aadc0a33dd3d810b833d9c5105345cbb0e6/ofl/cormorantgaramond/OFL.txt",
+    "commit": "6a386aadc0a33dd3d810b833d9c5105345cbb0e6",
+    "family": "Cormorant Garamond",
+    "license": "OFL-1.1",
+    "modification": "none"
+  },
+  {
+    "file": "resources/fonts/licenses/inter-OFL.txt",
+    "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57",
+    "bytes": 4377,
+    "source": "https://raw.githubusercontent.com/google/fonts/b0928647ba26c8d55548aa19feb2f7aeba622d4a/ofl/inter/OFL.txt",
+    "commit": "b0928647ba26c8d55548aa19feb2f7aeba622d4a",
+    "family": "Inter",
+    "license": "OFL-1.1",
+    "modification": "none"
+  }
+]

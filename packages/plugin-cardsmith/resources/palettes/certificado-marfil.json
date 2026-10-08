@@ -1,0 +1,17 @@
+{
+  "id": "certificado-marfil",
+  "version": 1,
+  "label": { "es": "Certificado marfil", "en": "Ivory certificate" },
+  "tokens": {
+    "background": "#FFFCF5",
+    "text": "#23313D",
+    "primary": "#264A66",
+    "secondary": "#B59048",
+    "accent": "#E7D9BE"
+  },
+  "textOn": {
+    "background": ["text"],
+    "primary": ["background"],
+    "accent": ["text"]
+  }
+}

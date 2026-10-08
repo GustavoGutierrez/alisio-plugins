@@ -1,0 +1,41 @@
+{
+  "id": "node-graph",
+  "version": 1,
+  "label": { "es": "Grafo de nodos", "en": "Node graph" },
+  "tags": ["technical"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    { "kind": "path", "d": "M24 38 L42 63 M58 63 L76 38", "stroke": "$text", "strokeWidth": 3 },
+    {
+      "kind": "circle",
+      "cx": 16,
+      "cy": 32,
+      "r": 9,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 70,
+      "r": 9,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "circle",
+      "cx": 84,
+      "cy": 32,
+      "r": 9,
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    { "kind": "circle", "cx": 35, "cy": 50, "r": 2.2, "fill": "$text" },
+    { "kind": "circle", "cx": 65, "cy": 50, "r": 2.2, "fill": "$text" },
+    { "kind": "circle", "cx": 88, "cy": 80, "r": 2.5, "fill": "$accent" },
+    { "kind": "circle", "cx": 12, "cy": 80, "r": 2.5, "fill": "$primary" }
+  ]
+}

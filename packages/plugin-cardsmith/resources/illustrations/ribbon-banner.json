@@ -1,0 +1,43 @@
+{
+  "id": "ribbon-banner",
+  "version": 1,
+  "label": { "es": "Cinta de banner", "en": "Banner ribbon" },
+  "tags": ["decoration"],
+  "viewBox": [0, 0, 100, 36],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M0 8 L100 8 L92 18 L100 28 L0 28 L8 18 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "path",
+      "d": "M0 8 L8 18 L0 28 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M100 8 L92 18 L100 28 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    { "kind": "circle", "cx": 30, "cy": 18, "r": 2.8, "fill": "$secondary" },
+    { "kind": "circle", "cx": 50, "cy": 18, "r": 2.8, "fill": "$secondary" },
+    { "kind": "circle", "cx": 70, "cy": 18, "r": 2.8, "fill": "$secondary" },
+    {
+      "kind": "path",
+      "d": "M14 13 L15.5 16.5 L19 18 L15.5 19.5 L14 23 L12.5 19.5 L9 18 L12.5 16.5 Z",
+      "fill": "$accent"
+    },
+    {
+      "kind": "path",
+      "d": "M86 13 L87.5 16.5 L91 18 L87.5 19.5 L86 23 L84.5 19.5 L81 18 L84.5 16.5 Z",
+      "fill": "$accent"
+    }
+  ]
+}

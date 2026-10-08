@@ -1,0 +1,80 @@
+{
+  "id": "badge-clean",
+  "version": 1,
+  "family": "personalized",
+  "label": { "es": "Credencial limpia", "en": "Clean badge" },
+  "description": {
+    "es": "Credencial nominal horizontal con foto circular y QR de verificación.",
+    "en": "Horizontal name badge with a circular photo and verification QR."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "personName",
+          "role": "display",
+          "box": { "x": 0.36, "y": 0.18, "w": 0.5, "h": 0.16 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "role",
+          "role": "bodyStrong",
+          "box": { "x": 0.36, "y": 0.37, "w": 0.5, "h": 0.08 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4
+        },
+        {
+          "key": "organization",
+          "role": "body",
+          "box": { "x": 0.36, "y": 0.46, "w": 0.52, "h": 0.09 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "identifier",
+          "role": "body",
+          "box": { "x": 0.36, "y": 0.59, "w": 0.4, "h": 0.07 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 3
+        },
+        {
+          "key": "validLabel",
+          "role": "body",
+          "box": { "x": 0.36, "y": 0.68, "w": 0.4, "h": 0.07 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "imageSlots": [
+        {
+          "key": "photo",
+          "box": { "x": 0.07, "y": 0.28, "w": 0.24, "h": 0.38 },
+          "fit": "cover",
+          "round": "circle"
+        }
+      ],
+      "qr": { "box": { "x": 0.79, "y": 0.6, "w": 0.15, "h": 0.238 } }
+    }
+  },
+  "fields": [
+    { "key": "personName", "type": "text", "required": true, "maxChars": 40, "overflow": "error" },
+    { "key": "role", "type": "text", "maxChars": 60, "overflow": "warn" },
+    { "key": "organization", "type": "text", "maxChars": 60, "overflow": "warn" },
+    { "key": "identifier", "type": "text", "maxChars": 40, "overflow": "warn" },
+    { "key": "validLabel", "type": "text", "maxChars": 40, "overflow": "warn" }
+  ],
+  "defaultPalette": "certificado-marfil",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": true, "illustration": false, "images": true }
+}

@@ -1,0 +1,97 @@
+{
+  "id": "laurel-branch",
+  "version": 1,
+  "label": { "es": "Rama de laurel", "en": "Laurel branch" },
+  "tags": ["formal", "nature"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M50 88 C33 82 21 68 21 50 C21 37 27 27 37 21",
+      "stroke": "$secondary",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "path",
+      "d": "M50 88 C67 82 79 68 79 50 C79 37 73 27 63 21",
+      "stroke": "$secondary",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "path",
+      "d": "M31 56 Q23 50 24 40 Q34 44 35 54 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M25 45 Q17 37 20 27 Q30 33 29 43 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M26 33 Q20 23 27 15 Q35 23 33 31 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M69 56 Q77 50 76 40 Q66 44 65 54 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M75 45 Q83 37 80 27 Q70 33 71 43 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M74 33 Q80 23 73 15 Q65 23 67 31 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M50 30 Q44 22 47 13 Q54 20 53 28 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "circle",
+      "cx": 44,
+      "cy": 80,
+      "r": 3.5,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "circle",
+      "cx": 56,
+      "cy": 80,
+      "r": 3.5,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 90,
+      "r": 3,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    }
+  ]
+}

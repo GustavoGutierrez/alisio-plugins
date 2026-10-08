@@ -1,0 +1,150 @@
+{
+  "id": "editorial-photo",
+  "version": 1,
+  "family": "social",
+  "label": { "es": "Editorial con foto", "en": "Editorial photo" },
+  "description": {
+    "es": "Foto dominante con antetítulo, titular y firma en jerarquía editorial.",
+    "en": "Photo-dominant card with kicker, headline and byline in editorial hierarchy."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "kicker",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.1, "w": 0.44, "h": 0.1 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 3.2
+        },
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.22, "w": 0.48, "h": 0.3 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 8
+        },
+        {
+          "key": "author",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.62, "w": 0.46, "h": 0.09 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 3.2
+        },
+        {
+          "key": "dateLabel",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.73, "w": 0.46, "h": 0.08 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        }
+      ],
+      "imageSlots": [
+        { "key": "photo", "box": { "x": 0.58, "y": 0, "w": 0.42, "h": 1 }, "fit": "cover" }
+      ]
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "kicker",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.58, "w": 0.5, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 3.0
+        },
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.65, "w": 0.88, "h": 0.19 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 7.5
+        },
+        {
+          "key": "author",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.86, "w": 0.45, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "dateLabel",
+          "role": "body",
+          "box": { "x": 0.53, "y": 0.86, "w": 0.41, "h": 0.05 },
+          "align": "right",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "imageSlots": [
+        { "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 0.52 }, "fit": "cover" }
+      ]
+    },
+    "portrait": {
+      "slots": [
+        {
+          "key": "kicker",
+          "role": "bodyStrong",
+          "box": { "x": 0.07, "y": 0.59, "w": 0.5, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.07, "y": 0.65, "w": 0.86, "h": 0.2 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 7
+        },
+        {
+          "key": "author",
+          "role": "bodyStrong",
+          "box": { "x": 0.07, "y": 0.87, "w": 0.45, "h": 0.045 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "dateLabel",
+          "role": "body",
+          "box": { "x": 0.53, "y": 0.87, "w": 0.4, "h": 0.045 },
+          "align": "right",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "imageSlots": [
+        { "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 0.54 }, "fit": "cover" }
+      ]
+    }
+  },
+  "fields": [
+    { "key": "kicker", "type": "text", "maxChars": 40, "overflow": "warn" },
+    { "key": "title", "type": "text", "required": true, "maxChars": 90, "overflow": "warn" },
+    { "key": "author", "type": "text", "maxChars": 60, "overflow": "warn" },
+    { "key": "dateLabel", "type": "text", "maxChars": 40, "overflow": "warn" }
+  ],
+  "defaultPalette": "alisio-ocean",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": false, "illustration": false, "images": true }
+}

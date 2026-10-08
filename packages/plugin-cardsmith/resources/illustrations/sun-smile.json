@@ -1,0 +1,29 @@
+{
+  "id": "sun-smile",
+  "version": 1,
+  "label": { "es": "Sol sonriente", "en": "Smiling sun" },
+  "tags": ["kawaii"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    { "kind": "path", "d": "M50 6 L50 18", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M50 82 L50 94", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M6 50 L18 50", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M82 50 L94 50", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M16 16 L25 25", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M75 25 L84 16", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M16 84 L25 75", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "path", "d": "M75 75 L84 84", "stroke": "$accent", "strokeWidth": 5 },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 50,
+      "r": 26,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    { "kind": "circle", "cx": 42, "cy": 46, "r": 2.4, "fill": "$text" },
+    { "kind": "circle", "cx": 58, "cy": 46, "r": 2.4, "fill": "$text" },
+    { "kind": "path", "d": "M41 57 Q50 65 59 57", "stroke": "$text", "strokeWidth": 3 }
+  ]
+}

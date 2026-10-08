@@ -1,0 +1,18 @@
+{
+  "id": "alisio-ocean",
+  "version": 1,
+  "label": { "es": "Océano Alisio", "en": "Alisio ocean" },
+  "tokens": {
+    "background": "#071C2C",
+    "text": "#F4FBFF",
+    "primary": "#01A5F7",
+    "secondary": "#60E0F9",
+    "accent": "#A7DBED"
+  },
+  "textOn": {
+    "background": ["text"],
+    "primary": ["background"],
+    "secondary": ["background"],
+    "accent": ["background"]
+  }
+}

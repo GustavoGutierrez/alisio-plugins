@@ -1,0 +1,50 @@
+{
+  "id": "medal-ribbon",
+  "version": 1,
+  "label": { "es": "Medalla con cinta", "en": "Medal ribbon" },
+  "tags": ["formal"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M34 58 L22 94 L36 86 L42 94 L50 62 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M66 58 L78 94 L64 86 L58 94 L50 62 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 44,
+      "r": 26,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 44,
+      "r": 20,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M50 31 L53.2 39.6 L62.4 40 L55.2 45.7 L57.6 54.5 L50 49.5 L42.4 54.5 L44.8 45.7 L37.6 40 L46.8 39.6 Z",
+      "fill": "$primary",
+      "stroke": "#181818",
+      "strokeWidth": 1.5
+    },
+    { "kind": "circle", "cx": 50, "cy": 21, "r": 2, "fill": "$text" },
+    { "kind": "circle", "cx": 50, "cy": 67, "r": 2, "fill": "$text" }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "id": "donut",
+  "version": 1,
+  "family": "chart",
+  "label": { "es": "Gráfica de dona", "en": "Donut chart" },
+  "description": {
+    "es": "Dona para valores no negativos con total positivo y espacio central.",
+    "en": "Donut for non-negative values with a positive total and a center hole."
+  },
+  "layouts": {
+    "square": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.07, "w": 0.84, "h": 0.13 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "unit",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.22, "w": 0.3, "h": 0.04 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        },
+        {
+          "key": "source",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.88, "w": 0.6, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        }
+      ],
+      "plot": { "x": 0.22, "y": 0.3, "w": 0.56, "h": 0.52 }
+    },
+    "landscape": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.08, "w": 0.88, "h": 0.14 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "unit",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.28, "w": 0.2, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        },
+        {
+          "key": "source",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.9, "w": 0.6, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        }
+      ],
+      "plot": { "x": 0.32, "y": 0.28, "w": 0.36, "h": 0.6 }
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "maxChars": 90, "overflow": "warn" },
+    { "key": "unit", "type": "text", "maxChars": 20, "overflow": "warn" },
+    { "key": "categories", "type": "string[]", "required": true, "overflow": "warn" },
+    { "key": "series", "type": "series", "required": true, "overflow": "warn" },
+    { "key": "source", "type": "text", "maxChars": 60, "overflow": "warn" }
+  ],
+  "defaultPalette": "alisio-ocean",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": false, "illustration": false, "images": false }
+}

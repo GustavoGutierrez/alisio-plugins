@@ -1,0 +1,129 @@
+{
+  "id": "seal-ring",
+  "version": 1,
+  "label": { "es": "Sello", "en": "Seal" },
+  "tags": ["formal"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 50,
+      "r": 40,
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 50,
+      "r": 30,
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M50 31 L56 44 L69 50 L56 56 L50 69 L44 56 L31 50 L44 44 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 85,
+      "cy": 50,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 15,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 15,
+      "cy": 50,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 85,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 74.7,
+      "cy": 25.3,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 74.7,
+      "cy": 74.7,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 25.3,
+      "cy": 74.7,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "circle",
+      "cx": 25.3,
+      "cy": 25.3,
+      "r": 2.6,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1
+    },
+    {
+      "kind": "path",
+      "d": "M32 82 L24 96 L38 90 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M68 82 L76 96 L62 90 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 86,
+      "r": 5,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    }
+  ]
+}

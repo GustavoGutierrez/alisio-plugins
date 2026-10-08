@@ -1,0 +1,107 @@
+{
+  "id": "image-collage",
+  "version": 1,
+  "family": "composite",
+  "label": { "es": "Collage de imágenes", "en": "Image collage" },
+  "description": {
+    "es": "Cuadrícula de hasta cuatro fotos con título y leyenda.",
+    "en": "Grid of up to four photos with a title and caption."
+  },
+  "layouts": {
+    "square": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.06, "w": 0.84, "h": 0.08 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4.5
+        },
+        {
+          "key": "caption",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.85, "w": 0.84, "h": 0.11 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3
+        }
+      ],
+      "imageSlots": [
+        {
+          "key": "photoA",
+          "box": { "x": 0.06, "y": 0.16, "w": 0.435, "h": 0.37 },
+          "fit": "contain"
+        },
+        {
+          "key": "photoB",
+          "box": { "x": 0.505, "y": 0.16, "w": 0.435, "h": 0.37 },
+          "fit": "contain"
+        },
+        {
+          "key": "photoC",
+          "box": { "x": 0.06, "y": 0.55, "w": 0.435, "h": 0.28 },
+          "fit": "contain"
+        },
+        {
+          "key": "photoD",
+          "box": { "x": 0.505, "y": 0.55, "w": 0.435, "h": 0.28 },
+          "fit": "contain"
+        }
+      ]
+    },
+    "portrait": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.05, "w": 0.84, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4
+        },
+        {
+          "key": "caption",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.76, "w": 0.84, "h": 0.12 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3
+        }
+      ],
+      "imageSlots": [
+        {
+          "key": "photoA",
+          "box": { "x": 0.06, "y": 0.13, "w": 0.435, "h": 0.29 },
+          "fit": "contain"
+        },
+        {
+          "key": "photoB",
+          "box": { "x": 0.505, "y": 0.13, "w": 0.435, "h": 0.29 },
+          "fit": "contain"
+        },
+        {
+          "key": "photoC",
+          "box": { "x": 0.06, "y": 0.44, "w": 0.435, "h": 0.29 },
+          "fit": "contain"
+        },
+        {
+          "key": "photoD",
+          "box": { "x": 0.505, "y": 0.44, "w": 0.435, "h": 0.29 },
+          "fit": "contain"
+        }
+      ]
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "maxChars": 80, "overflow": "warn" },
+    { "key": "caption", "type": "text", "maxChars": 120, "overflow": "warn" }
+  ],
+  "defaultPalette": "amistad-pastel",
+  "defaultFontPair": "handwritten-readable",
+  "supports": { "qr": false, "illustration": false, "images": true }
+}

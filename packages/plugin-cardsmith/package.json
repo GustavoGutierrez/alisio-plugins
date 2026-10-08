@@ -1,0 +1,65 @@
+{
+  "name": "@alisio/plugin-cardsmith",
+  "version": "0.1.0",
+  "description": "Generates finished card images from chat requests: social cards, certificates, badges, banners, photo composites, charts and dynamic data cards.",
+  "keywords": [
+    "alisio-plugin",
+    "images",
+    "cards",
+    "templates",
+    "png"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-cardsmith"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-cardsmith#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    }
+  },
+  "files": [
+    "dist",
+    ".agents",
+    "resources",
+    "assets",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "cover.svg"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "1.0.10"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": "^0.5.1"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.5.1",
+    "jsqr": "1.4.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

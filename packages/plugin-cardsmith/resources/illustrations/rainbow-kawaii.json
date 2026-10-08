@@ -1,0 +1,32 @@
+{
+  "id": "rainbow-kawaii",
+  "version": 1,
+  "label": { "es": "Arcoíris kawaii", "en": "Kawaii rainbow" },
+  "tags": ["kawaii", "decoration"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    { "kind": "path", "d": "M18 80 A32 32 0 0 1 82 80", "stroke": "$primary", "strokeWidth": 8 },
+    { "kind": "path", "d": "M26 80 A24 24 0 0 1 74 80", "stroke": "$accent", "strokeWidth": 8 },
+    { "kind": "path", "d": "M34 80 A16 16 0 0 1 66 80", "stroke": "$secondary", "strokeWidth": 8 },
+    {
+      "kind": "path",
+      "d": "M8 84 C2 84 0 78 4 74 C3 67 10 63 16 66 C18 60 27 59 31 64 C37 62 43 67 41 74 C44 78 41 84 35 84 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    { "kind": "path", "d": "M15 72 Q18 75 21 72", "stroke": "$text", "strokeWidth": 2 },
+    { "kind": "path", "d": "M25 72 Q28 75 31 72", "stroke": "$text", "strokeWidth": 2 },
+    { "kind": "path", "d": "M20 77 Q23 80 26 77", "stroke": "$text", "strokeWidth": 2 },
+    {
+      "kind": "path",
+      "d": "M59 84 C53 84 51 78 55 74 C54 67 61 63 67 66 C69 60 78 59 82 64 C88 62 94 67 92 74 C95 78 92 84 86 84 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    { "kind": "path", "d": "M66 72 Q69 75 72 72", "stroke": "$text", "strokeWidth": 2 },
+    { "kind": "path", "d": "M76 72 Q79 75 82 72", "stroke": "$text", "strokeWidth": 2 },
+    { "kind": "path", "d": "M71 77 Q74 80 77 77", "stroke": "$text", "strokeWidth": 2 }
+  ]
+}

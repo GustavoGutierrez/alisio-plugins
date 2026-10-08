@@ -1,0 +1,84 @@
+{
+  "id": "gear-cog",
+  "version": 1,
+  "label": { "es": "Engranaje", "en": "Gear cog" },
+  "tags": ["technical"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M77.3 43.7 L88 41.2 L88 58.8 L77.3 56.3 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M73.7 64.8 L83.1 70.7 L70.7 83.1 L64.8 73.7 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M56.3 77.3 L58.8 88 L41.2 88 L43.7 77.3 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M35.2 73.7 L29.3 83.1 L16.9 70.7 L26.3 64.8 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M22.7 56.3 L12 58.8 L12 41.2 L22.7 43.7 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M26.3 35.2 L16.9 29.3 L29.3 16.9 L35.2 26.3 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M43.7 22.7 L41.2 12 L58.8 12 L56.3 22.7 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M64.8 26.3 L70.7 16.9 L83.1 29.3 L73.7 35.2 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 50,
+      "r": 30,
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "circle",
+      "cx": 50,
+      "cy": 50,
+      "r": 12,
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    { "kind": "circle", "cx": 50, "cy": 50, "r": 4, "fill": "$text" }
+  ]
+}

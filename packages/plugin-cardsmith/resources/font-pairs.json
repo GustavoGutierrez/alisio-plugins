@@ -1,0 +1,207 @@
+[
+  {
+    "id": "handwritten-readable",
+    "version": 1,
+    "label": { "es": "Manuscrita legible", "en": "Readable handwriting" },
+    "families": {
+      "Patrick Hand": {
+        "files": { "400": "PatrickHand-Regular.ttf" }
+      },
+      "Inter": {
+        "files": { "400": "Inter-Regular.ttf", "600": "Inter-SemiBold.ttf" }
+      }
+    },
+    "roles": {
+      "display": {
+        "family": "Patrick Hand",
+        "file": "PatrickHand-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithPatrickHand400"
+      },
+      "body": {
+        "family": "Inter",
+        "file": "Inter-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithInter400"
+      },
+      "bodyStrong": {
+        "family": "Inter",
+        "file": "Inter-SemiBold.ttf",
+        "weight": 600,
+        "alias": "CardsmithInter600"
+      }
+    },
+    "cssFontAlias": "CardsmithHandwrittenReadable"
+  },
+  {
+    "id": "handwritten-elegant",
+    "version": 1,
+    "label": { "es": "Manuscrita elegante", "en": "Elegant handwriting" },
+    "families": {
+      "Caveat": {
+        "files": { "700": "Caveat-Bold.ttf" }
+      },
+      "Cormorant Garamond": {
+        "files": {
+          "400": "CormorantGaramond-Regular.ttf",
+          "600": "CormorantGaramond-SemiBold.ttf"
+        }
+      }
+    },
+    "roles": {
+      "display": {
+        "family": "Caveat",
+        "file": "Caveat-Bold.ttf",
+        "weight": 700,
+        "alias": "CardsmithCaveat700"
+      },
+      "body": {
+        "family": "Cormorant Garamond",
+        "file": "CormorantGaramond-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithCormorantGaramond400"
+      },
+      "bodyStrong": {
+        "family": "Cormorant Garamond",
+        "file": "CormorantGaramond-SemiBold.ttf",
+        "weight": 600,
+        "alias": "CardsmithCormorantGaramond600"
+      }
+    },
+    "cssFontAlias": "CardsmithHandwrittenElegant"
+  },
+  {
+    "id": "playful",
+    "version": 1,
+    "label": { "es": "Divertida", "en": "Playful" },
+    "families": {
+      "Chewy": {
+        "files": { "400": "Chewy-Regular.ttf" }
+      },
+      "Inter": {
+        "files": { "400": "Inter-Regular.ttf", "600": "Inter-SemiBold.ttf" }
+      }
+    },
+    "roles": {
+      "display": {
+        "family": "Chewy",
+        "file": "Chewy-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithChewy400"
+      },
+      "body": {
+        "family": "Inter",
+        "file": "Inter-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithInter400"
+      },
+      "bodyStrong": {
+        "family": "Inter",
+        "file": "Inter-SemiBold.ttf",
+        "weight": 600,
+        "alias": "CardsmithInter600"
+      }
+    },
+    "cssFontAlias": "CardsmithPlayful"
+  },
+  {
+    "id": "editorial",
+    "version": 1,
+    "label": { "es": "Editorial", "en": "Editorial" },
+    "families": {
+      "Inter": {
+        "files": {
+          "400": "Inter-Regular.ttf",
+          "600": "Inter-SemiBold.ttf",
+          "700": "Inter-Bold.ttf"
+        }
+      }
+    },
+    "roles": {
+      "display": {
+        "family": "Inter",
+        "file": "Inter-Bold.ttf",
+        "weight": 700,
+        "alias": "CardsmithInter700"
+      },
+      "body": {
+        "family": "Inter",
+        "file": "Inter-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithInter400"
+      },
+      "bodyStrong": {
+        "family": "Inter",
+        "file": "Inter-SemiBold.ttf",
+        "weight": 600,
+        "alias": "CardsmithInter600"
+      }
+    },
+    "cssFontAlias": "CardsmithEditorial"
+  },
+  {
+    "id": "classic-serif",
+    "version": 1,
+    "label": { "es": "Serif clásica", "en": "Classic serif" },
+    "families": {
+      "Cormorant Garamond": {
+        "files": { "600": "CormorantGaramond-SemiBold.ttf" }
+      },
+      "Inter": {
+        "files": { "400": "Inter-Regular.ttf", "600": "Inter-SemiBold.ttf" }
+      }
+    },
+    "roles": {
+      "display": {
+        "family": "Cormorant Garamond",
+        "file": "CormorantGaramond-SemiBold.ttf",
+        "weight": 600,
+        "alias": "CardsmithCormorantGaramond600"
+      },
+      "body": {
+        "family": "Inter",
+        "file": "Inter-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithInter400"
+      },
+      "bodyStrong": {
+        "family": "Inter",
+        "file": "Inter-SemiBold.ttf",
+        "weight": 600,
+        "alias": "CardsmithInter600"
+      }
+    },
+    "cssFontAlias": "CardsmithClassicSerif"
+  },
+  {
+    "id": "handwritten-note",
+    "version": 1,
+    "label": { "es": "Nota manuscrita", "en": "Handwritten note" },
+    "families": {
+      "Caveat": {
+        "files": { "400": "Caveat-Regular.ttf", "700": "Caveat-Bold.ttf" }
+      }
+    },
+    "roles": {
+      "display": {
+        "family": "Caveat",
+        "file": "Caveat-Bold.ttf",
+        "weight": 700,
+        "alias": "CardsmithCaveat700"
+      },
+      "body": {
+        "family": "Caveat",
+        "file": "Caveat-Regular.ttf",
+        "weight": 400,
+        "alias": "CardsmithCaveat400"
+      },
+      "bodyStrong": {
+        "family": "Caveat",
+        "file": "Caveat-Bold.ttf",
+        "weight": 700,
+        "alias": "CardsmithCaveat700"
+      }
+    },
+    "cssFontAlias": "CardsmithHandwrittenNote"
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "id": "watermark",
+  "version": 1,
+  "family": "composite",
+  "label": { "es": "Marca de agua", "en": "Watermark" },
+  "description": {
+    "es": "Foto a sangre con un texto central grande a modo de marca de agua.",
+    "en": "Full-bleed photo with large centered overlay text as a watermark."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "watermarkText",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.38, "w": 0.84, "h": 0.22 },
+          "align": "center",
+          "valign": "middle",
+          "maxLines": 2,
+          "maxSizePct": 9
+        }
+      ],
+      "imageSlots": [{ "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 1 }, "fit": "cover" }]
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "watermarkText",
+          "role": "display",
+          "box": { "x": 0.1, "y": 0.4, "w": 0.8, "h": 0.2 },
+          "align": "center",
+          "valign": "middle",
+          "maxLines": 2,
+          "maxSizePct": 7.5
+        }
+      ],
+      "imageSlots": [{ "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 1 }, "fit": "cover" }]
+    }
+  },
+  "fields": [
+    { "key": "watermarkText", "type": "text", "required": true, "maxChars": 60, "overflow": "warn" }
+  ],
+  "defaultPalette": "alisio-ocean",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": false, "illustration": false, "images": true }
+}

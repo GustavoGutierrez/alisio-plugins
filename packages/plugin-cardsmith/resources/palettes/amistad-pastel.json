@@ -1,0 +1,18 @@
+{
+  "id": "amistad-pastel",
+  "version": 1,
+  "label": { "es": "Amistad pastel", "en": "Pastel friendship" },
+  "tokens": {
+    "background": "#FFF8EF",
+    "text": "#313139",
+    "primary": "#FF82A7",
+    "secondary": "#8BD0CB",
+    "accent": "#FFE071"
+  },
+  "textOn": {
+    "background": ["text"],
+    "primary": ["text"],
+    "secondary": ["text"],
+    "accent": ["text"]
+  }
+}

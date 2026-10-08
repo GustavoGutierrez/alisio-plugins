@@ -1,0 +1,17 @@
+{
+  "id": "amor-calido",
+  "version": 1,
+  "label": { "es": "Amor cálido", "en": "Warm love" },
+  "tokens": {
+    "background": "#FFD59A",
+    "text": "#241A16",
+    "primary": "#90AD63",
+    "secondary": "#B79A80",
+    "accent": "#EC3B49"
+  },
+  "textOn": {
+    "background": ["text"],
+    "primary": ["text"],
+    "secondary": ["text"]
+  }
+}

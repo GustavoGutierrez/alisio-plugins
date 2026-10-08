@@ -1,0 +1,23 @@
+{
+  "id": "sparkle-basic",
+  "version": 1,
+  "label": { "es": "Destello básico", "en": "Basic sparkle" },
+  "tags": ["decoration"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M 50 6 L 61 39 L 94 50 L 61 61 L 50 94 L 39 61 L 6 50 L 39 39 Z",
+      "fill": "$accent"
+    },
+    {
+      "kind": "path",
+      "d": "M 50 6 L 61 39 L 94 50 L 61 61 L 50 94 L 39 61 L 6 50 L 39 39 Z",
+      "stroke": "$text",
+      "strokeWidth": 4
+    },
+    { "kind": "circle", "cx": 82, "cy": 20, "r": 5, "fill": "$primary" },
+    { "kind": "ellipse", "cx": 20, "cy": 78, "rx": 7, "ry": 4, "fill": "$secondary" },
+    { "kind": "rect", "x": 72, "y": 74, "w": 10, "h": 10, "radius": 3, "fill": "$decorative" }
+  ]
+}

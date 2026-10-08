@@ -1,0 +1,49 @@
+{
+  "id": "corner-flourish",
+  "version": 1,
+  "label": { "es": "Filigrana de esquina", "en": "Corner flourish" },
+  "tags": ["formal", "decoration"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M6 96 C30 93 48 82 60 64 C68 52 68 39 60 30",
+      "stroke": "$secondary",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "path",
+      "d": "M60 30 C53 22 42 23 39 31 C37 37 42 43 48 41",
+      "stroke": "$secondary",
+      "strokeWidth": 3
+    },
+    {
+      "kind": "path",
+      "d": "M12 86 C28 84 40 75 48 60 C52 51 50 43 44 38",
+      "stroke": "$secondary",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M30 76 C22 71 21 60 30 57 C36 63 36 72 30 76 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    {
+      "kind": "path",
+      "d": "M52 52 C45 47 45 37 54 35 C59 41 59 49 52 52 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 1.5
+    },
+    { "kind": "circle", "cx": 68, "cy": 20, "r": 3, "fill": "$accent" },
+    { "kind": "circle", "cx": 16, "cy": 92, "r": 2.5, "fill": "$accent" },
+    { "kind": "circle", "cx": 40, "cy": 88, "r": 2, "fill": "$primary" },
+    {
+      "kind": "path",
+      "d": "M74 38 L75.5 41 L79 42.5 L75.5 44 L74 47.5 L72.5 44 L69 42.5 L72.5 41 Z",
+      "fill": "$accent"
+    }
+  ]
+}

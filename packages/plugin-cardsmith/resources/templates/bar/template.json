@@ -1,0 +1,86 @@
+{
+  "id": "bar",
+  "version": 1,
+  "family": "chart",
+  "label": { "es": "Gráfica de barras", "en": "Bar chart" },
+  "description": {
+    "es": "Barras con eje de magnitud desde cero, categorías y unidades.",
+    "en": "Bars with a magnitude axis from zero, categories and units."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.06, "w": 0.88, "h": 0.14 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 5.5
+        },
+        {
+          "key": "unit",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.215, "w": 0.3, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        },
+        {
+          "key": "source",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.89, "w": 0.6, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        }
+      ],
+      "plot": { "x": 0.06, "y": 0.29, "w": 0.88, "h": 0.57 }
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.06, "w": 0.84, "h": 0.13 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 5
+        },
+        {
+          "key": "unit",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.2, "w": 0.3, "h": 0.04 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        },
+        {
+          "key": "source",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.9, "w": 0.6, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.4
+        }
+      ],
+      "plot": { "x": 0.08, "y": 0.27, "w": 0.84, "h": 0.6 }
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "maxChars": 90, "overflow": "warn" },
+    { "key": "unit", "type": "text", "maxChars": 20, "overflow": "warn" },
+    { "key": "categories", "type": "string[]", "required": true, "overflow": "warn" },
+    { "key": "series", "type": "series", "required": true, "overflow": "warn" },
+    { "key": "source", "type": "text", "maxChars": 60, "overflow": "warn" }
+  ],
+  "defaultPalette": "alisio-ocean",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": false, "illustration": false, "images": false }
+}

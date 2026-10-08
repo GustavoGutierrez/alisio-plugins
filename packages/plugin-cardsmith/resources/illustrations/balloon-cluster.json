@@ -1,0 +1,57 @@
+{
+  "id": "balloon-cluster",
+  "version": 1,
+  "label": { "es": "Racimo de globos", "en": "Balloon cluster" },
+  "tags": ["kawaii", "birthday"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M24 26 C15 26 10 33 10 41 C10 50 17 56 24 56 C31 56 38 50 38 41 C38 33 33 26 24 26 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M76 26 C67 26 62 33 62 41 C62 50 69 56 76 56 C83 56 90 50 90 41 C90 33 85 26 76 26 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    {
+      "kind": "path",
+      "d": "M50 10 C39 10 32 19 32 30 C32 42 41 50 50 50 C59 50 68 42 68 30 C68 19 61 10 50 10 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2.5
+    },
+    { "kind": "path", "d": "M24 61 Q28 74 38 86", "stroke": "$text", "strokeWidth": 2 },
+    { "kind": "path", "d": "M76 61 Q72 74 62 86", "stroke": "$text", "strokeWidth": 2 },
+    { "kind": "path", "d": "M50 56 Q46 70 50 86", "stroke": "$text", "strokeWidth": 2 },
+    {
+      "kind": "path",
+      "d": "M21 56 L24 61 L27 56 Z",
+      "fill": "$accent",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M73 56 L76 61 L79 56 Z",
+      "fill": "$secondary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    {
+      "kind": "path",
+      "d": "M46 50 L50 56 L54 50 Z",
+      "fill": "$primary",
+      "stroke": "$text",
+      "strokeWidth": 2
+    },
+    { "kind": "ellipse", "cx": 16, "cy": 33, "rx": 2, "ry": 3.5, "fill": "$secondary" },
+    { "kind": "ellipse", "cx": 68, "cy": 33, "rx": 2, "ry": 3.5, "fill": "$primary" },
+    { "kind": "ellipse", "cx": 43, "cy": 21, "rx": 2.5, "ry": 4, "fill": "$accent" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "retro-calido",
+  "version": 1,
+  "label": { "es": "Retro cálido", "en": "Warm retro" },
+  "tokens": {
+    "background": "#FFF3DE",
+    "text": "#17140F",
+    "primary": "#E95026",
+    "secondary": "#D64293",
+    "accent": "#F8C53F",
+    "decorative": ["#8D8D35"]
+  },
+  "textOn": {
+    "background": ["text"],
+    "primary": ["text"],
+    "accent": ["text"]
+  }
+}

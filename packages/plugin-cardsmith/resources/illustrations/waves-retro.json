@@ -1,0 +1,27 @@
+{
+  "id": "waves-retro",
+  "version": 1,
+  "label": { "es": "Ondas retro", "en": "Retro waves" },
+  "tags": ["retro", "decoration"],
+  "viewBox": [0, 0, 100, 40],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M0 14 Q12 6 25 14 T50 14 T75 14 T100 14 L100 40 L0 40 Z",
+      "fill": "$accent"
+    },
+    {
+      "kind": "path",
+      "d": "M0 21 Q12 13 25 21 T50 21 T75 21 T100 21 L100 40 L0 40 Z",
+      "fill": "$secondary"
+    },
+    {
+      "kind": "path",
+      "d": "M0 29 Q12 21 25 29 T50 29 T75 29 T100 29 L100 40 L0 40 Z",
+      "fill": "$primary"
+    },
+    { "kind": "circle", "cx": 18, "cy": 25, "r": 2.5, "fill": "$text" },
+    { "kind": "circle", "cx": 52, "cy": 22, "r": 2, "fill": "$text" },
+    { "kind": "circle", "cx": 82, "cy": 26, "r": 2.5, "fill": "$text" }
+  ]
+}

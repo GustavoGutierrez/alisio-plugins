@@ -1,0 +1,93 @@
+{
+  "id": "metric-summary",
+  "version": 1,
+  "family": "social",
+  "label": { "es": "Resumen de métricas", "en": "Metric summary" },
+  "description": {
+    "es": "Titular y lista tipográfica de métricas con línea de fuente.",
+    "en": "Headline and typographic list of metrics with a source line."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.08, "w": 0.72, "h": 0.16 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6
+        },
+        {
+          "key": "metrics",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.3, "w": 0.88, "h": 0.5 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 6,
+          "maxSizePct": 3.6
+        },
+        {
+          "key": "source",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.86, "w": 0.6, "h": 0.07 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "plot": { "x": 0.06, "y": 0.3, "w": 0.88, "h": 0.5 }
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.09, "w": 0.84, "h": 0.14 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 5.5
+        },
+        {
+          "key": "metrics",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.27, "w": 0.84, "h": 0.54 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 6,
+          "maxSizePct": 3.8
+        },
+        {
+          "key": "source",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.88, "w": 0.6, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.5
+        }
+      ],
+      "plot": { "x": 0.08, "y": 0.27, "w": 0.84, "h": 0.54 }
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "maxChars": 70, "overflow": "warn" },
+    {
+      "key": "metrics",
+      "type": "string[]",
+      "required": true,
+      "label": {
+        "es": "Métricas (una por línea, formato Etiqueta | Valor)",
+        "en": "Metrics (one per line, Label | Value format)"
+      },
+      "overflow": "warn"
+    },
+    { "key": "source", "type": "text", "maxChars": 60, "overflow": "warn" }
+  ],
+  "defaultPalette": "alisio-ocean",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": false, "illustration": false, "images": false }
+}

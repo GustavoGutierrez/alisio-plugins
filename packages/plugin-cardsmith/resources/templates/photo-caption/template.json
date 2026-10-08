@@ -1,0 +1,122 @@
+{
+  "id": "photo-caption",
+  "version": 1,
+  "family": "composite",
+  "label": { "es": "Foto con leyenda", "en": "Photo caption" },
+  "description": {
+    "es": "Foto dominante a sangre con leyenda, autoría y lugar.",
+    "en": "Full-bleed dominant photo with caption, credit and location."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "caption",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.76, "w": 0.7, "h": 0.1 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 3.2
+        },
+        {
+          "key": "author",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.88, "w": 0.4, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        },
+        {
+          "key": "locationLabel",
+          "role": "body",
+          "box": { "x": 0.52, "y": 0.88, "w": 0.42, "h": 0.06 },
+          "align": "right",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "imageSlots": [
+        { "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 0.72 }, "fit": "cover" }
+      ]
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "caption",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.72, "w": 0.84, "h": 0.1 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "author",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.85, "w": 0.4, "h": 0.055 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        },
+        {
+          "key": "locationLabel",
+          "role": "body",
+          "box": { "x": 0.52, "y": 0.85, "w": 0.4, "h": 0.055 },
+          "align": "right",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "imageSlots": [
+        { "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 0.68 }, "fit": "cover" }
+      ]
+    },
+    "portrait": {
+      "slots": [
+        {
+          "key": "caption",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.75, "w": 0.84, "h": 0.08 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 3
+        },
+        {
+          "key": "author",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.86, "w": 0.4, "h": 0.045 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        },
+        {
+          "key": "locationLabel",
+          "role": "body",
+          "box": { "x": 0.52, "y": 0.86, "w": 0.4, "h": 0.045 },
+          "align": "right",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.6
+        }
+      ],
+      "imageSlots": [
+        { "key": "photo", "box": { "x": 0, "y": 0, "w": 1, "h": 0.72 }, "fit": "cover" }
+      ]
+    }
+  },
+  "fields": [
+    { "key": "caption", "type": "text", "required": true, "maxChars": 120, "overflow": "warn" },
+    { "key": "author", "type": "text", "maxChars": 60, "overflow": "warn" },
+    { "key": "locationLabel", "type": "text", "maxChars": 60, "overflow": "warn" }
+  ],
+  "defaultPalette": "certificado-marfil",
+  "defaultFontPair": "editorial",
+  "supports": { "qr": false, "illustration": false, "images": true }
+}

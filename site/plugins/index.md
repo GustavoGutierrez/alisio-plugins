@@ -9,6 +9,7 @@ Install any plugin with `alisio install npm:<package>`. See the [catalog home](/
 
 - [Atlassian](./atlassian) — Read-first Jira, Confluence, and Agile tools with strict environment configuration, opt-in writes, and untrusted-content framing (`tools`)
 - [Brave Search](./brave-search) — Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback (`search`, `tools`)
+- [Cardsmith](./cardsmith) — Generates finished card images from chat requests: social cards, certificates, badges, banners, photo composites, charts and dynamic data cards. (`tools`)
 - [Context7 Docs](./context7) — Resolve library names and fetch third-party documentation from the Context7 hosted service (`tools`)
 - [DeepSeek](./deepseek) — Dedicated DeepSeek Chat Completions and Responses provider (`model-provider`)
 - [Evalua](./evalua) — Guides teachers through a short interview for printable school math exams and keeps the teacher profile, workspace and exam numbering. (`methodology-harness`)

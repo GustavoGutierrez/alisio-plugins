@@ -1,0 +1,91 @@
+{
+  "id": "illustrated-greeting",
+  "version": 1,
+  "family": "social",
+  "label": { "es": "Felicitación ilustrada", "en": "Illustrated greeting" },
+  "description": {
+    "es": "Frase y mensaje con una ilustración protagonista y remate de firma.",
+    "en": "Title and message with a protagonist illustration and a signature close."
+  },
+  "layouts": {
+    "portrait": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.1, "w": 0.84, "h": 0.18 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 7
+        },
+        {
+          "key": "message",
+          "role": "body",
+          "box": { "x": 0.1, "y": 0.71, "w": 0.8, "h": 0.14 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "author",
+          "role": "bodyStrong",
+          "box": { "x": 0.2, "y": 0.88, "w": 0.6, "h": 0.05 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.24, "y": 0.31, "w": 0.52, "h": 0.36 },
+        "defaultId": "flower-happy"
+      }
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "title",
+          "role": "display",
+          "box": { "x": 0.1, "y": 0.09, "w": 0.8, "h": 0.17 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 6.5
+        },
+        {
+          "key": "message",
+          "role": "body",
+          "box": { "x": 0.12, "y": 0.67, "w": 0.76, "h": 0.15 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "author",
+          "role": "bodyStrong",
+          "box": { "x": 0.25, "y": 0.87, "w": 0.5, "h": 0.055 },
+          "align": "center",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.28, "y": 0.3, "w": 0.44, "h": 0.34 },
+        "defaultId": "flower-happy"
+      }
+    }
+  },
+  "fields": [
+    { "key": "title", "type": "text", "required": true, "maxChars": 80, "overflow": "warn" },
+    { "key": "message", "type": "text", "maxChars": 200, "overflow": "warn" },
+    { "key": "author", "type": "text", "maxChars": 40, "overflow": "warn" }
+  ],
+  "defaultPalette": "alegria-botanica",
+  "defaultFontPair": "handwritten-readable",
+  "supports": { "qr": false, "illustration": true, "images": false },
+  "accentIllustrations": ["flower-happy", "sun-smile", "heart-pair", "cloud-soft"]
+}

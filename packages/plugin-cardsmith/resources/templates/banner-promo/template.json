@@ -1,0 +1,118 @@
+{
+  "id": "banner-promo",
+  "version": 1,
+  "family": "personalized",
+  "label": { "es": "Banner promocional", "en": "Promo banner" },
+  "description": {
+    "es": "Anuncio con titular, llamada a la acción, cinta decorativa y QR.",
+    "en": "Announcement with headline, call to action, decorative ribbon and QR."
+  },
+  "layouts": {
+    "landscape": {
+      "slots": [
+        {
+          "key": "brand",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.08, "w": 0.3, "h": 0.06 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "headline",
+          "role": "display",
+          "box": { "x": 0.06, "y": 0.17, "w": 0.6, "h": 0.27 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 9
+        },
+        {
+          "key": "subhead",
+          "role": "body",
+          "box": { "x": 0.06, "y": 0.46, "w": 0.56, "h": 0.16 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3.6
+        },
+        {
+          "key": "cta",
+          "role": "bodyStrong",
+          "box": { "x": 0.06, "y": 0.65, "w": 0.34, "h": 0.1 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.68, "y": 0.08, "w": 0.28, "h": 0.36 },
+        "defaultId": "ribbon-banner"
+      },
+      "imageSlots": [
+        { "key": "product", "box": { "x": 0.62, "y": 0.5, "w": 0.18, "h": 0.36 }, "fit": "cover" }
+      ],
+      "qr": { "box": { "x": 0.82, "y": 0.5, "w": 0.14, "h": 0.21 } }
+    },
+    "square": {
+      "slots": [
+        {
+          "key": "brand",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.08, "w": 0.4, "h": 0.05 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 2.8
+        },
+        {
+          "key": "headline",
+          "role": "display",
+          "box": { "x": 0.08, "y": 0.15, "w": 0.52, "h": 0.22 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 2,
+          "maxSizePct": 8
+        },
+        {
+          "key": "subhead",
+          "role": "body",
+          "box": { "x": 0.08, "y": 0.4, "w": 0.52, "h": 0.15 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 3,
+          "maxSizePct": 3.4
+        },
+        {
+          "key": "cta",
+          "role": "bodyStrong",
+          "box": { "x": 0.08, "y": 0.57, "w": 0.4, "h": 0.08 },
+          "align": "left",
+          "valign": "top",
+          "maxLines": 1,
+          "maxSizePct": 4
+        }
+      ],
+      "illustration": {
+        "box": { "x": 0.55, "y": 0.55, "w": 0.39, "h": 0.22 },
+        "defaultId": "ribbon-banner"
+      },
+      "imageSlots": [
+        { "key": "product", "box": { "x": 0.62, "y": 0.08, "w": 0.3, "h": 0.2 }, "fit": "cover" }
+      ],
+      "qr": { "box": { "x": 0.74, "y": 0.78, "w": 0.14, "h": 0.14 } }
+    }
+  },
+  "fields": [
+    { "key": "headline", "type": "text", "required": true, "maxChars": 90, "overflow": "warn" },
+    { "key": "subhead", "type": "text", "maxChars": 140, "overflow": "warn" },
+    { "key": "cta", "type": "text", "maxChars": 40, "overflow": "warn" },
+    { "key": "brand", "type": "text", "maxChars": 40, "overflow": "warn" }
+  ],
+  "defaultPalette": "retro-calido",
+  "defaultFontPair": "playful",
+  "supports": { "qr": true, "illustration": true, "images": true },
+  "accentIllustrations": ["ribbon-banner", "sparkle-cluster"]
+}

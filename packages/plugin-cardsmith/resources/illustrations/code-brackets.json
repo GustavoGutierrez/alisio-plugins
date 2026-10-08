@@ -1,0 +1,27 @@
+{
+  "id": "code-brackets",
+  "version": 1,
+  "label": { "es": "Llaves de código", "en": "Code brackets" },
+  "tags": ["technical"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    {
+      "kind": "path",
+      "d": "M36 10 C27 10 27 20 27 30 C27 39 24 42 18 44 C24 46 27 49 27 58 C27 68 27 78 36 78",
+      "stroke": "$text",
+      "strokeWidth": 4
+    },
+    {
+      "kind": "path",
+      "d": "M64 10 C73 10 73 20 73 30 C73 39 76 42 82 44 C76 46 73 49 73 58 C73 68 73 78 64 78",
+      "stroke": "$text",
+      "strokeWidth": 4
+    },
+    { "kind": "path", "d": "M43 80 L57 14", "stroke": "$primary", "strokeWidth": 5 },
+    { "kind": "path", "d": "M40 92 L60 92", "stroke": "$accent", "strokeWidth": 5 },
+    { "kind": "circle", "cx": 14, "cy": 12, "r": 2.5, "fill": "$primary" },
+    { "kind": "circle", "cx": 86, "cy": 12, "r": 2.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 14, "cy": 88, "r": 2.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 86, "cy": 88, "r": 2.5, "fill": "$primary" }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "confetti-dots",
+  "version": 1,
+  "label": { "es": "Confeti", "en": "Confetti" },
+  "tags": ["birthday", "decoration"],
+  "viewBox": [0, 0, 100, 100],
+  "ops": [
+    { "kind": "circle", "cx": 20, "cy": 26, "r": 5, "fill": "$primary" },
+    { "kind": "circle", "cx": 38, "cy": 14, "r": 3.5, "fill": "$accent" },
+    { "kind": "circle", "cx": 64, "cy": 20, "r": 4.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 82, "cy": 34, "r": 3, "fill": "$primary" },
+    { "kind": "circle", "cx": 30, "cy": 58, "r": 4, "fill": "$accent" },
+    { "kind": "circle", "cx": 52, "cy": 44, "r": 3, "fill": "$secondary" },
+    { "kind": "circle", "cx": 72, "cy": 62, "r": 5, "fill": "$accent" },
+    { "kind": "circle", "cx": 18, "cy": 78, "r": 3.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 46, "cy": 74, "r": 4, "fill": "$primary" },
+    { "kind": "circle", "cx": 86, "cy": 82, "r": 3, "fill": "$accent" },
+    { "kind": "rect", "x": 58, "y": 78, "w": 8, "h": 8, "radius": 2, "fill": "$primary" },
+    { "kind": "rect", "x": 8, "y": 46, "w": 7, "h": 7, "radius": 2, "fill": "$secondary" },
+    { "kind": "rect", "x": 80, "y": 10, "w": 6, "h": 6, "radius": 1.5, "fill": "$secondary" },
+    { "kind": "circle", "cx": 34, "cy": 88, "r": 2.5, "fill": "$text" }
+  ]
+}
