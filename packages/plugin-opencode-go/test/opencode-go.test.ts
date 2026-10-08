@@ -103,7 +103,7 @@ describe("OpenCode Go provider", () => {
     }).rejects.toThrow("Unsupported OpenCode Go model family");
   });
 
-  it("offers only the bound protocol to a session provider, every family to the catalog", async () => {
+  it("serves any model of the provider in one session; the profile model is only the default", async () => {
     const fetchMock = vi.fn(async () =>
       Response.json({
         data: [
@@ -113,18 +113,35 @@ describe("OpenCode Go provider", () => {
         ],
       }),
     ) as unknown as typeof fetch;
-    // A catalog provider (no model) lists every known family, so a profile's model can be chosen.
-    const catalog = openCodeGo("", fetchMock);
-    expect((await catalog.listModels(AbortSignal.timeout(1000))).map((m) => m.id)).toEqual([
+    // The chat selector offers every model of the provider, not only the default model's protocol.
+    const provider = openCodeGo("deepseek-v4-flash", fetchMock);
+    expect((await provider.listModels(AbortSignal.timeout(1000))).map((m) => m.id)).toEqual([
       "opencode-go/deepseek-v4-pro",
       "opencode-go/muse-spark-1.2-contributor",
       "opencode-go/minimax-m3",
     ]);
-    // Bound to a chat model, only chat models are offered: no cross-protocol pick can break a run.
-    const chat = openCodeGo("deepseek-v4-flash", fetchMock);
-    expect((await chat.listModels(AbortSignal.timeout(1000))).map((m) => m.id)).toEqual([
-      "opencode-go/deepseek-v4-pro",
-    ]);
+  });
+
+  it("dispatches a request by the requested model's protocol, not the constructor's default", async () => {
+    const fetchMock = vi.fn(async (_url: string | URL | Request) =>
+      sse([
+        {
+          type: "response.completed",
+          response: {
+            output: [{ type: "function_call", call_id: "c1", name: "echo", arguments: "{}" }],
+            usage: { input_tokens: 4, output_tokens: 2 },
+          },
+        },
+      ]),
+    );
+    // Constructed with a chat default, yet a responses model is served in the same session.
+    const provider = openCodeGo("deepseek-v4-flash", fetchMock as unknown as typeof fetch);
+    const result = await collect(provider, "muse-spark-1.2-contributor");
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/responses");
+    expect(result.at(-1)).toMatchObject({
+      type: "completed",
+      message: { calls: [{ id: "c1", name: "echo", arguments: "{}" }] },
+    });
   });
 
   it.each([

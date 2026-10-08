@@ -204,12 +204,7 @@ export class OpenCodeGatewayProvider implements ModelProvider {
       throw new Error(`${this.displayName} model catalog failed: HTTP ${response.status}`);
     const body = (await response.json()) as { data?: Array<Record<string, unknown>> };
     return (body.data ?? []).flatMap((entry) => {
-      if (typeof entry.id !== "string") return [];
-      const family = this.classify(entry.id);
-      // A session-bound provider only offers its own protocol: the chat model selector must not
-      // offer a model of another family, or the run fails with "start a fresh session". A catalog
-      // provider (no model) lists every family so a profile's model can still be chosen.
-      if (!family || (this.protocol && family !== this.protocol)) return [];
+      if (typeof entry.id !== "string" || !this.classify(entry.id)) return [];
       const context = [entry.context_window, entry.context_length].find(
         (value): value is number => typeof value === "number" && value > 0,
       );
@@ -245,10 +240,9 @@ export class OpenCodeGatewayProvider implements ModelProvider {
     const model = modelId(request.model || this.model);
     const protocol = this.classify(model);
     if (!protocol) throw new Error(`Unsupported ${this.displayName} model family: ${model}`);
-    if (this.protocol && protocol !== this.protocol)
-      throw new Error(
-        `Model ${model} uses ${protocol}, but this session is bound to ${this.protocol}; start a fresh session`,
-      );
+    // The gateway is multi-protocol: the session's default model only picks the protocol the
+    // provider was constructed with, but any model of the provider is served by classifying it
+    // here. The Settings model is just the default; a session may use any model of the provider.
     const sessionId = request.sessionId ?? this.fallbackSession;
     if (protocol === "chat") yield* this.chat(model, request, sessionId);
     else if (protocol === "responses") yield* this.responses(model, request, sessionId);

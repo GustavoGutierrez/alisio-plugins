@@ -4,9 +4,10 @@
 
 ### Patch Changes
 
-- List only the models of the provider's own protocol: a session bound to `chat` no longer offers
-  `responses`/`messages` models in the chat model selector, which previously failed with
-  "Model X uses responses, but this session is bound to chat; start a fresh session".
+- Serve any model of the provider from a single session: `stream` now dispatches by the requested
+  model's protocol instead of rejecting a model whose family differs from the profile's default.
+  The model chosen in Settings is only the default for new sessions; the chat model selector
+  offers every model of the provider and any of them works.
 
 ## 0.1.5
 

@@ -211,16 +211,21 @@ describe("OpenCode Console provider", () => {
     expect(result.at(-1)).toMatchObject({ type: "completed", message: { text: "ok" } });
   });
 
-  it("rejects a protocol change on an existing provider session", async () => {
+  it("serves any model of the provider, dispatching by the requested model's protocol", async () => {
+    const fetchMock = vi.fn(async (_url: string | URL | Request) =>
+      sse([{ choices: [{ delta: { content: "ok" }, finish_reason: "stop" }] }]),
+    );
+    // Constructed with a responses default, a chat model is still served in the same session.
     const provider = new OpenCodeProvider({
       apiKey: "fake",
       model: "gpt-6-sol",
       baseURL: "http://127.0.0.1/v1",
-      fetch: vi.fn() as typeof fetch,
+      fetch: fetchMock as unknown as typeof fetch,
     });
-    await expect(async () => {
-      for await (const _ of provider.stream(request("deepseek-v4-pro"))) void _;
-    }).rejects.toThrow("session is bound to responses");
+    const result: unknown[] = [];
+    for await (const event of provider.stream(request("deepseek-v4-pro"))) result.push(event);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/chat/completions");
+    expect(result.at(-1)).toMatchObject({ type: "completed", message: { text: "ok" } });
   });
 
   it("replays Messages reasoning signatures, tool blocks, results, and image attachments", async () => {

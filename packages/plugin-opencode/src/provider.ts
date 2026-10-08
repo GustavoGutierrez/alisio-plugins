@@ -327,10 +327,9 @@ export class OpenCodeGatewayProvider implements ModelProvider {
     const model = modelId(request.model || this.model);
     const protocol = this.classify(model);
     if (!protocol) throw new Error(`Unsupported ${this.displayName} model family: ${model}`);
-    if (this.protocol && protocol !== this.protocol)
-      throw new Error(
-        `Model ${model} uses ${protocol}, but this session is bound to ${this.protocol}; start a fresh session`,
-      );
+    // Multi-protocol gateway: the session's default model only sets the protocol the provider was
+    // constructed with, but any model of the provider is served by classifying it here. The
+    // Settings model is just the default; a session may use any model of the provider.
     const sessionId = request.sessionId ?? this.fallbackSession;
     if (protocol === "chat") yield* this.chat(model, request, sessionId);
     else if (protocol === "responses") yield* this.responses(model, request, sessionId);
