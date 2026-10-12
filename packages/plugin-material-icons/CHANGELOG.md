@@ -1,5 +1,11 @@
 # @alisio/plugin-material-icons
 
+## 0.6.0
+
+### Minor Changes
+
+- Requires @alisio/sdk ^0.6.0 (Alisio 0.6.0)
+
 ## 0.5.2
 
 ### Patch Changes

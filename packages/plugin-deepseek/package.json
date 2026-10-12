@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-deepseek",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Dedicated DeepSeek model provider for Alisio: Chat Completions and Responses with metadata-rich catalog discovery and context windows.",
   "keywords": [
     "alisio-plugin",
@@ -43,10 +43,10 @@
     "openai": "7.23.0"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.5.1"
+    "@alisio/sdk": "^0.6.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.5.1",
+    "@alisio/sdk": "0.6.0",
     "typescript": "7.0.2",
     "vitest": "5.0.1"
   }

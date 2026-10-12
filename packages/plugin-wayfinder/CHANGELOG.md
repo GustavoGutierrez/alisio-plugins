@@ -1,5 +1,11 @@
 # @alisio/plugin-wayfinder
 
+## 0.3.0
+
+### Minor Changes
+
+- Requires @alisio/sdk ^0.6.0 (Alisio 0.6.0)
+
 ## 0.2.3
 
 ### Patch Changes

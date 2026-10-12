@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-laya",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Local Laya decision provider for Alisio: fast select, boolean and ordinal decisions from a managed, isolated Laya server, with explicit-consent setup and no data leaving the machine.",
   "keywords": [
     "alisio-plugin",
@@ -42,10 +42,10 @@
     "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.5.1"
+    "@alisio/sdk": "^0.6.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.5.1",
+    "@alisio/sdk": "0.6.0",
     "typescript": "7.0.2",
     "vitest": "5.0.1"
   }
