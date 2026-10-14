@@ -57,15 +57,15 @@
     "markdown-it-footnote": "4.0.0",
     "vega": "6.4.0",
     "vega-interpreter": "2.3.2",
-    "vega-lite": "6.4.3",
+    "vega-lite": "6.5.0",
     "yaml": "2.9.1"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.6.0"
+    "@alisio/sdk": "^0.7.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.6.0",
+    "@alisio/sdk": "0.7.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.1"
+    "vitest": "5.0.4"
   }
 }

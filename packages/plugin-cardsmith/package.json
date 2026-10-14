@@ -51,15 +51,15 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
-    "@napi-rs/canvas": "1.0.10"
+    "@napi-rs/canvas": "1.0.11"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.6.0"
+    "@alisio/sdk": "^0.7.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.6.0",
+    "@alisio/sdk": "0.7.0",
     "jsqr": "1.4.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.1"
+    "vitest": "5.0.4"
   }
 }

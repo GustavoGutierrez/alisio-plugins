@@ -46,11 +46,11 @@
     "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.6.0"
+    "@alisio/sdk": "^0.7.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.6.0",
+    "@alisio/sdk": "0.7.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.1"
+    "vitest": "5.0.4"
   }
 }

@@ -40,14 +40,14 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
-    "openai": "7.23.0"
+    "openai": "7.33.0"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.6.0"
+    "@alisio/sdk": "^0.7.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.6.0",
+    "@alisio/sdk": "0.7.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.1"
+    "vitest": "5.0.4"
   }
 }
