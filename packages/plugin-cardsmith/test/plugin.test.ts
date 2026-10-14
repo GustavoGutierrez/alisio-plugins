@@ -24,7 +24,7 @@ function stubApi(): { api: PluginAPI; tools: Map<string, ToolDefinition>; skills
 describe("plugin entry", () => {
   it("declares id, version and api version", () => {
     expect(plugin.id).toBe("alisio.cardsmith");
-    expect(plugin.version).toBe("0.2.0");
+    expect(plugin.version).toBe("0.3.0");
     expect(plugin.apiVersion).toBe(1);
   });
 

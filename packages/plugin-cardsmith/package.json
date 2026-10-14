@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-cardsmith",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Generates finished card images from chat requests: social cards, certificates, badges, banners, photo composites, charts and dynamic data cards.",
   "keywords": [
     "alisio-plugin",
