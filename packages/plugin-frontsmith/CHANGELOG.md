@@ -1,5 +1,12 @@
 # @alisio/plugin-frontsmith
 
+## 0.5.0
+
+### Minor Changes
+
+- fc350a1: Update the `@alisio/sdk` dependency to `^0.8.0` (peer) and `0.8.0` (dev) across every plugin. The release
+  only adds the optional Proof API, two events and optional fields, so no plugin code changes are needed.
+
 ## 0.4.0
 
 ### Minor Changes
