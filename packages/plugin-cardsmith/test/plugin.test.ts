@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import type { PluginAPI, ToolDefinition } from "@alisio/sdk";
 import { describe, expect, it } from "vitest";
 import plugin from "../src/index.js";
@@ -22,9 +23,12 @@ function stubApi(): { api: PluginAPI; tools: Map<string, ToolDefinition>; skills
 }
 
 describe("plugin entry", () => {
-  it("declares id, version and api version", () => {
+  it("declares id, the package version and api version", () => {
+    const manifest = JSON.parse(
+      readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+    ) as { version: string };
     expect(plugin.id).toBe("alisio.cardsmith");
-    expect(plugin.version).toBe("0.4.0");
+    expect(plugin.version).toBe(manifest.version);
     expect(plugin.apiVersion).toBe(1);
   });
 
