@@ -17,6 +17,7 @@ documentation and the source disagree, this guide follows the source and calls i
 - [Choose your path](#choose-your-path)
 - [Third-party quick path](#third-party-quick-path)
 - [Catalog inclusion](#catalog-inclusion)
+- [Catalog JSON](#catalog-json)
 - [First-party quick path](#first-party-quick-path)
 - [The contract](#the-contract)
 - [Capability surface](#capability-surface)
@@ -112,7 +113,7 @@ After publishing, open a pull request against
 scanner and commit its generated cache/pages; do not hand-edit generated catalog files.
 
 The registry schema requires **only** `package`. Its optional fields are `title`, `npmUrl`,
-`repository`, `homepage`, `cover`, `categories`, and `featured` — exactly as defined in
+`repository`, `homepage`, `cover`, `icon`, `categories`, and `featured` — exactly as defined in
 [`registry/plugins.schema.json`](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/registry/plugins.schema.json).
 
 ```json
@@ -130,12 +131,36 @@ The registry schema requires **only** `package`. Its optional fields are `title`
 | Category and capabilities | `categories` is an optional registry override. Use only: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`, `decisions`. Explain actual capabilities in the PR; capabilities are not a schema field. |
 | Peer SDK range, Node compatibility, tests and validation evidence | These are maintainer review evidence, not registry fields. Include your `@alisio/sdk` peer range, `engines.node`, commands/results, and the exact published version installed with Alisio. |
 | Security and integration details | Explain network/process/write behavior, credential handling, durable-data behavior, optional integrations, and any resources. The scanner never imports or executes third-party code. |
-| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. |
+| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. An optional square `icon` follows the same path rules, falling back to a root `icon.svg`, `.png` or `.webp`. |
 
 `npmUrl`, `title`, and `featured` are optional presentation overrides, not evidence substitutes.
 The scanner fetches npm metadata and, only to find a cover, reads the published tarball without
 executing it. A maintainer can reject or defer a registry change when the package, metadata, safety,
 or validation evidence is insufficient.
+
+## Catalog JSON
+
+Every site build publishes a minified, machine-readable catalog at
+`https://gustavogutierrez.github.io/alisio-plugins/catalog.json`. The Alisio desktop app reads it to
+list, search, filter and install plugins without the CLI. It is derived from the committed cache, so
+it changes only when the cache is refreshed. Image URLs are built from the site URL, defined once
+in `scripts/lib/catalog.mjs`; set `ALISIO_SITE_URL` (an absolute https URL) at build time to
+publish under another domain.
+
+The top level carries `schemaVersion` (`1`), `generatedAt` (the newest `publishedAt`, or
+`null`), `site`, `categories` (`{ id, count }` for each known category in use) and `plugins`,
+sorted by `slug`. Each plugin carries:
+
+| Field | Meaning |
+| --- | --- |
+| `id`, `slug`, `name` | Plugin id (or `null`), URL slug, display name. |
+| `package`, `version` | npm package to install and its catalog version. |
+| `description` | One-line summary. |
+| `categories`, `tags` | Filter facets: known category ids, plus keywords without `alisio-plugin` or category ids. |
+| `cover`, `icon` | Absolute image URLs, or `null`. |
+| `sdk` | The `@alisio/sdk` peer range, or `null`. |
+| `author`, `license`, `homepage`, `npmUrl`, `repository` | Display metadata; links are http(s) or `null`. |
+| `publishedAt`, `featured`, `source` | Publish time, promotion flag, `local` or `third-party`. |
 
 ## First-party quick path
 

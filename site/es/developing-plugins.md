@@ -17,6 +17,7 @@ documentación upstream y el código discrepan, esta guía sigue al código y lo
 - [Elige tu ruta](#elige-tu-ruta)
 - [Ruta rápida de terceros](#ruta-rapida-de-terceros)
 - [Inclusión en el catálogo](#inclusion-en-el-catalogo)
+- [JSON del catálogo](#json-del-catalogo)
 - [Ruta rápida de primera parte](#ruta-rapida-de-primera-parte)
 - [El contrato](#el-contrato)
 - [Superficie de capacidades](#superficie-de-capacidades)
@@ -109,7 +110,7 @@ Después de publicar, abre un pull request contra
 y confirma la caché/páginas generadas; no edites a mano los archivos generados del catálogo.
 
 El esquema exige **solo** `package`. Sus campos opcionales son `title`, `npmUrl`, `repository`,
-`homepage`, `cover`, `categories` y `featured`, según
+`homepage`, `cover`, `icon`, `categories` y `featured`, según
 [`registry/plugins.schema.json`](https://github.com/GustavoGutierrez/alisio-plugins/blob/main/registry/plugins.schema.json).
 
 ```json
@@ -127,11 +128,35 @@ El esquema exige **solo** `package`. Sus campos opcionales son `title`, `npmUrl`
 | Categoría y capacidades | `categories` es opcional. Usa solo: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`, `decisions`. Explica capacidades reales en el PR; no son un campo del esquema. |
 | Rango peer SDK, compatibilidad Node, evidencia de tests y validación | Son evidencia de revisión, no campos del registro. Incluye rango de `@alisio/sdk`, `engines.node`, comandos/resultados y versión publicada instalada con Alisio. |
 | Detalles de seguridad e integración | Explica red/proceso/escritura, credenciales, datos duraderos, integraciones opcionales y recursos. El escáner nunca importa ni ejecuta código de terceros. |
-| Cover y presentación | `cover` es opcional: una ruta del paquete como `cover.svg`, o `/...` para un archivo confirmado bajo `site/public`. Si no, el escáner busca `alisio.cover` y después `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp` en la raíz. Prefiere SVG 16:9 de 1600×900 bajo 512 KB e inclúyelo en el tarball npm. |
+| Cover y presentación | `cover` es opcional: una ruta del paquete como `cover.svg`, o `/...` para un archivo confirmado bajo `site/public`. Si no, el escáner busca `alisio.cover` y después `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp` en la raíz. Prefiere SVG 16:9 de 1600×900 bajo 512 KB e inclúyelo en el tarball npm. Un `icon` cuadrado opcional sigue las mismas reglas de ruta y, si falta, se busca `icon.svg`, `.png` o `.webp` en la raíz. |
 
 `npmUrl`, `title` y `featured` son sustituciones de presentación, no sustitutos de evidencia. El escáner
 obtiene metadatos npm y, solo para encontrar un cover, lee el tarball publicado sin ejecutarlo. Un
 mantenedor puede rechazar o posponer un cambio si paquete, metadatos, seguridad o evidencia son insuficientes.
+
+## JSON del catálogo
+
+Cada compilación del sitio publica un catálogo minificado y legible por máquina en
+`https://gustavogutierrez.github.io/alisio-plugins/catalog.json`. La aplicación de escritorio de Alisio
+lo lee para listar, buscar, filtrar e instalar plugins sin la CLI. Se deriva de la caché confirmada,
+por lo que solo cambia cuando se actualiza la caché. Las URLs de imagen se construyen a partir de la
+URL del sitio, definida una sola vez en `scripts/lib/catalog.mjs`; define `ALISIO_SITE_URL` (una URL
+https absoluta) al compilar para publicar bajo otro dominio.
+
+El nivel superior incluye `schemaVersion` (`1`), `generatedAt` (el `publishedAt` más reciente, o
+`null`), `site`, `categories` (`{ id, count }` por cada categoría conocida en uso) y `plugins`,
+ordenados por `slug`. Cada plugin incluye:
+
+| Campo | Significado |
+| --- | --- |
+| `id`, `slug`, `name` | Id del plugin (o `null`), slug de URL y nombre visible. |
+| `package`, `version` | Paquete npm que se instala y su versión en el catálogo. |
+| `description` | Resumen de una línea. |
+| `categories`, `tags` | Facetas de filtrado: ids de categorías conocidas y keywords sin `alisio-plugin` ni ids de categoría. |
+| `cover`, `icon` | URLs absolutas de imagen, o `null`. |
+| `sdk` | Rango peer de `@alisio/sdk`, o `null`. |
+| `author`, `license`, `homepage`, `npmUrl`, `repository` | Metadatos visibles; los enlaces son http(s) o `null`. |
+| `publishedAt`, `featured`, `source` | Fecha de publicación, marca de promoción, `local` o `third-party`. |
 
 ## Ruta rápida de primera parte
 

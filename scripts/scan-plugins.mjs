@@ -17,8 +17,8 @@
  *
  * RESILIENCE. One broken package never aborts the scan. Local packages fall
  * back to `package.json` when `dist/index.js` is not built; third-party entries
- * fall back to their cached record; cover extraction and download stats are
- * optional and degrade to the default cover and `null`. Every failure is
+ * fall back to their cached record; cover/icon extraction and download stats
+ * are optional and degrade to the default cover, no icon, and `null`. Every failure is
  * printed with its cause, and `--strict` turns any failure into a non-zero exit.
  *
  * SAFETY. Third-party code is never imported or executed: only the npm
@@ -41,7 +41,9 @@ import {
   normalizeRepository,
   prepareReadme,
   pruneCovers,
+  pruneIcons,
   publishCover,
+  publishIcon,
   REPO_ROOT,
   readJson,
   readLocalPluginObject,
@@ -49,6 +51,8 @@ import {
   renderDetailPage,
   renderIndexPage,
   resolveCoverFile,
+  resolveIconFile,
+  sdkRange,
   siteCoverFromRegistry,
   slugFor,
   writeTextFileClean,
@@ -75,6 +79,7 @@ const PATHS = {
   pages: join(SITE_ROOT, "plugins"),
   pagesEs: join(SITE_ROOT, "es", "plugins"),
   covers: process.env.ALISIO_PLUGIN_COVERS ?? join(SITE_ROOT, "public", "covers"),
+  icons: process.env.ALISIO_PLUGIN_ICONS ?? join(SITE_ROOT, "public", "icons"),
   public: join(SITE_ROOT, "public"),
   npmRegistry: (process.env.ALISIO_NPM_REGISTRY ?? "https://registry.npmjs.org").replace(
     /\/+$/,
@@ -214,6 +219,7 @@ export function packumentFields(packument, registryEntry) {
       : null,
     dependencyCount: countDependencies(versionData?.dependencies),
     peerCount: countDependencies(versionData?.peerDependencies),
+    sdk: sdkRange(versionData),
     directory: versionData?.repository?.directory ?? packument?.repository?.directory ?? "",
     tarball: typeof versionData?.dist?.tarball === "string" ? versionData.dist.tarball : null,
     readme: typeof packument?.readme === "string" ? packument.readme : null,
@@ -233,6 +239,8 @@ export function fromCache(cached, registryEntry) {
       : cached.categories,
     featured: registryEntry?.featured ?? cached.featured ?? false,
     cover: cached.cover ?? null,
+    icon: cached.icon ?? null,
+    sdk: cached.sdk ?? null,
     readme: cached.readme ?? null,
   };
 }
@@ -265,6 +273,12 @@ async function localEntry(dir, manifest, previousByName, registryEntry, options)
     if (file) cover = publishCover(file, slug, PATHS.covers);
   }
   if (!cover) note(name, "no cover found; using the default cover");
+
+  let icon = siteCoverFromRegistry(registryEntry?.icon, PATHS.public);
+  if (!icon) {
+    const file = resolveIconFile(dir, { declared: registryEntry?.icon });
+    if (file) icon = publishIcon(file, slug, PATHS.icons);
+  }
 
   // Local metadata is authoritative; npm only adds publish recency and size. A missing size means
   // the cached entry was recorded before this version reached npm, so it is fetched again.
@@ -306,8 +320,10 @@ async function localEntry(dir, manifest, previousByName, registryEntry, options)
     unpackedSize,
     dependencyCount: countDependencies(manifest.dependencies),
     peerCount: countDependencies(manifest.peerDependencies),
+    sdk: sdkRange(manifest),
     installName: name,
     cover,
+    icon: icon ?? null,
     readme: prepareReadme(readPackageReadme(dir), { repository, directory, npmUrl }),
     ...optionalSpanishReadme(dir, { repository, directory, npmUrl }),
     downloadsLastMonth,
@@ -355,12 +371,28 @@ async function thirdPartyEntry(registryEntry, previousByName, options) {
 
   const repository = fields.repository ?? registryEntry?.repository ?? null;
   let cover = siteCoverFromRegistry(registryEntry?.cover, PATHS.public) ?? cached?.cover ?? null;
-  if (!cover && fields.tarball) {
+  // An icon is optional, so a cached `null` is a settled answer unless the registry now declares an
+  // in-package icon; a record that predates the field (no `icon` key) also needs the tarball.
+  let icon = siteCoverFromRegistry(registryEntry?.icon, PATHS.public);
+  const iconSettled =
+    icon !== null ||
+    (cached !== undefined &&
+      Object.hasOwn(cached, "icon") &&
+      (cached.icon !== null || !registryEntry?.icon));
+  if (!icon && iconSettled) icon = cached?.icon ?? null;
+  if ((!cover || !iconSettled) && fields.tarball) {
     try {
-      cover = await coverFromTarball(fields.tarball, registryEntry, slug);
-      if (!cover) note(name, "no cover in the published tarball; using the default cover");
+      const found = await assetsFromTarball(fields.tarball, registryEntry, slug, {
+        cover: !cover,
+        icon: !iconSettled,
+      });
+      if (!cover) {
+        cover = found.cover;
+        if (!cover) note(name, "no cover in the published tarball; using the default cover");
+      }
+      if (!iconSettled) icon = found.icon;
     } catch (error) {
-      note(name, `cover extraction failed (${messageOf(error)}); using the default cover`);
+      note(name, `tarball cover/icon extraction failed (${messageOf(error)})`);
     }
   }
   if (!cover) note(name, "no cover declared or detected; using the default cover");
@@ -396,8 +428,10 @@ async function thirdPartyEntry(registryEntry, previousByName, options) {
     unpackedSize: fields.unpackedSize,
     dependencyCount: fields.dependencyCount,
     peerCount: fields.peerCount,
+    sdk: fields.sdk,
     installName: name,
     cover,
+    icon: icon ?? null,
     readme: readme ? readme.slice(0, README_LIMIT) : null,
     downloadsLastMonth: await fetchDownloads(name),
     featured: registryEntry?.featured ?? false,
@@ -406,9 +440,12 @@ async function thirdPartyEntry(registryEntry, previousByName, options) {
   };
 }
 
-/** Download a tarball and extract its cover by the documented precedence. */
-async function coverFromTarball(tarballUrl, registryEntry, slug) {
-  const temp = mkdtempSync(join(tmpdir(), "alisio-plugin-cover-"));
+/**
+ * Download a tarball once and extract the requested cover and/or icon by the
+ * documented precedence. Files are copied as data; nothing is executed.
+ */
+async function assetsFromTarball(tarballUrl, registryEntry, slug, wanted) {
+  const temp = mkdtempSync(join(tmpdir(), "alisio-plugin-assets-"));
   try {
     const archive = join(temp, "package.tgz");
     await downloadTarball(tarballUrl, archive);
@@ -416,8 +453,16 @@ async function coverFromTarball(tarballUrl, registryEntry, slug) {
     extractTarball(archive, unpacked);
     const packageDir = join(unpacked, "package");
     const manifest = readJson(join(packageDir, "package.json")) ?? {};
-    const file = resolveCoverFile(packageDir, { declared: registryEntry?.cover, manifest });
-    return file ? publishCover(file, slug, PATHS.covers) : null;
+    const found = { cover: null, icon: null };
+    if (wanted.cover) {
+      const file = resolveCoverFile(packageDir, { declared: registryEntry?.cover, manifest });
+      found.cover = file ? publishCover(file, slug, PATHS.covers) : null;
+    }
+    if (wanted.icon) {
+      const file = resolveIconFile(packageDir, { declared: registryEntry?.icon });
+      found.icon = file ? publishIcon(file, slug, PATHS.icons) : null;
+    }
+    return found;
   } finally {
     rmSync(temp, { recursive: true, force: true });
   }
@@ -540,6 +585,12 @@ async function main() {
     PATHS.covers,
   );
   if (removed.length > 0) note("<covers>", `removed unreferenced cover(s): ${removed.join(", ")}`);
+  const removedIcons = pruneIcons(
+    entries.map((entry) => entry.icon),
+    PATHS.icons,
+  );
+  if (removedIcons.length > 0)
+    note("<icons>", `removed unreferenced icon(s): ${removedIcons.join(", ")}`);
   writePages(cache.plugins);
 
   const localCount = entries.filter((entry) => entry.source === "local").length;

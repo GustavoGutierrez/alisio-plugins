@@ -13,7 +13,8 @@
  *      and no cache entry is unattributed.
  *   4. Page sync — the generated detail and index pages match what the cache
  *      would render, and no stale page lingers.
- *   5. Covers — every referenced cover exists and no orphan cover is committed.
+ *   5. Covers and icons — every referenced cover/icon exists and no orphan
+ *      cover or icon is committed.
  *   6. Links — every internal link and `#anchor` in `site/**` resolves to a
  *      page, an asset, or a heading that exists.
  *
@@ -30,6 +31,9 @@ import {
   coverSitePath,
   DEFAULT_COVER,
   firstPerson,
+  ICON_EXTENSIONS,
+  ICONS_DIR,
+  iconSitePath,
   knownCategories,
   localPackages,
   neutralizeForPublication,
@@ -44,7 +48,9 @@ import {
   renderDetailPage,
   renderIndexPage,
   resolveCoverFile,
+  resolveIconFile,
   SITE_BASE,
+  sdkRange,
   siteCoverFromRegistry,
   slugFor,
 } from "./lib/plugins.mjs";
@@ -116,6 +122,7 @@ async function snapshot(dir, manifest) {
     author: firstPerson(manifest.author) ?? "Alisio",
     dependencyCount: countDependencies(manifest.dependencies),
     peerCount: countDependencies(manifest.peerDependencies),
+    sdk: sdkRange(manifest),
     installName: manifest.name,
     slug: slugFor(manifest.name),
   };
@@ -155,6 +162,7 @@ async function checkLocalSync(entries, registryByPackage) {
       ["author", expected.author, cached.author],
       ["dependencyCount", expected.dependencyCount, cached.dependencyCount],
       ["peerCount", expected.peerCount, cached.peerCount],
+      ["sdk", expected.sdk, cached.sdk ?? null],
       ["installName", expected.installName, cached.installName],
       ["slug", expected.slug, cached.slug],
       ["featured", registryEntry?.featured ?? false, cached.featured],
@@ -179,6 +187,16 @@ async function checkLocalSync(entries, registryByPackage) {
         CACHE_PATH,
         0,
         `${name}: cache cover "${cached.cover}" does not match "${wantCover}"; run \`pnpm docs:scan\``,
+      );
+
+    const iconFromSite = siteCoverFromRegistry(registryEntry?.icon);
+    const iconFile = iconFromSite ? null : resolveIconFile(dir, { declared: registryEntry?.icon });
+    const wantIcon = iconFromSite ?? (iconFile ? iconSitePath(iconFile, expected.slug) : null);
+    if ((cached.icon ?? null) !== wantIcon)
+      problem(
+        CACHE_PATH,
+        0,
+        `${name}: cache icon "${cached.icon ?? null}" does not match "${wantIcon}"; run \`pnpm docs:scan\``,
       );
 
     const directory = relative(REPO_ROOT, dir).split(/[\\/]/).join("/");
@@ -304,6 +322,27 @@ function checkCovers(entries) {
   for (const file of readdirSync(COVERS_DIR)) {
     if (!referenced.has(file))
       problem(join(COVERS_DIR, file), 0, `orphan cover: ${file}; run \`pnpm docs:scan\``);
+  }
+}
+
+function checkIcons(entries) {
+  const referenced = new Set();
+  for (const entry of entries) {
+    if (entry.icon === undefined || entry.icon === null) continue;
+    if (typeof entry.icon !== "string" || !entry.icon.startsWith("/")) {
+      problem(CACHE_PATH, 0, `${entry.name}: icon must be a site path or null`);
+      continue;
+    }
+    if (entry.icon.startsWith("/icons/")) referenced.add(entry.icon.replace("/icons/", ""));
+    const path = join(SITE_DIR, "public", entry.icon);
+    if (!existsSync(path))
+      problem(path, 0, `${entry.name}: referenced icon is missing; run \`pnpm docs:scan\``);
+  }
+  if (!existsSync(ICONS_DIR)) return;
+  for (const file of readdirSync(ICONS_DIR)) {
+    const extension = file.split(".").pop()?.toLowerCase() ?? "";
+    if (ICON_EXTENSIONS.includes(extension) && !referenced.has(file))
+      problem(join(ICONS_DIR, file), 0, `orphan icon: ${file}; run \`pnpm docs:scan\``);
   }
 }
 
@@ -520,6 +559,7 @@ async function main() {
   checkRegistry(entries, registryEntries);
   checkPages(entries);
   checkCovers(entries);
+  checkIcons(entries);
   const stats = checkLinks();
   return report(entries.length, stats);
 }

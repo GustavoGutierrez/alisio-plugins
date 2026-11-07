@@ -1,7 +1,16 @@
+import { join } from "node:path";
 import { type DefaultTheme, defineConfig } from "vitepress";
+import { buildCatalog, resolveSiteUrl, writeCatalog } from "../../scripts/lib/catalog.mjs";
+import categoryList from "./data/categories.json";
 import catalog from "./data/plugins.json";
 
 const repo = "https://github.com/GustavoGutierrez/alisio-plugins";
+
+/**
+ * Absolute site root for the sitemap and the public `catalog.json`. Defined once in
+ * `scripts/lib/catalog.mjs`; override with `ALISIO_SITE_URL` (an invalid value fails the build).
+ */
+const hostname = resolveSiteUrl(process.env.ALISIO_SITE_URL);
 
 /** Plugins rendered in the sidebar from the committed catalog cache. */
 const pluginItems = (prefix: string): DefaultTheme.SidebarItem[] =>
@@ -97,7 +106,18 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   head: [["link", { rel: "icon", href: "/alisio-plugins/assets/favicon.png" }]],
-  sitemap: { hostname: "https://gustavogutierrez.github.io/alisio-plugins/" },
+  sitemap: { hostname },
+  /**
+   * Publish the machine-readable catalog the Alisio desktop app installs from. It is derived from
+   * the committed cache at build time and never committed itself.
+   */
+  buildEnd(siteConfig) {
+    const publicCatalog = buildCatalog(catalog, {
+      siteUrl: hostname,
+      categories: categoryList.categories,
+    });
+    writeCatalog(join(siteConfig.outDir, "catalog.json"), publicCatalog);
+  },
   srcExclude: ["README.md", "README.es.md"],
   themeConfig: {
     logo: "/assets/logo.png",

@@ -49,6 +49,11 @@
           "type": "string",
           "minLength": 1
         },
+        "icon": {
+          "description": "Optional square icon override. A leading slash means a file already committed under site/public (for example /icons/acme.svg). Any other value is a path inside the package (for example icon.svg or assets/icon.png). Without it, a package-root icon.svg, icon.png or icon.webp is used when present.",
+          "type": "string",
+          "minLength": 1
+        },
         "categories": {
           "description": "Optional category override. Values outside the Alisio category set are ignored.",
           "type": "array",

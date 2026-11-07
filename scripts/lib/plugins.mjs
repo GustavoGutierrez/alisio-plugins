@@ -59,6 +59,18 @@ export const DEFAULT_COVER = "/assets/covers/default-cover.svg";
 /** Cover extension search order for the `cover.<ext>` convention. */
 export const COVER_EXTENSIONS = ["svg", "png", "jpg", "jpeg", "webp"];
 
+/** Committed icon files served by the site. */
+export const ICONS_DIR = join(REPO_ROOT, "site", "public", "icons");
+
+/** Icon extension search order for the `icon.<ext>` convention. */
+export const ICON_EXTENSIONS = ["svg", "png", "webp"];
+
+/** Per-kind settings for the published image assets (covers and icons). */
+const ASSETS = {
+  cover: { prefix: "/covers/", extensions: COVER_EXTENSIONS },
+  icon: { prefix: "/icons/", extensions: ICON_EXTENSIONS },
+};
+
 /** Read and parse a JSON file, returning `null` instead of throwing. */
 export function readJson(path) {
   try {
@@ -106,6 +118,12 @@ export function normalizeRepository(value) {
   return /^https?:\/\/[^\s]+$/.test(url) ? url : null;
 }
 
+/** The `@alisio/sdk` peer range a package manifest declares, or null. */
+export function sdkRange(manifest) {
+  const range = manifest?.peerDependencies?.["@alisio/sdk"];
+  return typeof range === "string" && range.trim() !== "" ? range.trim() : null;
+}
+
 /** `{ owner, repo }` when the repository URL is on github.com, else null. */
 export function githubRepoParts(repositoryUrl) {
   const match = /^https?:\/\/github\.com\/([^/]+)\/([^/#?]+)/.exec(repositoryUrl ?? "");
@@ -133,23 +151,37 @@ export function isInside(root, candidate) {
  * must stay inside the package; an escaping or absolute path is ignored.
  */
 export function resolveCoverFile(rootDir, { declared, manifest } = {}) {
-  const fromManifest = manifest?.alisio?.cover;
-  for (const candidate of [declared, fromManifest]) {
+  return resolveAssetFile(rootDir, [declared, manifest?.alisio?.cover], "cover", COVER_EXTENSIONS);
+}
+
+/**
+ * Resolve an icon file inside a package directory.
+ *
+ * Precedence: registry-declared path > the `icon.svg|png|webp` convention at
+ * the package root. The same path-safety rules as covers apply.
+ */
+export function resolveIconFile(rootDir, { declared } = {}) {
+  return resolveAssetFile(rootDir, [declared], "icon", ICON_EXTENSIONS);
+}
+
+/** Declared in-package paths first, then `<basename>.<ext>` at the package root. */
+function resolveAssetFile(rootDir, declaredPaths, basename, extensions) {
+  for (const candidate of declaredPaths) {
     if (typeof candidate !== "string" || candidate.trim() === "") continue;
     if (isAbsolute(candidate)) continue;
     const abs = resolve(rootDir, candidate.trim());
     if (isInside(rootDir, candidate) && existsSync(abs)) return abs;
   }
-  for (const extension of COVER_EXTENSIONS) {
-    const abs = join(rootDir, `cover.${extension}`);
+  for (const extension of extensions) {
+    const abs = join(rootDir, `${basename}.${extension}`);
     if (existsSync(abs)) return abs;
   }
   return null;
 }
 
 /**
- * A registry `cover` that starts with `/` points at a file already committed
- * under `site/public`; return the site path when that file exists.
+ * A registry `cover` (or `icon`) that starts with `/` points at a file already
+ * committed under `site/public`; return the site path when that file exists.
  */
 export function siteCoverFromRegistry(declared, publicDir = join(REPO_ROOT, "site", "public")) {
   if (typeof declared !== "string" || !declared.startsWith("/")) return null;
@@ -159,8 +191,17 @@ export function siteCoverFromRegistry(declared, publicDir = join(REPO_ROOT, "sit
 
 /** The site path a cover copy at `slug.<ext>` is served from. */
 export function coverSitePath(sourcePath, slug) {
+  return assetSitePath(ASSETS.cover, sourcePath, slug);
+}
+
+/** The site path an icon copy at `slug.<ext>` is served from. */
+export function iconSitePath(sourcePath, slug) {
+  return assetSitePath(ASSETS.icon, sourcePath, slug);
+}
+
+function assetSitePath(kind, sourcePath, slug) {
   const extension = extname(sourcePath).slice(1).toLowerCase();
-  return COVER_EXTENSIONS.includes(extension) ? `/covers/${slug}.${extension}` : null;
+  return kind.extensions.includes(extension) ? `${kind.prefix}${slug}.${extension}` : null;
 }
 
 /**
@@ -169,11 +210,20 @@ export function coverSitePath(sourcePath, slug) {
  * binary guard mirrors the leak scanner's own NUL-byte test.
  */
 export function publishCover(sourcePath, slug, coversDir = COVERS_DIR) {
-  const sitePath = coverSitePath(sourcePath, slug);
+  return publishAsset(ASSETS.cover, sourcePath, slug, coversDir);
+}
+
+/** Copy an icon into `site/public/icons/<slug>.<ext>`, with the cover rules. */
+export function publishIcon(sourcePath, slug, iconsDir = ICONS_DIR) {
+  return publishAsset(ASSETS.icon, sourcePath, slug, iconsDir);
+}
+
+function publishAsset(kind, sourcePath, slug, dir) {
+  const sitePath = assetSitePath(kind, sourcePath, slug);
   if (!sitePath) return null;
-  mkdirSync(coversDir, { recursive: true });
-  removeCoversFor(slug, coversDir);
-  const target = join(coversDir, `${slug}${extname(sourcePath).toLowerCase()}`);
+  mkdirSync(dir, { recursive: true });
+  removeAssetsFor(kind, slug, dir);
+  const target = join(dir, `${slug}${extname(sourcePath).toLowerCase()}`);
   const buffer = readFileSync(sourcePath);
   if (buffer.includes(0)) writeFileAtomic(target, buffer);
   else writeFileAtomic(target, neutralizeForPublication(buffer.toString("utf8")));
@@ -182,25 +232,40 @@ export function publishCover(sourcePath, slug, coversDir = COVERS_DIR) {
 
 /** Delete every `site/public/covers/<slug>.<ext>` copy. */
 export function removeCoversFor(slug, coversDir = COVERS_DIR) {
-  if (!existsSync(coversDir)) return;
-  for (const name of readdirSync(coversDir)) {
-    if (COVER_EXTENSIONS.some((extension) => name === `${slug}.${extension}`))
-      rmSync(join(coversDir, name), { force: true });
+  removeAssetsFor(ASSETS.cover, slug, coversDir);
+}
+
+function removeAssetsFor(kind, slug, dir) {
+  if (!existsSync(dir)) return;
+  for (const name of readdirSync(dir)) {
+    if (kind.extensions.some((extension) => name === `${slug}.${extension}`))
+      rmSync(join(dir, name), { force: true });
   }
 }
 
 /** Delete cover files that no plugin references anymore. */
 export function pruneCovers(referencedSitePaths, coversDir = COVERS_DIR) {
-  if (!existsSync(coversDir)) return [];
+  return pruneAssets(ASSETS.cover, referencedSitePaths, coversDir);
+}
+
+/** Delete icon files that no plugin references anymore. */
+export function pruneIcons(referencedSitePaths, iconsDir = ICONS_DIR) {
+  return pruneAssets(ASSETS.icon, referencedSitePaths, iconsDir);
+}
+
+function pruneAssets(kind, referencedSitePaths, dir) {
+  if (!existsSync(dir)) return [];
   const keep = new Set(
-    [...referencedSitePaths].map((sitePath) => sitePath?.replace("/covers/", "")).filter(Boolean),
+    [...referencedSitePaths]
+      .filter((sitePath) => typeof sitePath === "string" && sitePath.startsWith(kind.prefix))
+      .map((sitePath) => sitePath.slice(kind.prefix.length)),
   );
   const removed = [];
-  for (const name of readdirSync(coversDir)) {
+  for (const name of readdirSync(dir)) {
     const extension = name.split(".").pop()?.toLowerCase() ?? "";
-    if (!COVER_EXTENSIONS.includes(extension)) continue;
+    if (!kind.extensions.includes(extension)) continue;
     if (!keep.has(name)) {
-      rmSync(join(coversDir, name), { force: true });
+      rmSync(join(dir, name), { force: true });
       removed.push(name);
     }
   }

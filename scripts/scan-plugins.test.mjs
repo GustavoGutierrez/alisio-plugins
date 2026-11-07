@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -10,6 +10,8 @@ import {
   coverSitePath,
   githubRepoParts,
   headingSlugs,
+  ICON_EXTENSIONS,
+  iconSitePath,
   isInside,
   knownCategories,
   localPackages,
@@ -17,11 +19,15 @@ import {
   normalizeRepository,
   PLUGIN_CATEGORIES,
   prepareReadme,
+  pruneIcons,
   pruneReadmeAnchors,
+  publishIcon,
   renderDetailPage,
   renderIndexPage,
   resolveCoverFile,
+  resolveIconFile,
   sanitizeReadme,
+  sdkRange,
   slugFor,
 } from "./lib/plugins.mjs";
 import { assertSafeTarball, fromCache, packumentFields } from "./scan-plugins.mjs";
@@ -105,6 +111,64 @@ test("coverSitePath derives the served path and rejects unknown extensions", () 
   assert.equal(coverSitePath(join("/x", "cover.svg"), "wayfinder"), "/covers/wayfinder.svg");
   assert.equal(coverSitePath(join("/x", "cover.webp"), "wayfinder"), "/covers/wayfinder.webp");
   assert.equal(coverSitePath(join("/x", "cover.gif"), "wayfinder"), null);
+});
+
+test("resolveIconFile prefers a declared path, then the icon.<ext> convention", () =>
+  withTempDir((dir) => {
+    mkdirSync(join(dir, "art"), { recursive: true });
+    assert.equal(resolveIconFile(dir, {}), null);
+    writeFileSync(join(dir, "icon.webp"), "x");
+    writeFileSync(join(dir, "icon.png"), "x");
+    writeFileSync(join(dir, "art", "mark.svg"), "<svg/>");
+    assert.deepEqual(ICON_EXTENSIONS, ["svg", "png", "webp"]);
+    assert.equal(resolveIconFile(dir, {}), join(dir, "icon.png"));
+    writeFileSync(join(dir, "icon.svg"), "<svg/>");
+    assert.equal(resolveIconFile(dir, {}), join(dir, "icon.svg"));
+    assert.equal(resolveIconFile(dir, { declared: "art/mark.svg" }), join(dir, "art", "mark.svg"));
+    // Escaping, absolute or missing declared paths fall back to the convention.
+    assert.equal(resolveIconFile(dir, { declared: "../secret.svg" }), join(dir, "icon.svg"));
+    assert.equal(
+      resolveIconFile(dir, { declared: join(dir, "art", "mark.svg") }),
+      join(dir, "icon.svg"),
+    );
+    assert.equal(resolveIconFile(dir, { declared: "art/none.svg" }), join(dir, "icon.svg"));
+    // A cover is never mistaken for an icon.
+    rmSync(join(dir, "icon.svg"));
+    rmSync(join(dir, "icon.png"));
+    rmSync(join(dir, "icon.webp"));
+    writeFileSync(join(dir, "cover.svg"), "<svg/>");
+    assert.equal(resolveIconFile(dir, {}), null);
+  }));
+
+test("iconSitePath derives the served path and rejects unknown extensions", () => {
+  assert.equal(iconSitePath(join("/x", "icon.svg"), "wayfinder"), "/icons/wayfinder.svg");
+  assert.equal(iconSitePath(join("/x", "ICON.PNG"), "wayfinder"), "/icons/wayfinder.png");
+  assert.equal(iconSitePath(join("/x", "icon.jpg"), "wayfinder"), null);
+});
+
+test("publishIcon copies, replaces stale extensions, and pruneIcons drops orphans", () =>
+  withTempDir((dir) => {
+    const icons = join(dir, "icons");
+    const source = join(dir, "pkg");
+    mkdirSync(source, { recursive: true });
+    writeFileSync(join(source, "icon.png"), Buffer.from([137, 80, 0, 1]));
+    writeFileSync(join(source, "icon.svg"), "<svg/>");
+    assert.equal(publishIcon(join(source, "icon.png"), "acme", icons), "/icons/acme.png");
+    assert.equal(publishIcon(join(source, "icon.svg"), "acme", icons), "/icons/acme.svg");
+    assert.ok(!existsSync(join(icons, "acme.png")));
+    assert.equal(readFileSync(join(icons, "acme.svg"), "utf8"), "<svg/>");
+    writeFileSync(join(icons, "orphan.webp"), "x");
+    writeFileSync(join(icons, "notes.txt"), "keep");
+    assert.deepEqual(pruneIcons(["/icons/acme.svg", null], icons), ["orphan.webp"]);
+    assert.ok(existsSync(join(icons, "acme.svg")));
+    assert.ok(existsSync(join(icons, "notes.txt")));
+  }));
+
+test("sdkRange reads the @alisio/sdk peer range", () => {
+  assert.equal(sdkRange({ peerDependencies: { "@alisio/sdk": " ^0.9.0 " } }), "^0.9.0");
+  assert.equal(sdkRange({ peerDependencies: { other: "1" } }), null);
+  assert.equal(sdkRange({ peerDependencies: { "@alisio/sdk": 1 } }), null);
+  assert.equal(sdkRange(null), null);
 });
 
 test("sanitizeReadme neutralizes the VitePress pipeline", () => {
@@ -266,7 +330,7 @@ test("packumentFields extracts display metadata from a packument", () => {
         description: "A plugin",
         repository: { url: "git+https://github.com/acme/plugin.git", directory: "pkg" },
         dependencies: { a: "1", b: "2" },
-        peerDependencies: { c: "3" },
+        peerDependencies: { c: "3", "@alisio/sdk": "^0.9.0" },
         dist: { unpackedSize: 1234, tarball: "https://example.com/p.tgz" },
       },
     },
@@ -279,7 +343,8 @@ test("packumentFields extracts display metadata from a packument", () => {
   assert.equal(fields.firstPublishedAt, "2024-01-01T00:00:00.000Z");
   assert.equal(fields.unpackedSize, 1234);
   assert.equal(fields.dependencyCount, 2);
-  assert.equal(fields.peerCount, 1);
+  assert.equal(fields.peerCount, 2);
+  assert.equal(fields.sdk, "^0.9.0");
   assert.equal(fields.author, "Ada");
   assert.deepEqual(fields.maintainers, ["Ada", "Grace"]);
   assert.equal(fields.tarball, "https://example.com/p.tgz");
@@ -309,6 +374,11 @@ test("fromCache applies registry overrides without dropping cached data", () => 
   assert.equal(merged.homepage, "https://acme.dev");
   assert.equal(merged.version, "1.0.0");
   assert.equal(merged.readme, "# Cached");
+  assert.equal(merged.icon, null);
+  assert.equal(merged.sdk, null);
+  const withAssets = fromCache({ ...cached, icon: "/icons/acme-plugin.svg", sdk: "^0.9.0" }, {});
+  assert.equal(withAssets.icon, "/icons/acme-plugin.svg");
+  assert.equal(withAssets.sdk, "^0.9.0");
 });
 
 /** Build a minimal ustar block for one entry name. */

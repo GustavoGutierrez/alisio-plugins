@@ -17,6 +17,10 @@ const COVER_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">' +
   '<rect width="1600" height="900" fill="#3451b2"/></svg>\n';
 
+const ICON_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">' +
+  '<circle cx="128" cy="128" r="120" fill="#3451b2"/></svg>\n';
+
 /** Run a command asynchronously so the in-process registry server stays live. */
 function run(command, args, options) {
   return new Promise((resolve) => {
@@ -80,6 +84,7 @@ test("the third-party pipeline runs end to end without executing package code", 
     );
     writeFileSync(join(fixture, "index.js"), PROOF_OF_NO_EXECUTION);
     writeFileSync(join(fixture, "cover.svg"), COVER_SVG);
+    writeFileSync(join(fixture, "icon.svg"), ICON_SVG);
     const tarballPath = join(root, "tarball.tgz");
     execFileSync("tar", ["-czf", tarballPath, "-C", join(root, "fixture"), "package"]);
     state.tarball = readFileSync(tarballPath);
@@ -135,8 +140,11 @@ test("the third-party pipeline runs end to end without executing package code", 
       },
     };
 
-    // 3. A throwaway scan root: registry in, cache/pages/covers out.
+    // 3. A throwaway scan root: registry in, cache/pages/covers/icons out. A stale icon from an
+    //    earlier scan must be pruned.
     mkdirSync(join(root, "registry"), { recursive: true });
+    mkdirSync(join(root, "site", "public", "icons"), { recursive: true });
+    writeFileSync(join(root, "site", "public", "icons", "gone-plugin.svg"), ICON_SVG);
     writeFileSync(
       join(root, "registry", "plugins.json"),
       `${JSON.stringify({ schemaVersion: 1, plugins: [{ package: "@acme/plugin-search" }] }, null, 2)}\n`,
@@ -173,6 +181,8 @@ test("the third-party pipeline runs end to end without executing package code", 
     assert.equal(entry.downloadsLastMonth, 42);
     assert.deepEqual(entry.categories, ["search", "tools"]);
     assert.equal(entry.cover, "/covers/acme-plugin-search.svg");
+    assert.equal(entry.icon, "/icons/acme-plugin-search.svg");
+    assert.equal(entry.sdk, ">=0.1.0");
 
     // 5. The README is sanitized and its relative links are rewritten.
     assert.ok(!entry.readme.includes("@include"));
@@ -194,6 +204,10 @@ test("the third-party pipeline runs end to end without executing package code", 
     const cover = join(root, "site", "public", "covers", "acme-plugin-search.svg");
     assert.ok(existsSync(cover));
     assert.ok(readFileSync(cover, "utf8").includes('viewBox="0 0 1600 900"'));
+    const icon = join(root, "site", "public", "icons", "acme-plugin-search.svg");
+    assert.ok(existsSync(icon));
+    assert.ok(readFileSync(icon, "utf8").includes('viewBox="0 0 256 256"'));
+    assert.ok(!existsSync(join(root, "site", "public", "icons", "gone-plugin.svg")));
     const page = readFileSync(join(root, "site", "plugins", "acme-plugin-search.md"), "utf8");
     assert.ok(page.includes('<PluginDetail slug="acme-plugin-search" />'));
     assert.ok(page.includes("## Usage"));
