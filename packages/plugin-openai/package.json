@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-openai",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Official OpenAI Responses API model provider for Alisio.",
   "keywords": [
     "alisio-plugin",
@@ -43,10 +43,10 @@
     "openai": "7.33.0"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.8.0"
+    "@alisio/sdk": "^0.9.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.8.0",
+    "@alisio/sdk": "0.9.0",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }

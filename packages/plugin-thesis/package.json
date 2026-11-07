@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-thesis",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Plans, researches, drafts and typesets university theses with verified evidence, deterministic quality gates and fast Typst PDF builds in the language you choose.",
   "keywords": [
     "alisio-plugin",
@@ -61,10 +61,10 @@
     "yaml": "2.9.1"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.8.0"
+    "@alisio/sdk": "^0.9.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.8.0",
+    "@alisio/sdk": "0.9.0",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }

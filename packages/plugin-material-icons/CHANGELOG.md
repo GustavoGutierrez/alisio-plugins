@@ -1,5 +1,11 @@
 # @alisio/plugin-material-icons
 
+## 0.9.0
+
+### Minor Changes
+
+- Update the `@alisio/sdk` dependency to `^0.9.0` (peer) and `0.9.0` (dev) across every plugin.
+
 ## 0.8.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-swarm",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Runs a handoff-driven swarm of specialised agents, each in its own git worktree, with durable handoffs, deterministic quality gates and a human approval gate.",
   "keywords": [
     "alisio-plugin",
@@ -45,10 +45,10 @@
     "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "@alisio/sdk": "^0.8.0"
+    "@alisio/sdk": "^0.9.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.8.0",
+    "@alisio/sdk": "0.9.0",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }

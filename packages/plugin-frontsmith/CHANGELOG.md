@@ -1,5 +1,11 @@
 # @alisio/plugin-frontsmith
 
+## 0.6.0
+
+### Minor Changes
+
+- Update the `@alisio/sdk` dependency to `^0.9.0` (peer) and `0.9.0` (dev) across every plugin.
+
 ## 0.5.0
 
 ### Minor Changes
