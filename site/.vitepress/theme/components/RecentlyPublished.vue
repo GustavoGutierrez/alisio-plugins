@@ -62,7 +62,10 @@ const heading = computed(
               :alt="lang === 'es' ? `Portada de ${plugin.title}` : `${plugin.title} cover`"
             />
             <span class="recent-card__footer">
-              <span class="recent-card__name">{{ plugin.title }}</span>
+              <span class="recent-card__name">
+                <PluginIcon :src="plugin.icon" :size="22" />
+                <span class="recent-card__name-text">{{ plugin.title }}</span>
+              </span>
               <span class="recent-card__meta">
                 <span v-if="plugin.version">v{{ plugin.version }}</span>
                 <template v-if="plugin.publishedAt">
@@ -75,6 +78,7 @@ const heading = computed(
           <!-- Back: the full detail, shown on hover, keyboard focus or tap. -->
           <div class="recent-card__face recent-card__back">
             <h3 class="recent-card__title">
+              <PluginIcon :src="plugin.icon" :size="24" />
               <a :href="links.detail(plugin.slug)">{{ plugin.title }}</a>
             </h3>
             <div class="plugin-meta">

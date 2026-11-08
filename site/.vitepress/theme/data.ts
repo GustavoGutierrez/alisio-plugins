@@ -23,6 +23,8 @@ export interface PluginEntry {
   peerCount: number;
   installName: string;
   cover: string;
+  /** Square icon site path, or `null` when the plugin ships none. */
+  icon: string | null;
   readme: string | null;
   readmeEs?: string | null;
   downloadsLastMonth: number | null;

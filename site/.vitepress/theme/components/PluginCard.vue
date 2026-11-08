@@ -18,11 +18,14 @@ const links = usePluginLinks();
       />
     </a>
     <div class="plugin-card__body">
-      <div>
-        <h3 class="plugin-card__title">
-          <a :href="links.detail(props.plugin.slug)">{{ props.plugin.title }}</a>
-        </h3>
-        <code class="plugin-card__package">{{ props.plugin.name }}</code>
+      <div class="plugin-card__heading">
+        <PluginIcon :src="props.plugin.icon" :size="40" />
+        <div class="plugin-card__heading-text">
+          <h3 class="plugin-card__title">
+            <a :href="links.detail(props.plugin.slug)">{{ props.plugin.title }}</a>
+          </h3>
+          <code class="plugin-card__package">{{ props.plugin.name }}</code>
+        </div>
       </div>
       <p class="plugin-card__description">{{ props.plugin.description }}</p>
       <PluginBadges

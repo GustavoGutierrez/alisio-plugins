@@ -10,6 +10,7 @@ import PluginCard from "./components/PluginCard.vue";
 import PluginCatalog from "./components/PluginCatalog.vue";
 import PluginCover from "./components/PluginCover.vue";
 import PluginDetail from "./components/PluginDetail.vue";
+import PluginIcon from "./components/PluginIcon.vue";
 import RecentlyPublished from "./components/RecentlyPublished.vue";
 import RelativeTime from "./components/RelativeTime.vue";
 import SiteLayout from "./SiteLayout.vue";
@@ -29,6 +30,7 @@ export default {
     app.component("PluginCard", PluginCard);
     app.component("PluginCatalog", PluginCatalog);
     app.component("PluginCover", PluginCover);
+    app.component("PluginIcon", PluginIcon);
     app.component("PluginDetail", PluginDetail);
     app.component("RecentlyPublished", RecentlyPublished);
     app.component("RelativeTime", RelativeTime);
