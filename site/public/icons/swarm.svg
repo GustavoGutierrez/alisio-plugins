@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="swarm-icon-title swarm-icon-desc">
+  <title id="swarm-icon-title">Swarm</title>
+  <desc id="swarm-icon-desc">Three honeycomb hexagons in sky blue and green on a dark slate tile, representing a swarm of specialised agents with a passing quality gate.</desc>
+  <defs>
+    <linearGradient id="swarm-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#swarm-bg)"/>
+  <g stroke-width="8" stroke-linejoin="round">
+    <polygon points="256,126 316.6,161 316.6,231 256,266 195.4,231 195.4,161" fill="#38bdf8" stroke="#38bdf8"/>
+    <polygon points="186.7,246 247.3,281 247.3,351 186.7,386 126.1,351 126.1,281" fill="#0284c7" stroke="#0284c7"/>
+    <polygon points="325.3,246 385.9,281 385.9,351 325.3,386 264.7,351 264.7,281" fill="#22c55e" stroke="#22c55e"/>
+  </g>
+</svg>

@@ -38,6 +38,8 @@ Load this skill before creating or restructuring a package under `packages/`.
 1. Copy the package shape, not product behavior, from an existing package.
 2. Write metadata, README, LICENSE, source, and tests as one work unit.
 3. Register resources relative to the built entry and include them in `files`.
+   Ship a 16:9 `cover.svg` (1600×900) and a square `icon.svg` (512×512) at the package root, both
+   listed in `files`; follow the site guide's "Cover and icon artwork" rules.
 4. Run `pnpm check` and inspect the generated tarball through `pnpm pack:check`.
 
 ## Output Contract

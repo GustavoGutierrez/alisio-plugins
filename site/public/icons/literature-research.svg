@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="literature-research-icon-title literature-research-icon-desc">
+  <title id="literature-research-icon-title">Literature Research</title>
+  <desc id="literature-research-icon-desc">A teal page outline with text lines and a gold magnifier on a dark navy tile, representing scholarly metadata research.</desc>
+  <defs>
+    <linearGradient id="literature-research-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1626"/>
+      <stop offset="1" stop-color="#132a42"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#literature-research-bg)"/>
+  <rect x="96" y="112" width="252" height="288" rx="24" fill="none" stroke="#75d5c8" stroke-width="28"/>
+  <g fill="#dbeafe"><rect x="140" y="176" width="124" height="24" rx="12"/><rect x="140" y="228" width="96" height="24" rx="12"/><rect x="140" y="280" width="116" height="24" rx="12"/></g>
+  <path d="M372 336L424 388" stroke="#f6c85f" stroke-width="38" stroke-linecap="round"/>
+  <circle cx="330" cy="294" r="68" fill="#f6c85f" stroke="#102033" stroke-width="14"/>
+</svg>

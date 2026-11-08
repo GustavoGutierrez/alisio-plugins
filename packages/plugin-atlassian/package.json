@@ -37,7 +37,8 @@
     ".agents",
     "README.md",
     "LICENSE",
-    "cover.svg"
+    "cover.svg",
+    "icon.svg"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

@@ -35,7 +35,8 @@
     "LICENSE",
     "LICENSE.material-icon-theme",
     "icons",
-    "material-icons.json"
+    "material-icons.json",
+    "icon.svg"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

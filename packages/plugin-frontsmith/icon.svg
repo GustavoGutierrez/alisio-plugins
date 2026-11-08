@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="frontsmith-icon-title frontsmith-icon-desc">
+  <title id="frontsmith-icon-title">Frontsmith</title>
+  <desc id="frontsmith-icon-desc">A gold browser window with a green passing check badge on a dark tile, representing a gated frontend engineering workflow.</desc>
+  <defs>
+    <linearGradient id="frontsmith-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0f1c"/>
+      <stop offset="1" stop-color="#151f33"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#frontsmith-bg)"/>
+  <rect x="88" y="112" width="320" height="272" rx="36" fill="#f5b83d"/>
+  <rect x="116" y="176" width="264" height="180" rx="14" fill="#10182a"/>
+  <g fill="#10182a"><circle cx="132" cy="144" r="12"/><circle cx="168" cy="144" r="12"/><circle cx="204" cy="144" r="12"/></g>
+  <rect x="148" y="212" width="128" height="26" rx="13" fill="#f5b83d"/>
+  <rect x="148" y="264" width="84" height="26" rx="13" fill="#f5b83d" opacity="0.6"/>
+  <circle cx="372" cy="364" r="76" fill="#22c55e" stroke="#121a2c" stroke-width="16"/>
+  <path d="M336 364L362 390L410 340" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

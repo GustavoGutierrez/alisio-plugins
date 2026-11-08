@@ -45,7 +45,8 @@
     "README.md",
     "README.es.md",
     "LICENSE",
-    "cover.webp"
+    "cover.webp",
+    "icon.svg"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

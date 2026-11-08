@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="cardsmith-icon-title cardsmith-icon-desc">
+  <title id="cardsmith-icon-title">Cardsmith</title>
+  <desc id="cardsmith-icon-desc">A tilted cream card with a bold rainbow arc on a deep navy tile, representing finished card images rendered locally.</desc>
+  <defs>
+    <linearGradient id="cardsmith-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1626"/>
+      <stop offset="1" stop-color="#1b3550"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#cardsmith-bg)"/>
+  <g transform="rotate(-6 256 256)">
+    <rect x="136" y="96" width="240" height="320" rx="28" fill="#fbf1dc"/>
+    <rect x="176" y="140" width="160" height="22" rx="11" fill="#b59048"/>
+    <g fill="none" stroke-width="26">
+      <path d="M164 304A92 92 0 0 1 348 304" stroke="#e95026"/>
+      <path d="M192 304A64 64 0 0 1 320 304" stroke="#f8c53f"/>
+      <path d="M220 304A36 36 0 0 1 292 304" stroke="#01a5f7"/>
+    </g>
+    <rect x="176" y="344" width="160" height="22" rx="11" fill="#d64293"/>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="thesis-icon-title thesis-icon-desc">
+  <title id="thesis-icon-title">Thesis</title>
+  <desc id="thesis-icon-desc">A white graduation cap with a gold tassel on a bright blue gradient tile, representing university thesis planning and typesetting.</desc>
+  <defs>
+    <linearGradient id="thesis-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b3fae"/>
+      <stop offset="1" stop-color="#3fa9ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#thesis-bg)"/>
+  <path d="M152 236V312Q256 372 360 312V236L256 284Z" fill="#cfe6ff"/>
+  <path d="M256 112L440 196L256 280L72 196Z" fill="#ffffff"/>
+  <path d="M400 214V318" fill="none" stroke="#ffd166" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="400" cy="334" r="26" fill="#ffd166"/>
+</svg>

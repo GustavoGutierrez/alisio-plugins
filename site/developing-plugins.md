@@ -84,7 +84,7 @@ repository:
   "type": "module",
   "engines": { "node": ">=22.16" },
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "README.md", "LICENSE", "cover.svg"],
+  "files": ["dist", "README.md", "LICENSE", "cover.svg", "icon.svg"],
   "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0" },
   "devDependencies": { "@alisio/sdk": "0.1.0-alpha.10" }
 }
@@ -131,12 +131,44 @@ The registry schema requires **only** `package`. Its optional fields are `title`
 | Category and capabilities | `categories` is an optional registry override. Use only: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`, `decisions`. Explain actual capabilities in the PR; capabilities are not a schema field. |
 | Peer SDK range, Node compatibility, tests and validation evidence | These are maintainer review evidence, not registry fields. Include your `@alisio/sdk` peer range, `engines.node`, commands/results, and the exact published version installed with Alisio. |
 | Security and integration details | Explain network/process/write behavior, credential handling, durable-data behavior, optional integrations, and any resources. The scanner never imports or executes third-party code. |
-| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. An optional square `icon` follows the same path rules, falling back to a root `icon.svg`, `.png` or `.webp`. |
+| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. An optional square `icon` follows the same path rules, falling back to a root `icon.svg`, `.png` or `.webp`. See [Cover and icon artwork](#cover-and-icon-artwork). |
 
 `npmUrl`, `title`, and `featured` are optional presentation overrides, not evidence substitutes.
 The scanner fetches npm metadata and, only to find a cover, reads the published tarball without
 executing it. A maintainer can reject or defer a registry change when the package, metadata, safety,
 or validation evidence is insufficient.
+
+### Cover and icon artwork
+
+Every plugin can ship two images: a wide **cover** for the catalog card and detail page, and a
+square **icon** for compact lists, the catalog JSON and host UIs. Both are optional, but
+first-party packages ship both. Put them at the package root as `cover.svg` and `icon.svg` and
+list both in `package.json` `files`, so the scanner finds them locally and in the published tarball.
+
+| Property | Cover | Icon |
+| --- | --- | --- |
+| Aspect ratio | **16:9** | **1:1** (square) |
+| Recommended size | **1600 × 900** | **512 × 512** |
+| Minimum raster size | **640 × 360** | **128 × 128** |
+| SVG `viewBox` | `0 0 1600 900` | `0 0 512 512` |
+| Formats, in lookup order | `svg`, `png`, `jpg`, `jpeg`, `webp` | `svg`, `png`, `webp` |
+| Maximum file size | **512 KB** | **64 KB** |
+| Default file name | `cover.<ext>` | `icon.<ext>` |
+| Missing file | Default cover is used | `icon: null`; no fallback |
+| Published to the site at | `/covers/<slug>.<ext>` | `/icons/<slug>.<ext>` |
+
+Design rules for icons:
+
+- Bake the background into the file: a full-bleed rounded square (`rx` ≈ 112 on a 512 viewBox).
+  Hosts show the icon as-is, on light and dark themes.
+- Use one bold glyph that stays legible at **32 px**. Avoid text, hairline strokes and fine detail.
+- Derive colors and motif from the plugin's cover so both read as the same brand.
+- Keep SVGs self-contained: no `<image>`, scripts, external references or web fonts, and prefix
+  gradient and filter ids with the plugin name so several icons can be inlined on one page.
+- A plugin that integrates a specific vendor or library (for example OpenAI, Atlassian or Brave)
+  may use that vendor's official mark, unmodified in shape and proportions and in the colors its
+  brand guidelines allow, on the icon's background. Record the mark owner and source in an XML
+  comment at the top of the file. Never imply endorsement beyond the integration itself.
 
 ## Catalog JSON
 

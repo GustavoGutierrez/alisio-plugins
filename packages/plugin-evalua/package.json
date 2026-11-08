@@ -41,7 +41,8 @@
     "README.es.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
-    "cover.webp"
+    "cover.webp",
+    "icon.svg"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

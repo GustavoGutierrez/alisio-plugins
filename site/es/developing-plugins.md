@@ -81,7 +81,7 @@ Parte de esta forma de manifiesto y adapta versiones, scripts y el gestor de paq
   "type": "module",
   "engines": { "node": ">=22.16" },
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "README.md", "LICENSE", "cover.svg"],
+  "files": ["dist", "README.md", "LICENSE", "cover.svg", "icon.svg"],
   "peerDependencies": { "@alisio/sdk": ">=0.1.0-alpha.10 <0.2.0" },
   "devDependencies": { "@alisio/sdk": "0.1.0-alpha.10" }
 }
@@ -128,11 +128,46 @@ El esquema exige **solo** `package`. Sus campos opcionales son `title`, `npmUrl`
 | Categoría y capacidades | `categories` es opcional. Usa solo: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`, `decisions`. Explica capacidades reales en el PR; no son un campo del esquema. |
 | Rango peer SDK, compatibilidad Node, evidencia de tests y validación | Son evidencia de revisión, no campos del registro. Incluye rango de `@alisio/sdk`, `engines.node`, comandos/resultados y versión publicada instalada con Alisio. |
 | Detalles de seguridad e integración | Explica red/proceso/escritura, credenciales, datos duraderos, integraciones opcionales y recursos. El escáner nunca importa ni ejecuta código de terceros. |
-| Cover y presentación | `cover` es opcional: una ruta del paquete como `cover.svg`, o `/...` para un archivo confirmado bajo `site/public`. Si no, el escáner busca `alisio.cover` y después `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp` en la raíz. Prefiere SVG 16:9 de 1600×900 bajo 512 KB e inclúyelo en el tarball npm. Un `icon` cuadrado opcional sigue las mismas reglas de ruta y, si falta, se busca `icon.svg`, `.png` o `.webp` en la raíz. |
+| Cover y presentación | `cover` es opcional: una ruta del paquete como `cover.svg`, o `/...` para un archivo confirmado bajo `site/public`. Si no, el escáner busca `alisio.cover` y después `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp` en la raíz. Prefiere SVG 16:9 de 1600×900 bajo 512 KB e inclúyelo en el tarball npm. Un `icon` cuadrado opcional sigue las mismas reglas de ruta y, si falta, se busca `icon.svg`, `.png` o `.webp` en la raíz. Consulta [Arte de cover e icono](#arte-de-cover-e-icono). |
 
 `npmUrl`, `title` y `featured` son sustituciones de presentación, no sustitutos de evidencia. El escáner
 obtiene metadatos npm y, solo para encontrar un cover, lee el tarball publicado sin ejecutarlo. Un
 mantenedor puede rechazar o posponer un cambio si paquete, metadatos, seguridad o evidencia son insuficientes.
+
+### Arte de cover e icono
+
+Cada plugin puede incluir dos imágenes: un **cover** ancho para la tarjeta y la página de detalle
+del catálogo, y un **icono** cuadrado para listas compactas, el JSON del catálogo y la interfaz del
+host. Ambos son opcionales, pero los paquetes propios incluyen los dos. Colócalos en la raíz del
+paquete como `cover.svg` e `icon.svg` y agrégalos a `files` en `package.json`, para que el escáner
+los encuentre en local y en el tarball publicado.
+
+| Propiedad | Cover | Icono |
+| --- | --- | --- |
+| Relación de aspecto | **16:9** | **1:1** (cuadrado) |
+| Tamaño recomendado | **1600 × 900** | **512 × 512** |
+| Tamaño mínimo (raster) | **640 × 360** | **128 × 128** |
+| `viewBox` SVG | `0 0 1600 900` | `0 0 512 512` |
+| Formatos, en orden de búsqueda | `svg`, `png`, `jpg`, `jpeg`, `webp` | `svg`, `png`, `webp` |
+| Tamaño máximo de archivo | **512 KB** | **64 KB** |
+| Nombre por defecto | `cover.<ext>` | `icon.<ext>` |
+| Si falta | Se usa el cover por defecto | `icon: null`; sin respaldo |
+| Publicado en el sitio en | `/covers/<slug>.<ext>` | `/icons/<slug>.<ext>` |
+
+Reglas de diseño para iconos:
+
+- Incluye el fondo en el archivo: un cuadrado redondeado a sangre (`rx` ≈ 112 en un viewBox de 512).
+  Los hosts muestran el icono tal cual, en temas claros y oscuros.
+- Usa un solo glifo marcado que siga siendo legible a **32 px**. Evita texto, trazos finos y detalle menudo.
+- Toma colores y motivo del cover del plugin para que ambos se lean como la misma marca.
+- Mantén los SVG autocontenidos: sin `<image>`, scripts, referencias externas ni fuentes web, y
+  prefija los ids de gradientes y filtros con el nombre del plugin para poder incrustar varios
+  iconos en una misma página.
+- Un plugin que integra un proveedor o librería concreta (por ejemplo OpenAI, Atlassian o Brave)
+  puede usar la marca oficial de ese proveedor, sin alterar su forma ni sus proporciones y con los
+  colores que permitan sus guías de marca, sobre el fondo del icono. Indica el titular y el origen
+  de la marca en un comentario XML al inicio del archivo. Nunca sugieras un respaldo más allá de la
+  integración en sí.
 
 ## JSON del catálogo
 

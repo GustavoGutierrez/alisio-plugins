@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="wayfinder-icon-title wayfinder-icon-desc">
+  <title id="wayfinder-icon-title">Wayfinder</title>
+  <desc id="wayfinder-icon-desc">A compass ring with a white and lavender needle on an indigo tile, representing a spec-driven development workflow that finds the way.</desc>
+  <defs>
+    <linearGradient id="wayfinder-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1b4d"/>
+      <stop offset="0.55" stop-color="#3451b2"/>
+      <stop offset="1" stop-color="#5c73e7"/>
+    </linearGradient>
+    <radialGradient id="wayfinder-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#a8b1ff" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#a8b1ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#wayfinder-bg)"/>
+  <circle cx="256" cy="256" r="220" fill="url(#wayfinder-glow)"/>
+  <circle cx="256" cy="256" r="152" fill="none" stroke="#dbe0ff" stroke-width="28"/>
+  <g transform="rotate(35 256 256)">
+    <path d="M256 120L300 256H212Z" fill="#ffffff"/>
+    <path d="M212 256H300L256 392Z" fill="#a8b1ff"/>
+  </g>
+  <circle cx="256" cy="256" r="20" fill="#3451b2"/>
+</svg>

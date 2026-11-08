@@ -100,7 +100,7 @@ cover fails to load.
 
 For third-party packages the cover is taken from the published tarball, so the file must be included
 in the package's `files` (or not excluded by `.npmignore`). Local packages in this repository ship
-`cover.svg` in `files`.
+`cover.svg` and `icon.svg` in `files`.
 
 ### Icon convention
 
@@ -115,7 +115,8 @@ An icon is optional and square; nothing falls back to a default, so a plugin wit
 The same path-safety rules as covers apply. The resolved file is copied to
 `site/public/icons/<slug>.<ext>`, stale copies with another extension are removed, and unreferenced
 copies are pruned. For third-party packages the icon is read from the published tarball, so it must
-be included in the package's `files`. Prefer a 256 × 256 SVG.
+be included in the package's `files`. Prefer a 512 × 512 SVG (`viewBox="0 0 512 512"`) under 64 KB;
+the full size, format and design rules are in the site guide's "Cover and icon artwork" section.
 
 ### Dimension rule
 

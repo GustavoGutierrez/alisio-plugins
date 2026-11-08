@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="telemetry-icon-title telemetry-icon-desc">
+  <title id="telemetry-icon-title">Telemetry</title>
+  <desc id="telemetry-icon-desc">Cyan-to-indigo bar chart with a white rising trend line on a dark navy tile, representing local agent observability.</desc>
+  <defs>
+    <linearGradient id="telemetry-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#0d1c31"/>
+    </linearGradient>
+    <linearGradient id="telemetry-accent" gradientUnits="userSpaceOnUse" x1="104" y1="0" x2="404" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#telemetry-bg)"/>
+  <g fill="url(#telemetry-accent)">
+    <rect x="104" y="292" width="60" height="112" rx="16"/>
+    <rect x="184" y="236" width="60" height="168" rx="16"/>
+    <rect x="264" y="268" width="60" height="136" rx="16"/>
+    <rect x="344" y="196" width="60" height="208" rx="16"/>
+  </g>
+  <path d="M120 220L206 156L290 188L374 112" fill="none" stroke="#ffffff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="374" cy="112" r="24" fill="#ffffff"/>
+</svg>
