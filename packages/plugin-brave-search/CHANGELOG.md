@@ -1,5 +1,11 @@
 # @alisio/plugin-brave-search
 
+## 0.5.2
+
+### Patch Changes
+
+- 3c11bd8: Ship a square `icon.svg` (512×512) in the package, used by the catalog and host UIs.
+
 ## 0.5.1
 
 ### Patch Changes

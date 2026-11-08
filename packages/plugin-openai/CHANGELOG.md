@@ -1,5 +1,11 @@
 # @alisio/plugin-openai
 
+## 0.6.1
+
+### Patch Changes
+
+- 3c11bd8: Ship a square `icon.svg` (512×512) in the package, used by the catalog and host UIs.
+
 ## 0.6.0
 
 ### Minor Changes
