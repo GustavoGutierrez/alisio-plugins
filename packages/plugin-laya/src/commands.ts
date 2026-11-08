@@ -411,6 +411,9 @@ export function createCommandHandlers(deps: CommandDeps): CommandHandlers {
       const outcome = runtime.jobs.start("uninstall", async (ctx) => {
         ctx.step(1, "stopping server");
         await runtime.stopServer();
+        // Settle queued job-record writes first: they land in runtime/jobs, which is about to be
+        // removed, and a write racing the removal fails it with ENOTEMPTY.
+        await runtime.jobs.flush();
         await uninstallRuntime({
           runtimeRoot: runtime.paths.runtime,
           parent: dirname(runtime.paths.runtime),

@@ -353,7 +353,8 @@ export async function uninstallRuntime(input: UninstallInput): Promise<void> {
     if (KNOWN_ENTRIES.includes(entry) || isVenvName(entry)) {
       const target = join(input.runtimeRoot, entry);
       await assertContained(input.runtimeRoot, target, { forbidSymlink: true });
-      await rm(target, { recursive: true, force: true });
+      // Retries absorb a file that appears mid-removal (ENOTEMPTY/EBUSY) instead of failing.
+      await rm(target, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
     }
   }
   try {
