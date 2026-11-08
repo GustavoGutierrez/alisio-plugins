@@ -188,8 +188,8 @@ importers:
         version: 7.33.0
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.9.0
-        version: 0.9.0
+        specifier: 0.11.0
+        version: 0.11.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -396,6 +396,10 @@ packages:
   '@algolia/requester-node-http@5.59.0':
     resolution: {integrity: sha512-YYHLEs5rC6oRTFwT7bJaKBR9NSFzikeVHGAT1ffATmUQzR8XqyhHXjoieAUoR7fBU6I5cfy1FVeh5GoRgriuzA==, tarball: https://registry.npmjs.org/@algolia/requester-node-http/-/requester-node-http-5.59.0.tgz}
     engines: {node: '>= 14.0.0'}
+
+  '@alisio/sdk@0.11.0':
+    resolution: {integrity: sha512-qo/eUB9hqpyTojiBrXzQ9HDigjNHuZUPZxH/8nHqpPNVs0NphPFQqTmpfojr3YetNvHsdNKeqrh1+f+olHxL5g==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.11.0.tgz}
+    engines: {node: '>=22.16'}
 
   '@alisio/sdk@0.9.0':
     resolution: {integrity: sha512-MVidMzo/WtUjrDs8YdRdHMw9RK71WNEEDEdyb3jzWetZcNIOqPiDC3D+AChAAw09FfYQKk8aN+WbfoFt95PKMg==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.9.0.tgz}
@@ -2304,6 +2308,8 @@ snapshots:
   '@algolia/requester-node-http@5.59.0':
     dependencies:
       '@algolia/client-common': 5.59.0
+
+  '@alisio/sdk@0.11.0': {}
 
   '@alisio/sdk@0.9.0': {}
 

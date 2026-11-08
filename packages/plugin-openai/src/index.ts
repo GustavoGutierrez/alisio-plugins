@@ -1,9 +1,14 @@
 import { definePlugin, type Plugin, type ProviderCreateRequest } from "@alisio/sdk";
+import { type ChatGPTDeps, createChatGPTRegistration } from "./chatgpt/index.js";
 import { OpenAIProvider } from "./provider.js";
 import { VERSION } from "./version.js";
 
 const API_KEY_ENV = "OPENAI_API_KEY";
-export function createOpenAIPlugin(): Plugin {
+export interface OpenAIPluginOptions {
+  /** Injected dependencies for the ChatGPT sign-in provider (tests). */
+  chatgpt?: ChatGPTDeps;
+}
+export function createOpenAIPlugin(options: OpenAIPluginOptions = {}): Plugin {
   return definePlugin({
     id: "openai",
     name: "OpenAI",
@@ -37,8 +42,10 @@ export function createOpenAIPlugin(): Plugin {
           });
         },
       });
+      api.providers.register(createChatGPTRegistration(options.chatgpt));
     },
   });
 }
-export { OpenAIProvider } from "./provider.js";
+export { createBrowserMethod, createChatGPTRegistration } from "./chatgpt/index.js";
+export { OpenAIProvider, type OpenAIProviderConfig } from "./provider.js";
 export default createOpenAIPlugin();

@@ -10,7 +10,7 @@ const registration = (plugin: Plugin) => {
   plugin.setup({
     providers: {
       register(value: ProviderRegistration) {
-        found = value;
+        found ??= value;
         return () => {};
       },
     },
