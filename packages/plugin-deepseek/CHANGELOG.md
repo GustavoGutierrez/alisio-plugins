@@ -1,5 +1,11 @@
 # @alisio/plugin-deepseek
 
+## 0.5.1
+
+### Patch Changes
+
+- 7df00a0: Widen the `@alisio/sdk` peer range to `>=0.9.0 <0.12.0` so the plugin installs alongside plugins built for `@alisio/sdk` 0.11 (caret ranges on 0.x pin a single minor and made npm reject mixed installs).
+
 ## 0.5.0
 
 ### Minor Changes
