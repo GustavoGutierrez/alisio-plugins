@@ -157,6 +157,9 @@ describe("permission messages", () => {
       expect(messages[locale].not_permitted_process).toMatch(/--allow-process/);
     }
     const app = await readFile(new URL("../web/app.js", import.meta.url), "utf8");
-    expect(app).toMatch(/"pdf\.compile" \? "not_permitted_process" : "not_permitted_write"/);
+    // Prefer the host's `effect` field, else infer it from the action.
+    expect(app).toMatch(/message\.effect === "process" \|\| message\.effect === "write"/);
+    expect(app).toMatch(/request\.action === "pdf\.compile"/);
+    expect(app).toMatch(/`not_permitted_\$\{effect\}`/);
   });
 });

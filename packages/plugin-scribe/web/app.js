@@ -35,10 +35,17 @@ const connected = new Promise((resolve) => {
         const result = message.result;
         let error = message.error || result?.error;
         if (message.error === "not_found") showUnavailable();
-        // Name the missing permission: compiling runs a process, everything else that can be denied writes.
-        if (message.error === "not_permitted")
-          error =
-            request.action === "pdf.compile" ? "not_permitted_process" : "not_permitted_write";
+        // Name the missing permission. Newer hosts send the denied `effect`; older ones do not, so
+        // fall back to the action: compiling runs a process, everything else that can be denied writes.
+        if (message.error === "not_permitted") {
+          const effect =
+            message.effect === "process" || message.effect === "write"
+              ? message.effect
+              : request.action === "pdf.compile"
+                ? "process"
+                : "write";
+          error = `not_permitted_${effect}`;
+        }
         error ? request.reject(new Error(error)) : request.resolve(result?.value);
       }
     };
@@ -88,6 +95,7 @@ function toast(message) {
 }
 // The host runs at most PLUGIN_APP_LIMITS.inFlight (8) requests per frame; stay below it.
 const MAX_IN_FLIGHT = 6;
+const RESPONSE_GUARD_MS = 6 * 60 * 1000;
 let inFlight = 0;
 const waiting = [];
 async function api(action, input = {}, mutation = false) {
@@ -105,10 +113,12 @@ async function api(action, input = {}, mutation = false) {
 function send(action, input, mutation) {
   const id = crypto.randomUUID();
   return new Promise((resolve, reject) => {
+    // Last-resort guard for a lost response only: the host answers every request itself (30 s per
+    // handler), but it may first wait for the user's approval prompt (capped at about 5 minutes).
     const timer = setTimeout(() => {
       pending.delete(id);
       reject(new Error("operation_failed"));
-    }, 35000);
+    }, RESPONSE_GUARD_MS);
     pending.set(id, { resolve, reject, timer, action });
     hostPort.postMessage({
       type: "request",
