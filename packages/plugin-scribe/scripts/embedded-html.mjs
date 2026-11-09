@@ -28,12 +28,17 @@ export async function buildEmbeddedHtml() {
       },
     ],
   });
-  const i18n = (await read("i18n.js")).replace(/^export /gm, "");
-  const app = (await read("app.js")).replace(/^import .*?;\n/, "");
-  const js = `${viewer.outputFiles[0].text}\n(async()=>{${i18n}\n${app}\n})();`.replaceAll(
-    "</script",
-    "<\\/script",
-  );
+  // The plain browser modules share one function scope: drop their `export` keywords and the
+  // app's `import` lines (every module the app imports is inlined here, in dependency order).
+  const modules = [];
+  for (const name of ["i18n.js", "derive.js", "icons.js"])
+    modules.push((await read(name)).replace(/^export /gm, ""));
+  const app = (await read("app.js")).replace(/^import [\s\S]*?;\n/gm, "");
+  const js =
+    `${viewer.outputFiles[0].text}\n(async()=>{${modules.join("\n")}\n${app}\n})();`.replaceAll(
+      "</script",
+      "<\\/script",
+    );
   const icon = await readFile(new URL("../icon.svg", import.meta.url));
   const css = `:root{--scribe-icon:url("data:image/svg+xml;base64,${icon.toString("base64")}")}\n${await read("style.css")}`;
   return (await read("index.html"))
