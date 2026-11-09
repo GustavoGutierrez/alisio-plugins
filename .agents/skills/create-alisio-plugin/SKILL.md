@@ -47,8 +47,11 @@ Source of truth: the site guide's "Plugin apps" section and the `@alisio/sdk` ty
   A plugin that needs its app uses peer `@alisio/sdk >=0.11.5 <0.12.0`.
 - Lifecycle: register in `setup`; `register()` returns an unregister function; `dispose` is
   synchronous and idempotent; `busy()` returns `true` during background work; keep state per activation.
-- Actions: declare `effect` and an `inputSchema` without `$ref`/`$id`/`$async`; ungranted effects fail
-  with `not_permitted`; calls time out at 30 s (honor `ctx.signal`, return a job id for long work);
+- Actions: declare `effect` and an `inputSchema` without `$ref`/`$id`/`$async`; from Alisio 0.11.6 an
+  effect the chat would ask about shows the chat's approval prompt, and a denial returns
+  `not_permitted` with `effect: "write" | "process"` (name the missing permission to the user; 0.11.5
+  never prompts). Calls time out at 30 s from handler start, not while approval waits (up to 10 min),
+  so keep the frame's own response guard longer than that (honor `ctx.signal`, return a job id for long work);
   take the session from `ctx`; return JSON-serializable results; never echo inputs or secrets in errors.
 - Frame: `nonce="__ALISIO_NONCE__"` on every inline script; no `<form>` submits; no network, external
   URLs, `eval` or WebAssembly; inline assets or use `data:`/`blob:`; opaque origin.

@@ -95,7 +95,7 @@ function toast(message) {
 }
 // The host runs at most PLUGIN_APP_LIMITS.inFlight (8) requests per frame; stay below it.
 const MAX_IN_FLIGHT = 6;
-const RESPONSE_GUARD_MS = 6 * 60 * 1000;
+const RESPONSE_GUARD_MS = 11 * 60 * 1000;
 let inFlight = 0;
 const waiting = [];
 async function api(action, input = {}, mutation = false) {
@@ -114,7 +114,7 @@ function send(action, input, mutation) {
   const id = crypto.randomUUID();
   return new Promise((resolve, reject) => {
     // Last-resort guard for a lost response only: the host answers every request itself (30 s per
-    // handler), but it may first wait for the user's approval prompt (capped at about 5 minutes).
+    // handler), but it may first wait for the user's approval prompt (capped at 10 minutes).
     const timer = setTimeout(() => {
       pending.delete(id);
       reject(new Error("operation_failed"));

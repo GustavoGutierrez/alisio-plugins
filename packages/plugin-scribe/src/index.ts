@@ -35,7 +35,7 @@ const PROCESS_ACTIONS = ["pdf.compile"];
 const HELP_WITH_APP =
   "Open Scribe from the Apps group in the project sidebar / Abre Scribe desde el grupo Aplicaciones del panel de proyectos.";
 const HELP_WITHOUT_APP =
-  "This Alisio host has no plugin apps API, so the Scribe studio is unavailable: it needs Alisio 0.11.5 or newer. The scribe_documents tool and the documents view still work. / Este host de Alisio no tiene la API de apps de plugins, así que el estudio de Scribe no está disponible: requiere Alisio 0.11.5 o posterior. La herramienta scribe_documents y la vista de documentos siguen funcionando.";
+  "This Alisio host has no plugin apps API, so the Scribe studio is unavailable: it needs Alisio 0.11.6 or newer. The scribe_documents tool and the documents view still work. / Este host de Alisio no tiene la API de apps de plugins, así que el estudio de Scribe no está disponible: requiere Alisio 0.11.6 o posterior. La herramienta scribe_documents y la vista de documentos siguen funcionando.";
 
 export default definePlugin({
   id: "alisio.scribe",

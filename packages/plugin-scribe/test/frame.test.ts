@@ -153,8 +153,9 @@ describe("permission messages", () => {
   it("names the missing permission in both locales", async () => {
     const { messages } = await import("../web/i18n.js");
     for (const locale of ["en", "es"] as const) {
-      expect(messages[locale].not_permitted_write).toMatch(/--allow-write/);
-      expect(messages[locale].not_permitted_process).toMatch(/--allow-process/);
+      expect(messages[locale].not_permitted_write).toMatch(/Alisio/);
+      expect(messages[locale].not_permitted_write).not.toBe(messages[locale].not_permitted_process);
+      expect(messages[locale].not_permitted_process).toMatch(/PDF/);
     }
     const app = await readFile(new URL("../web/app.js", import.meta.url), "utf8");
     // Prefer the host's `effect` field, else infer it from the action.

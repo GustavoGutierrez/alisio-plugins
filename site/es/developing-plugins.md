@@ -310,7 +310,7 @@ aplica el modelo de efecto/permisos.
 | `api.sessions.*` (spawn, create, run, get, children, ancestors, cancel, enqueue, isRunning, capabilities, model, workspace, setStatus) | Sesiones hijas: conversaciones separadas y persistidas con contexto fresco y permisos **reducidos**. | — | Una sesión hija nunca puede superar a su padre; abortar un padre aborta a sus descendientes en ejecución. |
 | `api.ui.status(key, text, detail?)` / `.panel(id, provider)` / `.select(req)` / `.askQuestions(req)` / `.open(sessionId)` / `.interactive()` | Texto de estado, paneles de árbol y preguntas interactivas. | El estado se indexa como `plugin:key`; los paneles como `plugin:id`. | Solo con interfaz interactiva; en modo headless resuelven a `undefined`/`false` y nunca se cuelgan. |
 | `api.extensions.register(point, provider, options?)` | Reemplaza un punto de extensión tipado del host: `mascot`, `startup-screen` o `websearch`. | Resolución: mayor `priority`, luego id del plugin, luego orden de registro. | No pasa por `effect`; un proveedor lento o que lanza vuelve al valor por defecto. |
-| `api.apps?.register(app)` (Alisio >= 0.11.5) | Una **app de plugin** a página completa: un iframe aislado que reemplaza el área central del chat, listado en el grupo Apps del panel izquierdo, más acciones tipadas que el frame invoca. Devuelve una función para quitar el registro. | `app.id` cumple `^[a-z][a-z0-9-]{0,39}$`, único por plugin; nombres de acción `^[A-Za-z][A-Za-z0-9_.-]{0,63}$`. | Cada acción declara `effect` (`read`/`write`/`process`) y un `inputSchema`; el host valida la entrada y aplica el control de efectos de la sesión. Un efecto no concedido se rechaza con `not_permitted`, sin pedir aprobación. Consulta [Apps de plugins](#apps-de-plugins). |
+| `api.apps?.register(app)` (Alisio >= 0.11.5) | Una **app de plugin** a página completa: un iframe aislado que reemplaza el área central del chat, listado en el grupo Apps del panel izquierdo, más acciones tipadas que el frame invoca. Devuelve una función para quitar el registro. | `app.id` cumple `^[a-z][a-z0-9-]{0,39}$`, único por plugin; nombres de acción `^[A-Za-z][A-Za-z0-9_.-]{0,63}$`. | Cada acción declara `effect` (`read`/`write`/`process`) y un `inputSchema`; el host valida la entrada y aplica el control de efectos de la sesión. Desde Alisio 0.11.6, un efecto por el que el chat preguntaría muestra el mismo aviso de aprobación; una negativa es `not_permitted` con el `effect` denegado. Consulta [Apps de plugins](#apps-de-plugins). |
 
 **La regla de namespacing en una frase:** los plugins externos se delimitan (nombres de herramientas
 con prefijo, comandos bajo `<plugin id>:`) y su efecto `internal` se degrada a `external`; los
@@ -357,8 +357,16 @@ estado por activación del plugin, sin disposers globales compartidos entre work
 `true` en `busy` mientras haya trabajo en segundo plano para que el workspace no se descargue.
 
 **Acciones.** El host valida `input` contra `inputSchema` (no se admiten `$ref`, `$id` ni `$async`)
-y aplica el mismo control de efectos que a las herramientas. La sesión sale de la ruta autenticada,
-nunca de la entrada. Cada llamada vence a los **30 s** y aborta `ctx.signal`: el trabajo largo
+y aplica el mismo control de efectos que a las herramientas. Un efecto que la sesión ya concede se
+ejecuta. Desde Alisio 0.11.6, cuando el chat preguntaría, el host muestra el mismo aviso de
+aprobación (permitir una vez, permitir para la sesión, denegar) con el plugin, la app y la acción;
+"permitir para la sesión" amplía la sesión igual que en el chat. Una negativa, un aviso sin
+respuesta o una sesión de solo lectura devuelve
+`{ type: "response", id, error: "not_permitted", effect: "write" | "process" }`, así que indica a la
+persona qué permiso falta. En Alisio 0.11.5 no hay aviso: todo lo que no esté concedido se rechaza.
+La sesión sale de la ruta autenticada, nunca de la entrada. Cada llamada vence a los **30 s**,
+contados desde que empieza el handler (no mientras espera el aviso de aprobación, que tiene un
+máximo de 10 minutos), y aborta `ctx.signal`: el trabajo largo
 devuelve enseguida un id de tarea y el frame lo consulta. Los resultados deben poder serializarse a
 JSON y los errores nunca repiten entradas ni secretos. Dentro de los handlers usa `api.models`,
 `api.model.complete` y `api.sessions`; llega a otros plugins solo mediante una sesión hija con una

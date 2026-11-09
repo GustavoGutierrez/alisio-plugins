@@ -6,6 +6,8 @@ pageClass: "plugin-detail"
 
 <PluginDetail slug="scribe" />
 
+![Scribe](https://gustavogutierrez.github.io/alisio-plugins/covers/scribe.svg)
+
 Scientific writing studio for Alisio: multiple LaTeX documents, agent-generated proposals that you
 review before they become revisions, attachments, revision history and offline PDF builds with a
 bundled TeX engine. It does not start another server, open a browser window or ask for provider
@@ -14,8 +16,10 @@ credentials.
 ## Requirements
 
 - Node `>=22.16`.
-- **Alisio 0.11.5 or newer** for the full studio: it is the first release with the plugin apps API
-  (`api.apps`, typed in `@alisio/sdk` 0.11.5).
+- **Alisio 0.11.6 or newer** for the full studio. The plugin apps API (`api.apps`) arrived in 0.11.5,
+  and 0.11.6 lets studio actions ask for approval like the chat: drafting needs `write` and building
+  a PDF needs `process`. Alisio shows the usual prompt (allow once, allow for the session, deny); a
+  denied or read-only session makes the studio say which permission is missing.
 - On older hosts (no `api.apps`), Scribe still loads: it registers the `scribe_documents` tool, the
   read-only `documents` view, the agents/skills and the `help` command, and skips the studio. Since
   documents are created only from the studio, the tool and view stay empty there and `help` says

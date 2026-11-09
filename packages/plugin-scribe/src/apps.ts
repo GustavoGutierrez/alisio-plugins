@@ -1,4 +1,4 @@
-// Helpers over the plugin apps API shipped in @alisio/sdk 0.11.5 (`api.apps`). The contract types
+// Helpers over the plugin apps API shipped in @alisio/sdk 0.11.5 (`api.apps`; approval prompts since 0.11.6). The contract types
 // come from the SDK; this module only adds what Scribe checks on its own side.
 export type { PluginAppAction, PluginAppContext, PluginAppDefinition } from "@alisio/sdk";
 

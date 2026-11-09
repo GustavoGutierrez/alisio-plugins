@@ -152,7 +152,7 @@ describe("plugin entry", () => {
     expect(h.views).toEqual(["documents"]);
     expect(h.agents).toHaveLength(1);
     expect(h.skills).toHaveLength(1);
-    expect(await h.commands.get("help")?.("")).toMatch(/no plugin apps API.*Alisio 0\.11\.5/);
+    expect(await h.commands.get("help")?.("")).toMatch(/no plugin apps API.*Alisio 0\.11\.6/);
     const tool = h.tools.get("scribe_documents");
     const result = await tool?.execute({}, { session: "s" } as Parameters<
       ToolDefinition["execute"]

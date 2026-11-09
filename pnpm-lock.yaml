@@ -250,8 +250,8 @@ importers:
         version: 6.5.438
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.11.5
-        version: 0.11.5
+        specifier: 0.11.6
+        version: 0.11.6
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
@@ -429,8 +429,8 @@ packages:
     resolution: {integrity: sha512-l1+dEcSsvfqNtDAee5OUSlsb6oYE0dSeN6KakLvhJlHNZtWGu7FvEcBTfiDkjpIjGZAa8Tc8htonS49mhPZT8Q==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.11.4.tgz}
     engines: {node: '>=22.16'}
 
-  '@alisio/sdk@0.11.5':
-    resolution: {integrity: sha512-HTS+aOcxMP00K0E94L1GS/2uNxXkeWw8pOji2zrz8+OxJUMTc1m7piNWyJKOS+204We8x/Xmxrvh1OkEOXflIw==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.11.5.tgz}
+  '@alisio/sdk@0.11.6':
+    resolution: {integrity: sha512-361zNuFVpc9zOtzabpXzVR77Mdhp1Ckhpd8zR+5hod+XRvobK+meLMr72WPKyNyelhQrMoOcd7oS00peyk8MbQ==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.11.6.tgz}
     engines: {node: '>=22.16'}
 
   '@babel/helper-string-parser@7.29.7':
@@ -2718,7 +2718,7 @@ snapshots:
 
   '@alisio/sdk@0.11.4': {}
 
-  '@alisio/sdk@0.11.5': {}
+  '@alisio/sdk@0.11.6': {}
 
   '@babel/helper-string-parser@7.29.7': {}
 

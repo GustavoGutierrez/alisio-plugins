@@ -308,7 +308,7 @@ effect/permission model applies.
 | `api.sessions.*` (spawn, create, run, get, children, ancestors, cancel, enqueue, isRunning, capabilities, model, workspace, setStatus) | Child sessions: separate persisted conversations with fresh context and **narrowed** permissions. | — | A child can never exceed its parent; aborting a parent aborts running descendants. |
 | `api.ui.status(key, text, detail?)` / `.panel(id, provider)` / `.select(req)` / `.askQuestions(req)` / `.open(sessionId)` / `.interactive()` | Status text, tree panels, and interactive prompts. | Status keyed `plugin:key`; panels keyed `plugin:id`. | Interactive UIs only; headless calls resolve to `undefined`/`false` and never hang. |
 | `api.extensions.register(point, provider, options?)` | Replace a typed host extension point: `mascot`, `startup-screen`, or `websearch`. | Resolution: highest `priority`, then plugin id, then registration order. | Not gated by `effect`; a slow or throwing provider falls back to the default. |
-| `api.apps?.register(app)` (Alisio >= 0.11.5) | A full-page **plugin app**: a sandboxed iframe that replaces the main chat area, listed in the left panel's Apps group, plus typed actions the frame calls. Returns an unregister function. | `app.id` matches `^[a-z][a-z0-9-]{0,39}$`, unique per plugin; action names `^[A-Za-z][A-Za-z0-9_.-]{0,63}$`. | Every action declares `effect` (`read`/`write`/`process`) and an `inputSchema`; the host validates the input and applies the session's effect gate. An ungranted effect is rejected with `not_permitted`, with no approval prompt. See [Plugin apps](#plugin-apps). |
+| `api.apps?.register(app)` (Alisio >= 0.11.5) | A full-page **plugin app**: a sandboxed iframe that replaces the main chat area, listed in the left panel's Apps group, plus typed actions the frame calls. Returns an unregister function. | `app.id` matches `^[a-z][a-z0-9-]{0,39}$`, unique per plugin; action names `^[A-Za-z][A-Za-z0-9_.-]{0,63}$`. | Every action declares `effect` (`read`/`write`/`process`) and an `inputSchema`; the host validates the input and applies the session's effect gate. From Alisio 0.11.6 an effect the chat would ask about shows the same approval prompt; a denial is `not_permitted` with the denied `effect`. See [Plugin apps](#plugin-apps). |
 
 **The namespacing rule in one sentence:** external plugins are namespaced (tool names prefixed,
 commands under `<plugin id>:`) and their `internal` effect is downgraded to `external`; built-in
@@ -354,8 +354,15 @@ with no global disposers shared between workspaces. Return `true` from `busy` wh
 runs so the workspace is not evicted.
 
 **Actions.** The host validates `input` against `inputSchema` (`$ref`, `$id` and `$async` are not
-supported), then applies the same effect gate as tools. The session comes from the authenticated
-route, never from the input. Each call times out after **30 s** and aborts `ctx.signal`: long work
+supported), then applies the same effect gate as tools. An effect the session already grants runs.
+From Alisio 0.11.6, when the chat would ask, the host shows the same approval prompt (allow once,
+allow for the session, deny) labelled with the plugin, app and action; "allow for the session"
+widens the session exactly like the chat. A denial, an unanswered prompt or a read-only session
+returns `{ type: "response", id, error: "not_permitted", effect: "write" | "process" }`, so tell the
+user which permission is missing. In Alisio 0.11.5 there is no prompt: anything not already granted
+is rejected. The session comes from the authenticated route, never from the input. Each call times
+out after **30 s**, counted from when the handler starts (not while the approval prompt waits, which
+is capped at 10 minutes), and aborts `ctx.signal`: long work
 returns a job id at once and the frame polls for it. Results must be JSON-serializable, and errors
 never echo inputs or secrets. Inside handlers use `api.models`, `api.model.complete` and
 `api.sessions`; reach other plugins only through a child session with an explicit allowed-tools list.
