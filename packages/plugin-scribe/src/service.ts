@@ -38,12 +38,7 @@ export class Service {
     readonly options: { locale?: Locale; allowedTools?: string[] } = {},
     private busy = new Set<string>(),
   ) {}
-  private writable() {
-    const caps = this.api.sessions.capabilities(this.sessionId);
-    if (!caps.write || caps.readOnly) throw new ScribeError("write_denied", undefined, 403);
-  }
   private async update(id: string, fn: (doc: Document) => void) {
-    this.writable();
     return this.store.exclusive(async () => {
       const d = await this.store.get(id);
       fn(d);
@@ -75,6 +70,9 @@ export class Service {
     }
     return this.dispatch(action, input);
   }
+  // Authorization is the host's: Alisio gates every studio action by its declared effect (and, from
+  // 0.11.6, asks the user). Scribe must not re-check `sessions.capabilities`, which reflects the
+  // session's standing grants only, so an action approved "once" would be rejected again here.
   private async dispatch(action: string, input: Record<string, unknown>): Promise<unknown> {
     if (action === "context")
       return {
@@ -85,18 +83,15 @@ export class Service {
     if (action === "documents.list") return this.store.list();
     if (action === "jobs.list") return this.store.jobs();
     if (action === "projects.import") {
-      this.writable();
       const imported = importProject(input.project);
       await this.store.put(imported);
       return imported;
     }
     if (action === "jobs.cancel") {
-      this.writable();
       this.controllers.get(identifier(input.jobId))?.abort();
       return { ok: true };
     }
     if (action === "documents.create") {
-      this.writable();
       const title = string(input.title, LIMITS.title).trim();
       if (!title) throw new ScribeError("invalid_input");
       const doc: Document = {
@@ -230,15 +225,12 @@ export class Service {
     throw new ScribeError("unknown_action", undefined, 404);
   }
   private async startJob(id: string, action: string, input: Record<string, unknown>) {
-    this.writable();
     if (this.busy.has(id)) throw new ScribeError("document_busy", undefined, 409);
     // Reserve before the first await so concurrent requests cannot race.
     this.busy.add(id);
     let doc: Document;
     try {
       doc = await this.store.get(id);
-      if (action === "pdf.compile" && !this.api.sessions.capabilities(this.sessionId).process)
-        throw new ScribeError("process_denied", undefined, 403);
       if (action === "draft.generate" && !string(input.prompt ?? doc.brief).trim())
         throw new ScribeError("invalid_input");
     } catch (e) {

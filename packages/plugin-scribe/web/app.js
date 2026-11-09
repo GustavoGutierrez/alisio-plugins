@@ -776,7 +776,8 @@ try {
   }
   jobs = await api("jobs.list");
   render();
-  if (!context.capabilities.write) toast(t("readOnly"));
+  // Only a hard read-only session is final; otherwise Alisio asks for approval when needed.
+  if (context.capabilities.readOnly) toast(t("readOnly"));
   setInterval(poll, 1500);
 } catch (e) {
   if (!unavailable)

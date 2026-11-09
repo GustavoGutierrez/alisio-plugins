@@ -1,5 +1,11 @@
 # @alisio/plugin-scribe
 
+## 0.3.3
+
+### Patch Changes
+
+- Trust Alisio's approval: stop re-checking the session's standing grants, which rejected actions the user had just approved once, and warn about read-only only for a truly read-only session.
+
 ## 0.3.2
 
 ### Patch Changes

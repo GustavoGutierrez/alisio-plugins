@@ -112,7 +112,7 @@ describe("Service", () => {
     ).rejects.toThrow(/asset_limit/);
   });
 
-  it("denies writes, including job cancellation, in a read-only session", async () => {
+  it("trusts the host gate: an action approved once still runs", async () => {
     const { invoke, api, service, store } = await setup();
     const d = await invoke("documents.create", { title: "Writable", brief: "Draft" });
     let release: (() => void) | undefined;
@@ -123,15 +123,15 @@ describe("Service", () => {
       });
     const job = await invoke<Job>("draft.generate", { documentId: d.id });
     while (!release) await new Promise((r) => setTimeout(r, 1));
+    // The host already authorized these actions (an approval "once" leaves the standing grants
+    // unchanged), so Scribe must not reject them by re-reading the session capabilities.
     api.sessions.capabilities = () => ({
       write: false,
       process: false,
-      approvals: false,
-      readOnly: true,
+      approvals: true,
+      readOnly: false,
     });
-    await expect(invoke("documents.create", { title: "Blocked" })).rejects.toThrow(/write_denied/);
-    await expect(invoke("jobs.cancel", { jobId: job.id })).rejects.toThrow(/write_denied/);
-    expect(service.controllers.get(job.id)?.signal.aborted).toBe(false);
+    await expect(invoke("documents.create", { title: "Approved once" })).resolves.toBeTruthy();
     release?.();
     expect((await finish(store, job)).status).toBe("failed");
   });
