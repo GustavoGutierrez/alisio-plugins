@@ -87,11 +87,13 @@ Scribe uses Tectonic 0.16.9. No Docker or system TeX is needed.
   installed automatically (Linux arm64 is already a static build). Do not omit optional
   dependencies when installing.
 
-The package contains a 215 MB compressed offline TeX archive (`compiler/bundle.zip`): a TeX Live
+The package contains a 106 MB compressed offline TeX archive (`compiler/bundle.zip`): a TeX Live
 2023 subset with LaTeX (recommended and extra), English, Spanish, Portuguese, French and German,
 mathematics and science (including `siunitx` and algorithm packages), graphics (`tikz`,
 `pgfplots`), bibliographies (`biblatex` with the BibTeX backend, `natbib`), recommended fonts and
-XeTeX font support. The first build creates the LaTeX format cache; later builds reuse it. Builds
+XeTeX font support. To stay within npm's package size limit it leaves out Type1 copies of fonts
+that XeTeX reads as OpenType (cm-super, Libertine, TeX Gyre), AFM metrics, MetaPost data and a few
+image-heavy novelty packages (see `scripts/tex-bundle-excludes.txt`). The first build creates the LaTeX format cache; later builds reuse it. Builds
 never download packages or send document contents anywhere. Before compiling, Scribe checks the
 document's classes, packages and babel languages against `compiler/bundle-manifest.json` and names
 anything missing. Packages outside the snapshot, `biber` and LuaLaTeX-only templates are not

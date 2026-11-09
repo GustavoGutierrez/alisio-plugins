@@ -12,7 +12,7 @@
   bundle guarantees. `vendor-tex-bundle.py` takes the TEXMF roots to snapshot, adds generated font
   maps from TEXMFVAR, and writes the manifest.
 - Redesign the Scribe studio: a new home (prompt card with sources, language and discipline pills, idea templates, document cards with derived status, filters and a drafting activity bar) and a three-column document view (structure and files, a conversation-style assistant with job stages and proposed-change summaries, and a PDF preview with paging and zoom). Fix the PDF preview being replaced by an error after rendering (release the document through its pdf.js loading task).
-- b1918d7: Ship a reproducible TeX Live 2023 bundle (Spanish, Portuguese, French and German babel, siunitx, algorithms, biblatex, pgfplots, recommended fonts with generated font maps), built from a documented install-tl profile.
+- b1918d7: Ship a reproducible TeX Live 2023 bundle (Spanish, Portuguese, French and German babel, siunitx, algorithms, biblatex, pgfplots, recommended fonts with generated font maps), built from a documented install-tl profile. The bundle is trimmed to 106 MB (no Type1 copies of OpenType fonts, AFM metrics, MetaPost data or image-heavy novelty packages) so the package stays within npm's size limit.
 - b1918d7: Show the Scribe icon in the studio header, give dialogs descriptive titles and spacing (history items, settings buttons), and keep "Download LaTeX ZIP" in the settings button row.
 
 ## 0.3.3

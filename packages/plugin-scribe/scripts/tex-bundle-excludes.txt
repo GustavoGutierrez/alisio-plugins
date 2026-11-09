@@ -31,3 +31,22 @@ tex/latex/fithesis/locale/mu/*
 
 # Copies of the PGF manual helpers bundled by tikz-dependency.
 tex/latex/tikz-dependency/pgfmanual*
+
+# Size budget (npm rejects very large packages). XeTeX defaults to Latin Modern OpenType, and
+# Libertine/TeX Gyre ship OpenType files too, so these Type1 copies are only used by 8-bit T1
+# setups the writer avoids. Latin Modern Type1 (fonts/type1/public/lm) stays for `lmodern`.
+fonts/type1/public/cm-super/*
+fonts/type1/public/libertine/*
+fonts/type1/public/tex-gyre/*
+# AFM metrics are for dvips/pdfTeX only; Flash files are never used.
+*.afm
+*.swf
+# Packages whose payload is large bitmap/PDF art.
+tex/latex/twemojis/*
+tex/latex/hwemoji/*
+tex/latex/realhats/*
+# AFM metrics (also gzipped) are for dvips/pdfTeX only.
+fonts/afm/*
+# MetaPost data (Tectonic runs no MetaPost) and emoji-as-TikZ art.
+metapost/*
+tex/latex/utfsym/*

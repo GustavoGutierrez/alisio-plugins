@@ -194,7 +194,7 @@ def main(argv: list[str]) -> int:
 
     sums: list[str] = []
     target = out / "bundle.zip"
-    with ZipFile(target, "w", ZIP_DEFLATED) as z:
+    with ZipFile(target, "w", ZIP_DEFLATED, compresslevel=9) as z:
         for name, (p, h) in sorted(chosen.items()):
             z.write(p, name)
             sums.append(f"{h}  {name}")
