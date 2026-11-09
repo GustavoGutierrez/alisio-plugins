@@ -1,0 +1,33 @@
+# install-tl profile for the Scribe TeX bundle (TeX Live 2023, tlnet-final). Replace @TEXDIR@ with an
+# absolute scratch directory; see README "Release".
+selected_scheme scheme-custom
+TEXDIR @TEXDIR@
+TEXMFLOCAL @TEXDIR@/texmf-local
+TEXMFSYSCONFIG @TEXDIR@/texmf-config
+TEXMFSYSVAR @TEXDIR@/texmf-var
+TEXMFHOME @TEXDIR@/texmf-home
+TEXMFCONFIG @TEXDIR@/texmf-config
+TEXMFVAR @TEXDIR@/texmf-var
+binary_x86_64-linux 1
+collection-basic 1
+collection-latex 1
+collection-latexrecommended 1
+collection-latexextra 1
+collection-fontsrecommended 1
+collection-langenglish 1
+collection-langspanish 1
+collection-langportuguese 1
+collection-langfrench 1
+collection-langgerman 1
+collection-mathscience 1
+collection-pictures 1
+collection-bibtexextra 1
+collection-xetex 1
+instopt_adjustpath 0
+instopt_adjustrepo 0
+instopt_letter 0
+instopt_portable 1
+instopt_write18_restricted 1
+tlpdbopt_autobackup 0
+tlpdbopt_install_docfiles 0
+tlpdbopt_install_srcfiles 0

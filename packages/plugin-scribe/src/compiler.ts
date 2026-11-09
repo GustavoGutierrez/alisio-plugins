@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { binaryPath } from "node-tectonic";
+import { type BundleManifest, describeReport, loadManifest, preflight } from "./preflight.js";
 import { type Document, ScribeError } from "./types.js";
 
 export function assetFingerprint(d: Pick<Document, "assets">) {
@@ -95,15 +96,20 @@ const MAX_PDF = 64 * 1024 * 1024;
 
 /** Managed native engine: installed with the plugin, no system TeX or container required.
  * Untrusted mode is defense in depth, not an OS sandbox. Session process permission still applies.
+ * When the bundle manifest is present, documents needing packages the bundle lacks fail fast with
+ * `latex_package_missing` instead of a long engine run.
  */
 export async function compilePdf(
   document: Pick<Document, "assets" | "revisions">,
   outputRoot: string,
   signal: AbortSignal,
+  manifest: BundleManifest | null = loadManifest(),
 ) {
   signal.throwIfAborted();
   const revision = document.revisions?.at(-1);
   if (!revision) throw new ScribeError("invalid_input");
+  const report = manifest ? preflight(revision.tex, manifest) : null;
+  if (report) throw new ScribeError("latex_package_missing", describeReport(report));
   const dir = await mkdtemp(join(tmpdir(), "scribe-"));
   try {
     await mkdir(join(dir, "assets"));

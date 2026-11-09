@@ -164,3 +164,11 @@ describe("permission messages", () => {
     expect(app).toMatch(/`not_permitted_\$\{effect\}`/);
   });
 });
+
+describe("branding", () => {
+  it("embeds the plugin icon as a data: image for the header mark", async () => {
+    const html = await buildEmbeddedHtml();
+    expect(html).toMatch(/--scribe-icon:url\("data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+"\)/);
+    expect(html).not.toContain("▱");
+  });
+});

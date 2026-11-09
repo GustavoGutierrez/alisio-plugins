@@ -5,3 +5,4 @@ compiler/bundle.zip
 # Static Tectonic for linux-x64 (~25 MB). Regenerate with scripts/vendor-tectonic.mjs before
 # packing; `files` still ships it to npm.
 compiler/linux-x64/
+scripts/__pycache__/

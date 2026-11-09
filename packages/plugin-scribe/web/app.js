@@ -227,7 +227,7 @@ function showUnavailable() {
   root.innerHTML = `<main class="shell"><div class="empty"><h1>${escapeHtml(t("unavailableTitle"))}</h1><p>${escapeHtml(t("unavailable"))}</p></div></main>`;
 }
 function brand() {
-  return `<header><div class="brand"><span class="mark" aria-hidden="true">▱</span><strong>Scribe</strong><span class="muted">${t("tagline")}</span></div><div class="row">${doc ? button("back", "back") : ""}</div></header>${context.demo ? `<div class="warning">${t("demo")}</div>` : ""}`;
+  return `<header><div class="brand"><span class="mark" aria-hidden="true"></span><strong>Scribe</strong><span class="muted">${t("tagline")}</span></div><div class="row">${doc ? button("back", "back") : ""}</div></header>${context.demo ? `<div class="warning">${t("demo")}</div>` : ""}`;
 }
 function bindCommon() {
   on("back", async () => {
@@ -564,20 +564,35 @@ function renderJobs() {
     b.onclick = () =>
       api("jobs.cancel", { jobId: b.dataset.stop }).catch((e) => toast(t(e.message)));
 }
+/** Names-only warning for a proposal that needs packages or languages the engine lacks. */
+function preflightNotice(report) {
+  if (!report) return "";
+  const rows = [
+    ["preflightPackages", report.packages],
+    ["preflightLanguages", report.languages],
+    ["preflightProvide", report.provide],
+  ]
+    .filter(([, names]) => Array.isArray(names) && names.length)
+    .map(([key, names]) => `<li>${t(key)}: ${escapeHtml(names.join(", "))}</li>`)
+    .join("");
+  return rows
+    ? `<div class="preflight"><p>${t("latex_package_missing")}</p><ul>${rows}</ul></div>`
+    : "";
+}
 function renderProposals() {
   const el = document.querySelector("#proposals");
   if (!el) return;
   el.innerHTML = doc.proposals
     .map(
       (p) =>
-        `<div class="proposal"><h3>${t("proposals")}</h3><p>${escapeHtml(p.summary)}</p><button data-review="${p.id}">${t("review")}</button></div>`,
+        `<div class="proposal"><h3>${t("proposals")}</h3><p>${escapeHtml(p.summary)}</p>${preflightNotice(p.preflight)}<button data-review="${p.id}">${t("review")}</button></div>`,
     )
     .join("");
   for (const b of el.querySelectorAll("[data-review]"))
     b.onclick = () => showProposal(b.dataset.review);
 }
-function showDialog(html) {
-  dialog.innerHTML = `<div class="row spread"><h2>Scribe</h2>${button("dialog-close", "close")}</div>${html}`;
+function showDialog(html, title = "Scribe") {
+  dialog.innerHTML = `<div class="dialog-head row spread"><h2>${escapeHtml(title)}</h2>${button("dialog-close", "close")}</div><div class="dialog-body">${html}</div>`;
   if (!dialog.open) dialog.showModal();
   on("dialog-close", () => dialog.close());
 }
@@ -585,7 +600,8 @@ function showProposal(id) {
   refreshDialog = () => showProposal(id);
   const p = doc.proposals.find((p) => p.id === id);
   showDialog(
-    `<p>${escapeHtml(p.summary)}</p><div class="compare"><div><label>${t("before")}</label><textarea readonly>${escapeHtml(latest().tex)}</textarea></div><div><label>${t("after")}</label><textarea readonly>${escapeHtml(p.tex)}</textarea></div></div><details><summary>${t("bibliography")}</summary><pre class="joblog">${escapeHtml(p.bib)}</pre></details><div class="row">${button("apply", "apply", true)}${button("discard", "discard")}</div>`,
+    `<p>${escapeHtml(p.summary)}</p>${preflightNotice(p.preflight)}<div class="compare"><div><label>${t("before")}</label><textarea readonly>${escapeHtml(latest().tex)}</textarea></div><div><label>${t("after")}</label><textarea readonly>${escapeHtml(p.tex)}</textarea></div></div><details><summary>${t("bibliography")}</summary><pre class="joblog">${escapeHtml(p.bib)}</pre></details><div class="row">${button("apply", "apply", true)}${button("discard", "discard")}</div>`,
+    t("review"),
   );
   on("apply", async () => {
     if (dirty) {
@@ -616,6 +632,7 @@ function showHistory() {
           `<div class="activity row spread"><div><strong>${escapeHtml(r.summary)}</strong><p class="muted">${new Date(r.at).toLocaleString(locale)}</p></div><button data-restore="${r.id}">${t("restore")}</button></div>`,
       )
       .join(""),
+    t("history"),
   );
   for (const b of dialog.querySelectorAll("[data-restore]"))
     b.onclick = async () => {
@@ -643,7 +660,8 @@ function showHistory() {
 function showSettings() {
   refreshDialog = showSettings;
   showDialog(
-    `<label class="field">${t("title")}<input id="setting-title" value="${escapeHtml(doc.title)}"></label><label class="field">${t("model")}<select id="setting-model">${modelOptions(doc.model)}</select></label><label class="field">${t("language")}<select id="setting-language">${["en", "es"].map((l) => `<option value="${l}" ${doc.language === l ? "selected" : ""}>${t(l)}</option>`).join("")}</select></label><div class="row">${button("settings-save", "save", true)}${button("project-export", "exportProject")}${button("archive", doc.archived ? "unarchive" : "archive")}</div>`,
+    `<label class="field">${t("title")}<input id="setting-title" value="${escapeHtml(doc.title)}"></label><label class="field">${t("model")}<select id="setting-model">${modelOptions(doc.model)}</select></label><label class="field">${t("language")}<select id="setting-language">${["en", "es"].map((l) => `<option value="${l}" ${doc.language === l ? "selected" : ""}>${t(l)}</option>`).join("")}</select></label><div class="row">${button("settings-save", "save", true)}${button("project-export", "exportProject")}${button("export-sources", "exportSources")}${button("archive", doc.archived ? "unarchive" : "archive")}</div>`,
+    t("settings"),
   );
   on("settings-save", async () => {
     doc = await api(
@@ -666,17 +684,10 @@ function showSettings() {
       "document.scribe.json",
     );
   });
-  const sourceButton = document.createElement("button");
-  sourceButton.textContent = t("exportSources");
-  sourceButton.onclick = async () => {
-    try {
-      const zip = await api("sources.export", { documentId: doc.id });
-      downloadBlob(blobFromBase64(zip.base64, "application/zip"), "latex-project.zip");
-    } catch (e) {
-      toast(t(e.message));
-    }
-  };
-  dialog.append(sourceButton);
+  on("export-sources", async () => {
+    const zip = await api("sources.export", { documentId: doc.id });
+    downloadBlob(blobFromBase64(zip.base64, "application/zip"), "latex-project.zip");
+  });
   on("archive", async () => {
     doc = await api("documents.settings", { documentId: doc.id, archived: !doc.archived }, true);
     dialog.close();

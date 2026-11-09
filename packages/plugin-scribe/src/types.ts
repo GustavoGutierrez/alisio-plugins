@@ -1,3 +1,5 @@
+import type { PreflightReport } from "./preflight.js";
+
 export type Locale = "es" | "en";
 export interface Asset {
   id: string;
@@ -19,6 +21,8 @@ export interface Proposal {
   tex: string;
   bib: string;
   summary: string;
+  /** Present when the proposal needs packages or babel languages the bundled engine lacks. */
+  preflight?: PreflightReport;
 }
 export interface Document {
   id: string;

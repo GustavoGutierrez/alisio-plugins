@@ -36,6 +36,7 @@
     "cover.svg",
     "icon.svg",
     "compiler/bundle.zip",
+    "compiler/bundle-manifest.json",
     "compiler/linux-x64/tectonic",
     "THIRD_PARTY_NOTICES.md"
   ],

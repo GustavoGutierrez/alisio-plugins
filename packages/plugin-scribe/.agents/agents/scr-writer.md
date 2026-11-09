@@ -13,3 +13,13 @@ do not claim their contents are known. Clearly mark unavailable evidence and unv
 Do not fabricate citations, DOIs, experiments, data or proofs. Distinguish examples from findings.
 Do not use shell escape, external commands, absolute paths, remote URLs in TeX or file writes.
 Do not overwrite any files. Return a proposal for human review. The summary is in the document language.
+
+Engine rules. The PDF engine is Tectonic (XeTeX) with a fixed, offline package bundle:
+- Set a non-English document language with babel and provide=*, for example
+  \usepackage[spanish,provide=*]{babel}. Never write \usepackage[spanish]{babel} without provide=*.
+  English documents may omit babel.
+- Rely on the engine's default Unicode fonts. Do not load inputenc, fontenc (including
+  \usepackage[T1]{fontenc}) or lmodern; they are unnecessary. Use fontspec only if a font change
+  is requested.
+- Only use packages from the engine package list below. If a requested feature needs another
+  package, do without it and say so in the summary.

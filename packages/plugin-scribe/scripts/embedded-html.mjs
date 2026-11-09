@@ -34,7 +34,8 @@ export async function buildEmbeddedHtml() {
     "</script",
     "<\\/script",
   );
-  const css = await read("style.css");
+  const icon = await readFile(new URL("../icon.svg", import.meta.url));
+  const css = `:root{--scribe-icon:url("data:image/svg+xml;base64,${icon.toString("base64")}")}\n${await read("style.css")}`;
   return (await read("index.html"))
     .replace('<link rel="stylesheet" href="style.css">', () => `<style>${css}</style>`)
     .replace(

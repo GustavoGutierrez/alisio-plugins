@@ -81,9 +81,14 @@ Scribe uses Tectonic 0.16.9. No Docker or system TeX is needed.
   installed automatically (Linux arm64 is already a static build). Do not omit optional
   dependencies when installing.
 
-The package contains a 110 MB compressed offline TeX archive (`compiler/bundle.zip`). The first
-build creates the LaTeX format cache; later builds reuse it. Builds never download packages or send
-document contents anywhere. Packages outside the snapshot and LuaLaTeX-only templates are not
+The package contains a 215 MB compressed offline TeX archive (`compiler/bundle.zip`): a TeX Live
+2023 subset with LaTeX (recommended and extra), English, Spanish, Portuguese, French and German,
+mathematics and science (including `siunitx` and algorithm packages), graphics (`tikz`,
+`pgfplots`), bibliographies (`biblatex` with the BibTeX backend, `natbib`), recommended fonts and
+XeTeX font support. The first build creates the LaTeX format cache; later builds reuse it. Builds
+never download packages or send document contents anywhere. Before compiling, Scribe checks the
+document's classes, packages and babel languages against `compiler/bundle-manifest.json` and names
+anything missing. Packages outside the snapshot, `biber` and LuaLaTeX-only templates are not
 supported. The archive is produced by the maintainer script `scripts/vendor-tex-bundle.py`; end
 users never run it.
 
@@ -129,9 +134,21 @@ Both vendored files are git-ignored (too large for the repository) and must exis
 
 ```bash
 cd packages/plugin-scribe
-python3 scripts/vendor-tex-bundle.py   # compiler/bundle.zip, from an installed TeX Live
+# 1. A portable TeX Live 2023 subset in a scratch directory (no root access, nothing system-wide).
+TL=/absolute/scratch/tl2023
+REPO=https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2023/tlnet-final
+curl -fLO $REPO/install-tl-unx.tar.gz && tar xzf install-tl-unx.tar.gz
+sed "s|@TEXDIR@|$TL|g" scripts/texlive-2023.profile > "$TL.profile"
+perl install-tl-*/install-tl --no-interaction --profile "$TL.profile" --repository $REPO
+# 2. The flat bundle and its manifest (also takes the generated font maps and language.dat).
+python3 scripts/vendor-tex-bundle.py $TL/texmf-dist
+# 3. The static Tectonic binary for linux-x64.
 node scripts/vendor-tectonic.mjs       # compiler/linux-x64/tectonic, checksum-verified download
 ```
+
+`vendor-tex-bundle.py` leaves out what Tectonic never reads (listed in
+`scripts/tex-bundle-excludes.txt`) and fails if two different files would share a name in the flat
+archive. `compiler/bundle-manifest.json` is small and committed; `compiler/bundle.zip` is not.
 
 `vendor-tectonic.mjs` downloads the pinned upstream release asset, verifies the tarball and binary
 SHA-256 digests and writes the binary atomically; `--from <tar.gz>` uses a local copy instead.

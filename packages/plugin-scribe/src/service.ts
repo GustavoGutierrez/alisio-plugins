@@ -5,6 +5,7 @@ import type { PluginAPI } from "@alisio/sdk";
 import { strToU8, zipSync } from "fflate";
 import { assetFingerprint, compilePdf } from "./compiler.js";
 import { importProject } from "./importer.js";
+import { type BundleManifest, loadManifest, preflight, writerEngineNote } from "./preflight.js";
 import type { Store } from "./store.js";
 import {
   checkAssetBudget,
@@ -27,7 +28,7 @@ const current = (d: Document) => {
   return revision;
 };
 const initialTex =
-  "\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amsmath,amssymb,graphicx}\n\\begin{document}\n\\section{Introduction}\n% Your draft will appear here.\n\\end{document}\n";
+  "\\documentclass[11pt]{article}\n\\usepackage{amsmath,amssymb,graphicx}\n\\begin{document}\n\\section{Introduction}\n% Your draft will appear here.\n\\end{document}\n";
 export class Service {
   readonly controllers = new Map<string, AbortController>();
   private idempotent = new Map<string, { hash: string; promise: Promise<unknown> }>();
@@ -35,9 +36,17 @@ export class Service {
     readonly api: PluginAPI,
     readonly store: Store,
     readonly sessionId: string,
-    readonly options: { locale?: Locale; allowedTools?: string[] } = {},
+    readonly options: {
+      locale?: Locale;
+      allowedTools?: string[];
+      /** Bundle manifest override; defaults to the one shipped next to the bundle. */
+      manifest?: BundleManifest | null;
+    } = {},
     private busy = new Set<string>(),
   ) {}
+  private get manifest(): BundleManifest | null {
+    return this.options.manifest === undefined ? loadManifest() : this.options.manifest;
+  }
   private async update(id: string, fn: (doc: Document) => void) {
     return this.store.exclusive(async () => {
       const d = await this.store.get(id);
@@ -259,16 +268,15 @@ export class Service {
     void (async () => {
       try {
         if (job.action === "compile") {
-          const pdf = await compilePdf(doc, this.store.root, abort.signal);
+          const pdf = await compilePdf(doc, this.store.root, abort.signal, this.manifest);
           await this.update(id, (d) => {
             d.pdf = pdf;
           });
         } else {
           if (doc.model) await this.api.models.resolve(doc.model, abort.signal);
-          const instructions = await readFile(
-            new URL("../.agents/agents/scr-writer.md", import.meta.url),
-            "utf8",
-          );
+          const instructions =
+            (await readFile(new URL("../.agents/agents/scr-writer.md", import.meta.url), "utf8")) +
+            writerEngineNote(this.manifest);
           const child = await this.api.sessions.create({
             parentId: this.sessionId,
             agent: "scr-writer",
@@ -332,6 +340,10 @@ export class Service {
               bib,
               summary: string(value.summary, LIMITS.summary),
             };
+            // Surface what the bundle lacks with the proposal; the model is not re-run.
+            const manifest = this.manifest;
+            const report = manifest ? preflight(tex, manifest) : null;
+            if (report) proposal.preflight = report;
             await this.update(id, (d) => {
               d.proposals.push(proposal);
             });

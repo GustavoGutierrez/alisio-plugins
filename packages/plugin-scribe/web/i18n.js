@@ -114,6 +114,11 @@ export const messages = {
     compiler_unavailable: "The included engine could not start. Repair the plugin installation.",
     compile_limit: "The build exceeded its time or output limit.",
     compile_failed: "The PDF could not be built. Open technical details for the compiler log.",
+    latex_package_missing:
+      "The included LaTeX engine lacks packages this document uses. Open technical details for the list.",
+    preflightPackages: "Packages not included in the engine",
+    preflightLanguages: "Babel languages not included in the engine",
+    preflightProvide: "Add provide=* to babel for",
     invalid_pdf: "The compiler did not produce a valid PDF.",
     pdf_missing: "No PDF has been built yet.",
     agent_incomplete: "The agent stopped before completing the proposal. Try a smaller request.",
@@ -247,6 +252,11 @@ export const messages = {
     compiler_unavailable: "No se pudo iniciar el motor incluido. Repara la instalación del plugin.",
     compile_limit: "La compilación superó el límite de tiempo o de salida.",
     compile_failed: "No se pudo generar el PDF. Consulta el registro en detalles técnicos.",
+    latex_package_missing:
+      "El motor LaTeX incluido no tiene paquetes que usa este documento. Consulta la lista en detalles técnicos.",
+    preflightPackages: "Paquetes no incluidos en el motor",
+    preflightLanguages: "Idiomas de babel no incluidos en el motor",
+    preflightProvide: "Añade provide=* a babel para",
     invalid_pdf: "El compilador no produjo un PDF válido.",
     pdf_missing: "Todavía no se ha generado un PDF.",
     agent_incomplete:

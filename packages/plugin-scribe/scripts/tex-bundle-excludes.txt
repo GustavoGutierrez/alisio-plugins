@@ -1,0 +1,33 @@
+# Root-relative paths left out of compiler/bundle.zip (fnmatch globs; `*` also matches `/`).
+# Everything here is unused by Tectonic (XeTeX engine, LaTeX release kernel) and would otherwise
+# collide in the flat bundle with a file of the same basename.
+
+# Documentation, sources and scripts.
+doc/*
+source/*
+scripts/*
+*/README
+*/README.*
+*/README-*
+
+# LaTeX pre-release kernel; the bundle ships the released kernel from tex/latex.
+tex/latex-dev/*
+
+# Lua code and LuaTeX-only trees: Tectonic runs XeTeX, not LuaTeX.
+*.lua
+tex/luatex/*
+tex/lualatex/*
+
+# dvipdfm(x) and dvips-only font maps; pdftex.map/updmap output is generated separately.
+fonts/map/dvipdfm/*
+fonts/cmap/dvipdfmx/*
+
+# Metafont sources and the mmap package's duplicate CMaps (cmap ships the same encodings).
+mft/*
+tex/latex/mmap/*
+
+# Per-faculty locale copies of fithesis (the generic locale files stay).
+tex/latex/fithesis/locale/mu/*
+
+# Copies of the PGF manual helpers bundled by tikz-dependency.
+tex/latex/tikz-dependency/pgfmanual*

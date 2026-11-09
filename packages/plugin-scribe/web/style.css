@@ -92,9 +92,14 @@ header {
   font-size: 28px;
   letter-spacing: -1px;
 }
+/* The plugin icon (icon.svg), embedded at build time as --scribe-icon; the frame CSP allows data: images. */
 .mark {
-  color: var(--cyan);
-  font-size: 32px;
+  display: inline-block;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 22%;
+  background: var(--scribe-icon, var(--cyan)) center / contain no-repeat;
 }
 .muted {
   color: var(--muted);
@@ -372,6 +377,28 @@ dialog {
   max-height: 90vh;
   padding: 24px;
 }
+dialog[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.dialog-head h2 {
+  margin: 0;
+}
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  min-height: 0;
+}
+.dialog-body > .row {
+  margin-top: 4px;
+}
+dialog .activity {
+  padding: 16px 18px;
+  gap: 16px;
+}
 dialog::backdrop {
   background: #000a;
 }
@@ -497,4 +524,7 @@ label {
   * {
     scroll-behavior: auto;
   }
+}
+.preflight {
+  color: #ffbcaa;
 }
