@@ -363,7 +363,9 @@ aprobación (permitir una vez, permitir para la sesión, denegar) con el plugin,
 "permitir para la sesión" amplía la sesión igual que en el chat. Una negativa, un aviso sin
 respuesta o una sesión de solo lectura devuelve
 `{ type: "response", id, error: "not_permitted", effect: "write" | "process" }`, así que indica a la
-persona qué permiso falta. En Alisio 0.11.5 no hay aviso: todo lo que no esté concedido se rechaza.
+persona qué permiso falta. El host es la única autoridad: no vuelvas a revisar
+`api.sessions.capabilities` dentro de un handler, porque solo refleja los permisos permanentes y
+rechazaría una acción que la persona acaba de permitir una vez. En Alisio 0.11.5 no hay aviso: todo lo que no esté concedido se rechaza.
 La sesión sale de la ruta autenticada, nunca de la entrada. Cada llamada vence a los **30 s**,
 contados desde que empieza el handler (no mientras espera el aviso de aprobación, que tiene un
 máximo de 10 minutos), y aborta `ctx.signal`: el trabajo largo

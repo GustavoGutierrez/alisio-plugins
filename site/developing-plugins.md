@@ -359,7 +359,9 @@ From Alisio 0.11.6, when the chat would ask, the host shows the same approval pr
 allow for the session, deny) labelled with the plugin, app and action; "allow for the session"
 widens the session exactly like the chat. A denial, an unanswered prompt or a read-only session
 returns `{ type: "response", id, error: "not_permitted", effect: "write" | "process" }`, so tell the
-user which permission is missing. In Alisio 0.11.5 there is no prompt: anything not already granted
+user which permission is missing. The host is the only authority: do not re-check
+`api.sessions.capabilities` inside a handler, because it reflects standing grants only and would
+reject an action the user just allowed once. In Alisio 0.11.5 there is no prompt: anything not already granted
 is rejected. The session comes from the authenticated route, never from the input. Each call times
 out after **30 s**, counted from when the handler starts (not while the approval prompt waits, which
 is capped at 10 minutes), and aborts `ctx.signal`: long work
