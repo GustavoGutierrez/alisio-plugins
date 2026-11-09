@@ -235,7 +235,7 @@
       "title": "Free Models",
       "pluginId": "free-models",
       "description": "Free LLM access with minimal setup: Kilo Code by default, plus other free tiers",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "publishedAt": null,
       "firstPublishedAt": null,
       "author": "Alisio",

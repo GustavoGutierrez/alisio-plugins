@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-free-models",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Free LLM access for Alisio with minimal setup: Kilo Code works with no account or key, plus free tiers of other OpenAI-compatible services.",
   "keywords": [
     "alisio-plugin",
