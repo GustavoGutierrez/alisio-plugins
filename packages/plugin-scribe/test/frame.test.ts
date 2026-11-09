@@ -148,3 +148,15 @@ describe("frame handshake", () => {
     expect(window.document.querySelector("h1")?.textContent).toBe("Scribe is unavailable");
   });
 });
+
+describe("permission messages", () => {
+  it("names the missing permission in both locales", async () => {
+    const { messages } = await import("../web/i18n.js");
+    for (const locale of ["en", "es"] as const) {
+      expect(messages[locale].not_permitted_write).toMatch(/--allow-write/);
+      expect(messages[locale].not_permitted_process).toMatch(/--allow-process/);
+    }
+    const app = await readFile(new URL("../web/app.js", import.meta.url), "utf8");
+    expect(app).toMatch(/"pdf\.compile" \? "not_permitted_process" : "not_permitted_write"/);
+  });
+});

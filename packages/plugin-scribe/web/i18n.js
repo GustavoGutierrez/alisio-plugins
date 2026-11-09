@@ -2,6 +2,10 @@ export const messages = {
   en: {
     compiler_network: "Could not download LaTeX packages. Check your connection and try again.",
     not_permitted: "This action needs permission in Alisio. Check the session settings.",
+    not_permitted_write:
+      'Alisio did not allow Scribe to save changes. Set this session to Auto (or Full access); if Alisio was started without --allow-write, approve a write in this session\'s chat with "Allow for session".',
+    not_permitted_process:
+      'Alisio did not allow Scribe to run the PDF compiler. Set this session to Full access; if Alisio was started without --allow-process, approve a process in this session\'s chat with "Allow for session".',
     too_many_requests: "There are too many pending requests. Please try again.",
     timeout: "The action timed out. Check its status before retrying.",
     too_large: "The request or its result is too large.",
@@ -128,6 +132,10 @@ export const messages = {
     compiler_network:
       "No se pudieron descargar los paquetes LaTeX. Revisa la conexión y vuelve a intentarlo.",
     not_permitted: "Esta acción necesita permiso en Alisio. Revisa los ajustes de la sesión.",
+    not_permitted_write:
+      'Alisio no permitió que Scribe guarde cambios. Pon esta sesión en Auto (o Acceso total); si Alisio se inició sin --allow-write, aprueba una escritura en el chat de esta sesión con "Permitir para la sesión".',
+    not_permitted_process:
+      'Alisio no permitió que Scribe ejecute el compilador de PDF. Pon esta sesión en Acceso total; si Alisio se inició sin --allow-process, aprueba un proceso en el chat de esta sesión con "Permitir para la sesión".',
     too_many_requests: "Hay demasiadas peticiones pendientes. Vuelve a intentarlo.",
     timeout: "La acción agotó su tiempo. Revisa su estado antes de reintentar.",
     too_large: "La petición o su resultado es demasiado grande.",

@@ -33,8 +33,12 @@ const connected = new Promise((resolve) => {
         clearTimeout(request.timer);
         // `message.error` is a host transport code; `result.error` is a Scribe action code.
         const result = message.result;
-        const error = message.error || result?.error;
+        let error = message.error || result?.error;
         if (message.error === "not_found") showUnavailable();
+        // Name the missing permission: compiling runs a process, everything else that can be denied writes.
+        if (message.error === "not_permitted")
+          error =
+            request.action === "pdf.compile" ? "not_permitted_process" : "not_permitted_write";
         error ? request.reject(new Error(error)) : request.resolve(result?.value);
       }
     };
@@ -105,7 +109,7 @@ function send(action, input, mutation) {
       pending.delete(id);
       reject(new Error("operation_failed"));
     }, 35000);
-    pending.set(id, { resolve, reject, timer });
+    pending.set(id, { resolve, reject, timer, action });
     hostPort.postMessage({
       type: "request",
       id,
