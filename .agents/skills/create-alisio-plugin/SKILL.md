@@ -4,7 +4,7 @@ description: "Trigger: create plugin, scaffold plugin, add Alisio plugin. Build 
 license: Apache-2.0
 metadata:
   author: "alisio-contributors"
-  version: "1.0"
+  version: "1.1"
 ---
 
 ## Activation Contract
@@ -41,10 +41,13 @@ Load this skill before creating or restructuring a package under `packages/`.
 
 Source of truth: the site guide's "Plugin apps" section and the `@alisio/sdk` types
 (`PluginAppDefinition`, `PLUGIN_APP_LIMITS`). Do not use the original apps spec.
+Before building an app-type plugin, read `references/plugin-app.md`: the step-by-step recipe
+(layout, single-file HTML build, transport, tests, heavy assets) based on `packages/plugin-scribe`.
 
 - Feature-detect: register tools/commands/views first, then `if (api.apps) api.apps.register(...)`;
   explain the minimum host (Alisio 0.11.5) in help text and never open a separate UI as a fallback.
-  A plugin that needs its app uses peer `@alisio/sdk >=0.11.5 <0.12.0`.
+  A plugin that needs its app uses peer `@alisio/sdk >=0.11.5 <0.12.0`; with `write`/`process`
+  actions that rely on the approval prompt, `>=0.11.6 <0.12.0`.
 - Lifecycle: register in `setup`; `register()` returns an unregister function; `dispose` is
   synchronous and idempotent; `busy()` returns `true` during background work; keep state per activation.
 - Actions: declare `effect` and an `inputSchema` without `$ref`/`$id`/`$async`; from Alisio 0.11.6 an
@@ -78,3 +81,4 @@ Report package name and ID, dependencies, resources, tests, and exact check resu
 ## References
 
 - `../../../AGENTS.md`
+- `references/plugin-app.md` (app-type plugins; reference package `packages/plugin-scribe`)
