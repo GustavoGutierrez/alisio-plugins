@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free models</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<header>
+<h1 id="title">Free models</h1>
+<p id="intro"></p>
+</header>
+<ul id="cards" class="cards"></ul>
+</main>
+<dialog id="steps" aria-labelledby="steps-title">
+<div class="dialog-head">
+<h2 id="steps-title">Free key</h2>
+<button type="button" id="steps-close" class="close"></button>
+</div>
+<ol id="steps-list"></ol>
+<p class="link-label" id="steps-link-label"></p>
+<div class="link-row">
+<input id="steps-link" type="text" readonly aria-labelledby="steps-link-label">
+<button type="button" id="steps-copy"></button>
+</div>
+<p class="hint" id="steps-hint"></p>
+</dialog>
+<script type="application/json" id="free-models-data" nonce="__ALISIO_NONCE__">"__FREE_MODELS_DATA__"</script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="free-models-icon-title free-models-icon-desc">
+  <title id="free-models-icon-title">Free Models</title>
+  <desc id="free-models-icon-desc">An open gift box releasing a bright spark on a deep teal tile, representing free and open model access.</desc>
+  <defs>
+    <linearGradient id="free-models-icon-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06302a"/>
+      <stop offset="1" stop-color="#0d5c4c"/>
+    </linearGradient>
+    <linearGradient id="free-models-icon-box" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d3a0"/>
+      <stop offset="1" stop-color="#18a77c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#free-models-icon-bg)"/>
+  <path d="M256 70l18 50 50 18-50 18-18 50-18-50-50-18 50-18z" fill="#ffd166"/>
+  <path d="M120 248l270-62 12 52-270 62z" fill="#7ff0c9"/>
+  <rect x="140" y="300" width="232" height="140" rx="18" fill="url(#free-models-icon-box)"/>
+  <rect x="236" y="300" width="40" height="140" fill="#ffd166"/>
+</svg>

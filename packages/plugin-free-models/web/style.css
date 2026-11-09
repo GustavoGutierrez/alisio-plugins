@@ -1,0 +1,171 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f7f9fc;
+  --card: #ffffff;
+  --text: #14213d;
+  --muted: #52607a;
+  --line: #d9e0ec;
+  --accent: #0f9d76;
+  --accent-text: #ffffff;
+  --badge: #e3f6ef;
+  --badge-text: #0b6b51;
+  --key: #fff2d9;
+  --key-text: #7a4b00;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1424;
+    --card: #152036;
+    --text: #e8eefb;
+    --muted: #a3b1cc;
+    --line: #26354f;
+    --accent: #34d3a0;
+    --accent-text: #06261c;
+    --badge: #12382e;
+    --badge-text: #7ff0c9;
+    --key: #3a2c10;
+    --key-text: #ffd27a;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+h1 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+}
+header p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--badge);
+  color: var(--badge-text);
+}
+.badge.key {
+  background: var(--key);
+  color: var(--key-text);
+}
+.card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.card strong {
+  color: var(--text);
+  font-weight: 600;
+}
+button {
+  font: inherit;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.card button {
+  margin-top: auto;
+  align-self: flex-start;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+dialog {
+  width: min(560px, calc(100vw - 32px));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--text);
+  padding: 20px;
+}
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+.dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.dialog-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.close {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+ol {
+  padding-left: 1.3rem;
+  line-height: 1.55;
+}
+.link-label {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.link-row {
+  display: flex;
+  gap: 8px;
+}
+.link-row input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 10px 0 0;
+}
