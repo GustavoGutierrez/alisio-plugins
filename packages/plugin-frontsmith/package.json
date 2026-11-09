@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-frontsmith",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Runs a gated frontend engineering workflow with specialist agents, deterministic rule packs, architecture, accessibility and token checks, and a reproducible visual-fidelity pipeline.",
   "keywords": [
     "alisio-plugin",
@@ -48,6 +48,9 @@
     "cover.webp",
     "icon.svg"
   ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -61,7 +64,7 @@
     "@alisio/sdk": ">=0.9.0 <0.12.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.11.0",
+    "@alisio/sdk": "0.11.4",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }

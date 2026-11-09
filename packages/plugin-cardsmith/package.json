@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-cardsmith",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Generates finished card images from chat requests: social cards, certificates, badges, banners, photo composites, charts and dynamic data cards.",
   "keywords": [
     "alisio-plugin",
@@ -45,6 +45,9 @@
     "cover.svg",
     "icon.svg"
   ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -58,7 +61,7 @@
     "@alisio/sdk": ">=0.9.0 <0.12.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.11.0",
+    "@alisio/sdk": "0.11.4",
     "jsqr": "1.4.0",
     "typescript": "7.0.2",
     "vitest": "5.0.4"

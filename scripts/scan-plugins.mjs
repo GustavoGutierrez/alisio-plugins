@@ -276,7 +276,7 @@ async function localEntry(dir, manifest, previousByName, registryEntry, options)
 
   let icon = siteCoverFromRegistry(registryEntry?.icon, PATHS.public);
   if (!icon) {
-    const file = resolveIconFile(dir, { declared: registryEntry?.icon });
+    const file = resolveIconFile(dir, { declared: registryEntry?.icon, manifest });
     if (file) icon = publishIcon(file, slug, PATHS.icons);
   }
 
@@ -459,7 +459,7 @@ async function assetsFromTarball(tarballUrl, registryEntry, slug, wanted) {
       found.cover = file ? publishCover(file, slug, PATHS.covers) : null;
     }
     if (wanted.icon) {
-      const file = resolveIconFile(packageDir, { declared: registryEntry?.icon });
+      const file = resolveIconFile(packageDir, { declared: registryEntry?.icon, manifest });
       found.icon = file ? publishIcon(file, slug, PATHS.icons) : null;
     }
     return found;

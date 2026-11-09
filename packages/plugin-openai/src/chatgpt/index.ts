@@ -1,5 +1,6 @@
 import type { ProviderCreateRequest, ProviderRegistration } from "@alisio/sdk";
 import { OpenAIProvider } from "../provider.js";
+import { DEFAULT_MODEL } from "./models.js";
 import { type ChatGPTDeps, createBrowserMethod } from "./siwc.js";
 
 export type { ChatGPTDeps } from "./siwc.js";
@@ -15,6 +16,8 @@ export function createChatGPTRegistration(deps: ChatGPTDeps = {}): ProviderRegis
     name: "ChatGPT Plus/Pro",
     description: "OpenAI Responses API using your ChatGPT plan (Sign in with ChatGPT, preview)",
     fields: [],
+    // Hosts before @alisio/sdk 0.11.1 ignore this optional field.
+    defaultModel: DEFAULT_MODEL,
     auth: [createBrowserMethod(deps)],
     create(request: ProviderCreateRequest) {
       // Feature detection: hosts before @alisio/sdk 0.11 ignore `auth` and pass no handle.

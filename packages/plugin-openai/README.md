@@ -28,6 +28,8 @@ From the web UI:
 3. Sign in to ChatGPT and approve Alisio.
 4. The browser returns to `http://127.0.0.1:1455/auth/callback` and the profile shows as connected.
 
+New ChatGPT profiles preselect `gpt-5.6-terra` (Alisio >= 0.11.1); pick any other model your plan lists.
+
 If the browser cannot reach Alisio (port 1455 is busy, or Alisio runs on another machine without a tunnel), it ends on an error page. Copy that page's full address and paste it into the field Alisio shows; the sign-in completes the same way. The TUI `/connect` offers the same steps.
 
 Remote use is supported only through an SSH tunnel to your own machine: forward the callback port as well as the web port (`ssh -L 1455:127.0.0.1:1455 <host>`), then sign in from your local browser. Copying credentials between machines is not supported.

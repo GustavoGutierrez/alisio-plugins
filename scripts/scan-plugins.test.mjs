@@ -132,6 +132,13 @@ test("resolveIconFile prefers a declared path, then the icon.<ext> convention", 
       join(dir, "icon.svg"),
     );
     assert.equal(resolveIconFile(dir, { declared: "art/none.svg" }), join(dir, "icon.svg"));
+    // `package.json` `alisio.icon` sits between the registry path and the convention.
+    const manifest = { alisio: { icon: "art/mark.svg" } };
+    assert.equal(resolveIconFile(dir, { manifest }), join(dir, "art", "mark.svg"));
+    assert.equal(
+      resolveIconFile(dir, { manifest: { alisio: { icon: "../x.svg" } } }),
+      join(dir, "icon.svg"),
+    );
     // A cover is never mistaken for an icon.
     rmSync(join(dir, "icon.svg"));
     rmSync(join(dir, "icon.png"));

@@ -32,6 +32,11 @@ describe("ChatGPT registration", () => {
     expect(typeof method?.refresh).toBe("function");
   });
 
+  it("chatgpt preselects gpt-5.6-terra; the API-key provider declares no default", () => {
+    expect(registration(createOpenAIPlugin(), "chatgpt").defaultModel).toBe("gpt-5.6-terra");
+    expect(registration(createOpenAIPlugin(), "openai").defaultModel).toBeUndefined();
+  });
+
   it("PO-AC-02: the README states preview, eligibility and plan billing", () => {
     const readme = readFileSync(`${packageDir}/README.md`, "utf8");
     expect(readme).toMatch(/preview/i);

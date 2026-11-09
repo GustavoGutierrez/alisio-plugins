@@ -131,7 +131,7 @@ The registry schema requires **only** `package`. Its optional fields are `title`
 | Category and capabilities | `categories` is an optional registry override. Use only: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`, `decisions`. Explain actual capabilities in the PR; capabilities are not a schema field. |
 | Peer SDK range, Node compatibility, tests and validation evidence | These are maintainer review evidence, not registry fields. Include your `@alisio/sdk` peer range, `engines.node`, commands/results, and the exact published version installed with Alisio. |
 | Security and integration details | Explain network/process/write behavior, credential handling, durable-data behavior, optional integrations, and any resources. The scanner never imports or executes third-party code. |
-| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. An optional square `icon` follows the same path rules, falling back to a root `icon.svg`, `.png` or `.webp`. See [Cover and icon artwork](#cover-and-icon-artwork). |
+| Cover and presentation | `cover` is optional. It may be a package-relative path such as `cover.svg`, or a `/...` path to a file already committed under `site/public`. Otherwise the scanner checks `package.json` `alisio.cover`, then root `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`. Prefer a 16:9, 1600×900 SVG under 512 KB and ensure it is included in the npm tarball. An optional square `icon` follows the same path rules, then `package.json` `alisio.icon`, falling back to a root `icon.svg`, `.png` or `.webp`. See [Cover and icon artwork](#cover-and-icon-artwork). |
 
 `npmUrl`, `title`, and `featured` are optional presentation overrides, not evidence substitutes.
 The scanner fetches npm metadata and, only to find a cover, reads the published tarball without
@@ -144,6 +144,18 @@ Every plugin can ship two images: a wide **cover** for the catalog card and deta
 square **icon** for compact lists, the catalog JSON and host UIs. Both are optional, but
 first-party packages ship both. Put them at the package root as `cover.svg` and `icon.svg` and
 list both in `package.json` `files`, so the scanner finds them locally and in the published tarball.
+Also declare the icon in `package.json` so Alisio (>= 0.11.2) can show it for an installed plugin
+even when no catalog entry is available:
+
+```json
+{
+  "files": ["dist", "README.md", "LICENSE", "cover.svg", "icon.svg"],
+  "alisio": { "icon": "icon.svg" }
+}
+```
+
+`alisio.icon` must be an image path inside the package; the host rejects files over 256 KB. The
+catalog scanner honors the same field, after a registry `icon` and before the root `icon.*` convention.
 
 | Property | Cover | Icon |
 | --- | --- | --- |

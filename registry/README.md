@@ -109,7 +109,9 @@ An icon is optional and square; nothing falls back to a default, so a plugin wit
 
 1. The registry entry's **`icon`** field, with the same rules as `cover`: a value starting with `/`
    is a file already committed under `site/public`, any other value is a path inside the package.
-2. The convention at the package root, in this extension order: **`icon.svg`**, `icon.png`,
+2. `package.json` → **`alisio.icon`**, a path inside the package (the same field the Alisio host
+   reads for installed plugins).
+3. The convention at the package root, in this extension order: **`icon.svg`**, `icon.png`,
    `icon.webp`.
 
 The same path-safety rules as covers apply. The resolved file is copied to

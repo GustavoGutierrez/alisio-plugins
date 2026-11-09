@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-brave-search",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback.",
   "keywords": [
     "alisio-plugin",
@@ -38,6 +38,9 @@
     "cover.svg",
     "icon.svg"
   ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -48,7 +51,7 @@
     "@alisio/sdk": ">=0.9.0 <0.12.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.11.0",
+    "@alisio/sdk": "0.11.4",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }

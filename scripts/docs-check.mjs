@@ -190,7 +190,9 @@ async function checkLocalSync(entries, registryByPackage) {
       );
 
     const iconFromSite = siteCoverFromRegistry(registryEntry?.icon);
-    const iconFile = iconFromSite ? null : resolveIconFile(dir, { declared: registryEntry?.icon });
+    const iconFile = iconFromSite
+      ? null
+      : resolveIconFile(dir, { declared: registryEntry?.icon, manifest });
     const wantIcon = iconFromSite ?? (iconFile ? iconSitePath(iconFile, expected.slug) : null);
     if ((cached.icon ?? null) !== wantIcon)
       problem(

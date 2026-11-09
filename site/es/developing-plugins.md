@@ -128,7 +128,7 @@ El esquema exige **solo** `package`. Sus campos opcionales son `title`, `npmUrl`
 | Categoría y capacidades | `categories` es opcional. Usa solo: `model-provider`, `methodology-harness`, `memory`, `subagents`, `search`, `tools`, `security`, `analytics`, `mcp`, `storage`, `ui`, `decisions`. Explica capacidades reales en el PR; no son un campo del esquema. |
 | Rango peer SDK, compatibilidad Node, evidencia de tests y validación | Son evidencia de revisión, no campos del registro. Incluye rango de `@alisio/sdk`, `engines.node`, comandos/resultados y versión publicada instalada con Alisio. |
 | Detalles de seguridad e integración | Explica red/proceso/escritura, credenciales, datos duraderos, integraciones opcionales y recursos. El escáner nunca importa ni ejecuta código de terceros. |
-| Cover y presentación | `cover` es opcional: una ruta del paquete como `cover.svg`, o `/...` para un archivo confirmado bajo `site/public`. Si no, el escáner busca `alisio.cover` y después `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp` en la raíz. Prefiere SVG 16:9 de 1600×900 bajo 512 KB e inclúyelo en el tarball npm. Un `icon` cuadrado opcional sigue las mismas reglas de ruta y, si falta, se busca `icon.svg`, `.png` o `.webp` en la raíz. Consulta [Arte de cover e icono](#arte-de-cover-e-icono). |
+| Cover y presentación | `cover` es opcional: una ruta del paquete como `cover.svg`, o `/...` para un archivo confirmado bajo `site/public`. Si no, el escáner busca `alisio.cover` y después `cover.svg`, `.png`, `.jpg`, `.jpeg`, `.webp` en la raíz. Prefiere SVG 16:9 de 1600×900 bajo 512 KB e inclúyelo en el tarball npm. Un `icon` cuadrado opcional sigue las mismas reglas de ruta, después `alisio.icon` en `package.json` y, si falta, se busca `icon.svg`, `.png` o `.webp` en la raíz. Consulta [Arte de cover e icono](#arte-de-cover-e-icono). |
 
 `npmUrl`, `title` y `featured` son sustituciones de presentación, no sustitutos de evidencia. El escáner
 obtiene metadatos npm y, solo para encontrar un cover, lee el tarball publicado sin ejecutarlo. Un
@@ -140,7 +140,19 @@ Cada plugin puede incluir dos imágenes: un **cover** ancho para la tarjeta y la
 del catálogo, y un **icono** cuadrado para listas compactas, el JSON del catálogo y la interfaz del
 host. Ambos son opcionales, pero los paquetes propios incluyen los dos. Colócalos en la raíz del
 paquete como `cover.svg` e `icon.svg` y agrégalos a `files` en `package.json`, para que el escáner
-los encuentre en local y en el tarball publicado.
+los encuentre en local y en el tarball publicado. Declara también el icono en `package.json` para
+que Alisio (>= 0.11.2) lo muestre en un plugin instalado aunque no haya una entrada de catálogo:
+
+```json
+{
+  "files": ["dist", "README.md", "LICENSE", "cover.svg", "icon.svg"],
+  "alisio": { "icon": "icon.svg" }
+}
+```
+
+`alisio.icon` debe ser una ruta de imagen dentro del paquete; el host rechaza archivos de más de
+256 KB. El escáner del catálogo respeta el mismo campo, después de un `icon` del registro y antes de
+la convención `icon.*` en la raíz.
 
 | Propiedad | Cover | Icono |
 | --- | --- | --- |

@@ -157,11 +157,12 @@ export function resolveCoverFile(rootDir, { declared, manifest } = {}) {
 /**
  * Resolve an icon file inside a package directory.
  *
- * Precedence: registry-declared path > the `icon.svg|png|webp` convention at
+ * Precedence: registry-declared path > `package.json` `alisio.icon` (the field the
+ * Alisio host reads for installed plugins) > the `icon.svg|png|webp` convention at
  * the package root. The same path-safety rules as covers apply.
  */
-export function resolveIconFile(rootDir, { declared } = {}) {
-  return resolveAssetFile(rootDir, [declared], "icon", ICON_EXTENSIONS);
+export function resolveIconFile(rootDir, { declared, manifest } = {}) {
+  return resolveAssetFile(rootDir, [declared, manifest?.alisio?.icon], "icon", ICON_EXTENSIONS);
 }
 
 /** Declared in-package paths first, then `<basename>.<ext>` at the package root. */

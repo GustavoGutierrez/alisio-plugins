@@ -1,7 +1,10 @@
 import type { ModelInfo } from "@alisio/sdk";
 
 /** Minimal static list, used only when the models endpoint fails (spec 025 D-33). */
-export const FALLBACK_MODELS: readonly ModelInfo[] = Object.freeze([{ id: "gpt-5.6-terra" }]);
+/** Model preselected for new `chatgpt` profiles; also the listing fallback. */
+export const DEFAULT_MODEL = "gpt-5.6-terra";
+
+export const FALLBACK_MODELS: readonly ModelInfo[] = Object.freeze([{ id: DEFAULT_MODEL }]);
 
 const MODEL_ID = /^[A-Za-z0-9._:/-]{1,128}$/;
 const isRecord = (value: unknown): value is Record<string, unknown> =>

@@ -1,5 +1,11 @@
 # @alisio/plugin-opencode
 
+## 0.5.3
+
+### Patch Changes
+
+- Declare the plugin icon in `package.json` (`alisio.icon`) so Alisio shows it for installed plugins, and build against `@alisio/sdk` 0.11.4 (peer range unchanged).
+
 ## 0.5.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-opencode",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "OpenCode Console (Zen) model provider for Alisio: fail-closed Responses, Chat Completions and Anthropic Messages routing over the unauthenticated OpenCode catalog.",
   "keywords": [
     "alisio-plugin",
@@ -34,6 +34,9 @@
     "cover.svg",
     "icon.svg"
   ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -44,7 +47,7 @@
     "@alisio/sdk": ">=0.9.0 <0.12.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.11.0",
+    "@alisio/sdk": "0.11.4",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }

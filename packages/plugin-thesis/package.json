@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-thesis",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Plans, researches, drafts and typesets university theses with verified evidence, deterministic quality gates and fast Typst PDF builds in the language you choose.",
   "keywords": [
     "alisio-plugin",
@@ -46,6 +46,9 @@
     "cover.webp",
     "icon.svg"
   ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -65,7 +68,7 @@
     "@alisio/sdk": ">=0.9.0 <0.12.0"
   },
   "devDependencies": {
-    "@alisio/sdk": "0.11.0",
+    "@alisio/sdk": "0.11.4",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   }
