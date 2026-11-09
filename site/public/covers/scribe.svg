@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Scribe scientific writing studio">
+<rect width="1600" height="900" fill="#0b1220"/>
+<path d="M880 0v900M1120 0v900M1360 0v900M800 180h800M800 420h800M800 660h800" stroke="#192e43" stroke-width="2"/>
+<rect x="100" y="130" width="170" height="205" rx="24" fill="none" stroke="#60e0f9" stroke-width="15"/>
+<path d="M135 185h98m-98 45h75" stroke="#60e0f9" stroke-width="14" stroke-linecap="round"/>
+<path d="m250 260 48 63-44 60v-51a12 12 0 1 0-8 0v51l-44-60z" fill="#01a5f7"/>
+<text x="95" y="475" font-family="Arial,sans-serif" font-size="122" font-weight="700" fill="#e7eef7">Scribe</text>
+<text x="103" y="550" font-family="Arial,sans-serif" font-size="31" fill="#a8b7c8">From an idea to a scientific document.</text>
+<text x="103" y="675" font-family="Arial,sans-serif" font-size="26" fill="#60e0f9">A writing studio for Alisio</text>
+<rect x="945" y="155" width="470" height="600" rx="16" fill="#263c52" transform="rotate(10 1180 455)"/>
+<rect x="835" y="135" width="470" height="600" rx="16" fill="#e7eef7" transform="rotate(-6 1070 435)"/>
+<rect x="950" y="210" width="470" height="600" rx="16" fill="#fff"/>
+<path d="M1000 280h350M1000 325h250M1000 370h350M1000 400h320" stroke="#a8b7c8" stroke-width="12"/>
+<path d="M1000 670V475m0 195h360" stroke="#172d41" stroke-width="4"/>
+<path d="M1000 575c60-150 120-150 180 0s120 150 180 0" stroke="#01a5f7" stroke-width="9" fill="none"/>
+<path d="M1000 720h350M1000 750h280" stroke="#a8b7c8" stroke-width="10"/>
+</svg>

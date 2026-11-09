@@ -1,0 +1,3 @@
+# Vendored TeX bundle (~110 MB, over GitHub's 100 MB limit). Regenerate with
+# scripts/vendor-tex-bundle.py before packing; `files` still ships it to npm.
+compiler/bundle.zip

@@ -1,0 +1,500 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --surface: #121e2c;
+  --raised: #192a3d;
+  --border: #2a4056;
+  --text: #e7eef7;
+  --muted: #a8b7c8;
+  --cyan: #60e0f9;
+  --blue: #01a5f7;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: var(--raised);
+  border-radius: 9px;
+  padding: 10px 14px;
+  min-height: 44px;
+}
+button:hover {
+  border-color: var(--cyan);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+button.primary {
+  background: var(--cyan);
+  color: #071724;
+  border-color: var(--cyan);
+  font-weight: 700;
+}
+button.quiet {
+  background: transparent;
+}
+button.small {
+  padding: 6px 10px;
+}
+input,
+select,
+textarea {
+  color: var(--text);
+  background: #0d1826;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px;
+  max-width: 100%;
+}
+textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+header {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  gap: 20px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.brand strong {
+  font-size: 28px;
+  letter-spacing: -1px;
+}
+.mark {
+  color: var(--cyan);
+  font-size: 32px;
+}
+.muted {
+  color: var(--muted);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.spread {
+  justify-content: space-between;
+}
+.shell {
+  padding: 28px;
+  max-width: 1800px;
+  margin: auto;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 22px;
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+h1 {
+  font-size: 34px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin: 0 0 24px;
+}
+h2 {
+  font-size: 21px;
+  margin: 0 0 12px;
+}
+h3 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+p {
+  line-height: 1.6;
+}
+.brief {
+  width: 100%;
+  height: 140px;
+  margin-bottom: 16px;
+}
+.templates {
+  display: grid;
+  gap: 12px;
+}
+.template {
+  text-align: left;
+  padding: 18px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.template span:first-child {
+  color: var(--cyan);
+  font-size: 28px;
+}
+.template strong {
+  display: block;
+  margin-bottom: 5px;
+}
+.library {
+  margin-top: 32px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+.card {
+  text-align: left;
+  border-radius: 14px;
+  padding: 20px;
+  min-height: 180px;
+  background: var(--surface);
+  display: flex;
+  gap: 18px;
+}
+.paper {
+  width: 68px;
+  height: 95px;
+  flex-shrink: 0;
+  background: #f2f4f7;
+  border-radius: 4px;
+  padding: 10px;
+  color: #142234;
+  line-height: 1.8;
+  font-family: Georgia, serif;
+  margin-top: 5px;
+}
+.paper:after {
+  content: "━━━━\a ━━━\a ━━━━";
+  white-space: pre;
+  font-size: 11px;
+  color: #acb7c5;
+}
+.badge {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 12px;
+  color: var(--cyan);
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.card h3 {
+  font-size: 19px;
+  line-height: 1.35;
+}
+.card p {
+  font-size: 12px;
+  margin-bottom: 0;
+}
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: var(--muted);
+}
+.toolbar {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.toolbar h1 {
+  font-size: 24px;
+  margin: 0;
+  flex: 1;
+}
+.editor {
+  height: calc(100vh - 158px);
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: 240px minmax(320px, 1fr) minmax(400px, 1.25fr);
+  gap: 12px;
+  padding: 12px;
+}
+.editor > .panel {
+  min-width: 0;
+  padding: 20px;
+  overflow: auto;
+}
+.sections button {
+  display: block;
+  text-align: left;
+  width: 100%;
+  margin: 8px 0;
+}
+.sections button.selected {
+  color: var(--cyan);
+}
+.asset {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.asset img {
+  width: 100%;
+  max-height: 90px;
+  object-fit: contain;
+}
+.asset small {
+  display: block;
+  color: var(--muted);
+  margin: 8px 0;
+}
+.assistant {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.assistant > p {
+  margin: 0;
+}
+.activity {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--raised);
+}
+.activity p {
+  margin: 5px 0;
+}
+.activity .error {
+  color: #ffbcaa;
+}
+.proposal {
+  padding: 16px;
+  border: 1px solid #356879;
+  border-radius: 10px;
+  margin: 12px 0;
+}
+.promptbox {
+  margin-top: auto;
+}
+.promptbox textarea {
+  width: 100%;
+  height: 145px;
+  margin: 10px 0;
+}
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.preview object {
+  border: 0;
+  background: white;
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+}
+.preview .source {
+  width: 100%;
+  flex: 1;
+  min-height: 380px;
+  font:
+    13px / 1.65 ui-monospace,
+    monospace;
+  tab-size: 2;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+.tabs button[aria-selected="true"] {
+  background: var(--raised);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+.warning {
+  background: #332c20;
+  border: 1px solid #655139;
+  border-radius: 8px;
+  padding: 10px;
+  color: #f5d6a0;
+  font-size: 12px;
+}
+.notice {
+  font-size: 12px;
+  color: var(--muted);
+}
+#toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  max-width: 440px;
+  background: #234054;
+  border: 1px solid var(--cyan);
+  padding: 16px;
+  border-radius: 10px;
+  display: none;
+  z-index: 20;
+}
+dialog {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: min(1100px, 95vw);
+  max-height: 90vh;
+  padding: 24px;
+}
+dialog::backdrop {
+  background: #000a;
+}
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.compare textarea {
+  width: 100%;
+  height: 50vh;
+  font-family: monospace;
+}
+.field {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+.mobile-tabs {
+  display: none;
+}
+.joblog {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+label {
+  color: var(--muted);
+}
+.search {
+  min-width: 220px;
+}
+.hide {
+  display: none;
+}
+@media (min-width: 1200px) {
+  .editor .assistant {
+    resize: horizontal;
+    min-width: 320px;
+    max-width: 700px;
+  }
+}
+@media (max-width: 1100px) {
+  .editor {
+    grid-template-columns: 190px 1fr 1fr;
+    gap: 8px;
+    padding: 8px;
+  }
+  .editor > .panel {
+    padding: 14px;
+  }
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .hero {
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+@media (max-width: 850px) {
+  header {
+    padding: 12px 16px;
+  }
+  .brand .muted {
+    display: none;
+  }
+  .shell {
+    padding: 16px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .mobile-tabs {
+    display: flex;
+    padding: 10px;
+    gap: 8px;
+  }
+  .editor {
+    display: block;
+    height: auto;
+    min-height: 0;
+  }
+  .editor > .panel {
+    display: none;
+    height: calc(100vh - 250px);
+    min-height: 480px;
+  }
+  .editor > .panel.mobile-active {
+    display: flex;
+    flex-direction: column;
+  }
+  .compare {
+    grid-template-columns: 1fr;
+  }
+  .compare textarea {
+    height: 25vh;
+  }
+  .toolbar {
+    padding: 12px;
+  }
+  .toolbar h1 {
+    font-size: 20px;
+  }
+  .panel {
+    padding: 18px;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  .preview object {
+    min-height: 350px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto;
+  }
+}
