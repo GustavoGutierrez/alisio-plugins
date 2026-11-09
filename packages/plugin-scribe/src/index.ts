@@ -1,8 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { definePlugin, type PluginAPI, textResult } from "@alisio/sdk";
-import type { AppAction, EmbeddedPluginAPI } from "./apps.js";
+import { definePlugin, type PluginAPI, type PluginAppAction, textResult } from "@alisio/sdk";
 import { Service } from "./service.js";
 import { Store } from "./store.js";
 import { ScribeError } from "./types.js";
@@ -34,9 +33,9 @@ const WRITE_ACTIONS = [
 const PROCESS_ACTIONS = ["pdf.compile"];
 
 const HELP_WITH_APP =
-  "Open Scribe from the project sidebar / Abre Scribe desde el panel de proyectos.";
+  "Open Scribe from the Apps group in the project sidebar / Abre Scribe desde el grupo Aplicaciones del panel de proyectos.";
 const HELP_WITHOUT_APP =
-  "This Alisio host has no plugin apps API, so the Scribe studio is unavailable; the scribe_documents tool and the documents view still work. / Este host de Alisio no tiene la API de apps de plugins: el estudio de Scribe no está disponible; la herramienta scribe_documents y la vista de documentos siguen funcionando.";
+  "This Alisio host has no plugin apps API, so the Scribe studio is unavailable: it needs Alisio 0.11.5 or newer. The scribe_documents tool and the documents view still work. / Este host de Alisio no tiene la API de apps de plugins, así que el estudio de Scribe no está disponible: requiere Alisio 0.11.5 o posterior. La herramienta scribe_documents y la vista de documentos siguen funcionando.";
 
 export default definePlugin({
   id: "alisio.scribe",
@@ -45,15 +44,14 @@ export default definePlugin({
   apiVersion: 1,
   description: "Scientific writing studio with agent-assisted LaTeX, revisions and PDF builds.",
   categories: ["tools", "ui"],
-  setup(baseApi) {
+  setup(api) {
     const disposers: Array<() => void> = [];
     const services = new Map<string, Promise<Service>>();
     const liveServices = new Set<Service>();
     const workspaces = new Map<string, Promise<{ store: Store; busy: Set<string> }>>();
 
-    // `api.apps` is an in-development host capability (see ./apps.ts). Everything else registers
-    // first, so the tool, view and help keep working on hosts that do not ship it yet.
-    const api = baseApi as EmbeddedPluginAPI;
+    // `api.apps` ships with Alisio 0.11.5; older hosts leave it out. Everything else registers
+    // first, so the tool, view and help keep working there (fail-open).
     api.resources.agents("../.agents/agents");
     api.resources.skills("../.agents/skills");
     const options = api.options ?? {};
@@ -62,7 +60,7 @@ export default definePlugin({
     function workspaceStore(workspace: string) {
       let shared = workspaces.get(workspace);
       if (!shared) {
-        if (!root) throw new Error("Scribe requires api.paths (SDK 0.11.4 compatible host).");
+        if (!root) throw new Error("Scribe requires api.paths (Alisio 0.11.5 or newer).");
         const dir = join(root, createHash("sha256").update(workspace).digest("hex").slice(0, 32));
         shared = (async () => {
           const store = new Store(dir);
@@ -136,7 +134,7 @@ export default definePlugin({
       );
 
     if (!api.apps) return;
-    const actions: Record<string, AppAction> = {};
+    const actions: Record<string, PluginAppAction> = {};
     for (const action of [...READ_ACTIONS, ...WRITE_ACTIONS, ...PROCESS_ACTIONS])
       actions[action] = {
         effect: READ_ACTIONS.includes(action)
@@ -149,7 +147,8 @@ export default definePlugin({
           context.signal.throwIfAborted();
           try {
             const instance = await service(context.sessionId);
-            return { value: await instance.invoke(action, input, context.idempotencyKey) };
+            const args = (input ?? {}) as Record<string, unknown>;
+            return { value: await instance.invoke(action, args, context.idempotencyKey) };
           } catch (error) {
             return { error: error instanceof ScribeError ? error.code : "operation_failed" };
           }

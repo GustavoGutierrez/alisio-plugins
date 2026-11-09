@@ -1,10 +1,9 @@
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
+import { chmod, mkdtemp, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { binaryPath } from "node-tectonic";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { compilePdf, tectonicEnv } from "../src/compiler.js";
+import { compilePdf, enginePath, tectonicEnv } from "../src/compiler.js";
 import type { ScribeError } from "../src/types.js";
 
 describe("tectonicEnv", () => {
@@ -43,11 +42,37 @@ describe("compilePdf", () => {
   });
 });
 
+describe("enginePath", () => {
+  const fallback = () => "node-tectonic";
+  it("uses the vendored static binary on linux-x64 when it is present", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "scribe-engine-"));
+    try {
+      const vendored = join(dir, "tectonic");
+      await writeFile(vendored, "#!/bin/sh\n");
+      await chmod(vendored, 0o644);
+      expect(enginePath("linux", "x64", vendored, fallback)).toBe(vendored);
+      // A copy that lost its executable bit is repaired instead of failing to spawn.
+      expect((await stat(vendored)).mode & 0o111).not.toBe(0);
+      expect(enginePath("linux", "arm64", vendored, fallback)).toBe("node-tectonic");
+      expect(enginePath("darwin", "x64", vendored, fallback)).toBe("node-tectonic");
+      expect(enginePath("win32", "x64", vendored, fallback)).toBe("node-tectonic");
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("falls back to node-tectonic when the vendored binary is missing", () => {
+    expect(enginePath("linux", "x64", join(tmpdir(), "scribe-missing-tectonic"), fallback)).toBe(
+      "node-tectonic",
+    );
+  });
+});
+
 // The engine binary may be missing for this platform or unable to run (e.g. an older glibc).
 function engineRuns(): boolean {
   try {
     return (
-      spawnSync(binaryPath(), ["--version"], { stdio: "ignore", timeout: 10_000 }).status === 0
+      spawnSync(enginePath(), ["--version"], { stdio: "ignore", timeout: 10_000 }).status === 0
     );
   } catch {
     return false;

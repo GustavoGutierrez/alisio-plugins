@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
+import { chmodSync, statSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -53,6 +54,41 @@ export function tectonicEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.Pro
   return env;
 }
 
+/**
+ * Static (musl) Tectonic 0.16.9 shipped with the package for linux-x64, written by
+ * `scripts/vendor-tectonic.mjs`. node-tectonic's linux-x64 build is linked against glibc 2.39, which
+ * Ubuntu 22.04 and Debian 12 lack; the static build runs on any x86_64 Linux.
+ */
+export const VENDORED_LINUX_X64 = fileURLToPath(
+  new URL("../compiler/linux-x64/tectonic", import.meta.url),
+);
+
+/** True when `path` is a regular file that is (or could be made) executable. */
+function usableBinary(path: string): boolean {
+  try {
+    const info = statSync(path);
+    if (!info.isFile() || info.size === 0) return false;
+    if ((info.mode & 0o111) === 0) chmodSync(path, 0o755);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Tectonic executable for this machine: the vendored static binary on linux-x64 when it is present,
+ * otherwise the platform binary of node-tectonic (linux-arm64 is already a static musl build there).
+ */
+export function enginePath(
+  platform: NodeJS.Platform = process.platform,
+  arch: string = process.arch,
+  vendored: string = VENDORED_LINUX_X64,
+  fallback: () => string = binaryPath,
+): string {
+  if (platform === "linux" && arch === "x64" && usableBinary(vendored)) return vendored;
+  return fallback();
+}
+
 const TIMEOUT_MS = 180_000;
 const MAX_LOG = 256_000;
 const MAX_PDF = 64 * 1024 * 1024;
@@ -81,7 +117,7 @@ export async function compilePdf(
     let log = "";
     let executable: string;
     try {
-      executable = binaryPath();
+      executable = enginePath();
     } catch {
       throw new ScribeError("compiler_unavailable");
     }

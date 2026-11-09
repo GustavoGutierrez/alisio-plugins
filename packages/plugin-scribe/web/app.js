@@ -22,19 +22,23 @@ const connected = new Promise((resolve) => {
       if (message?.type === "locale") {
         changeHostLocale(message.locale);
       }
-      if (message?.type === "visibility") visible = message.visible;
+      if (message?.type === "visibility") {
+        visible = message.visible !== false;
+        if (visible) void poll();
+      }
       if (message?.type === "response") {
         const request = pending.get(message.id);
         if (!request) return;
         pending.delete(message.id);
         clearTimeout(request.timer);
+        // `message.error` is a host transport code; `result.error` is a Scribe action code.
         const result = message.result;
         const error = message.error || result?.error;
+        if (message.error === "not_found") showUnavailable();
         error ? request.reject(new Error(error)) : request.resolve(result?.value);
       }
     };
     hostPort.start();
-    hostPort.postMessage({ type: "ready" });
     resolve();
   });
 });
@@ -53,9 +57,9 @@ let view = "preview",
   dirty = false;
 let draftTex = "",
   draftBib = "",
-  pdfUrl = "",
+  pdfBlob,
   pdfStale = false,
-  embeddedLocale = true;
+  unavailable = false;
 let pollBusy = false,
   pollSignature = "",
   toastTimer,
@@ -78,8 +82,23 @@ function toast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => (el.style.display = "none"), 7000);
 }
+// The host runs at most PLUGIN_APP_LIMITS.inFlight (8) requests per frame; stay below it.
+const MAX_IN_FLIGHT = 6;
+let inFlight = 0;
+const waiting = [];
 async function api(action, input = {}, mutation = false) {
   await connected;
+  if (unavailable) throw new Error("not_found");
+  if (inFlight >= MAX_IN_FLIGHT) await new Promise((resolve) => waiting.push(resolve));
+  inFlight++;
+  try {
+    return await send(action, input, mutation);
+  } finally {
+    inFlight--;
+    waiting.shift()?.();
+  }
+}
+function send(action, input, mutation) {
   const id = crypto.randomUUID();
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -166,23 +185,18 @@ function modelOptions(selected = "") {
       .join("")
   );
 }
-function localeControl() {
-  return embeddedLocale
-    ? ""
-    : `<select id="ui-language" aria-label="${escapeHtml(t("localLocale"))}"><option value="en" ${locale === "en" ? "selected" : ""}>English</option><option value="es" ${locale === "es" ? "selected" : ""}>Español</option></select>`;
+/** The app or its plugin is gone (disabled, removed or updated): stop and say so. */
+function showUnavailable() {
+  if (unavailable) return;
+  unavailable = true;
+  dirty = false;
+  if (dialog.open) dialog.close();
+  root.innerHTML = `<main class="shell"><div class="empty"><h1>${escapeHtml(t("unavailableTitle"))}</h1><p>${escapeHtml(t("unavailable"))}</p></div></main>`;
 }
 function brand() {
-  return `<header><div class="brand"><span class="mark" aria-hidden="true">▱</span><strong>Scribe</strong><span class="muted">${t("tagline")}</span></div><div class="row">${localeControl()}${doc ? button("back", "back") : ""}</div></header>${context.demo ? `<div class="warning">${t("demo")}</div>` : ""}`;
+  return `<header><div class="brand"><span class="mark" aria-hidden="true">▱</span><strong>Scribe</strong><span class="muted">${t("tagline")}</span></div><div class="row">${doc ? button("back", "back") : ""}</div></header>${context.demo ? `<div class="warning">${t("demo")}</div>` : ""}`;
 }
 function bindCommon() {
-  on(
-    "ui-language",
-    (e) => {
-      setLocale(e.target.value);
-      render();
-    },
-    "change",
-  );
   on("back", async () => {
     if (dirty && !(await confirmPrompt(t("dirtyLeave")))) return;
     doc = undefined;
@@ -196,8 +210,7 @@ async function refreshList() {
 }
 async function openDocument(id) {
   doc = await api("documents.get", { documentId: id });
-  if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-  pdfUrl = "";
+  pdfBlob = undefined;
   pdfStale = false;
   draftTex = latest().tex;
   draftBib = latest().bib;
@@ -210,6 +223,7 @@ async function openDocument(id) {
   await loadPdf();
 }
 function render() {
+  if (unavailable) return;
   if (!doc) {
     newLanguage = document.querySelector("#doc-language")?.value ?? newLanguage;
     newModel = document.querySelector("#new-model")?.value ?? newModel;
@@ -655,28 +669,26 @@ async function loadPdf() {
   try {
     const result = await api("pdf.get", { documentId: id });
     if (doc?.id !== id || request !== pdfRequest) return;
-    if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-    pdfUrl = URL.createObjectURL(blobFromBase64(result.base64, "application/pdf"));
+    pdfBlob = blobFromBase64(result.base64, "application/pdf");
     pdfStale = result.stale;
     renderPdf();
   } catch (e) {
     if (doc?.id !== id || request !== pdfRequest) return;
     if (e.message !== "pdf_missing") toast(t(e.message));
-    if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-    pdfUrl = "";
+    pdfBlob = undefined;
     renderPdf();
   }
 }
 function renderPdf() {
   const status = document.querySelector("#pdf-status");
   if (status)
-    status.innerHTML = pdfUrl
+    status.innerHTML = pdfBlob
       ? `<div class="${pdfStale ? "warning" : "notice"}">${t(pdfStale ? "stale" : "currentPdf")}</div>`
       : "";
   const holder = document.querySelector("#pdf-holder");
   if (!holder) return;
-  if (pdfUrl) {
-    if (globalThis.scribeRenderPdf) void globalThis.scribeRenderPdf(holder, pdfUrl);
+  if (pdfBlob) {
+    if (globalThis.scribeRenderPdf) void globalThis.scribeRenderPdf(holder, pdfBlob);
     else holder.textContent = t("download");
   } else
     holder.innerHTML = `<div class="empty"><h3>${t("noPdf")}</h3><p>${t("compilerHint")}</p></div>`;
@@ -688,7 +700,7 @@ window.addEventListener("beforeunload", (e) => {
   }
 });
 async function poll() {
-  if (pollBusy || document.hidden || !visible) return;
+  if (pollBusy || unavailable || document.hidden || !visible) return;
   pollBusy = true;
   try {
     const next = await api("jobs.list");
@@ -734,5 +746,6 @@ try {
   if (!context.capabilities.write) toast(t("readOnly"));
   setInterval(poll, 1500);
 } catch (e) {
-  root.innerHTML = `<main class="shell"><h1>Scribe</h1><p>${escapeHtml(t(e.message))}</p><p>${t("reconnect")}</p></main>`;
+  if (!unavailable)
+    root.innerHTML = `<main class="shell"><h1>Scribe</h1><p>${escapeHtml(t(e.message))}</p><p>${t("reconnect")}</p></main>`;
 }

@@ -250,8 +250,8 @@ importers:
         version: 6.5.438
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.11.4
-        version: 0.11.4
+        specifier: 0.11.5
+        version: 0.11.5
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
@@ -427,6 +427,10 @@ packages:
 
   '@alisio/sdk@0.11.4':
     resolution: {integrity: sha512-l1+dEcSsvfqNtDAee5OUSlsb6oYE0dSeN6KakLvhJlHNZtWGu7FvEcBTfiDkjpIjGZAa8Tc8htonS49mhPZT8Q==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.11.4.tgz}
+    engines: {node: '>=22.16'}
+
+  '@alisio/sdk@0.11.5':
+    resolution: {integrity: sha512-HTS+aOcxMP00K0E94L1GS/2uNxXkeWw8pOji2zrz8+OxJUMTc1m7piNWyJKOS+204We8x/Xmxrvh1OkEOXflIw==, tarball: https://registry.npmjs.org/@alisio/sdk/-/sdk-0.11.5.tgz}
     engines: {node: '>=22.16'}
 
   '@babel/helper-string-parser@7.29.7':
@@ -2713,6 +2717,8 @@ snapshots:
       '@algolia/client-common': 5.59.0
 
   '@alisio/sdk@0.11.4': {}
+
+  '@alisio/sdk@0.11.5': {}
 
   '@babel/helper-string-parser@7.29.7': {}
 

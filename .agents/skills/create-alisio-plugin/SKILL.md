@@ -32,6 +32,31 @@ Load this skill before creating or restructuring a package under `packages/`.
 | SDK contract | Import from `@alisio/sdk` only |
 | General utility | Prefer a Node built-in |
 | Shared plugin logic | Duplicate a small stable primitive or create a non-plugin library only with maintainer approval |
+| Model should act | Tool (`api.tools.register`) |
+| One-shot user action | Command (`api.commands.register`) |
+| Read-only output in the chat | View |
+| A full working surface (editor, studio, dashboard) | Plugin app (`api.apps?.register`, Alisio >= 0.11.5) |
+
+## Plugin Apps Rules
+
+Source of truth: the site guide's "Plugin apps" section and the `@alisio/sdk` types
+(`PluginAppDefinition`, `PLUGIN_APP_LIMITS`). Do not use the original apps spec.
+
+- Feature-detect: register tools/commands/views first, then `if (api.apps) api.apps.register(...)`;
+  explain the minimum host (Alisio 0.11.5) in help text and never open a separate UI as a fallback.
+  A plugin that needs its app uses peer `@alisio/sdk >=0.11.5 <0.12.0`.
+- Lifecycle: register in `setup`; `register()` returns an unregister function; `dispose` is
+  synchronous and idempotent; `busy()` returns `true` during background work; keep state per activation.
+- Actions: declare `effect` and an `inputSchema` without `$ref`/`$id`/`$async`; ungranted effects fail
+  with `not_permitted`; calls time out at 30 s (honor `ctx.signal`, return a job id for long work);
+  take the session from `ctx`; return JSON-serializable results; never echo inputs or secrets in errors.
+- Frame: `nonce="__ALISIO_NONCE__"` on every inline script; no `<form>` submits; no network, external
+  URLs, `eval` or WebAssembly; inline assets or use `data:`/`blob:`; opaque origin.
+- Transport: accept only the first `alisio.app.connect` whose `event.source === window.parent`, keep
+  its port, follow `locale` messages, pause on hidden `visibility`, show "unavailable" on `not_found`.
+- i18n: labels `{ en, es }` with `en` as fallback; no own language selector.
+- Tests: unit-test handlers and the HTML builder (nonce present, no external URLs, no forms); check
+  visually with `alisio serve` 0.11.5+.
 
 ## Execution Steps
 

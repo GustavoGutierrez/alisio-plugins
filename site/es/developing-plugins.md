@@ -310,10 +310,96 @@ aplica el modelo de efecto/permisos.
 | `api.sessions.*` (spawn, create, run, get, children, ancestors, cancel, enqueue, isRunning, capabilities, model, workspace, setStatus) | Sesiones hijas: conversaciones separadas y persistidas con contexto fresco y permisos **reducidos**. | — | Una sesión hija nunca puede superar a su padre; abortar un padre aborta a sus descendientes en ejecución. |
 | `api.ui.status(key, text, detail?)` / `.panel(id, provider)` / `.select(req)` / `.askQuestions(req)` / `.open(sessionId)` / `.interactive()` | Texto de estado, paneles de árbol y preguntas interactivas. | El estado se indexa como `plugin:key`; los paneles como `plugin:id`. | Solo con interfaz interactiva; en modo headless resuelven a `undefined`/`false` y nunca se cuelgan. |
 | `api.extensions.register(point, provider, options?)` | Reemplaza un punto de extensión tipado del host: `mascot`, `startup-screen` o `websearch`. | Resolución: mayor `priority`, luego id del plugin, luego orden de registro. | No pasa por `effect`; un proveedor lento o que lanza vuelve al valor por defecto. |
+| `api.apps?.register(app)` (Alisio >= 0.11.5) | Una **app de plugin** a página completa: un iframe aislado que reemplaza el área central del chat, listado en el grupo Apps del panel izquierdo, más acciones tipadas que el frame invoca. Devuelve una función para quitar el registro. | `app.id` cumple `^[a-z][a-z0-9-]{0,39}$`, único por plugin; nombres de acción `^[A-Za-z][A-Za-z0-9_.-]{0,63}$`. | Cada acción declara `effect` (`read`/`write`/`process`) y un `inputSchema`; el host valida la entrada y aplica el control de efectos de la sesión. Un efecto no concedido se rechaza con `not_permitted`, sin pedir aprobación. Consulta [Apps de plugins](#apps-de-plugins). |
 
 **La regla de namespacing en una frase:** los plugins externos se delimitan (nombres de herramientas
 con prefijo, comandos bajo `<plugin id>:`) y su efecto `internal` se degrada a `external`; los
 plugins integrados quedan sin prefijo y pueden declarar `internal`.
+
+### Apps de plugins
+
+`api.apps` (Alisio >= 0.11.5) permite que un plugin abra una página completa en el área principal
+del host. Usa una app cuando las personas necesitan una superficie de trabajo propia (un editor, un
+estudio, un panel); usa una herramienta cuando debe actuar el modelo, un comando para una acción
+puntual y una vista para resultados de solo lectura en el chat.
+
+**Detecta la capacidad y declara el host mínimo.** `api.apps` es opcional. Registra primero todo lo
+demás y agrega la app solo si existe; nunca abras una interfaz aparte como alternativa. Un plugin que
+no funciona sin su app fija su rango peer en `@alisio/sdk >=0.11.5 <0.12.0`.
+
+```ts
+export default definePlugin({
+  id: "acme.notes",
+  setup(api) {
+    // Primero herramientas, comandos y vistas, para que funcionen en cualquier host.
+    if (!api.apps) return; // Explica en /help que el estudio requiere Alisio >= 0.11.5.
+    api.apps.register({
+      id: "notes",
+      label: { en: "Notes", es: "Notas" },
+      html: () => renderAppHtml(), // autocontenido, <= 8 MiB
+      actions: {
+        "notes.list": {
+          effect: "read",
+          inputSchema: { type: "object", properties: {}, additionalProperties: false },
+          handler: async (_input, ctx) => listNotes(ctx.workspace, ctx.signal),
+        },
+      },
+      busy: () => jobs.running(),
+      dispose: () => jobs.cancelAll(), // síncrono e idempotente
+    });
+  },
+});
+```
+
+**Ciclo de vida.** Registra en `setup` y ejecuta inferencia solo después, dentro de los handlers. El
+host quita la app y llama a `dispose` cuando el plugin se cierra o cuando `setup` falla. Guarda el
+estado por activación del plugin, sin disposers globales compartidos entre workspaces. Devuelve
+`true` en `busy` mientras haya trabajo en segundo plano para que el workspace no se descargue.
+
+**Acciones.** El host valida `input` contra `inputSchema` (no se admiten `$ref`, `$id` ni `$async`)
+y aplica el mismo control de efectos que a las herramientas. La sesión sale de la ruta autenticada,
+nunca de la entrada. Cada llamada vence a los **30 s** y aborta `ctx.signal`: el trabajo largo
+devuelve enseguida un id de tarea y el frame lo consulta. Los resultados deben poder serializarse a
+JSON y los errores nunca repiten entradas ni secretos. Dentro de los handlers usa `api.models`,
+`api.model.complete` y `api.sessions`; llega a otros plugins solo mediante una sesión hija con una
+lista explícita de herramientas permitidas. Límites del host (`PLUGIN_APP_LIMITS`): HTML de 8 MiB,
+solicitud de 37 MiB, resultado de 90 MiB y 8 solicitudes simultáneas.
+
+**El frame.** El HTML corre en un iframe aislado con **origen opaco**
+(`allow-scripts allow-downloads allow-modals allow-popups`) bajo una CSP estricta:
+
+| Regla | Consecuencia |
+| --- | --- |
+| `script-src 'nonce-…'` | Cada `<script>` en línea lleva `nonce="__ALISIO_NONCE__"`; el host lo reemplaza en cada carga. |
+| Sin `allow-forms`, `form-action 'none'` | Enviar un `<form>` no hace nada; usa botones y manejadores de la tecla Enter. |
+| `default-src 'none'`, `connect-src blob:` | Sin fetch, XHR ni URLs externas de scripts, estilos o fuentes; incrusta todo y usa `data:`/`blob:` para los recursos. Todos los datos pasan por acciones. |
+| Sin `'unsafe-eval'` ni `'wasm-unsafe-eval'` | Sin `eval`, `new Function` ni WebAssembly. Los workers deben ser URLs `blob:`. |
+| Sin `allow-same-origin` | Sin cookies, sin credenciales y sin acceso al DOM padre. |
+
+**Transporte.** Al cargar, el host envía `{ type: "alisio.app.connect", locale, visible }` con un
+`MessagePort`. Acepta solo el primero y solo cuando `event.source === window.parent`. Envía
+`{ type: "request", id, action, input?, idempotencyKey? }` por el puerto y empareja
+`{ type: "response", id, result }` o `{ type: "response", id, error }`. Códigos de error:
+`not_found`, `invalid_input`, `not_permitted`, `timeout`, `failed`, `too_large`,
+`too_many_requests`, `unauthorized`, `network`. Muestra un estado "no disponible" ante `not_found`
+(el plugin se desactivó o se quitó).
+
+**Idioma y visibilidad.** Las etiquetas aceptan `{ en, es }` con `en` como respaldo. Sigue los
+mensajes `{ type: "locale" }` del host en vez de incluir un selector de idioma, y pausa las
+consultas periódicas ante `{ type: "visibility", visible: false }`.
+
+**Comportamiento del host.** Abrir una app oculta el chat pero lo mantiene montado, así que los
+borradores se conservan. Los frames siguen montados mientras están ocultos; cada proyecto tiene su
+propia instancia y sesión. Una recarga completa pierde el texto sin guardar, así que persiste mediante
+acciones y avisa con `beforeunload` mientras haya cambios pendientes.
+
+**Aún no disponible:** navegación declarativa, iconos o rutas profundas, una API de tareas del host o
+SSE, `model.stream`, un SDK de navegador y manejadores de archivos. Desactivar un plugin bloquea las
+acciones nuevas, pero no cierra un puerto abierto ni cancela tareas en curso.
+
+**Pruebas.** Prueba unitariamente los handlers de acciones y el generador de HTML: cada `<script>`
+tiene el marcador del nonce, no hay URLs externas ni `<form>`. Revisa la página visualmente con
+`alisio serve` de Alisio 0.11.5 o posterior.
 
 ## Límites duros: hasta dónde llegan los plugins
 

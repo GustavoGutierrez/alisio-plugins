@@ -14,9 +14,8 @@ credentials.
 ## Requirements
 
 - Node `>=22.16`.
-- **The first Alisio release with the plugin apps API** (`api.apps`) for the full studio. That API
-  is still in development and is not part of `@alisio/sdk` 0.11.4; `src/apps.ts` holds its local
-  structural types until an SDK release ships them.
+- **Alisio 0.11.5 or newer** for the full studio: it is the first release with the plugin apps API
+  (`api.apps`, typed in `@alisio/sdk` 0.11.5).
 - On older hosts (no `api.apps`), Scribe still loads: it registers the `scribe_documents` tool, the
   read-only `documents` view, the agents/skills and the `help` command, and skips the studio. Since
   documents are created only from the studio, the tool and view stay empty there and `help` says
@@ -28,18 +27,28 @@ credentials.
 alisio install npm:@alisio/plugin-scribe
 ```
 
-Open a trusted project and select **Scribe · Writing / Scribe · Redacción** under that project.
-The sidebar remains available; **Back to chat / Volver al chat** restores the conversation.
+Open a trusted project and select **Scribe · Writing / Scribe · Redacción** in the **Apps** group
+above **Projects**. The projects panel remains available; **Back to chat** restores the
+conversation.
 
 ## How it integrates
 
 - `api.apps.register` supplies a self-contained HTML bundle (`dist/embedded.html`, built from
   `web/`) and declared read, write and process action handlers.
-- The host mounts it in an isolated iframe inside the main area; no same-origin DOM access.
-- A MessageChannel carries actions to Alisio's authenticated server, never directly to providers.
-- Every mutating action, including job cancellation, requires session write permission; PDF builds
-  also require process permission.
-- The Alisio locale controls all UI labels (English/Spanish). Manuscript language is separate.
+- The host mounts it in a sandboxed iframe (opaque origin, no forms, no network). Its one inline
+  script carries the host nonce; PDF.js renders previews with a `blob:` worker, without eval or
+  WASM, from bytes returned by an action.
+- The frame accepts only the first `alisio.app.connect` port from `window.parent` and sends every
+  action over it to Alisio's authenticated server, never directly to providers. It keeps fewer
+  than 8 requests in flight, pauses polling while hidden and shows an unavailable state when the
+  host answers `not_found` (for example after the plugin is disabled).
+- Long work (agent drafts and PDF builds) returns a job at once and the studio polls it, so no
+  action holds the host's 30-second request limit.
+- The host gates every action by its effect with the session's existing permissions, without a
+  prompt: mutating actions, including job cancellation, need write permission and PDF builds also
+  need process permission.
+- The Alisio locale controls all UI labels (English/Spanish); the studio has no language selector
+  of its own. Manuscript language is separate.
 - The backend uses Alisio sessions, model configuration, tool permissions and private state paths.
 
 ## Features
@@ -64,10 +73,15 @@ allowlist never grants privileges absent from their parent.
 
 ## PDF compilation
 
-Scribe depends on `node-tectonic` 1.1.0, whose platform binary is installed automatically for
-Windows x64, Linux x64/arm64 and macOS x64/arm64. No Docker or system TeX is needed. On Linux the
-binary requires a recent glibc (2.38 or newer); on older systems PDF builds fail with a build error.
-Do not omit optional dependencies when installing.
+Scribe uses Tectonic 0.16.9. No Docker or system TeX is needed.
+
+- **Linux x64:** the package ships the static (musl) upstream build at
+  `compiler/linux-x64/tectonic`, so builds work on any x86_64 Linux, glibc or musl (including
+  Ubuntu 22.04 and Debian 12). If that file is missing, Scribe falls back to the `node-tectonic`
+  binary, which needs glibc 2.39 or newer; on older systems PDF builds then fail with a build error.
+- **Windows x64, Linux arm64 and macOS x64/arm64:** the platform binary of `node-tectonic` 1.1.0,
+  installed automatically (Linux arm64 is already a static build). Do not omit optional
+  dependencies when installing.
 
 The package contains a 110 MB compressed offline TeX archive (`compiler/bundle.zip`). The first
 build creates the LaTeX format cache; later builds reuse it. Builds never download packages or send
@@ -109,8 +123,20 @@ pnpm --filter @alisio/plugin-scribe typecheck
 pnpm --filter @alisio/plugin-scribe test
 ```
 
-Tests run with Vitest against `src`, including a jsdom test of the studio UI. The real-engine
-PDF test is skipped when the Tectonic binary cannot run on the current machine.
+Tests run with Vitest against `src`, including jsdom tests of the studio UI and its handshake, and
+a check that the built page meets the frame CSP. The real-engine PDF test is skipped when no
+Tectonic binary can run on the current machine.
+
+Both vendored files are git-ignored (too large for the repository) and must exist before packing:
+
+```bash
+cd packages/plugin-scribe
+python3 scripts/vendor-tex-bundle.py   # compiler/bundle.zip, from an installed TeX Live
+node scripts/vendor-tectonic.mjs       # compiler/linux-x64/tectonic, checksum-verified download
+```
+
+`vendor-tectonic.mjs` downloads the pinned upstream release asset, verifies the tarball and binary
+SHA-256 digests and writes the binary atomically; `--from ` uses a local copy instead.
 `scripts/verify-host-integration.mjs ` exercises the plugin inside a locally
 built Alisio that ships the plugin apps API.
 

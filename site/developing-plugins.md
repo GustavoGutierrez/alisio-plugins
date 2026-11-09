@@ -308,10 +308,93 @@ effect/permission model applies.
 | `api.sessions.*` (spawn, create, run, get, children, ancestors, cancel, enqueue, isRunning, capabilities, model, workspace, setStatus) | Child sessions: separate persisted conversations with fresh context and **narrowed** permissions. | — | A child can never exceed its parent; aborting a parent aborts running descendants. |
 | `api.ui.status(key, text, detail?)` / `.panel(id, provider)` / `.select(req)` / `.askQuestions(req)` / `.open(sessionId)` / `.interactive()` | Status text, tree panels, and interactive prompts. | Status keyed `plugin:key`; panels keyed `plugin:id`. | Interactive UIs only; headless calls resolve to `undefined`/`false` and never hang. |
 | `api.extensions.register(point, provider, options?)` | Replace a typed host extension point: `mascot`, `startup-screen`, or `websearch`. | Resolution: highest `priority`, then plugin id, then registration order. | Not gated by `effect`; a slow or throwing provider falls back to the default. |
+| `api.apps?.register(app)` (Alisio >= 0.11.5) | A full-page **plugin app**: a sandboxed iframe that replaces the main chat area, listed in the left panel's Apps group, plus typed actions the frame calls. Returns an unregister function. | `app.id` matches `^[a-z][a-z0-9-]{0,39}$`, unique per plugin; action names `^[A-Za-z][A-Za-z0-9_.-]{0,63}$`. | Every action declares `effect` (`read`/`write`/`process`) and an `inputSchema`; the host validates the input and applies the session's effect gate. An ungranted effect is rejected with `not_permitted`, with no approval prompt. See [Plugin apps](#plugin-apps). |
 
 **The namespacing rule in one sentence:** external plugins are namespaced (tool names prefixed,
 commands under `<plugin id>:`) and their `internal` effect is downgraded to `external`; built-in
 plugins are unprefixed and may declare `internal`.
+
+### Plugin apps
+
+`api.apps` (Alisio >= 0.11.5) lets a plugin open a full page in the host's main area. Use an app
+when people need a working surface of their own (an editor, a studio, a dashboard); use a tool when
+the model should act, a command for a one-shot action, and a view for read-only output in the chat.
+
+**Feature-detect and state the minimum host.** `api.apps` is optional. Register everything else
+first and add the app only when it exists; never open a separate UI as a fallback. A plugin that
+cannot work without its app sets its peer range to `@alisio/sdk >=0.11.5 <0.12.0`.
+
+```ts
+export default definePlugin({
+  id: "acme.notes",
+  setup(api) {
+    // Tools, commands and views first, so they work on every host.
+    if (!api.apps) return; // Explain in /help that the studio needs Alisio >= 0.11.5.
+    api.apps.register({
+      id: "notes",
+      label: { en: "Notes", es: "Notas" },
+      html: () => renderAppHtml(), // self-contained, <= 8 MiB
+      actions: {
+        "notes.list": {
+          effect: "read",
+          inputSchema: { type: "object", properties: {}, additionalProperties: false },
+          handler: async (_input, ctx) => listNotes(ctx.workspace, ctx.signal),
+        },
+      },
+      busy: () => jobs.running(),
+      dispose: () => jobs.cancelAll(), // synchronous and idempotent
+    });
+  },
+});
+```
+
+**Lifecycle.** Register in `setup` and run inference only later, inside handlers. The host removes
+the app and calls `dispose` when the plugin closes or `setup` fails. Keep state per plugin activation,
+with no global disposers shared between workspaces. Return `true` from `busy` while background work
+runs so the workspace is not evicted.
+
+**Actions.** The host validates `input` against `inputSchema` (`$ref`, `$id` and `$async` are not
+supported), then applies the same effect gate as tools. The session comes from the authenticated
+route, never from the input. Each call times out after **30 s** and aborts `ctx.signal`: long work
+returns a job id at once and the frame polls for it. Results must be JSON-serializable, and errors
+never echo inputs or secrets. Inside handlers use `api.models`, `api.model.complete` and
+`api.sessions`; reach other plugins only through a child session with an explicit allowed-tools list.
+Host limits (`PLUGIN_APP_LIMITS`): 8 MiB HTML, 37 MiB request, 90 MiB result, 8 requests in flight.
+
+**The frame.** The HTML runs in a sandboxed iframe with an **opaque origin**
+(`allow-scripts allow-downloads allow-modals allow-popups`) under a strict CSP:
+
+| Rule | Consequence |
+| --- | --- |
+| `script-src 'nonce-…'` | Every inline `<script>` carries `nonce="__ALISIO_NONCE__"`; the host replaces it on each load. |
+| No `allow-forms`, `form-action 'none'` | A `<form>` submit does nothing; use buttons and Enter-key handlers. |
+| `default-src 'none'`, `connect-src blob:` | No fetch, XHR or external script, style or font URLs; inline everything and use `data:`/`blob:` for assets. All data goes through actions. |
+| No `'unsafe-eval'` or `'wasm-unsafe-eval'` | No `eval`, `new Function` or WebAssembly. Workers must be `blob:` URLs. |
+| No `allow-same-origin` | No cookies, no credentials, no access to the parent DOM. |
+
+**Transport.** On load the host posts `{ type: "alisio.app.connect", locale, visible }` with a
+`MessagePort`. Accept only the first one, and only when `event.source === window.parent`. Send
+`{ type: "request", id, action, input?, idempotencyKey? }` over the port and match
+`{ type: "response", id, result }` or `{ type: "response", id, error }`. Error codes:
+`not_found`, `invalid_input`, `not_permitted`, `timeout`, `failed`, `too_large`,
+`too_many_requests`, `unauthorized`, `network`. Show an "unavailable" state on `not_found` (the
+plugin was disabled or removed).
+
+**Locale and visibility.** Labels take `{ en, es }` with `en` as the fallback. Follow the host's
+`{ type: "locale" }` messages instead of shipping a language selector, and pause polling on
+`{ type: "visibility", visible: false }`.
+
+**Host behavior.** Opening an app hides the chat but keeps it mounted, so drafts survive. Frames stay
+mounted while hidden; each project gets its own instance and session. A full reload loses unsaved
+text, so persist through actions and warn with `beforeunload` while edits are pending.
+
+**Not available yet:** declarative navigation, icons or deep routes, a host jobs API or SSE,
+`model.stream`, a browser SDK, and file handles. Disabling a plugin blocks new actions but does not
+close an open port or cancel running jobs.
+
+**Testing.** Unit-test the action handlers and the HTML builder: every `<script>` has the nonce
+placeholder, there are no external URLs and no `<form>`. Check the page visually with
+`alisio serve` from Alisio 0.11.5 or later.
 
 ## Hard limits: how far plugins reach
 

@@ -5,12 +5,21 @@ GlobalWorkerOptions.workerSrc = URL.createObjectURL(
   new Blob([worker], { type: "text/javascript" }),
 );
 let generation = 0;
-globalThis.scribeRenderPdf = async (holder, url) => {
+// The frame CSP forbids WASM and eval: PDF.js runs its JavaScript decoders only, and the
+// worker is a blob: URL (worker-src blob:). The PDF arrives as a Blob, so nothing is fetched.
+globalThis.scribeRenderPdf = async (holder, blob) => {
   const version = ++generation;
   holder.replaceChildren();
   try {
-    const data = new Uint8Array(await (await fetch(url)).arrayBuffer());
-    const pdf = await getDocument({ data, isEvalSupported: false, useSystemFonts: true }).promise;
+    const data = new Uint8Array(await blob.arrayBuffer());
+    const pdf = await getDocument({
+      data,
+      isEvalSupported: false,
+      useSystemFonts: true,
+      useWasm: false,
+      useWorkerFetch: false,
+      enableXfa: false,
+    }).promise;
     try {
       for (let i = 1; i <= pdf.numPages; i++) {
         if (version !== generation) return;

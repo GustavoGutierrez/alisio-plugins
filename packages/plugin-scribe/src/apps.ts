@@ -1,26 +1,20 @@
-// Structural contract for the in-development Alisio plugin apps API (`api.apps`). It is not in the
-// published @alisio/sdk yet; remove these local types once an SDK release ships them.
-import type { JsonSchema, PluginAPI } from "@alisio/sdk";
+// Helpers over the plugin apps API shipped in @alisio/sdk 0.11.5 (`api.apps`). The contract types
+// come from the SDK; this module only adds what Scribe checks on its own side.
+export type { PluginAppAction, PluginAppContext, PluginAppDefinition } from "@alisio/sdk";
 
-export interface AppContext {
-  sessionId: string;
-  workspace: string;
-  signal: AbortSignal;
-  idempotencyKey?: string;
+/** Keywords the host rejects in an action `inputSchema`. */
+export const UNSUPPORTED_SCHEMA_KEYWORDS = ["$ref", "$id", "$async"] as const;
+
+/** Paths of every unsupported keyword in a schema (empty when the host accepts it). */
+export function unsupportedSchemaKeywords(schema: unknown, path = "$"): string[] {
+  if (Array.isArray(schema))
+    return schema.flatMap((item, index) => unsupportedSchemaKeywords(item, `${path}[${index}]`));
+  if (!schema || typeof schema !== "object") return [];
+  const found: string[] = [];
+  for (const [key, value] of Object.entries(schema)) {
+    if ((UNSUPPORTED_SCHEMA_KEYWORDS as readonly string[]).includes(key))
+      found.push(`${path}.${key}`);
+    found.push(...unsupportedSchemaKeywords(value, `${path}.${key}`));
+  }
+  return found;
 }
-export interface AppAction {
-  effect: "read" | "write" | "process";
-  inputSchema: JsonSchema;
-  handler(input: Record<string, unknown>, context: AppContext): unknown | Promise<unknown>;
-}
-export interface AppRegistration {
-  id: string;
-  label: { en: string; es: string };
-  html(): string | Promise<string>;
-  actions: Record<string, AppAction>;
-  dispose?(): void;
-  busy?(): boolean;
-}
-export type EmbeddedPluginAPI = PluginAPI & {
-  apps?: { register(app: AppRegistration): () => void };
-};

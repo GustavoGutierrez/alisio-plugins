@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { PluginAPI, ToolDefinition } from "@alisio/sdk";
+import type { PluginAPI, PluginAppContext, PluginAppDefinition, ToolDefinition } from "@alisio/sdk";
 import { afterEach, describe, expect, it } from "vitest";
-import type { AppContext, AppRegistration } from "../src/apps.js";
+import { unsupportedSchemaKeywords } from "../src/apps.js";
 import plugin from "../src/index.js";
 import { VERSION } from "../src/version.js";
 import { fakeApi } from "./helpers.js";
@@ -16,7 +16,7 @@ interface Harness {
   views: string[];
   agents: string[];
   skills: string[];
-  apps: AppRegistration[];
+  apps: PluginAppDefinition[];
 }
 
 const roots: string[] = [];
@@ -66,7 +66,7 @@ async function harness(withApps: boolean): Promise<Harness> {
     ...(withApps
       ? {
           apps: {
-            register: (app: AppRegistration) => {
+            register: (app: PluginAppDefinition) => {
               h.apps.push(app);
               return () => {};
             },
@@ -98,40 +98,51 @@ describe("plugin entry", () => {
     expect(h.apps).toHaveLength(1);
     const app = h.apps[0];
     if (!app) throw new Error("app missing");
+    expect(app.id).toMatch(/^[a-z][a-z0-9-]{0,39}$/);
     expect(app.id).toBe("studio");
-    expect(app.actions["jobs.cancel"]?.effect).toBe("write");
-    expect(app.actions["pdf.compile"]?.effect).toBe("process");
-    expect(app.actions["documents.list"]?.effect).toBe("read");
+    const actions = app.actions ?? {};
+    expect(actions["jobs.cancel"]?.effect).toBe("write");
+    expect(actions["pdf.compile"]?.effect).toBe("process");
+    expect(actions["documents.list"]?.effect).toBe("read");
     expect(await h.commands.get("help")?.("")).toMatch(/project sidebar/);
 
-    const context: AppContext = {
+    const context: PluginAppContext = {
       sessionId: "s",
       workspace: "/workspace",
       signal: new AbortController().signal,
       idempotencyKey: randomUUID(),
     };
-    const created = (await app.actions["documents.create"]?.handler(
-      { title: "Via app" },
-      context,
-    )) as {
+    const created = (await actions["documents.create"]?.handler({ title: "Via app" }, context)) as {
       value: { id: string };
     };
     expect(created.value.id).toMatch(/^[a-f0-9-]{36}$/);
-    const readContext: AppContext = {
+    const readContext: PluginAppContext = {
       sessionId: "s",
       workspace: "/workspace",
       signal: context.signal,
     };
-    const listed = (await app.actions["documents.list"]?.handler({}, readContext)) as {
+    const listed = (await actions["documents.list"]?.handler({}, readContext)) as {
       value: Array<{ id: string }>;
     };
     expect(listed.value.map((d) => d.id)).toEqual([created.value.id]);
-    expect(await app.actions["documents.get"]?.handler({ documentId: "bad" }, readContext)).toEqual(
-      {
-        error: "invalid_id",
-      },
-    );
+    expect(await actions["documents.get"]?.handler({ documentId: "bad" }, readContext)).toEqual({
+      error: "invalid_id",
+    });
     app.dispose?.();
+  });
+
+  it("declares action names and input schemas the host accepts", async () => {
+    const h = await harness(true);
+    const actions = h.apps[0]?.actions ?? {};
+    expect(Object.keys(actions).length).toBeGreaterThan(0);
+    for (const [name, action] of Object.entries(actions)) {
+      expect(name).toMatch(/^[A-Za-z][A-Za-z0-9_.-]{0,63}$/);
+      expect(action.inputSchema.type).toBe("object");
+      expect(unsupportedSchemaKeywords(action.inputSchema), name).toEqual([]);
+    }
+    expect(
+      unsupportedSchemaKeywords({ properties: { a: { $ref: "#/x" } }, anyOf: [{ $id: "y" }] }),
+    ).toEqual(["$.properties.a.$ref", "$.anyOf[0].$id"]);
   });
 
   it("fails open on hosts without api.apps: no throw, everything else still registers", async () => {
@@ -141,7 +152,7 @@ describe("plugin entry", () => {
     expect(h.views).toEqual(["documents"]);
     expect(h.agents).toHaveLength(1);
     expect(h.skills).toHaveLength(1);
-    expect(await h.commands.get("help")?.("")).toMatch(/no plugin apps API/);
+    expect(await h.commands.get("help")?.("")).toMatch(/no plugin apps API.*Alisio 0\.11\.5/);
     const tool = h.tools.get("scribe_documents");
     const result = await tool?.execute({}, { session: "s" } as Parameters<
       ToolDefinition["execute"]
