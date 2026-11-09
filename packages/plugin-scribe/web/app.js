@@ -31,6 +31,8 @@ const connected = new Promise((resolve) => {
         if (!request) return;
         pending.delete(message.id);
         clearTimeout(request.timer);
+        clearTimeout(request.approvalTimer);
+        settleApprovalNotice();
         // `message.error` is a host transport code; `result.error` is a Scribe action code.
         const result = message.result;
         let error = message.error || result?.error;
@@ -96,6 +98,14 @@ function toast(message) {
 // The host runs at most PLUGIN_APP_LIMITS.inFlight (8) requests per frame; stay below it.
 const MAX_IN_FLIGHT = 6;
 const RESPONSE_GUARD_MS = 11 * 60 * 1000;
+// A write or process action can wait on Alisio's approval prompt; say so if it takes a moment.
+const APPROVAL_HINT_MS = 3000;
+let approvalNotice = false;
+function settleApprovalNotice() {
+  if (!approvalNotice || [...pending.values()].some((r) => r.awaitingHint)) return;
+  approvalNotice = false;
+  document.querySelector("#toast").style.display = "none";
+}
 let inFlight = 0;
 const waiting = [];
 async function api(action, input = {}, mutation = false) {
@@ -117,9 +127,18 @@ function send(action, input, mutation) {
     // handler), but it may first wait for the user's approval prompt (capped at 10 minutes).
     const timer = setTimeout(() => {
       pending.delete(id);
+      settleApprovalNotice();
       reject(new Error("operation_failed"));
     }, RESPONSE_GUARD_MS);
-    pending.set(id, { resolve, reject, timer, action });
+    const request = { resolve, reject, timer, action, awaitingHint: false };
+    if (mutation)
+      request.approvalTimer = setTimeout(() => {
+        request.awaitingHint = true;
+        approvalNotice = true;
+        toast(t("awaiting_approval"));
+        clearTimeout(toastTimer); // stays visible until the request settles
+      }, APPROVAL_HINT_MS);
+    pending.set(id, request);
     hostPort.postMessage({
       type: "request",
       id,
