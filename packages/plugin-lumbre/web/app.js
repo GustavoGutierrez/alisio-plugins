@@ -383,7 +383,9 @@ function messagesHtml() {
             ? nested("notice", "build_failed", m.fixAttempt ?? 1, max)
             : m.notice === "generation_failed"
               ? `${nested("notice", "generation_failed")} ${errorText(m.code ?? "operation_failed")}`
-              : nested("notice", m.notice ?? "applied");
+              : m.notice === "output_partial"
+                ? nested("notice", "output_partial", m.count ?? 0)
+                : nested("notice", m.notice ?? "applied");
         const warn = m.notice !== "applied";
         return `<div class="notice ${warn ? "warn" : "ok"}">${icon(warn ? "warning" : "check")}<span>${escapeHtml(text)}</span></div>`;
       }
@@ -429,12 +431,37 @@ function jobHtml() {
   </div>`;
 }
 
+/** Generation facts of a job (numbers and categories only), for the Details panel. */
+function diagnosticsHtml(d) {
+  if (!d) return "";
+  const dt = (key) => nested("details", key);
+  const source = (value) => dt(value === "provider" ? "provider" : "estimated");
+  const n = (value) => new Intl.NumberFormat(locale).format(value ?? 0);
+  const rows = [
+    ["model", d.model ?? "—"],
+    ["context", `${n(d.contextWindow)} (${source(d.contextSource)})`],
+    ["output", `${n(d.outputBudget)} (${source(d.outputSource)})`],
+    ["usage", `${n(d.usageInput)} / ${n(d.usageOutput)}`],
+    ["batches", d.planned ? String(d.batches) : dt("no")],
+    ["continuations", String(d.continuations ?? 0)],
+    ...(d.retriedWithoutLimit ? [["retried", dt("yes")]] : []),
+    ...(d.reason ? [["reason", nested("reasons", d.reason)]] : []),
+  ];
+  return `<dl class="diag">${rows.map(([k, v]) => `<dt>${escapeHtml(dt(k))}</dt><dd>${escapeHtml(v)}</dd>`).join("")}</dl>`;
+}
+
 function errorCard(e) {
-  const details = e.log
-    ? `<button type="button" class="link" data-action="toggle-details" aria-expanded="${detailsOpen}">${escapeHtml(detailsOpen ? t("hideDetails") : t("showDetails"))}</button>${detailsOpen ? `<pre class="log">${escapeHtml(e.log)}</pre>` : ""}`
+  const reason =
+    e.code === "agent_failed" && e.diagnostics?.reason
+      ? ` (${nested("reasons", e.diagnostics.reason)})`
+      : "";
+  const text = e.warning ?? `${errorText(e.code)}${reason}`;
+  const hasDetails = !!(e.log || e.diagnostics);
+  const details = hasDetails
+    ? `<button type="button" class="link" data-action="toggle-details" aria-expanded="${detailsOpen}">${escapeHtml(detailsOpen ? t("hideDetails") : t("showDetails"))}</button>${detailsOpen ? `${diagnosticsHtml(e.diagnostics)}${e.log ? `<pre class="log">${escapeHtml(e.log)}</pre>` : ""}` : ""}`
     : "";
-  return `<div class="job-card error" role="alert">
-    <div class="job-head">${icon("warning")}<strong>${escapeHtml(errorText(e.code))}</strong>${iconButton("dismiss-error", "close", t("close"))}</div>
+  return `<div class="job-card ${e.warning ? "warning" : "error"}" role="alert">
+    <div class="job-head">${icon("warning")}<strong>${escapeHtml(text)}</strong>${iconButton("dismiss-error", "close", t("close"))}</div>
     ${details}
   </div>`;
 }
@@ -512,6 +539,7 @@ function reviewHtml() {
   return `<div class="review">
     <div class="review-head"><h2>${escapeHtml(t("reviewTitle"))}</h2>${proposal.fixAttempt ? `<span class="badge warn">${escapeHtml(tf("fixLabel", proposal.fixAttempt, max))}</span>` : ""}</div>
     <p class="summary">${escapeHtml(proposal.summary)}</p>
+    ${proposal.partial ? `<div class="banner warn" role="note">${icon("warning")}<span>${escapeHtml(nested("notice", "output_partial", proposal.partial.received))}${proposal.partial.missing?.length ? ` ${escapeHtml(t("missing"))} ${escapeHtml(proposal.partial.missing.join(", "))}` : ""}</span></div>` : ""}
     <p class="muted small">${escapeHtml(t("reviewLead"))}</p>
     <ul class="review-files">${rows}</ul>
     ${deps ? `<h3>${escapeHtml(t("packages"))}</h3><ul class="deps">${deps}</ul><p class="muted small">${escapeHtml(t("packageHint"))}</p>` : ""}
@@ -667,8 +695,15 @@ function watchJob(id, kind, done) {
     job = undefined;
     const raw = finished.raw;
     if (raw?.state === "failed") {
-      lastError = { code: raw.error, log: raw.log };
+      lastError = { code: raw.error, log: raw.log, diagnostics: raw.diagnostics ?? null };
       announce(errorText(raw.error));
+    } else if (raw?.state === "done" && raw.result?.partial) {
+      // Kept what arrived: say so where the person is looking, with the same Details.
+      lastError = {
+        warning: nested("notice", "output_partial", raw.result.partial.received),
+        diagnostics: raw.diagnostics ?? null,
+      };
+      announce(lastError.warning);
     } else if (raw?.state === "cancelled") toast(t("cancelled"));
     if (current) await loadProject(current.id).catch(fail);
     try {

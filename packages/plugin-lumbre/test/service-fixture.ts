@@ -67,6 +67,16 @@ export class FakeRuntime implements RuntimeLike {
   }
 }
 
+export interface FakeRun {
+  text?: string;
+  status?: "completed" | "failed" | "cancelled";
+  error?: string;
+  /** Output tokens of THIS run (the fake host accumulates them per child). */
+  output?: number;
+  input?: number;
+  turnsExceeded?: boolean;
+}
+
 export interface Fixture {
   service: Service;
   root: string;
@@ -76,6 +86,10 @@ export interface Fixture {
   prompts: string[];
   /** Queue the next model answers (objects are JSON-encoded). */
   answer: (...values: unknown[]) => void;
+  /** Queue raw child runs (text, status, error, usage). */
+  respond: (...values: FakeRun[]) => void;
+  /** Child id of every run, in order. */
+  runs: string[];
   ctx: (key?: string) => PluginAppContext;
   call: (action: string, input?: Record<string, unknown>, key?: string) => Promise<Loose>;
   waitJob: (jobId: string) => Promise<Loose>;
@@ -85,7 +99,7 @@ export interface Fixture {
 
 export async function fixture(
   options: {
-    models?: Array<{ reference: string; contextWindow?: number }>;
+    models?: Array<{ reference: string; contextWindow?: number; maxOutputTokens?: number }>;
     resolveFails?: boolean;
   } = {},
 ): Promise<Fixture> {
@@ -94,7 +108,9 @@ export async function fixture(
   const runtimes: FakeRuntime[] = [];
   const specs: ChildSessionSpec[] = [];
   const prompts: string[] = [];
-  const answers: string[] = [];
+  const answers: Array<string | FakeRun> = [];
+  const runs: string[] = [];
+  const usage = new Map<string, { input: number; output: number }>();
   const opened: string[] = [];
   const models = options.models ?? [{ reference: "acme/fast", contextWindow: 64_000 }];
   const service = await new Service({
@@ -124,6 +140,7 @@ export async function fixture(
           model: {
             id: "fast",
             ...(found.contextWindow ? { contextWindow: found.contextWindow } : {}),
+            ...(found.maxOutputTokens ? { maxOutputTokens: found.maxOutputTokens } : {}),
           },
         };
       },
@@ -135,15 +152,29 @@ export async function fixture(
       },
       run: async (id, prompt, opts) => {
         prompts.push(prompt);
-        const text =
+        runs.push(id);
+        const next =
           answers.shift() ?? JSON.stringify({ message: "Nothing to change.", files: [] });
-        if (text === "__slow__") {
+        if (next === "__slow__") {
           await new Promise((resolve) =>
             opts?.signal?.addEventListener("abort", resolve, { once: true }),
           );
           return { id, status: "cancelled", text: "", usage: { input: 1, output: 1 } };
         }
-        return { id, status: "completed", text, usage: { input: 1, output: 1 } };
+        const run: FakeRun = typeof next === "string" ? { text: next } : next;
+        // Like the host: usage accumulates over the runs of one child.
+        const total = usage.get(id) ?? { input: 0, output: 0 };
+        total.input += run.input ?? 100;
+        total.output += run.output ?? 100;
+        usage.set(id, total);
+        return {
+          id,
+          status: run.status ?? "completed",
+          text: run.text ?? "",
+          usage: { ...total },
+          ...(run.error ? { error: run.error } : {}),
+          ...(run.turnsExceeded ? { turnsExceeded: true } : {}),
+        };
       },
       cancel: () => 1,
       model: () => "acme/fast",
@@ -184,6 +215,8 @@ export async function fixture(
     specs,
     prompts,
     opened,
+    respond: (...values) => answers.push(...values),
+    runs,
     answer: (...values) =>
       answers.push(...values.map((v) => (typeof v === "string" ? v : JSON.stringify(v)))),
     ctx,

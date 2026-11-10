@@ -13,7 +13,23 @@ import type {
   ResolvedProviderModel,
 } from "@alisio/sdk";
 import { errorCode, LumbreError, type LumbreErrorCode } from "./errors.js";
-import { budget, buildPrompt, type ChatMessage, type Ignored, parseOutput } from "./generate.js";
+import {
+  batchPrompt,
+  budget,
+  buildPrompt,
+  type ChatMessage,
+  continuePrompt,
+  type Ignored,
+  validateOutput,
+} from "./generate.js";
+import {
+  classifyFailure,
+  type FailureCategory,
+  mergeOutputs,
+  planBatches,
+  type RawOutput,
+  readOutput,
+} from "./output.js";
 import {
   isStackId,
   nodeAtLeast,
@@ -33,6 +49,9 @@ import { zip } from "./zip.js";
 
 export const MIN_HOST = "0.11.6";
 export const MAX_FIX_ATTEMPTS = 2;
+export const MAX_CONTINUATIONS = 3;
+/** The host's own output limit when a child sets none (`DEFAULT_MAX_OUTPUT_TOKENS`). */
+const HOST_DEFAULT_OUTPUT = 16_384;
 const MAX_JOBS = 3;
 const MAX_SERVERS = 3;
 const MAX_CHAT = 200;
@@ -95,6 +114,30 @@ interface Job {
   error: LumbreErrorCode | null;
   result: Record<string, unknown> | null;
   log: string;
+  diagnostics: Diagnostics | null;
+}
+
+/** Per-job generation facts for the "Details" panel: numbers and categories, never content. */
+export interface Diagnostics {
+  model: string | null;
+  contextWindow: number;
+  contextSource: "provider" | "estimated";
+  outputBudget: number;
+  outputSource: "provider" | "estimated";
+  usageInput: number;
+  usageOutput: number;
+  planned: boolean;
+  batches: number;
+  continuations: number;
+  retriedWithoutLimit: boolean;
+  reason: string | null;
+}
+
+/** A child run that failed for a reason other than the output limit. */
+class TurnFailure extends Error {
+  constructor(readonly category: FailureCategory) {
+    super(category);
+  }
 }
 
 interface Proposal {
@@ -108,6 +151,8 @@ interface Proposal {
   dependencies: Record<string, string>;
   ignored: Ignored[];
   fixAttempt: number;
+  /** Set when the model stopped before finishing: what arrived and what is missing. */
+  partial?: { received: number; missing: string[] };
 }
 
 type Input = Record<string, unknown>;
@@ -699,6 +744,7 @@ export class Service {
       error: null,
       result: null,
       log: "",
+      diagnostics: null,
     };
     const controller = new AbortController();
     this.jobs.set(job.id, job);
@@ -748,9 +794,35 @@ export class Service {
     try {
       const { model, info, fallback } = await this.modelFor(m, parent, signal);
       const b = budget(info);
+      let active: string | null = model ?? null;
+      if (!active)
+        try {
+          active = this.deps.sessions.model?.(parent) || null;
+        } catch {
+          active = null;
+        }
+      // Diagnostics: numbers and categories only, never content.
+      const diag: Diagnostics = {
+        model: active,
+        contextWindow: b.contextTokens,
+        contextSource: b.contextSource,
+        outputBudget: b.outputTokens,
+        outputSource: b.outputSource,
+        usageInput: 0,
+        usageOutput: 0,
+        planned: false,
+        batches: 0,
+        continuations: 0,
+        retriedWithoutLimit: false,
+        reason: null,
+      };
+      job.diagnostics = diag;
       const files = await this.head(m);
       const owned = Object.keys(await this.owned(m));
       const history = (await this.chat(id)).slice(0, pass.fixAttempt ? undefined : -1);
+      const planFirst =
+        !pass.fixAttempt &&
+        (m.revisions.length === 1 || pass.request.length > 1_500 || b.outputTokens < 12_000);
       const { prompt, omitted } = buildPrompt({
         stack: s,
         request: pass.request,
@@ -759,45 +831,144 @@ export class Service {
         owned,
         inputChars: b.inputChars,
         locale: pass.locale,
+        mode: planFirst ? "plan" : "write",
         ...(pass.errorLog !== undefined ? { errorLog: pass.errorLog } : {}),
       });
       this.stage(
         job,
         pass.fixAttempt
           ? "fixing"
-          : Object.keys(files).length > 3 && history.length
-            ? "thinkingChanges"
-            : "thinking",
+          : planFirst
+            ? "planning"
+            : Object.keys(files).length > 3 && history.length
+              ? "thinkingChanges"
+              : "thinking",
         pass.fixAttempt ? { attempt: pass.fixAttempt, max: MAX_FIX_ATTEMPTS } : undefined,
       );
-      const child = await this.deps.sessions.create({
-        parentId: parent,
-        agent: "lmb-builder",
-        title: `Lumbre: ${m.title}`.slice(0, 120),
-        instructions: await this.deps.instructions(pass.fixAttempt ? "fix" : "build"),
-        tools: { allow: [] },
-        readOnly: true,
-        permission: { write: "deny", process: "deny" },
-        maxTurns: 2,
-        maxTokens: b.contextTokens,
-        maxOutputTokens: b.outputTokens,
-        timeoutMs: 6 * 60_000,
-        ...(model ? { model } : {}),
-      });
-      const cancel = () => this.deps.sessions.cancel(child.id);
-      signal.addEventListener("abort", cancel, { once: true });
-      let result: ChildRunResult;
+      const instructions = await this.deps.instructions(pass.fixAttempt ? "fix" : "build");
+      let outputLimit: number | undefined = b.outputTokens;
+      const create = () =>
+        this.deps.sessions.create({
+          parentId: parent,
+          agent: "lmb-builder",
+          title: `Lumbre: ${m.title}`.slice(0, 120),
+          instructions,
+          tools: { allow: [] },
+          readOnly: true,
+          permission: { write: "deny", process: "deny" },
+          maxTurns: 2,
+          timeoutMs: 6 * 60_000,
+          ...(outputLimit ? { maxOutputTokens: outputLimit } : {}),
+          ...(model ? { model } : {}),
+        });
+      let child = await create();
+      let seen = { input: 0, output: 0 };
+      /** One run on the child; usage is cumulative per child, so only the growth counts. */
+      const turn = async (text: string): Promise<{ raw: RawOutput | null; cutOff: boolean }> => {
+        const cancel = () => this.deps.sessions.cancel(child.id);
+        signal.addEventListener("abort", cancel, { once: true });
+        let result: ChildRunResult;
+        try {
+          result = await this.deps.sessions.run(child.id, text, { signal });
+        } finally {
+          signal.removeEventListener("abort", cancel);
+        }
+        signal.throwIfAborted();
+        const out = result.usage?.output ?? 0;
+        const inp = result.usage?.input ?? 0;
+        const delta = out >= seen.output ? out - seen.output : out;
+        diag.usageOutput += delta;
+        diag.usageInput += inp >= seen.input ? inp - seen.input : inp;
+        seen = { input: inp, output: out };
+        if (result.status === "cancelled") throw new LumbreError("cancelled");
+        if (result.status !== "completed") {
+          const category = classifyFailure(result.error);
+          diag.reason = category;
+          if (category === "truncated") return { raw: null, cutOff: true };
+          throw new TurnFailure(category);
+        }
+        const nearLimit = delta >= 0.95 * (outputLimit ?? HOST_DEFAULT_OUTPUT);
+        let raw: RawOutput;
+        try {
+          raw = readOutput(result.text);
+        } catch (error) {
+          if (nearLimit || result.turnsExceeded) return { raw: null, cutOff: true };
+          throw error;
+        }
+        return { raw, cutOff: raw.truncated || !!result.turnsExceeded || (!raw.done && nearLimit) };
+      };
+      let first: { raw: RawOutput | null; cutOff: boolean };
       try {
-        result = await this.deps.sessions.run(child.id, prompt, { signal });
-      } finally {
-        signal.removeEventListener("abort", cancel);
+        first = await turn(prompt);
+      } catch (error) {
+        // An estimated output limit the provider rejects: retry once with the host's own limit.
+        const retry =
+          error instanceof TurnFailure &&
+          b.outputSource === "estimated" &&
+          (error.category === "output_limit" || error.category === "provider");
+        if (!retry) throw error;
+        diag.retriedWithoutLimit = true;
+        diag.reason = null;
+        outputLimit = undefined;
+        child = await create();
+        seen = { input: 0, output: 0 };
+        first = await turn(prompt);
       }
-      signal.throwIfAborted();
-      if (result.status !== "completed" && !result.turnsExceeded)
-        throw new LumbreError("agent_failed");
+      let acc: RawOutput | undefined;
+      let pending = false;
+      const absorb = (r: { raw: RawOutput | null; cutOff: boolean }) => {
+        if (r.raw) acc = mergeOutputs(acc, r.raw);
+        pending = r.cutOff;
+      };
+      absorb(first);
+      const received = () => acc?.files.map((f) => f.path) ?? [];
+      const continueCut = async (expected: string[]) => {
+        while (pending && diag.continuations < MAX_CONTINUATIONS) {
+          diag.continuations++;
+          this.stage(job, "continuing", { part: diag.continuations + 1 });
+          const got = received();
+          absorb(
+            await turn(
+              continuePrompt(
+                got,
+                acc?.cut ?? null,
+                expected.filter((p) => !got.includes(p)),
+              ),
+            ),
+          );
+        }
+      };
+      let expected: string[] = [];
+      const planned = (acc?.plan ?? []).filter((e) => !received().includes(e.path));
+      if (planFirst && planned.length) {
+        diag.planned = true;
+        pending = false;
+        expected = planned.map((e) => e.path);
+        const batches = planBatches(planned, outputLimit ?? HOST_DEFAULT_OUTPUT);
+        diag.batches = batches.length;
+        for (const [i, paths] of batches.entries()) {
+          this.stage(job, "writingBatch", { part: i + 1, total: batches.length });
+          const missing = paths.filter((p) => !received().includes(p));
+          if (!missing.length) continue;
+          absorb(await turn(batchPrompt(missing, i + 1, batches.length)));
+          await continueCut(missing);
+        }
+      } else await continueCut([]);
+      if (!acc) {
+        diag.reason = "truncated";
+        throw new LumbreError("output_truncated");
+      }
+      const missing = expected.filter((p) => !received().includes(p));
+      const cutPath = pending ? acc.cut : null;
+      const partial = pending || missing.length > 0;
       this.stage(job, "reading");
-      const out = parseOutput(result.text, { stack: s, current: files, owned, omitted });
+      const out = validateOutput(acc, { stack: s, current: files, owned, omitted });
       const changed = [...Object.keys(out.files), ...out.deletes];
+      if (partial && !Object.keys(out.files).length) {
+        diag.reason = "truncated";
+        throw new LumbreError("output_truncated");
+      }
+      if (partial) diag.reason = "truncated";
       for (const [i, path] of changed.entries())
         this.stage(
           job,
@@ -806,6 +977,12 @@ export class Service {
           (i + 1) / changed.length,
         );
       const hasChanges = changed.length > 0 || Object.keys(out.dependencies).length > 0;
+      const partialInfo = partial
+        ? {
+            received: Object.keys(out.files).length,
+            missing: [...new Set([...(cutPath ? [cutPath] : []), ...missing])].slice(0, 50),
+          }
+        : null;
       let proposalId: string | undefined;
       await this.lock(id, async () => {
         if (hasChanges) {
@@ -820,6 +997,7 @@ export class Service {
             dependencies: out.dependencies,
             ignored: out.ignored,
             fixAttempt: pass.fixAttempt,
+            ...(partialInfo ? { partial: partialInfo } : {}),
           };
           await this.store.writeJson(id, "proposal", p);
           proposalId = p.id;
@@ -831,11 +1009,34 @@ export class Service {
           ...(pass.fixAttempt ? { fixAttempt: pass.fixAttempt } : {}),
           ...(fallback ? { modelFallback: true } : {}),
         });
+        if (partialInfo)
+          await this.say(id, {
+            role: "notice",
+            text: "",
+            notice: "output_partial",
+            count: partialInfo.received,
+          });
       });
       this.stage(job, proposalId ? "reviewReady" : "answered");
-      return { proposalId: proposalId ?? null, ignored: out.ignored, omitted };
+      return {
+        proposalId: proposalId ?? null,
+        ignored: out.ignored,
+        omitted,
+        partial: partialInfo,
+      };
     } catch (error) {
+      if (error instanceof TurnFailure) {
+        const code = error.category === "context_length" ? "context_limit" : "agent_failed";
+        if (job.diagnostics) job.diagnostics.reason = error.category;
+        if (!pass.fixAttempt)
+          await this.say(id, { role: "notice", text: "", notice: "generation_failed", code }).catch(
+            () => {},
+          );
+        throw new LumbreError(code);
+      }
       const code = signal.aborted ? "cancelled" : errorCode(error);
+      if (job.diagnostics && !job.diagnostics.reason && code !== "cancelled")
+        job.diagnostics.reason = code;
       if (!pass.fixAttempt)
         await this.say(id, { role: "notice", text: "", notice: "generation_failed", code }).catch(
           () => {},

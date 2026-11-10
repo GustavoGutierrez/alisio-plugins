@@ -11,4 +11,5 @@ description: "Trigger: a Lumbre project fails to build or its dev server reports
 - If the error needs a package, request it in `dependencies` only when it is in the allowlist;
   otherwise rewrite the code so it does not need the package.
 - Never change configuration, `package.json` or lockfiles; they are managed by Lumbre.
-- In `message`, explain in one or two plain sentences what was wrong and what you changed.
+- Return only the files you change, as complete FILE blocks.
+- In the MESSAGE block, explain in one or two plain sentences what was wrong and what you changed.

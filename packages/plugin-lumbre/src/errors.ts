@@ -15,6 +15,7 @@ export const ERROR_CODES = [
   "context_limit",
   "agent_failed",
   "invalid_output",
+  "output_truncated",
   "install_failed",
   "build_failed",
   "server_failed",

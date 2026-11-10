@@ -72,6 +72,27 @@ and per workspace, so a damaged project never affects the others. Dependencies a
 inside that folder (a framework project typically uses 100 to 400 MB). **Export** writes only into
 a new or empty folder of your workspace.
 
+## Troubleshooting
+
+When a request fails, select **Show details** in the error card. It shows, without any of your
+content: the model, its context window and the output budget Lumbre used (each one "reported by the
+provider" or "estimated"), the tokens used, whether the files were written in parts, how many
+continuations were needed and the reason.
+
+- **"The model stopped before finishing."** Lumbre writes new projects in parts (a plan first, then
+  batches of files) and asks the model to continue up to three times when an answer is cut by its
+  output limit. If it still stops, the files that arrived are kept for review and the missing ones
+  are listed. Ask it to continue, ask for a smaller change, or pick a model with a larger output
+  limit.
+- **Limits "estimated".** Some providers do not report a model's context window or output limit.
+  Lumbre then assumes 128,000 tokens of context and asks for 32,768 output tokens; if the provider
+  rejects that, it retries once with Alisio's own limit.
+- **"The model did not finish (…)".** The reason in brackets comes from the provider: a rate limit,
+  a timeout, rejected credentials or a request too large for the model. Try again later or choose
+  another model.
+- **"The model's answer was malformed."** The answer did not follow Lumbre's format. Try again; if
+  it keeps happening, choose another model.
+
 ## Why npm is a dependency
 
 Alisio's desktop app runs plugins inside its own runtime, where neither `node` nor `npm` is

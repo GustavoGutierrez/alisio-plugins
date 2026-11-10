@@ -120,3 +120,22 @@ Preset-owned files (`package.json`, lockfiles, `vite`/`astro`/`next`/`postcss`/`
 Publishing/hosting, domains, managed auth or databases, GitHub import, binary uploads, visual
 element selection, collaboration, a standalone backend stack, and an OS sandbox: generated apps run
 as the user, after the host's process approval.
+
+## 8. 0.1.1: long answers (owner bug, 2026-11-10)
+
+Symptom: with `opencode-go/deepseek-v4.1-flash`, whose catalog reports no limits, every landing
+request failed with `invalid_output`. 0.1.0 assumed a 32,000-token context and a 16,000-token
+output, and needed the whole project as one escaped JSON object, so one cut lost everything.
+
+| Id | Criterion | Test |
+| --- | --- | --- |
+| LMB-AC-18 | Answers are delimited blocks; prose and fences are tolerated; the 0.1.0 JSON form still works; a cut answer keeps every complete block | `test/output.test.ts` |
+| LMB-AC-19 | Unknown limits: 128,000 context and 32,768 output; reported limits are used as they are (never above the catalog value) | `test/generate.test.ts`, `test/generation.test.ts` |
+| LMB-AC-20 | New projects (or large requests, or small budgets) are planned, then written in batches sized to the output budget, on one child session | `test/generation.test.ts` |
+| LMB-AC-21 | A cut answer is continued up to 3 times; when it still stops, the complete files become a partial proposal with a notice; with no complete file the job fails with `output_truncated` | `test/generation.test.ts` |
+| LMB-AC-22 | `agent_failed` carries a failure category (never the provider's text); an estimated output limit the provider rejects is retried once without it | `test/generation.test.ts` |
+| LMB-AC-23 | Every generation job records model, context and output budget (reported or estimated), usage, batches, continuations and reason; the error card shows them under Details (en/es) | `test/generation.test.ts`, `test/frame-details.test.ts` |
+
+A child's `maxOutputTokens` is sent to the provider as an explicit limit (the host does not clamp it
+to `limits.maxOutputTokens` or to the catalog maximum), so Lumbre never asks for more than the
+catalog reports.

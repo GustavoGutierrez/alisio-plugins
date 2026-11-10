@@ -2,6 +2,7 @@
 // output is untrusted: every path is validated, Lumbre-owned files are dropped (never applied),
 // packages must match the stack allowlist exactly, and anything dropped is reported to the user.
 import { LumbreError } from "./errors.js";
+import { FORMAT_HELP, type RawOutput, readOutput } from "./output.js";
 import { allowedDependency, type Stack } from "./presets.js";
 import {
   type Files,
@@ -22,6 +23,8 @@ export interface ChatMessage {
   modelFallback?: boolean;
   /** Error code of a failed pass, localized by the frame. */
   code?: string;
+  /** A number for the notice (files kept after a cut answer). */
+  count?: number;
   /** Notice key for the frame (e.g. `build_failed`), localized there. */
   notice?: string;
 }
@@ -30,26 +33,43 @@ export interface Budget {
   contextTokens: number;
   outputTokens: number;
   inputChars: number;
+  /** Whether the provider's catalog reported each limit, or Lumbre estimated it. */
+  contextSource: "provider" | "estimated";
+  outputSource: "provider" | "estimated";
 }
 
-const DEFAULT_CONTEXT = 32_000;
+/** Assumed context when the catalog says nothing (modern models have at least this). */
+export const DEFAULT_CONTEXT = 128_000;
+/** Requested output when the catalog says nothing; truncation is then handled by continuations. */
+export const DEFAULT_OUTPUT = 32_768;
 const RESERVED_TOKENS = 3_000; // instructions, wrapper and the model's own overhead
 const CHARS_PER_TOKEN = 3; // conservative for code
+const MAX_INPUT_CHARS = 1_500_000;
+const known = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value > 0;
 
-/** Budgets from the model's catalog entry; unknown models get a conservative default. */
+/**
+ * Budgets from the model's catalog entry. A reported `maxOutputTokens` is used as it is (never
+ * above it: a child's value is sent to the provider as an explicit limit), only reduced to leave
+ * half of the context for the prompt; unknown limits get generous defaults.
+ */
 export function budget(
   model: { contextWindow?: number; maxOutputTokens?: number } | undefined,
 ): Budget {
-  const ctx =
-    model?.contextWindow && Number.isFinite(model.contextWindow) && model.contextWindow > 0
-      ? Math.floor(model.contextWindow)
-      : DEFAULT_CONTEXT;
-  const wanted =
-    model?.maxOutputTokens && model.maxOutputTokens > 0 ? model.maxOutputTokens : 16_384;
-  const outputTokens = Math.max(2_048, Math.min(wanted, 32_000, Math.floor(ctx / 2)));
+  const contextKnown = known(model?.contextWindow);
+  const outputKnown = known(model?.maxOutputTokens);
+  const ctx = contextKnown ? Math.floor(model?.contextWindow as number) : DEFAULT_CONTEXT;
+  const wanted = outputKnown ? Math.floor(model?.maxOutputTokens as number) : DEFAULT_OUTPUT;
+  const outputTokens = Math.max(1_024, Math.min(wanted, Math.floor(ctx / 2)));
   const inputTokens = ctx - outputTokens - RESERVED_TOKENS;
   if (inputTokens < 3_000) throw new LumbreError("context_limit");
-  return { contextTokens: ctx, outputTokens, inputChars: inputTokens * CHARS_PER_TOKEN };
+  return {
+    contextTokens: ctx,
+    outputTokens,
+    inputChars: Math.min(MAX_INPUT_CHARS, inputTokens * CHARS_PER_TOKEN),
+    contextSource: contextKnown ? "provider" : "estimated",
+    outputSource: outputKnown ? "provider" : "estimated",
+  };
 }
 
 const ENTRY = [
@@ -94,6 +114,8 @@ export interface PromptInput {
   locale: "en" | "es";
   /** Build or dev-server errors for an automatic fix-up pass. */
   errorLog?: string;
+  /** `plan`: list the files first (no file contents); the files then come in batches. */
+  mode?: "plan" | "write";
 }
 
 export function buildPrompt(input: PromptInput): { prompt: string; omitted: string[] } {
@@ -104,8 +126,10 @@ export function buildPrompt(input: PromptInput): { prompt: string; omitted: stri
     fixing
       ? "The project fails to build or run. Fix the errors below with the smallest change. Do not redesign anything."
       : "Update the web project to fulfil the user's request, or answer in `message` without changing files when they only ask a question.",
-    'Answer with ONE JSON object: {"message": string, "summary": string, "files": [{"path": string, "content": string}], "delete": [string], "dependencies": [{"name": string, "version": string}]}.',
-    `Write \`message\` in ${language} unless the user writes in another language. Use short Markdown.`,
+    input.mode === "plan"
+      ? "PLAN FIRST. Do not write any file yet. Answer with the META and MESSAGE blocks and a PLAN block listing every file you will create or change, one per line: `path | small|medium|large | purpose`. Lumbre will then ask for the files in parts. If the person only asks a question, answer in MESSAGE with no PLAN."
+      : FORMAT_HELP,
+    `Write the MESSAGE in ${language} unless the user writes in another language. Use short Markdown.`,
     "",
     "# Project",
     stackRules(input.stack),
@@ -138,7 +162,7 @@ export function buildPrompt(input: PromptInput): { prompt: string; omitted: stri
       a.localeCompare(b),
   );
   for (const path of paths) {
-    const block = `<<<FILE ${path}>>>\n${input.files[path]}\n<<<END>>>`;
+    const block = `<<<PROJECT-FILE path="${path}">>>\n${input.files[path]}\n<<<PROJECT-END>>>`;
     if (block.length > room) {
       omitted.push(path);
       continue;
@@ -173,29 +197,20 @@ export interface ParsedOutput {
   ignored: Ignored[];
 }
 
-function extractJson(text: string): unknown {
-  const trimmed = text.trim();
-  const attempts = [
-    trimmed,
-    trimmed.replace(/^[\s\S]*?```(?:json)?\s*/i, "").replace(/\s*```[\s\S]*$/, ""),
-    trimmed.slice(trimmed.indexOf("{"), trimmed.lastIndexOf("}") + 1),
-  ];
-  for (const attempt of attempts) {
-    try {
-      const value = JSON.parse(attempt);
-      if (value && typeof value === "object" && !Array.isArray(value)) return value;
-    } catch {
-      // try the next shape
-    }
-  }
-  throw new LumbreError("invalid_output");
+export interface OutputContext {
+  stack: Stack;
+  current: Files;
+  owned: string[];
+  omitted?: string[];
 }
 
-export function parseOutput(
-  text: string,
-  ctx: { stack: Stack; current: Files; owned: string[]; omitted?: string[] },
-): ParsedOutput {
-  const raw = extractJson(text) as Record<string, unknown>;
+/** Parses and validates one complete answer (blocks or legacy JSON). */
+export function parseOutput(text: string, ctx: OutputContext): ParsedOutput {
+  return validateOutput(readOutput(text), ctx);
+}
+
+/** Validates what arrived: paths, managed files, allowlisted packages, limits. */
+export function validateOutput(raw: RawOutput, ctx: OutputContext): ParsedOutput {
   const managed = (p: string) =>
     ctx.owned.some((o) => o.toLowerCase() === p.toLowerCase()) ||
     isManagedPath(p, ctx.stack.generated);
@@ -233,7 +248,7 @@ export function parseOutput(
     files[path] = content;
   }
   const deletes: string[] = [];
-  for (const path of listOf(raw.delete)) {
+  for (const path of listOf(raw.deletes)) {
     if (typeof path !== "string") throw new LumbreError("invalid_output");
     try {
       filePath(path);
@@ -243,30 +258,55 @@ export function parseOutput(
     }
     if (managed(path)) ignored.push({ path, reason: "managed" });
     else if (!Object.hasOwn(ctx.current, path)) ignored.push({ path, reason: "not_found" });
-    else if (Object.hasOwn(files, path)) throw new LumbreError("invalid_output");
+    // A file the answer also writes stays (with multi-part answers, the write wins).
+    else if (raw.files.some((f) => f.path === path)) continue;
     else if (!deletes.includes(path)) deletes.push(path);
   }
   const dependencies: Record<string, string> = {};
-  const deps = Array.isArray(raw.dependencies)
-    ? raw.dependencies
-    : raw.dependencies && typeof raw.dependencies === "object"
-      ? Object.entries(raw.dependencies).map(([name, version]) => ({ name, version }))
-      : listOf(raw.dependencies);
-  for (const d of deps) {
+  for (const d of raw.dependencies) {
     const name = (d as { name?: unknown })?.name;
     const version = (d as { version?: unknown })?.version;
     if (allowedDependency(ctx.stack, name, version))
       dependencies[name as string] = version as string;
     else ignored.push({ name: String(name ?? "").slice(0, 100), reason: "not_allowed" });
   }
-  const message = typeof raw.message === "string" ? raw.message.slice(0, 20_000) : "";
-  const summary =
-    (typeof raw.summary === "string" && raw.summary.trim()) ||
-    message.split("\n")[0]?.slice(0, 200) ||
-    "Changes";
+  const message = raw.message.slice(0, 20_000);
+  const summary = raw.summary.trim() || message.split("\n")[0]?.slice(0, 200) || "Changes";
   const result: Files = { ...ctx.current, ...files };
   for (const d of deletes) delete result[d];
   if (sameCaseConflict(Object.keys(result))) throw new LumbreError("invalid_output");
   validateFileSet(result);
   return { message, summary: summary.slice(0, 300), files, deletes, dependencies, ignored };
+}
+
+/** Asks for one batch of planned files. */
+export function batchPrompt(paths: string[], part: number, total: number): string {
+  return [
+    `Write part ${part} of ${total} now: the complete content of these files, and only these:`,
+    ...paths.map((p) => `- ${p}`),
+    "Use FILE blocks (META only if you have deletions or packages to add), then <<<LUMBRE-DONE>>>.",
+    FORMAT_HELP,
+  ].join("\n");
+}
+
+/** Asks to continue an answer the output limit cut. */
+export function continuePrompt(
+  received: string[],
+  cut: string | null,
+  remaining: string[],
+): string {
+  return [
+    "Your previous answer was cut off by the output limit.",
+    received.length
+      ? `Already received complete (do not repeat them): ${received.join(", ")}.`
+      : "No complete file arrived yet.",
+    cut
+      ? `Rewrite ${cut} from its first line, then continue with the remaining files.`
+      : "Continue with the remaining files.",
+    remaining.length ? `Still missing: ${remaining.join(", ")}.` : "",
+    "Keep the same format and end with <<<LUMBRE-DONE>>> when everything is written.",
+    FORMAT_HELP,
+  ]
+    .filter(Boolean)
+    .join("\n");
 }

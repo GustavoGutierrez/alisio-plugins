@@ -73,8 +73,10 @@ describe("projects and generation", () => {
       permission: { write: "deny", process: "deny" },
       instructions: "instructions:build",
     });
-    // Token budget follows the model's context window (64k here).
-    expect(spec?.maxTokens).toBe(64_000);
+    // Output budget follows the model's context window (64k here, half kept for the prompt);
+    // no total-token cap, so continuations and batches fit in the host's own budget.
+    expect(spec?.maxOutputTokens).toBe(32_000);
+    expect(spec?.maxTokens).toBeUndefined();
     expect(f.prompts[0]).toContain("A bakery site");
     expect(f.prompts[0]).toMatch(/Spanish/);
 

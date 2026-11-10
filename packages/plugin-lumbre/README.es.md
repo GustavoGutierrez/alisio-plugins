@@ -77,6 +77,27 @@ carpeta por proyecto y por espacio de trabajo, así que un proyecto dañado nunc
 Las dependencias se instalan dentro de esa carpeta (un proyecto con framework suele ocupar entre
 100 y 400 MB). **Exportar** solo escribe en una carpeta nueva o vacía de tu espacio de trabajo.
 
+## Solución de problemas
+
+Cuando una solicitud falla, selecciona **Ver detalles** en la tarjeta de error. Muestra, sin nada
+de tu contenido: el modelo, su ventana de contexto y el presupuesto de salida que usó Lumbre (cada
+uno "informado por el proveedor" o "estimado"), los tokens usados, si los archivos se escribieron en
+partes, cuántas continuaciones hicieron falta y el motivo.
+
+- **"El modelo se detuvo antes de terminar."** Lumbre escribe los proyectos nuevos por partes
+  (primero un plan, luego grupos de archivos) y le pide al modelo que continúe hasta tres veces
+  cuando su límite de salida corta una respuesta. Si aun así se detiene, los archivos que llegaron
+  se conservan para revisarlos y se listan los que faltan. Pídele que continúe, pide un cambio más
+  pequeño o elige un modelo con un límite de salida mayor.
+- **Límites "estimados".** Algunos proveedores no informan la ventana de contexto ni el límite de
+  salida de un modelo. Lumbre asume entonces 128 000 tokens de contexto y pide 32 768 tokens de
+  salida; si el proveedor lo rechaza, reintenta una vez con el límite propio de Alisio.
+- **"El modelo no terminó (…)".** El motivo entre paréntesis viene del proveedor: un límite de
+  solicitudes, un tiempo de espera agotado, credenciales rechazadas o una solicitud demasiado
+  grande para el modelo. Inténtalo más tarde o elige otro modelo.
+- **"La respuesta del modelo llegó con errores de formato."** La respuesta no siguió el formato de
+  Lumbre. Inténtalo de nuevo; si se repite, elige otro modelo.
+
 ## Por qué npm es una dependencia
 
 La aplicación de escritorio de Alisio ejecuta los plugins dentro de su propio entorno, donde no se

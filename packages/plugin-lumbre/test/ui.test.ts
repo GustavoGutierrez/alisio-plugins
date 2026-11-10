@@ -253,5 +253,25 @@ describe("frame strings (LMB-AC-14)", () => {
       "Lumbre puede cometer errores; revisa el código antes de usarlo.",
     );
     expect(messages.en.awaitingApproval).toBe("Waiting for your approval in Alisio…");
+    expect(messages.en.stage.continuing({ part: 2 })).toBe("Writing more files… (part 2)");
+    expect(messages.es.stage.continuing({ part: 2 })).toBe("Escribiendo más archivos… (parte 2)");
+    expect(messages.en.notice.output_partial(3)).toBe(
+      "The model stopped before finishing. I kept the 3 files that arrived; ask it to continue or pick a model with a larger output limit.",
+    );
+    expect(messages.en.notice.output_partial(1)).toContain("I kept the file that arrived");
+    for (const lang of ["en", "es"] as const)
+      for (const reason of [
+        "truncated",
+        "timeout",
+        "rate_limit",
+        "auth",
+        "context_length",
+        "output_limit",
+        "provider",
+        "unknown",
+        "invalid_output",
+        "output_truncated",
+      ])
+        expect(messages[lang].reasons[reason], `${lang}:${reason}`).toBeTruthy();
   });
 });

@@ -65,10 +65,15 @@ const en = {
     fix_exhausted:
       "The build still fails after two automatic fixes. Open the build details, describe the problem in the chat, or restore an earlier version in History.",
     generation_failed: "Lumbre could not finish this request.",
+    output_partial: (n) =>
+      `The model stopped before finishing. I kept ${n === 1 ? "the file" : `the ${n} files`} that arrived; ask it to continue or pick a model with a larger output limit.`,
   },
   // Jobs and stages
   stage: {
     preparing: "Getting things ready…",
+    planning: "Planning the files…",
+    writingBatch: (a) => `Writing the files… (part ${a.part} of ${a.total})`,
+    continuing: (a) => `Writing more files… (part ${a.part})`,
     thinking: "Thinking about the design…",
     thinkingChanges: "Thinking about the changes…",
     fixing: (a) => `Looking for the cause of the error (fix ${a.attempt} of ${a.max})…`,
@@ -92,6 +97,33 @@ const en = {
   cancelled: "Cancelled. Nothing was changed.",
   awaitingApproval: "Waiting for your approval in Alisio…",
   showDetails: "Show details",
+  missing: "Missing:",
+  details: {
+    model: "Model",
+    context: "Context window",
+    output: "Output budget",
+    provider: "reported by the provider",
+    estimated: "estimated",
+    usage: "Tokens used (input / output)",
+    batches: "Written in parts",
+    continuations: "Continuations",
+    retried: "Retried without an output limit",
+    reason: "Reason",
+    yes: "yes",
+    no: "no",
+  },
+  reasons: {
+    truncated: "cut off by the output limit",
+    timeout: "the model took too long",
+    rate_limit: "the provider's rate limit was reached",
+    auth: "the provider refused the credentials",
+    context_length: "the request did not fit in the model's context",
+    output_limit: "the provider rejected the output limit",
+    provider: "the provider returned an error",
+    unknown: "unknown",
+    invalid_output: "malformed answer",
+    output_truncated: "cut off by the output limit",
+  },
   hideDetails: "Hide details",
   // Work pane
   preview: "Preview",
@@ -194,7 +226,9 @@ const en = {
       "The selected model's context is too small for this project. Choose a larger model.",
     agent_failed: "The model did not finish. Try again, or choose another model.",
     invalid_output:
-      "The model's answer was incomplete or malformed. Try a smaller request or a model with a larger output limit.",
+      "The model's answer was malformed, so nothing was applied. Try again, or choose another model.",
+    output_truncated:
+      "The model stopped before finishing and no complete file arrived. Ask for a smaller change, or pick a model with a larger output limit.",
     install_failed:
       "Installing dependencies failed. Check your internet connection, then try Reinstall dependencies.",
     build_failed:
@@ -286,9 +320,14 @@ const es = {
     fix_exhausted:
       "La compilación sigue fallando después de dos correcciones automáticas. Abre los detalles, describe el problema en el chat o restaura una versión anterior en Historial.",
     generation_failed: "Lumbre no pudo terminar esta solicitud.",
+    output_partial: (n) =>
+      `El modelo se detuvo antes de terminar. Conservé ${n === 1 ? "el archivo que llegó" : `los ${n} archivos que llegaron`}; pídele que continúe o elige un modelo con un límite de salida mayor.`,
   },
   stage: {
     preparing: "Preparando todo…",
+    planning: "Planificando los archivos…",
+    writingBatch: (a) => `Escribiendo los archivos… (parte ${a.part} de ${a.total})`,
+    continuing: (a) => `Escribiendo más archivos… (parte ${a.part})`,
     thinking: "Pensando en el diseño…",
     thinkingChanges: "Pensando en los cambios…",
     fixing: (a) => `Buscando la causa del error (corrección ${a.attempt} de ${a.max})…`,
@@ -312,6 +351,33 @@ const es = {
   cancelled: "Cancelado. No se cambió nada.",
   awaitingApproval: "Esperando tu aprobación en Alisio…",
   showDetails: "Ver detalles",
+  missing: "Faltan:",
+  details: {
+    model: "Modelo",
+    context: "Ventana de contexto",
+    output: "Presupuesto de salida",
+    provider: "informado por el proveedor",
+    estimated: "estimado",
+    usage: "Tokens usados (entrada / salida)",
+    batches: "Escrito en partes",
+    continuations: "Continuaciones",
+    retried: "Reintentado sin límite de salida",
+    reason: "Motivo",
+    yes: "sí",
+    no: "no",
+  },
+  reasons: {
+    truncated: "cortado por el límite de salida",
+    timeout: "el modelo tardó demasiado",
+    rate_limit: "se alcanzó el límite de solicitudes del proveedor",
+    auth: "el proveedor rechazó las credenciales",
+    context_length: "la solicitud no cupo en el contexto del modelo",
+    output_limit: "el proveedor rechazó el límite de salida",
+    provider: "el proveedor devolvió un error",
+    unknown: "desconocido",
+    invalid_output: "respuesta con errores de formato",
+    output_truncated: "cortado por el límite de salida",
+  },
   hideDetails: "Ocultar detalles",
   preview: "Vista previa",
   changes: "Cambios",
@@ -416,7 +482,9 @@ const es = {
       "El contexto del modelo elegido es demasiado pequeño para este proyecto. Elige un modelo más grande.",
     agent_failed: "El modelo no terminó. Inténtalo de nuevo o elige otro modelo.",
     invalid_output:
-      "La respuesta del modelo llegó incompleta o con errores. Pide algo más pequeño o usa un modelo con más capacidad de salida.",
+      "La respuesta del modelo llegó con errores de formato, así que no se aplicó nada. Inténtalo de nuevo o elige otro modelo.",
+    output_truncated:
+      "El modelo se detuvo antes de terminar y no llegó ningún archivo completo. Pide un cambio más pequeño o elige un modelo con un límite de salida mayor.",
     install_failed:
       "La instalación de dependencias falló. Revisa tu conexión a internet y luego usa Reinstalar dependencias.",
     build_failed:

@@ -12,16 +12,41 @@ const code = (fn: () => unknown) => {
   return "ok";
 };
 
-describe("token budget (LMB-AC-07)", () => {
-  it("derives output and input budgets from the model's context window", () => {
-    const small = budget({ contextWindow: 16_000, maxOutputTokens: 8_000 });
-    const large = budget({ contextWindow: 200_000, maxOutputTokens: 64_000 });
-    expect(small.outputTokens).toBeLessThanOrEqual(8_000);
-    expect(small.inputChars).toBeLessThan(large.inputChars);
-    expect(large.outputTokens).toBeLessThanOrEqual(32_000);
-    expect(large.contextTokens).toBe(200_000);
-    // Unknown models get a conservative default.
-    expect(budget(undefined).contextTokens).toBe(32_000);
+describe("token budget (LMB-AC-07, 0.1.1)", () => {
+  it("uses the limits the provider reports, without an artificial cap", () => {
+    const big = budget({ contextWindow: 1_000_000, maxOutputTokens: 128_000 });
+    expect(big).toMatchObject({
+      contextTokens: 1_000_000,
+      outputTokens: 128_000,
+      contextSource: "provider",
+      outputSource: "provider",
+    });
+    const mid = budget({ contextWindow: 200_000, maxOutputTokens: 64_000 });
+    expect(mid.outputTokens).toBe(64_000);
+    // Never more than the catalog value (a child's limit is sent to the provider as is).
+    expect(budget({ contextWindow: 1_000_000, maxOutputTokens: 8_192 }).outputTokens).toBe(8_192);
+    // Half of the context stays for the prompt.
+    const small = budget({ contextWindow: 16_000, maxOutputTokens: 16_000 });
+    expect(small.outputTokens).toBe(8_000);
+    expect(small.inputChars).toBeLessThan(big.inputChars);
+  });
+
+  it("assumes a modern context and a generous output when the catalog reports nothing", () => {
+    // The owner's case: OpenCode Go reports no limits for deepseek-v4.1-flash.
+    const unknown = budget({});
+    expect(unknown).toMatchObject({
+      contextTokens: 128_000,
+      outputTokens: 32_768,
+      contextSource: "estimated",
+      outputSource: "estimated",
+    });
+    expect(unknown.inputChars).toBeGreaterThan(200_000);
+    expect(budget(undefined).contextTokens).toBe(128_000);
+    // Context reported, output not: a generous output that still leaves room for input.
+    expect(budget({ contextWindow: 1_000_000 })).toMatchObject({
+      outputTokens: 32_768,
+      outputSource: "estimated",
+    });
   });
 
   it("refuses a context too small to hold a useful request", () => {
@@ -50,6 +75,8 @@ describe("prompt", () => {
     expect(prompt).toContain("vite.config.js");
     expect(prompt).toContain('"lucide-react":"1.61.0"');
     expect(prompt).toContain("h1{color:red}");
+    expect(prompt).toContain('<<<LUMBRE-FILE path="relative/path.ext">>>');
+    expect(prompt).not.toMatch(/Answer with ONE JSON object/);
     expect(prompt).toMatch(/Spanish/);
     expect(omitted).toEqual([]);
   });

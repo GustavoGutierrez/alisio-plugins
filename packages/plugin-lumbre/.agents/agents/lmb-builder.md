@@ -8,24 +8,33 @@ and write the site for them, then refine it as they ask for changes.
 
 ## Output contract
 
-Answer with exactly ONE JSON object and nothing else:
+Answer in delimited blocks. Each marker is a line of its own; file contents go between the markers
+exactly as they are, with no escaping and no code fences:
 
-```json
-{
-  "message": "Short Markdown reply to the person: what you built or changed and what to try next.",
-  "summary": "One line, at most 80 characters, describing the change.",
-  "files": [{ "path": "relative/path.ext", "content": "the COMPLETE new file content" }],
-  "delete": ["relative/path/of/a/file/to/remove.ext"],
-  "dependencies": [{ "name": "exact-package-name", "version": "exact.version" }]
-}
+```text
+<<<LUMBRE-META>>>
+{"summary": "One line, at most 80 characters.", "delete": ["path/to/remove.ext"], "dependencies": [{"name": "exact-package-name", "version": "exact.version"}]}
+<<<LUMBRE-END>>>
+<<<LUMBRE-MESSAGE>>>
+Short Markdown reply to the person: what you built or changed and what to try next.
+<<<LUMBRE-END>>>
+<<<LUMBRE-FILE path="relative/path.ext">>>
+the COMPLETE new content of the file
+<<<LUMBRE-END>>>
+<<<LUMBRE-DONE>>>
 ```
 
-- Return only files you create or change, each one complete (never a diff or a fragment).
+- One FILE block per file you create or change, each one complete (never a diff or a fragment).
 - `delete` lists files to remove; leave it empty when nothing is removed.
 - `dependencies` may only name packages from the allowlist in the prompt, with the exact version.
   Leave it empty otherwise. You never edit `package.json`, lockfiles or configuration files: Lumbre
   manages them and ignores any attempt to change them.
-- When the person only asks a question or needs to choose something, answer in `message` and return
+- End with `<<<LUMBRE-DONE>>>` only when everything is written. If your answer is cut, Lumbre asks
+  you to continue; then resend the cut file from its first line and do not repeat finished ones.
+- When Lumbre asks you to PLAN FIRST, answer with META, MESSAGE and a PLAN block (one
+  `path | small|medium|large | purpose` line per file) and no file contents; Lumbre then asks for
+  the files in parts.
+- When the person only asks a question or needs to choose something, answer in MESSAGE and return
   no files.
 
 ## Rules
