@@ -12,7 +12,8 @@ rules always win.
 
 ## Requirements
 
-- Node.js 22.16 or newer and `@alisio/sdk` 0.3 to 0.6. No credentials are needed.
+- Node.js 22.16 or newer and Alisio with `@alisio/sdk` 0.9 to 0.11 (peer range `>=0.9.0 <0.12.0`).
+  The Thesis Studio app needs Alisio 0.11.6 or newer. No credentials are needed.
 - PDF engine: run `/thesis:setup` once to install the pinned Typst into the cache (SHA-256
   verified). Without Typst, `/thesis:build` falls back to headless Chrome or Chromium, and
   `/thesis:build --html` needs neither.
@@ -46,6 +47,42 @@ If you pass your language, use `--lang` (`/thesis:init --lang es-CO`); the thesi
 use that folder. In chat, the `thesis-coordinator` agent answers in prose in your language and
 records interview data you state in conversation through `thesis_answer`, which asks for your
 confirmation before writing.
+
+## Thesis Studio app
+
+On Alisio **0.11.6 or newer**, the plugin adds a full-page app, **Thesis Studio** (in Spanish
+"Estudio de tesis"), to Alisio's Apps list. It is a guided surface over the same coordinator as the
+commands: every command, tool, agent and the chat keep working exactly as before. On older hosts
+nothing changes and `/thesis:status` says which Alisio version the app needs.
+
+- **Home** always shows where you are (a seven-step progress bar) and one **Next step** button with a
+  one-sentence reason.
+- **Interview**, **Plans** (research plan and chapter plan with Gates A, B and OUTLINE),
+  **Chapters** (research, approve, write, request changes, add figures), **Sources** (the evidence
+  library, rejected records and the search log), **Review** (fix or dismiss findings), **Build &
+  submit** (checks, PDF build, PDF preview and download, Gate C and the final document) and
+  **Settings** (model, rules and styles, ethics requirements, file editors, Typst setup).
+- The app follows Alisio's language (English or Spanish, switched live) and its light or dark theme.
+  The thesis text stays in the thesis language.
+- Long work (drafting, research, review, builds) runs in the background with a progress bar and a
+  **Cancel** button. While it runs, a chat command that changes the thesis answers
+  `Blocked: Thesis Studio is running ...`, and the app waits while a chat command runs: only one
+  surface changes the thesis at a time.
+- Decisions are applied only to the state you are looking at: if the chat changed the thesis in the
+  meantime, the app refreshes and asks you to check again.
+- **Effects and approval prompts.** Reading is always allowed. Actions that write files or start
+  assistants are `write`; anything that runs a program (Typst builds, setup, engine checks, the final
+  PDF/A) is `process`. Alisio asks for your approval in the chat when the session does not already
+  allow that effect; a denial names the missing permission. Approving a chapter is a `write`; the
+  partial PDF build that follows is a separate `process` action with its own prompt.
+- **Model.** Settings lets you choose one model for every assistant of this thesis (stored as
+  `settings.model` in the state, also used by chat commands). If that model disappears, the
+  assistants use Alisio's active model and the result says so; the choice is kept.
+- **Network and privacy.** The page itself never touches the network. Research searches public
+  scholarly databases (OpenAlex, Crossref, arXiv) with your topic, exactly like the commands, and the
+  thesis text goes to the chosen model. Installing Typst downloads it from GitHub.
+- Every generated text has **Copy text** and **Copy formatted** controls. Thesis Studio can make
+  mistakes: check every source and claim before you submit.
 
 ## Architecture
 
@@ -238,6 +275,6 @@ interview answers. Everything else is written by the coordinator code.
 ## Licensing
 
 MIT. Vendored Typst packages, browser libraries (Paged.js, KaTeX, Mermaid) and their licenses are
-listed in `THIRD_PARTY_NOTICES.md`. The `apa.csl` and `ieee.csl` styles come from the Citation Style
+listed in `THIRD_PARTY_NOTICES.md`, as is PDF.js, bundled into the Thesis Studio page. The `apa.csl` and `ieee.csl` styles come from the Citation Style
 Language repository under CC BY-SA 3.0; `apa.csl` is a documented modified derivative (a date-macro fix)
 and keeps the same license. Policy-pack rules cite their sources.

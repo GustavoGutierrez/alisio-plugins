@@ -75,6 +75,16 @@ the HTML output formats citations with a small built-in formatter.
 Each style keeps its `<rights>` notice. The license text is in `styles/LICENSE-CSL`; the
 golden fixtures under `styles/fixtures/` are renderings of these styles and share their license.
 
+## Bundled into the Thesis Studio page (`dist/embedded.html`)
+
+| Package | Version | License |
+| --- | --- | --- |
+| PDF.js (`pdfjs-dist`) | 6.5.438 | Apache-2.0 |
+
+PDF.js is bundled at build time (esbuild) into the single self-contained app page to preview built
+PDFs. It runs without `eval` or WebAssembly and never fetches anything. Its license text ships in the
+`pdfjs-dist` npm package (https://github.com/mozilla/pdf.js).
+
 ## Typst CLI (not bundled)
 
 The Typst command-line compiler (Apache-2.0, https://github.com/typst/typst) is not part of this

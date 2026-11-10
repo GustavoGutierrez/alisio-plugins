@@ -1,7 +1,7 @@
 # Spec: `@alisio/plugin-thesis` app v1 (Thesis Studio web UI)
 
-Status: **Draft for owner review (2026-11-10).** Not implemented. Spec first, then implementation
-(owner decision O1).
+Status: **Implemented (2026-11-10)** on a feature branch, pending owner review and release. Owner
+answered Q1 to Q4 on 2026-11-10 (decisions O8 to O11 below); see §13 for implementation notes.
 Audience: a coding agent adding a plugin app to `packages/plugin-thesis` with no prior context.
 Parent spec: `specs/alisio-plugin-thesis-v1.md` (lifecycle, gates, checks, security). This file only
 adds the app; every rule of the parent spec still applies.
@@ -86,6 +86,10 @@ model picker needs nothing newer. The peer range stays `>=0.9.0 <0.12.0`; the de
 | O5 | Thesis's own identity: gradient `#0b3fae → #3fa9ff`, white, under-band `#cfe6ff`, gold accent `#ffd166` (from `icon.svg`) |
 | O6 | UI follows Alisio's locale (`es*` → Spanish, else English); no own language selector |
 | O7 | App feature-detected (`api.apps?`); peer range compatible (`>=0.9.0 <0.12.0`); devDependency `0.11.7`; README states the real minimum host (0.11.6) |
+| O8 (Q1) | App label `{ en: "Thesis Studio", es: "Estudio de tesis" }` |
+| O9 (Q2) | One model per project (`state.settings.model`) for every role in v1 |
+| O10 (Q3) | `thesis.yaml` is edited in a validated text editor (YAML parsed before writing, G0 shown after) |
+| O11 (Q4) | Concurrent chat/app writes: block the second writer with a clear message; no queue (D4) |
 
 ---
 
@@ -364,7 +368,7 @@ Not tested: PDF.js internals, CSS details, the host approval UI (checked visuall
 
 ---
 
-## 12. Open questions for the owner
+## 12. Owner questions (answered 2026-11-10, see O8 to O11)
 
 | ID | Question | Recommended |
 | --- | --- | --- |
@@ -372,3 +376,19 @@ Not tested: PDF.js internals, CSS details, the host approval UI (checked visuall
 | Q2 | Model choice: one model for every role, or per role (e.g. a stronger writer)? | **One model per project in v1**; per-role as an "Advanced" option later, the state key can grow to `settings.models` |
 | Q3 | Should `thesis.yaml` get a guided form instead of a text editor? | **Text editor with validation in v1** plus the interview for initial values; a form duplicates the interview and its validation |
 | Q4 | Concurrency conflict: block the second writer (D4) or queue it? | **Block with a clear message**; queuing hides which surface is changing the thesis |
+
+---
+
+## 13. Implementation notes (2026-11-10)
+
+| Topic | As built |
+| --- | --- |
+| `files.read` / `files.write` revision | The revision of these two actions is the SHA-256 of **that file** (`none` when it does not exist), so an edit made elsewhere to the same file is a `conflict`; every other decision action uses the state revision (D5) |
+| `evidence.list` | Accepts an extra optional `tab: library\|rejected\|log` for the secondary tabs of the Sources screen |
+| `packs.check` | `read` (as in §6.3); `styles.check` is not exposed in v1 (it may run Typst) |
+| `interview.answer` errors | `invalid_input` with `fields` (question ids only, never the rejected value) |
+| `approve` of a chapter | Returns `buildAfter: true`; the frame then starts `build.run { scope: "approved" }` (D8) |
+| Lock scope | Locked commands: init, answer, check, `pack new`, `style new`, norms, design, outline, approve, revise, research, draft, figure, review, finalize, build, next, plus the `thesis_answer` tool. Not locked: status, setup, doctor and the read subcommands. A second chat writer gets `Blocked: another thesis command is running (...)` |
+| Model fallback in chat | The command reply ends with `Note: the chosen model is not available; used <active>.` |
+| `no_model` | Only refused when `api.models` exists, lists nothing **and** the session has no active model |
+| Visual check | Done in a Playwright stand-in host (sandboxed iframe, per-request CSP nonce, MessageChannel, the built plugin on a prepared workspace), not in `alisio serve`; the host approval prompt itself was not exercised |
