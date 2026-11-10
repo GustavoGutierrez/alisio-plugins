@@ -1,0 +1,176 @@
+{
+  "outputs": [
+    {
+      "step": "status-empty",
+      "text": "No Evalua workspace here. Run /evalua:init or /evalua:new."
+    },
+    {
+      "step": "evalua_status-empty",
+      "text": "{\n  \"initialized\": false\n}",
+      "isError": false
+    },
+    {
+      "step": "approve-a-without-draft",
+      "text": "No Evalua workspace here. Run /evalua:new first.",
+      "isError": true
+    },
+    {
+      "step": "generate-without-exam",
+      "text": "No approved exam. Run /evalua:new and /evalua:approve a first.",
+      "isError": true
+    },
+    {
+      "step": "build-without-exam",
+      "text": "No approved exam. Run /evalua:approve a and /evalua:generate first.",
+      "isError": true
+    },
+    {
+      "step": "new",
+      "text": "Exam draft recorded (the ficha tecnica for Gate A):\n- Title: EVALUACIÓN DE MATEMÁTICAS - GRADO SÉPTIMO\n- Theme: TEMA: EXPRESIONES ALGEBRAICAS Y TÉRMINOS SEMEJANTES\n- Grade and level: Séptimo, basico\n- Questions: 10 (single_choice 5, practice 5)\n- Distribution: same\n- Layout: 1 column(s), page limit auto\n- Time: 120 minutes, pencil, calculator no\n- Closing: none\n- School year: 2026\n- Proposed folder: 01-expresiones-algebraicas-y-terminos-semej-septimo (created only after Gate A)\n\nGate A, the teacher's approval of the spec and blueprint, arrives in a later release. Until then the draft stays in the workspace state and no exam folder is created."
+    },
+    {
+      "step": "status-draft",
+      "text": "Evalua workspace: evalua\nTeacher profile: set\nExam folders: none yet\nDraft exam: EVALUACIÓN DE MATEMÁTICAS - GRADO SÉPTIMO (EXPRESIONES ALGEBRAICAS Y TÉRMINOS SEMEJANTES).\nNext: Gate A, the teacher's approval of the spec and blueprint, which arrives in a later release."
+    },
+    {
+      "step": "evalua_status-draft",
+      "text": "{\n  \"initialized\": true,\n  \"root\": \"evalua\",\n  \"profile\": true,\n  \"pendingRound\": null,\n  \"pendingQuestionIds\": [],\n  \"draft\": true,\n  \"draftTitle\": \"EVALUACIÓN DE MATEMÁTICAS - GRADO SÉPTIMO\",\n  \"draftTheme\": \"EXPRESIONES ALGEBRAICAS Y TÉRMINOS SEMEJANTES\",\n  \"exams\": [],\n  \"nextExamNumber\": 1\n}",
+      "isError": false
+    },
+    {
+      "step": "evalua_profile-get",
+      "text": "{\n  \"root\": \"evalua\",\n  \"profile\": {\n    \"schemaVersion\": 1,\n    \"teacherName\": \"Ana Perez\",\n    \"institution\": \"Instituto Cristiano Demo\",\n    \"subject\": \"Matemáticas\",\n    \"language\": \"es\",\n    \"paper\": \"letter\"\n  }\n}",
+      "isError": false
+    },
+    {
+      "step": "evalua_profile-set",
+      "text": "{\n  \"root\": \"evalua\",\n  \"profile\": {\n    \"schemaVersion\": 1,\n    \"teacherName\": \"Ana Perez\",\n    \"institution\": \"Instituto Cristiano Demo\",\n    \"subject\": \"Álgebra\",\n    \"language\": \"es\",\n    \"paper\": \"letter\"\n  }\n}",
+      "isError": false
+    },
+    {
+      "step": "evalua_profile-logo",
+      "text": "{\n  \"root\": \"evalua\",\n  \"profile\": {\n    \"schemaVersion\": 1,\n    \"teacherName\": \"Ana Perez\",\n    \"institution\": \"Instituto Cristiano Demo\",\n    \"subject\": \"Álgebra\",\n    \"language\": \"es\",\n    \"paper\": \"letter\",\n    \"logo\": \"assets/logo.png\"\n  }\n}",
+      "isError": false
+    },
+    {
+      "step": "evalua_kb",
+      "text": "{\n  \"ok\": true,\n  \"packs\": [\n    {\n      \"id\": \"algebra\",\n      \"code\": \"ALG\",\n      \"layer\": \"shipped\",\n      \"levels\": [\n        \"basico\",\n        \"intermedio\",\n        \"avanzado\",\n        \"genio\"\n      ],\n      \"topics\": [\n        \"algebra/algebraic-expressions\",\n        \"algebra/factoring\",\n        \"algebra/linear-equations\",\n        \"algebra/linear-functions\",\n        \"algebra/linear-inequalities\",\n        \"algebra/linear-systems\",\n        \"algebra/polynomials\",\n        \"algebra/quadratic-equations\",\n        \"algebra/radicals\",\n        \"algebra/rational-expressions\"\n      ]\n    },\n    {\n      \"id\": \"basic-math\",\n      \"code\": \"BAS\",\n      \"layer\": \"shipped\",\n      \"levels\": [\n        \"basico\",\n        \"intermedio\",\n        \"avanzado\",\n        \"genio\"\n      ],\n      \"topics\": [\n        \"basic-math/decimals\",\n        \"basic-math/divisibility\",\n        \"basic-math/fractions\",\n        \"basic-math/geometry\",\n        \"basic-math/integers\",\n        \"basic-math/natural-numbers\",\n        \"basic-math/order-of-operations\",\n        \"basic-math/percentages\",\n        \"basic-math/powers-roots\",\n        \"basic-math/rational-numbers\",\n        \"basic-math/statistics\"\n      ]\n    },\n    {\n      \"id\": \"primary-math\",\n      \"code\": \"PRI\",\n      \"layer\": \"shipped\",\n      \"levels\": [\n        \"basico\",\n        \"intermedio\",\n        \"avanzado\",\n        \"genio\"\n      ],\n      \"topics\": [\n        \"primary-math/measurement\",\n        \"primary-math/whole-number-operations\"\n      ]\n    }\n  ],\n  \"findings\": []\n}",
+      "isError": false
+    },
+    {
+      "step": "evalua_check",
+      "text": "{\n  \"ok\": true,\n  \"results\": []\n}",
+      "isError": false
+    },
+    {
+      "step": "kb",
+      "text": "{\n  \"ok\": true,\n  \"packs\": [\n    {\n      \"id\": \"algebra\",\n      \"code\": \"ALG\",\n      \"layer\": \"shipped\",\n      \"levels\": [\n        \"basico\",\n        \"intermedio\",\n        \"avanzado\",\n        \"genio\"\n      ],\n      \"topics\": [\n        \"algebra/algebraic-expressions\",\n        \"algebra/factoring\",\n        \"algebra/linear-equations\",\n        \"algebra/linear-functions\",\n        \"algebra/linear-inequalities\",\n        \"algebra/linear-systems\",\n        \"algebra/polynomials\",\n        \"algebra/quadratic-equations\",\n        \"algebra/radicals\",\n        \"algebra/rational-expressions\"\n      ]\n    },\n    {\n      \"id\": \"basic-math\",\n      \"code\": \"BAS\",\n      \"layer\": \"shipped\",\n      \"levels\": [\n        \"basico\",\n        \"intermedio\",\n        \"avanzado\",\n        \"genio\"\n      ],\n      \"topics\": [\n        \"basic-math/decimals\",\n        \"basic-math/divisibility\",\n        \"basic-math/fractions\",\n        \"basic-math/geometry\",\n        \"basic-math/integers\",\n        \"basic-math/natural-numbers\",\n        \"basic-math/order-of-operations\",\n        \"basic-math/percentages\",\n        \"basic-math/powers-roots\",\n        \"basic-math/rational-numbers\",\n        \"basic-math/statistics\"\n      ]\n    },\n    {\n      \"id\": \"primary-math\",\n      \"code\": \"PRI\",\n      \"layer\": \"shipped\",\n      \"levels\": [\n        \"basico\",\n        \"intermedio\",\n        \"avanzado\",\n        \"genio\"\n      ],\n      \"topics\": [\n        \"primary-math/measurement\",\n        \"primary-math/whole-number-operations\"\n      ]\n    }\n  ],\n  \"findings\": []\n}"
+    },
+    {
+      "step": "doctor",
+      "text": "Knowledge base: ok\nPacks: algebra, basic-math, primary-math\nBrowser: <detected>"
+    },
+    {
+      "step": "init-existing",
+      "text": "The teacher profile already exists in evalua/teacher.yaml; nothing to ask. Run /evalua:init --edit to change it, or /evalua:new to start an exam."
+    },
+    {
+      "step": "evalua_exam-approve-a",
+      "text": "Gate A approved. Exam folder: evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo. Run /evalua:generate to build the items.",
+      "isError": false
+    },
+    {
+      "step": "evalua_exam-status",
+      "text": "{\n  \"initialized\": true,\n  \"root\": \"evalua\",\n  \"profile\": true,\n  \"pendingRound\": null,\n  \"pendingQuestionIds\": [],\n  \"draft\": false,\n  \"draftTitle\": null,\n  \"draftTheme\": null,\n  \"exams\": [\n    \"01-expresiones-algebraicas-y-terminos-semej-septimo\"\n  ],\n  \"nextExamNumber\": 2\n}",
+      "isError": false
+    },
+    {
+      "step": "evalua_exam-set-prompts",
+      "text": "Saved item instructions for: expression-evaluate.",
+      "isError": false
+    },
+    {
+      "step": "evalua_exam-set-prompts-unknown",
+      "text": "Unknown item family: nope",
+      "isError": true
+    },
+    {
+      "step": "evalua_generate",
+      "text": "Generated 10 items for e01 (items.json SHA-256 715aa1644a95).",
+      "isError": false
+    },
+    {
+      "step": "generate",
+      "text": "Generated 10 items for e01 (items.json SHA-256 715aa1644a95)."
+    },
+    {
+      "step": "evalua_build",
+      "text": "Built 10 items into evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo (9 files).\nEngine: Chrome/test.",
+      "isError": false
+    },
+    {
+      "step": "build",
+      "text": "Built 10 items into evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo (9 files).\nEngine: Chrome/test."
+    },
+    {
+      "step": "approve-b",
+      "text": "Gate B approved: the final package is approved."
+    },
+    {
+      "step": "approve-bad",
+      "text": "Usage: /evalua:approve a|b",
+      "isError": true
+    },
+    {
+      "step": "new-headless",
+      "text": "Entrevista de Evalúa, ronda 1\nResponde con /evalua:new usando pares id=valor (separados por espacios), o un objeto JSON.\nEl texto libre va en <id>:text=... para las opciones marcadas (text); varias opciones se separan con comas.\n\n1. topic: ¿De qué trata el examen?\n   - algebra/algebraic-expressions: Expresiones algebraicas y términos semejantes (recommended)\n   - algebra/factoring: Factorización\n   - algebra/linear-equations: Ecuaciones lineales de una variable\n   - enter: Otro tema (text)\n2. grade: ¿Para qué grado es el examen?\n   - sexto: Sexto\n   - septimo: Séptimo (recommended)\n   - octavo: Octavo\n   - other: Otro grado (text)\n3. level: ¿Qué nivel?\n   - basico: Básico (recommended) - Directo, rutinario, un solo concepto.\n   - intermedio: Intermedio - Rutinario con 2 a 3 pasos, conceptos combinados.\n   - avanzado: Avanzado - Varios pasos, modelado y justificación.\n   - genio: Genio - No rutinario, tipo olimpiada, mucho razonamiento.\n4. kind: ¿De qué base de conocimiento debe tomar el examen?\n   - algebra: Álgebra (recommended)\n   - basic-math: Matemática básica\n   - mixed: Temas mixtos\n\nExample: /evalua:new topic=algebra/algebraic-expressions grade=septimo level=basico kind=algebra"
+    },
+    {
+      "step": "evalua_answer-bad",
+      "text": "Not pending interview ids: bogus. Nothing was recorded. Pending question ids: topic, grade, level, kind.",
+      "isError": true
+    },
+    {
+      "step": "evalua_answer-1",
+      "text": "Entrevista de Evalúa, ronda 2\nResponde con /evalua:new usando pares id=valor (separados por espacios), o un objeto JSON.\nEl texto libre va en <id>:text=... para las opciones marcadas (text); varias opciones se separan con comas.\n\n1. types: ¿Qué tipos de ítems debe incluir el examen?\n   - single_choice: Selección única (recommended)\n   - multiple_choice: Selección múltiple\n   - open: Abiertas\n   - practice: Ejercicio de práctica - Resolver con todo el procedimiento.\n2. count: ¿Cuántas preguntas?\n   - 10: 10 (recommended)\n   - 15: 15\n   - 20: 20\n   - other: Otra cantidad (text)\n3. distribution: ¿El mismo examen para todos o sorteos aleatorios de un banco?\n   - same: Las mismas preguntas en el mismo orden (recommended)\n   - bank: Banco con sorteos aleatorios por examen\n4. columns: ¿Cuántas columnas de preguntas?\n   - 1: Una (recommended)\n   - 2: Dos\n\nExample: /evalua:new types=single_choice count=10 distribution=same columns=1",
+      "isError": false
+    },
+    {
+      "step": "evalua_answer-2",
+      "text": "Entrevista de Evalúa, ronda 2b\nResponde con /evalua:new usando pares id=valor (separados por espacios), o un objeto JSON.\nEl texto libre va en <id>:text=... para las opciones marcadas (text); varias opciones se separan con comas.\n\n1. bank_size: ¿Cuántos ítems debe tener el banco?\n   - default: 36 ítems (3 veces la longitud del examen) (recommended)\n   - double: 24 ítems (2 veces la longitud del examen)\n   - other: Otro tamaño (text)\n2. variants: ¿Cuántas variantes (A, B, ...) se deben sortear?\n   - 2: 2 variantes (recommended)\n   - 3: 3 variantes\n   - other: Otra cantidad (text)\n\nExample: /evalua:new bank_size=default variants=2",
+      "isError": false
+    },
+    {
+      "step": "evalua_answer-2b",
+      "text": "Entrevista de Evalúa, ronda 3\nResponde con /evalua:new usando pares id=valor (separados por espacios), o un objeto JSON.\nEl texto libre va en <id>:text=... para las opciones marcadas (text); varias opciones se separan con comas.\n\n1. pages: ¿Límite de páginas?\n   - auto: Las mínimas legibles (recommended)\n   - 1: 1 página\n   - 2: 2 páginas\n   - other: Otra cantidad (text)\n2. time: ¿Tiempo e instrumento?\n   - 120-pencil: 2 horas, lápiz (recommended)\n   - 90-pencil: 90 minutos, lápiz\n   - 60-pen: 1 hora, bolígrafo\n   - other: Otra opción (text)\n3. closing: ¿Texto de cierre después de la última pregunta?\n   - none: Ninguno (recommended)\n   - quote: Una frase célebre\n   - bible: Un versículo bíblico\n4. numbering: ¿Cómo se numeran las secciones y las preguntas?\n   - letters: Secciones 1. y preguntas a, b, c (recommended)\n   - section: Secciones 1. y preguntas 1.1, 1.2, 1.3\n   - continuous: Preguntas 1, 2, 3… de corrido, secciones sin número\n\nExample: /evalua:new pages=auto time=120-pencil closing=none numbering=letters",
+      "isError": false
+    },
+    {
+      "step": "evalua_answer-3",
+      "text": "Exam draft recorded (the ficha tecnica for Gate A):\n- Title: EVALUACIÓN DE ÁLGEBRA - GRADO SÉPTIMO\n- Theme: TEMA: BASIC-MATH/FRACTIONS\n- Grade and level: Séptimo, intermedio\n- Questions: 12 (single_choice 12)\n- Distribution: bank (bank 36, 3 variants)\n- Layout: 2 column(s), page limit 2\n- Time: 90 minutes, pen, calculator yes\n- Closing: quote\n- School year: 2026\n- Proposed folder: 02-basic-math-fractions-septimo (created only after Gate A)\n\nGate A, the teacher's approval of the spec and blueprint, arrives in a later release. Until then the draft stays in the workspace state and no exam folder is created.",
+      "isError": false
+    },
+    {
+      "step": "status-final",
+      "text": "Evalua workspace: evalua\nTeacher profile: set\nExam folders: 01-expresiones-algebraicas-y-terminos-semej-septimo\nDraft exam: EVALUACIÓN DE ÁLGEBRA - GRADO SÉPTIMO (BASIC-MATH/FRACTIONS).\nNext: Gate A, the teacher's approval of the spec and blueprint, which arrives in a later release."
+    }
+  ],
+  "files": {
+    ".alisio/evalua/state.json": "ae9cfaf23663024ab152edfa7b896e34c00df1b672f939b66e54fa4f92be54a3",
+    "evalua/assets/logo.png": "f731c2528f4184b386555de339aeb78f1f0908532be04e6bfe1ec790f5f50da9",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/00_plan_proyecto.md": "3e7bc606ae7d204ba34cf398490de97046cc1ac2bbc92927d56a64a30f4fb78f",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/01_examen_estudiante.html": "7dd2abc70b773c6e0f5399ded5545603204e9399bae12166d088000cbdc5a28f",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/01_examen_estudiante.pdf": "5e6625231f9a9c625ad45f171effa432e3eacfc850e9ead0359f17630d9a8960",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/02_hoja_respuestas.html": "d59aee9ff7d0766bbc418186f0e343cebb760ccdb874b9bd14c0d1833857d306",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/02_hoja_respuestas.pdf": "5e6625231f9a9c625ad45f171effa432e3eacfc850e9ead0359f17630d9a8960",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/03_solucionario_completo.html": "580dfb9ea579e62ba50ac06c784004bbb1ff0fe0ecf3d0f89314f5f90fc15dd1",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/03_solucionario_completo.pdf": "5e6625231f9a9c625ad45f171effa432e3eacfc850e9ead0359f17630d9a8960",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/04_rubrica_calificacion.html": "55d709099287f13ad95f98c4c7d04c7d54b4da40211d74f48191856b58945902",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/04_rubrica_calificacion.pdf": "5e6625231f9a9c625ad45f171effa432e3eacfc850e9ead0359f17630d9a8960",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/05_control_versiones.md": "a93a419040cd300042632b7aaab8cbf603b67caa9dba3bd66b602b7a3a0c6643",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/exam.yaml": "2d188511727c55590276e26cff1a9d5a9678581342e42b5ce36f072cc06bc244",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/items.json": "715aa1644a95ed2e04f1a2b763cffa7c1d73ffafae9674885c589589a909ed30",
+    "evalua/exams/01-expresiones-algebraicas-y-terminos-semej-septimo/layout-report.json": "273df6a22897a9744b8c1414a0352d586b98dd3cf563ba490d49d64a5d1d6221",
+    "evalua/teacher.yaml": "1ccee54f596c8c2915771cc846081122e3059901980c2e15a6cf728660c2a760"
+  }
+}
