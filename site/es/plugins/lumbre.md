@@ -27,18 +27,26 @@ navegador. Lumbre sigue el idioma de Alisio (inglés o español) y su tema claro
 1. Abre **Lumbre · Creador web** en el grupo Aplicaciones de tu proyecto.
 2. Describe lo que quieres, elige cómo se debe construir y, si quieres, un modelo. Selecciona
    **Empezar a construir**.
-3. Sigue la tarjeta de progreso: cada paso se muestra ("Pensando en el diseño…", "Escribiendo
-   index.html…", "Instalando dependencias…", "Compilando…", "Iniciando la vista previa…"), con el
-   tiempo transcurrido y un botón **Cancelar**. Cuando Alisio pide permiso, Lumbre muestra
-   "Esperando tu aprobación en Alisio…".
-4. Revisa los cambios: archivos nuevos, modificados y eliminados, una comparación por archivo y
+3. **Planificar** (lo predeterminado en el primer mensaje de un proyecto nuevo): Lumbre propone un
+   plan con una dirección de diseño, una paleta, roles tipográficos y un boceto de la composición.
+   Selecciona **Construir este plan**, **Editar** o **Descartar**. El selector **Planificar /
+   Construir** sobre el cuadro de mensaje siempre está disponible.
+4. **Construir**: con un modelo que puede usar herramientas, Lumbre trabaja paso a paso en un
+   borrador privado (lee, escribe y edita archivos) y la tarjeta de actividad muestra cada paso en
+   vivo, con el tiempo transcurrido y **Cancelar**. Si se le acaban los pasos, continúa dos veces
+   por su cuenta y luego se pausa con **Continuar** (y un objetivo opcional) o **Revisar el
+   borrador ahora**. Antes de la revisión compila el borrador y corrige los errores de compilación
+   hasta dos veces. Los modelos sin llamadas a herramientas escriben los archivos en una sola
+   respuesta, como en la versión 0.1. Cuando Alisio pide permiso, Lumbre muestra "Esperando tu
+   aprobación en Alisio…".
+5. Revisa los cambios: archivos nuevos, modificados y eliminados, una comparación por archivo y
    cualquier paquete que haya pedido el modelo. Aplícalos todos, solo los que marques, o descártalos.
-5. Abre **Vista previa**: una miniatura estática de tu página, más **Iniciar vista previa en vivo**
+6. Abre **Vista previa**: una miniatura estática de tu página, más **Iniciar vista previa en vivo**
    y **Abrir en vivo en tu navegador**. La vista previa en vivo se recarga sola cuando aplicas
    cambios.
-6. Sigue conversando para cambiarla. Si una compilación falla, Lumbre le envía el error al modelo y
+7. Sigue conversando para cambiarla. Si una compilación falla, Lumbre le envía el error al modelo y
    te propone una corrección para revisar, como máximo dos veces seguidas.
-7. Usa **Exportar** para copiar el proyecto a una carpeta nueva de tu espacio de trabajo, o
+8. Usa **Exportar** para copiar el proyecto a una carpeta nueva de tu espacio de trabajo, o
    descarga un ZIP.
 
 **Código** muestra cada archivo (puedes editar los tuyos; los que administra Lumbre son de solo
@@ -59,6 +67,25 @@ instalaciones usan `npm ci`. El modelo solo puede pedir algunos paquetes adicion
 permitida por base (nombre y versión exactos), y tú apruebas cada uno en la revisión. Lumbre
 escribe `package.json`, los archivos de bloqueo y los de configuración; ni el modelo ni el editor
 pueden cambiarlos.
+
+| Base | Paquetes adicionales que el modelo puede pedir |
+| --- | --- |
+| HTML, CSS y JavaScript (+ Tailwind) | Ninguno (no hay empaquetador): fuentes del sistema y JavaScript simple |
+| Vite, Astro | `clsx`, `tailwind-merge`, `class-variance-authority`, `zod`, `date-fns`, fuentes autoalojadas (`@fontsource`) |
+| React + Vite, Next.js | Lo anterior más `lucide-react`, `motion`, `react-hook-form`, `@hookform/resolvers` y primitivas de Radix (`slot`, `dialog`, `dropdown-menu`, `tabs`, `accordion`, `popover`, `tooltip`, `label`) |
+| Astro con islas de React | Aprobar `@astrojs/react` agrega React y su integración a la configuración de Astro que administra Lumbre; luego, los paquetes de React anteriores |
+
+Lumbre prefiere menos dependencias: primero los elementos nativos y los componentes simples, y solo
+pide un paquete cuando ayuda claramente, explicando el motivo en el mensaje.
+
+## Diseño y calidad del código
+
+El constructor sigue guías incluidas en el paquete: `lmb-design` (adaptada y combinada a partir de
+las habilidades frontend-design de Anthropic y de Vercel Labs, licencia Apache 2.0), `lmb-tailwind`
+(adaptada de tailwind-design-system de Seth Hobson, MIT) para las bases con Tailwind y
+`lmb-react-next` (adaptada de react-best-practices de Vercel, MIT, más las convenciones de archivos
+de Next.js 16 basadas en la documentación de Next.js, MIT) para React y Next.js. Detalles y
+licencias: `THIRD_PARTY_NOTICES.md`.
 
 ## Seguridad y límites
 
@@ -124,6 +151,11 @@ compila y ejecuta `node scripts/update-preset-locks.mjs` para regenerar los arch
 
 ## Recursos y licencia
 
-Agente `lmb-builder`; habilidades `lmb-web` y `lmb-fix` (también son las instrucciones del
-constructor); herramienta de solo lectura `lumbre_projects`; comando `help`. MIT. Los proyectos
-generados usan las licencias de sus frameworks.
+Agentes `lmb-builder` y `lmb-agent`; habilidades `lmb-web`, `lmb-design`, `lmb-tailwind`,
+`lmb-react-next` y `lmb-fix` (también son las instrucciones de los constructores); herramienta de
+solo lectura `lumbre_projects`; las herramientas del borrador `lumbre_list_files`,
+`lumbre_read_file`, `lumbre_write_file`, `lumbre_edit_file`, `lumbre_delete_file`,
+`lumbre_add_dependency`, `lumbre_progress` y `lumbre_done` (solo funcionan dentro de una
+construcción de Lumbre y solo cambian su borrador privado); comando `help`. MIT; las guías de
+terceros se listan en `THIRD_PARTY_NOTICES.md`. Los proyectos generados usan las licencias de sus
+frameworks.

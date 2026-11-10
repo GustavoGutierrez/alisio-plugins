@@ -20,17 +20,23 @@ Alisio's language (English or Spanish) and its light or dark theme.
 1. Open **Lumbre · Web builder** in your project's Apps group.
 2. Describe what you want, choose how it should be built and, optionally, a model. Select
    **Start building**.
-3. Watch the progress card: every step is shown ("Thinking about the design…", "Writing
-   index.html…", "Installing dependencies…", "Building…", "Starting preview…"), with the elapsed
-   time and a **Cancel** button. When Alisio asks for permission, Lumbre shows "Waiting for your
+3. **Plan** (the default for a new project's first message): Lumbre proposes a plan with a design
+   direction, a palette, type roles and a layout sketch. Select **Build this plan**, **Edit** it, or
+   **Discard** it. The **Plan / Build** switch above the message box is always available.
+4. **Build**: with a model that can use tools, Lumbre works step by step in a private draft
+   (reading, writing and editing files) and the activity card shows each step live, with the elapsed
+   time and **Cancel**. If it runs out of steps it continues twice by itself, then pauses with
+   **Continue** (and an optional goal) or **Review the draft now**. Before the review it builds the
+   draft and fixes build errors up to twice. Models without tool calling write the files in one
+   answer instead, as in 0.1. When Alisio asks for permission, Lumbre shows "Waiting for your
    approval in Alisio…".
-4. Review the changes: added, changed and deleted files, a diff per file, and any package the model
+5. Review the changes: added, changed and deleted files, a diff per file, and any package the model
    asked for. Apply all of them, only the ones you tick, or discard them.
-5. Open **Preview**: a static thumbnail of your page, plus **Start live preview** and **Open live
+6. Open **Preview**: a static thumbnail of your page, plus **Start live preview** and **Open live
    in your browser**. The live preview reloads by itself when you apply changes.
-6. Keep chatting to change it. If a build fails, Lumbre sends the error to the model and proposes a
+7. Keep chatting to change it. If a build fails, Lumbre sends the error to the model and proposes a
    fix for you to review, at most twice in a row.
-7. Use **Export** to copy the project into a new folder of your workspace, or download a ZIP.
+8. Use **Export** to copy the project into a new folder of your workspace, or download a ZIP.
 
 **Code** shows every file (you can edit your own; Lumbre-managed files are read-only) and
 **History** keeps the last 40 versions, any of which you can restore.
@@ -49,6 +55,24 @@ Versions are pinned and each stack ships a committed lockfile, so installs run `
 can ask for a few extra packages only from a per-stack allowlist (exact name and version), and you
 approve each one in the review. Lumbre writes `package.json`, lockfiles and configuration files
 itself; the model and the editor cannot change them.
+
+| Stack | Extra packages the model may ask for |
+| --- | --- |
+| HTML, CSS and JavaScript (+ Tailwind) | None (no bundler): system fonts and plain JavaScript |
+| Vite, Astro | `clsx`, `tailwind-merge`, `class-variance-authority`, `zod`, `date-fns`, self-hosted fonts (`@fontsource`) |
+| React + Vite, Next.js | The above plus `lucide-react`, `motion`, `react-hook-form`, `@hookform/resolvers` and Radix primitives (`slot`, `dialog`, `dropdown-menu`, `tabs`, `accordion`, `popover`, `tooltip`, `label`) |
+| Astro with React islands | Approving `@astrojs/react` adds React and its integration to Lumbre's Astro config, then the React packages above |
+
+Lumbre prefers fewer dependencies: native elements and plain components come first, and a package
+is requested only when it clearly helps, with the reason in the message.
+
+## Design and code quality
+
+The builder follows packaged guidance: `lmb-design` (adapted and combined from Anthropic's and
+Vercel Labs' frontend-design skills, Apache License 2.0), `lmb-tailwind` (adapted from Seth
+Hobson's tailwind-design-system, MIT) for Tailwind stacks, and `lmb-react-next` (adapted from
+Vercel's react-best-practices, MIT, plus Next.js 16 file conventions based on the Next.js
+documentation, MIT) for React and Next.js. Details and licenses: `THIRD_PARTY_NOTICES.md`.
 
 ## Safety and limits
 
@@ -113,6 +137,10 @@ version, rebuild and run `node scripts/update-preset-locks.mjs` to regenerate th
 
 ## Resources and license
 
-Agent `lmb-builder`; skills `lmb-web` and `lmb-fix` (also used as the builder's instructions);
-read-only tool `lumbre_projects`; command `help`. MIT. Generated projects use their frameworks'
-own licenses.
+Agents `lmb-builder` and `lmb-agent`; skills `lmb-web`, `lmb-design`, `lmb-tailwind`,
+`lmb-react-next` and `lmb-fix` (also used as the builders' instructions); read-only tool
+`lumbre_projects`; the draft tools `lumbre_list_files`, `lumbre_read_file`, `lumbre_write_file`,
+`lumbre_edit_file`, `lumbre_delete_file`, `lumbre_add_dependency`, `lumbre_progress` and
+`lumbre_done` (they only work inside a Lumbre build and only change its private draft); command
+`help`. MIT; third-party guidance as listed in `THIRD_PARTY_NOTICES.md`. Generated projects use
+their frameworks' own licenses.

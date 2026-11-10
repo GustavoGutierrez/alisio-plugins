@@ -120,3 +120,44 @@ describe("block output (0.1.1)", () => {
     expect(classifyFailure(undefined)).toBe("unknown");
   });
 });
+
+describe("design token plan (lmb-design)", () => {
+  it("reads palette, type roles, layout, principles and an ASCII wireframe", () => {
+    const out = readOutput(`<<<LUMBRE-MESSAGE>>>
+Plan.
+<<<LUMBRE-END>>>
+<<<LUMBRE-DESIGN>>>
+direction: Organic, sun-warmed
+color: Masa #F2E3C6
+color: Horno | #9a3b1e
+color: Ceniza #333
+color: not a color
+type: display | Fraunces (@fontsource-variable/fraunces)
+type: body | ui-sans-serif, system-ui
+layout: Asymmetric hero with the bread photo bleeding off the right edge.
+principle: One warm accent, everything else quiet.
+wireframe:
++-----------------------+
+| LOGO        menu      |
+| Big headline   [img]  |
++-----------------------+
+<<<LUMBRE-END>>>
+<<<LUMBRE-DONE>>>`);
+    expect(out.design).toEqual({
+      direction: "Organic, sun-warmed",
+      palette: [
+        { name: "Masa", hex: "#f2e3c6" },
+        { name: "Horno", hex: "#9a3b1e" },
+        { name: "Ceniza", hex: "#333333" },
+      ],
+      type: [
+        { role: "display", font: "Fraunces (@fontsource-variable/fraunces)" },
+        { role: "body", font: "ui-sans-serif, system-ui" },
+      ],
+      layout: "Asymmetric hero with the bread photo bleeding off the right edge.",
+      wireframe:
+        "+-----------------------+\n| LOGO        menu      |\n| Big headline   [img]  |\n+-----------------------+",
+      principles: ["One warm accent, everything else quiet."],
+    });
+  });
+});

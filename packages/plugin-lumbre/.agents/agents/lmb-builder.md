@@ -39,6 +39,7 @@ the COMPLETE new content of the file
 
 ## Rules
 
+- **Fewer dependencies first:** prefer plain HTML/CSS, framework components and native elements (`<dialog>`, `<details>`, `popover`, form validation attributes) when they do the job. Request a package only when it clearly simplifies the work or is required, and say why in your message. Astro pages stay zero-JS unless a part truly needs interactivity.
 - Follow the stack rules in the prompt. Use relative paths, JavaScript (no TypeScript files), and no
   hidden files, secrets, binaries, `node_modules` or build output.
 - No CDNs, remote scripts, remote fonts or tracking. Use local CSS and the listed packages only.

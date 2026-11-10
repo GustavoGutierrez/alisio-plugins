@@ -17,6 +17,16 @@ export interface PlanEntry {
   path: string;
   size: PlanSize;
 }
+/** The design token plan (lmb-design): shown in the plan card, used by the build. */
+export interface DesignPlan {
+  direction: string;
+  palette: Array<{ name: string; hex: string }>;
+  type: Array<{ role: string; font: string }>;
+  layout: string;
+  wireframe: string;
+  principles: string[];
+}
+
 export interface RawOutput {
   format: "blocks" | "json";
   message: string;
@@ -25,6 +35,7 @@ export interface RawOutput {
   deletes: unknown[];
   dependencies: unknown[];
   plan: PlanEntry[] | null;
+  design: DesignPlan | null;
   /** The answer ended with <<<LUMBRE-DONE>>> (or was a complete JSON object). */
   done: boolean;
   /** Path of a file block the answer stopped inside. */
@@ -34,7 +45,7 @@ export interface RawOutput {
 }
 
 const START =
-  /^\s*<<<LUMBRE-(FILE|META|MESSAGE|PLAN)(?:\s+path=(?:"([^"]*)"|'([^']*)'))?\s*>>>\s*$/;
+  /^\s*<<<LUMBRE-(FILE|META|MESSAGE|PLAN|DESIGN)(?:\s+path=(?:"([^"]*)"|'([^']*)'))?\s*>>>\s*$/;
 const END = /^\s*<<<LUMBRE-END>>>\s*$/;
 const DONE = /^\s*<<<LUMBRE-DONE>>>\s*$/;
 const FENCE = /^\s*(```|~~~)/;
@@ -60,6 +71,7 @@ const empty = (format: RawOutput["format"]): RawOutput => ({
   deletes: [],
   dependencies: [],
   plan: null,
+  design: null,
   done: false,
   cut: null,
   truncated: false,
@@ -95,6 +107,62 @@ function readPlan(lines: string[]): PlanEntry[] {
   return plan;
 }
 
+const clip = (value: string, max: number) => value.trim().slice(0, max);
+
+/**
+ * The DESIGN block, one `key: value` per line (no JSON, so the wireframe needs no escaping):
+ *   direction: Organic, sun-warmed bakery
+ *   color: Masa #F2E3C6          (4-6 lines)
+ *   type: display | Fraunces     (role | font)
+ *   layout: one sentence
+ *   principle: one line           (repeatable)
+ *   wireframe:                    (every following line, as drawn)
+ */
+export function readDesign(lines: string[]): DesignPlan | null {
+  const design: DesignPlan = {
+    direction: "",
+    palette: [],
+    type: [],
+    layout: "",
+    wireframe: "",
+    principles: [],
+  };
+  const wire: string[] = [];
+  let inWire = false;
+  for (const line of lines) {
+    if (inWire) {
+      if (wire.length < 30) wire.push(line.slice(0, 100));
+      continue;
+    }
+    const m = /^\s*[-*]?\s*([a-z]+)\s*:\s*(.*)$/i.exec(line);
+    if (!m) continue;
+    const key = (m[1] as string).toLowerCase();
+    const value = m[2] as string;
+    if (key === "wireframe") {
+      inWire = true;
+      if (value.trim()) wire.push(value.slice(0, 100));
+    } else if (key === "direction") design.direction = clip(value, 160);
+    else if (key === "layout") design.layout = clip(value, 300);
+    else if (key === "principle" && design.principles.length < 6)
+      design.principles.push(clip(value, 200));
+    else if ((key === "color" || key === "colour") && design.palette.length < 8) {
+      const hex = /#([0-9a-f]{6}|[0-9a-f]{3})\b/i.exec(value);
+      if (!hex) continue;
+      const raw = (hex[1] as string).toLowerCase();
+      const full = raw.length === 3 ? [...raw].map((c) => c + c).join("") : raw;
+      const name = clip(value.replace(hex[0], "").replace(/[|:]/g, " "), 40) || `#${full}`;
+      design.palette.push({ name, hex: `#${full}` });
+    } else if (key === "type" && design.type.length < 4) {
+      const [role, font] = value.split("|").map((v) => v.trim());
+      if (role && font) design.type.push({ role: clip(role, 30), font: clip(font, 80) });
+    }
+  }
+  design.wireframe = wire.join("\n").replace(/\s+$/, "");
+  return design.palette.length || design.type.length || design.layout || design.wireframe
+    ? design
+    : null;
+}
+
 function readMeta(out: RawOutput, text: string) {
   try {
     const meta = JSON.parse(text) as Record<string, unknown>;
@@ -126,6 +194,7 @@ function readBlocks(text: string): RawOutput | undefined {
     else if (open.kind === "MESSAGE") out.message = value.trim();
     else if (open.kind === "META") readMeta(out, value.trim());
     else if (open.kind === "PLAN") out.plan = readPlan(body);
+    else if (open.kind === "DESIGN") out.design = readDesign(body);
     open = undefined;
   };
   for (const line of lines) {
@@ -230,6 +299,7 @@ export function mergeOutputs(base: RawOutput | undefined, next: RawOutput): RawO
     deletes: [...base.deletes, ...next.deletes.filter((d) => !base.deletes.includes(d))],
     dependencies: [...base.dependencies, ...next.dependencies],
     plan: base.plan ?? next.plan,
+    design: base.design ?? next.design,
     done: next.done,
     cut: next.cut,
     truncated: next.truncated,

@@ -75,6 +75,10 @@ export interface FakeRun {
   output?: number;
   input?: number;
   turnsExceeded?: boolean;
+  /** Tool calls the fake model makes, in order (executed through the service like the host). */
+  calls?: Array<{ name: string; input?: Record<string, unknown> }>;
+  /** After the calls, wait until the run is cancelled. */
+  wait?: boolean;
 }
 
 export interface Fixture {
@@ -90,6 +94,8 @@ export interface Fixture {
   respond: (...values: FakeRun[]) => void;
   /** Child id of every run, in order. */
   runs: string[];
+  /** Results of the fake model's tool calls, in order. */
+  toolResults: unknown[];
   ctx: (key?: string) => PluginAppContext;
   call: (action: string, input?: Record<string, unknown>, key?: string) => Promise<Loose>;
   waitJob: (jobId: string) => Promise<Loose>;
@@ -101,6 +107,10 @@ export async function fixture(
   options: {
     models?: Array<{ reference: string; contextWindow?: number; maxOutputTokens?: number }>;
     resolveFails?: boolean;
+    /** Catalog tool support: false (0.1.x tests, default), true, or "unknown" (not stated). */
+    toolCalling?: boolean | "unknown";
+    /** Build failures of the agent's draft copy before it passes. */
+    draftBuildFailures?: number;
   } = {},
 ): Promise<Fixture> {
   const root = await mkdtemp(join(tmpdir(), "lmb-svc-"));
@@ -110,9 +120,14 @@ export async function fixture(
   const prompts: string[] = [];
   const answers: Array<string | FakeRun> = [];
   const runs: string[] = [];
+  const toolResults: unknown[] = [];
+  let serviceRef: Service | undefined;
   const usage = new Map<string, { input: number; output: number }>();
   const opened: string[] = [];
   const models = options.models ?? [{ reference: "acme/fast", contextWindow: 64_000 }];
+  const toolCalling = options.toolCalling ?? false;
+  const capabilities =
+    toolCalling === "unknown" ? {} : { capabilities: { tool_call: toolCalling } };
   const service = await new Service({
     root: join(root, "state"),
     cacheDir: join(root, "cache"),
@@ -127,6 +142,7 @@ export async function fixture(
             id: m.reference.split("/")[1] as string,
             name: "Fast",
             ...(m.contextWindow ? { contextWindow: m.contextWindow } : {}),
+            ...capabilities,
           },
         })),
       resolve: async (reference: string) => {
@@ -141,6 +157,7 @@ export async function fixture(
             id: "fast",
             ...(found.contextWindow ? { contextWindow: found.contextWindow } : {}),
             ...(found.maxOutputTokens ? { maxOutputTokens: found.maxOutputTokens } : {}),
+            ...capabilities,
           },
         };
       },
@@ -162,6 +179,16 @@ export async function fixture(
           return { id, status: "cancelled", text: "", usage: { input: 1, output: 1 } };
         }
         const run: FakeRun = typeof next === "string" ? { text: next } : next;
+        for (const call of run.calls ?? [])
+          toolResults.push(
+            await (serviceRef as Service).agentTool(call.name as never, call.input ?? {}, id),
+          );
+        if (run.wait) {
+          await new Promise((resolve) =>
+            opts?.signal?.addEventListener("abort", resolve, { once: true }),
+          );
+          return { id, status: "cancelled", text: "", usage: { input: 1, output: 1 } };
+        }
         // Like the host: usage accumulates over the runs of one child.
         const total = usage.get(id) ?? { input: 0, output: 0 };
         total.input += run.input ?? 100;
@@ -183,6 +210,7 @@ export async function fixture(
     npmCli: () => "npm-cli.js",
     runtime: (opts) => {
       const r = new FakeRuntime(opts);
+      if (/[\\/]draft$/.test(opts.dir)) r.buildFailures = options.draftBuildFailures ?? 0;
       runtimes.push(r);
       return r;
     },
@@ -190,6 +218,7 @@ export async function fixture(
       opened.push(url);
     },
   }).init();
+  serviceRef = service;
   let n = 0;
   const ctx = (key?: string): PluginAppContext => ({
     sessionId: "session-1",
@@ -217,6 +246,7 @@ export async function fixture(
     opened,
     respond: (...values) => answers.push(...values),
     runs,
+    toolResults,
     answer: (...values) =>
       answers.push(...values.map((v) => (typeof v === "string" ? v : JSON.stringify(v)))),
     ctx,

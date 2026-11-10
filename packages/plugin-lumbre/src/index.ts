@@ -7,10 +7,13 @@ import { dirname, join } from "node:path";
 import { definePlugin, type PluginAPI, textResult } from "@alisio/sdk";
 import { buildActions } from "./apps.js";
 import { LumbreError } from "./errors.js";
+import { composeInstructions, type InstructionMode } from "./instructions.js";
 import { messagesFor, resolveLocale } from "./messages.js";
+import type { StackId } from "./presets.js";
 import { ProjectRuntime } from "./runtime.js";
 import { Service } from "./service.js";
 import { ProjectStore } from "./store.js";
+import { registerAgentTools } from "./tools.js";
 import { VERSION } from "./version.js";
 
 const require = createRequire(import.meta.url);
@@ -49,21 +52,18 @@ function openUrl(url: string): Promise<void> {
   });
 }
 
-const stripFrontmatter = (s: string) => s.replace(/^---\n[\s\S]*?\n---\n/, "").trim();
-let instructionCache: Promise<Record<"build" | "fix", string>> | undefined;
-function instructions(mode: "build" | "fix") {
-  instructionCache ??= (async () => {
-    const read = async (p: string) =>
-      stripFrontmatter(await readFile(new URL(`../.agents/${p}`, import.meta.url), "utf8"));
-    const agent = await read("agents/lmb-builder.md");
-    const web = await read("skills/lmb-web/SKILL.md");
-    const fix = await read("skills/lmb-fix/SKILL.md");
-    return { build: `${agent}\n\n${web}`, fix: `${agent}\n\n${fix}` };
-  })().catch((error) => {
-    instructionCache = undefined;
-    throw error;
-  });
-  return instructionCache.then((all) => all[mode]);
+const instructionCache = new Map<string, Promise<string>>();
+function instructions(mode: InstructionMode, stack: StackId) {
+  const key = `${mode}:${stack}`;
+  let cached = instructionCache.get(key);
+  if (!cached) {
+    cached = composeInstructions(mode, stack).catch((error) => {
+      instructionCache.delete(key);
+      throw error;
+    });
+    instructionCache.set(key, cached);
+  }
+  return cached;
 }
 
 /**
@@ -94,6 +94,7 @@ function activate(api: PluginAPI): Activation {
     if (!s) {
       const root = rootFor(workspace);
       s = new Service({
+        workspace,
         root,
         cacheDir: join(api.paths?.cache ?? root, "npm"),
         ...(api.models ? { models: api.models } : {}),
@@ -166,6 +167,14 @@ function activate(api: PluginAPI): Activation {
   if (api.apps) {
     // Each call resolves the service of its own workspace (from the host context, never the input).
     const actions = buildActions((context) => service(context.workspace));
+    // Agent-mode tools: they find the workspace's LIVE service (never start one) and refuse
+    // every call that does not come from a running Lumbre job.
+    attempt(() =>
+      registerAgentTools(api, (workspace) => {
+        for (const s of live) if (s.workspace === workspace) return s;
+        return undefined;
+      }),
+    );
     appRegistered = attempt(() =>
       api.apps?.register({
         id: "studio",

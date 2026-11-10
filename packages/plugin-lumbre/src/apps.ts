@@ -30,6 +30,10 @@ export const WRITE_ACTIONS = [
   "revisions.restore",
   "jobs.cancel",
   "project.export",
+  "agent.continue",
+  "agent.review",
+  "agent.discard",
+  "plan.discard",
 ] as const;
 export const PROCESS_ACTIONS = [
   "preview.check",
@@ -37,6 +41,7 @@ export const PROCESS_ACTIONS = [
   "server.start",
   "server.stop",
   "server.open",
+  "agent.check",
 ] as const;
 export type ActionName =
   | (typeof READ_ACTIONS)[number]
@@ -80,9 +85,15 @@ export const SCHEMAS: Record<ActionName, JsonSchema> = {
     archived: { type: "boolean" },
   }),
   "projects.delete": project(),
-  "chat.send": project({ text: { type: "string", minLength: 1, maxLength: 8_000 }, locale }, [
-    "text",
-  ]),
+  "chat.send": project(
+    {
+      text: { type: "string", minLength: 1, maxLength: 8_000 },
+      locale,
+      mode: { type: "string", enum: ["plan", "build"] },
+      planId: id,
+    },
+    ["text"],
+  ),
   "chat.clear": project(),
   "proposal.apply": project(
     {
@@ -105,6 +116,11 @@ export const SCHEMAS: Record<ActionName, JsonSchema> = {
     "folder",
   ]),
   "preview.check": project({ locale }),
+  "agent.continue": project({ goal: { type: "string", maxLength: 2_000 } }),
+  "agent.review": project(),
+  "agent.discard": project(),
+  "plan.discard": project({ messageId: id }, ["messageId"]),
+  "agent.check": project(),
   "deps.install": project(),
   "server.start": project(),
   "server.stop": project(),

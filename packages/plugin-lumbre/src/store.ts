@@ -38,7 +38,14 @@ export interface ProjectMeta {
   /** Approved extra packages (exact versions from the stack allowlist). */
   extras: Record<string, string>;
 }
-export type JsonKind = "chat" | "proposal" | "snapshot" | "lock" | "installed" | "work-manifest";
+export type JsonKind =
+  | "chat"
+  | "proposal"
+  | "snapshot"
+  | "lock"
+  | "installed"
+  | "work-manifest"
+  | "agent";
 
 export const isId = (value: unknown): value is string =>
   typeof value === "string" && ID.test(value);

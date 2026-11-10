@@ -117,3 +117,35 @@ describe("plugin entry (LMB-AC-01, LMB-AC-03)", () => {
     await plugin.dispose?.();
   });
 });
+
+describe("agent tools in the plugin entry (AGT-AC-01)", () => {
+  it("registers the eight draft tools as read and refuses calls from the main chat", async () => {
+    const h = await host();
+    const names = [...h.tools.keys()].filter((n) => n !== "lumbre_projects").sort();
+    expect(names).toEqual([
+      "lumbre_add_dependency",
+      "lumbre_delete_file",
+      "lumbre_done",
+      "lumbre_edit_file",
+      "lumbre_list_files",
+      "lumbre_progress",
+      "lumbre_read_file",
+      "lumbre_write_file",
+    ]);
+    for (const n of names) expect(h.tools.get(n)?.effect, n).toBe("read");
+    const out = await h.tools
+      .get("lumbre_write_file")
+      ?.execute({ path: "index.html", content: "x" }, {
+        workspace: h.root,
+        session: "main-chat",
+        signal: new AbortController().signal,
+      } as never);
+    expect(JSON.stringify(out)).toContain("not_in_lumbre_job");
+    const { readdir } = await import("node:fs/promises");
+    expect(await readdir(h.root)).toEqual([]);
+    expect(await readFile(new URL("../src/tools.ts", import.meta.url), "utf8")).toContain(
+      'PLUGIN_ID = "alisio.lumbre"',
+    );
+    expect(plugin.id).toBe("alisio.lumbre");
+  });
+});

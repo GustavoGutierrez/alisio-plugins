@@ -65,6 +65,9 @@ const en = {
     fix_exhausted:
       "The build still fails after two automatic fixes. Open the build details, describe the problem in the chat, or restore an earlier version in History.",
     generation_failed: "Lumbre could not finish this request.",
+    agent_paused: (n) => `Lumbre paused after ${n} steps. Continue, or review the draft now.`,
+    agent_check_failed:
+      "The draft still fails to build after two automatic fixes. Review it carefully, or ask Lumbre to fix it.",
     output_partial: (n) =>
       `The model stopped before finishing. I kept ${n === 1 ? "the file" : `the ${n} files`} that arrived; ask it to continue or pick a model with a larger output limit.`,
   },
@@ -72,6 +75,14 @@ const en = {
   stage: {
     preparing: "Getting things ready…",
     planning: "Planning the files…",
+    agentStep: (a) => timelineText(a),
+    agentContinuing: (a) => `Continuing the build… (part ${a.part})`,
+    agentPaused: "Paused.",
+    agentNeedsCheck: "Draft ready. Checking the build next…",
+    planReady: "Your plan is ready to review.",
+    checkingDraft: "Building the draft…",
+    fixingDraft: (a) => `Fixing build errors (round ${a.round} of ${a.max})…`,
+
     writingBatch: (a) => `Writing the files… (part ${a.part} of ${a.total})`,
     continuing: (a) => `Writing more files… (part ${a.part})`,
     thinking: "Thinking about the design…",
@@ -96,6 +107,59 @@ const en = {
   cancel: "Cancel",
   cancelled: "Cancelled. Nothing was changed.",
   awaitingApproval: "Waiting for your approval in Alisio…",
+  modePlan: "Plan",
+  modeBuild: "Build",
+  modeLabel: "Mode",
+  modeHintPlan: "Lumbre proposes a plan first; nothing is written until you approve it.",
+  modeHintBuild: "Lumbre builds right away; you review every change before it is applied.",
+  planTitle: "Proposed plan",
+  designTitle: "Design",
+  palette: "Palette",
+  typeRoles: "Type",
+  layout: "Layout",
+  principles: "Principles",
+  buildPlan: "Build this plan",
+  buildPlanText: "Build the approved plan.",
+  editPlan: "Edit",
+  discardPlan: "Discard",
+  planApproved: "Approved",
+  planDiscarded: "Discarded",
+  activityTitle: "Building your site",
+  activityCounts: (c) =>
+    `${c.write} written, ${c.edit} edited, ${c.delete} deleted, ${c.read} read`,
+  showSteps: "Show all steps",
+  hideSteps: "Show fewer steps",
+  pausedTitle: "Lumbre paused",
+  paused: {
+    turns: "It used this round's steps before finishing. The draft is kept.",
+    cancelled: "You stopped it. The draft is kept.",
+    failed: "It stopped because of an error. The draft is kept.",
+  },
+  goalLabel: "What should it focus on next? (optional)",
+  continueBuild: "Continue",
+  reviewDraft: "Review the draft now",
+  discardDraft: "Discard the draft",
+  needsCheckTitle: "Draft ready",
+  needsCheck: "Lumbre checks that the draft builds before you review it.",
+  runCheck: "Check the build",
+  timeline: {
+    thinking: () => "Started",
+    read: (a) => `Read ${a.file}`,
+    write: (a) => `Wrote ${a.file}`,
+    edit: (a) => `Edited ${a.file}`,
+    delete: (a) => `Deleted ${a.file}`,
+    dependency: (a) => `Added the package ${a.text}`,
+    progress: (a) => a.text,
+    check: (a) =>
+      a.text === "ok"
+        ? "The build passed"
+        : a.text === "packages"
+          ? "New packages: the build is checked after you apply"
+          : "Checking the build",
+    fix: (a) => `Automatic fix ${a.text}`,
+    done: (a) => `Finished: ${a.text}`,
+    error: () => "The build failed",
+  },
   showDetails: "Show details",
   missing: "Missing:",
   details: {
@@ -157,6 +221,8 @@ const en = {
   deleted: "Deleted",
   packages: "Packages to install",
   packageHint: "Installed with npm after you apply (scripts are never run).",
+  featureAstroReact:
+    "Adds React islands: Lumbre also installs React and adds its integration to astro.config.mjs.",
   ignoredTitle: "Lumbre kept these out:",
   ignored: {
     managed: "managed by Lumbre",
@@ -320,12 +386,24 @@ const es = {
     fix_exhausted:
       "La compilación sigue fallando después de dos correcciones automáticas. Abre los detalles, describe el problema en el chat o restaura una versión anterior en Historial.",
     generation_failed: "Lumbre no pudo terminar esta solicitud.",
+    agent_paused: (n) =>
+      `Lumbre se pausó después de ${n} pasos. Continúa o revisa el borrador ahora.`,
+    agent_check_failed:
+      "El borrador sigue sin compilar después de dos correcciones automáticas. Revísalo con cuidado o pídele a Lumbre que lo corrija.",
     output_partial: (n) =>
       `El modelo se detuvo antes de terminar. Conservé ${n === 1 ? "el archivo que llegó" : `los ${n} archivos que llegaron`}; pídele que continúe o elige un modelo con un límite de salida mayor.`,
   },
   stage: {
     preparing: "Preparando todo…",
     planning: "Planificando los archivos…",
+    agentStep: (a) => timelineText(a),
+    agentContinuing: (a) => `Continuando la construcción… (parte ${a.part})`,
+    agentPaused: "En pausa.",
+    agentNeedsCheck: "Borrador listo. Ahora se revisa la compilación…",
+    planReady: "Tu plan está listo para revisar.",
+    checkingDraft: "Compilando el borrador…",
+    fixingDraft: (a) => `Corrigiendo errores de compilación (ronda ${a.round} de ${a.max})…`,
+
     writingBatch: (a) => `Escribiendo los archivos… (parte ${a.part} de ${a.total})`,
     continuing: (a) => `Escribiendo más archivos… (parte ${a.part})`,
     thinking: "Pensando en el diseño…",
@@ -350,6 +428,59 @@ const es = {
   cancel: "Cancelar",
   cancelled: "Cancelado. No se cambió nada.",
   awaitingApproval: "Esperando tu aprobación en Alisio…",
+  modePlan: "Planificar",
+  modeBuild: "Construir",
+  modeLabel: "Modo",
+  modeHintPlan: "Lumbre propone primero un plan; no escribe nada hasta que lo apruebes.",
+  modeHintBuild: "Lumbre construye de inmediato; revisas cada cambio antes de aplicarlo.",
+  planTitle: "Plan propuesto",
+  designTitle: "Diseño",
+  palette: "Paleta",
+  typeRoles: "Tipografía",
+  layout: "Composición",
+  principles: "Principios",
+  buildPlan: "Construir este plan",
+  buildPlanText: "Construye el plan aprobado.",
+  editPlan: "Editar",
+  discardPlan: "Descartar",
+  planApproved: "Aprobado",
+  planDiscarded: "Descartado",
+  activityTitle: "Construyendo tu sitio",
+  activityCounts: (c) =>
+    `${c.write} escritos, ${c.edit} editados, ${c.delete} eliminados, ${c.read} leídos`,
+  showSteps: "Ver todos los pasos",
+  hideSteps: "Ver menos pasos",
+  pausedTitle: "Lumbre está en pausa",
+  paused: {
+    turns: "Usó los pasos de esta ronda antes de terminar. El borrador se conserva.",
+    cancelled: "Lo detuviste. El borrador se conserva.",
+    failed: "Se detuvo por un error. El borrador se conserva.",
+  },
+  goalLabel: "¿En qué debe enfocarse ahora? (opcional)",
+  continueBuild: "Continuar",
+  reviewDraft: "Revisar el borrador ahora",
+  discardDraft: "Descartar el borrador",
+  needsCheckTitle: "Borrador listo",
+  needsCheck: "Lumbre comprueba que el borrador compila antes de que lo revises.",
+  runCheck: "Revisar la compilación",
+  timeline: {
+    thinking: () => "Empezó",
+    read: (a) => `Leyó ${a.file}`,
+    write: (a) => `Escribió ${a.file}`,
+    edit: (a) => `Editó ${a.file}`,
+    delete: (a) => `Eliminó ${a.file}`,
+    dependency: (a) => `Agregó el paquete ${a.text}`,
+    progress: (a) => a.text,
+    check: (a) =>
+      a.text === "ok"
+        ? "La compilación funciona"
+        : a.text === "packages"
+          ? "Paquetes nuevos: la compilación se revisa después de aplicar"
+          : "Revisando la compilación",
+    fix: (a) => `Corrección automática ${a.text}`,
+    done: (a) => `Terminó: ${a.text}`,
+    error: () => "La compilación falló",
+  },
   showDetails: "Ver detalles",
   missing: "Faltan:",
   details: {
@@ -410,6 +541,8 @@ const es = {
   deleted: "Eliminado",
   packages: "Paquetes por instalar",
   packageHint: "Se instalan con npm después de aplicar (nunca se ejecutan scripts).",
+  featureAstroReact:
+    "Agrega islas de React: Lumbre también instala React y agrega su integración a astro.config.mjs.",
   ignoredTitle: "Lumbre dejó esto fuera:",
   ignored: {
     managed: "lo administra Lumbre",
@@ -512,6 +645,14 @@ const es = {
 };
 
 export const messages = { en, es };
+
+/** One timeline entry (`{ kind, file?, text? }`) in the current language. */
+export function timelineText(entry) {
+  const fn = messages[locale].timeline[entry?.kind] ?? messages.en.timeline[entry?.kind];
+  return fn
+    ? fn({ file: entry.file ?? entry.path ?? "", text: entry.text ?? "" })
+    : String(entry?.text ?? "");
+}
 export let locale = "en";
 export const t = (key) => messages[locale][key] ?? messages.en[key] ?? key;
 /** A string or a function of arguments, by key (and optional nested key). */

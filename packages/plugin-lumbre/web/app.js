@@ -11,7 +11,7 @@ import {
   serverView,
 } from "./derive.js";
 import { hunks, lineDiff, stats } from "./diff.js";
-import { errorText, locale, nested, setLocale, t, tf } from "./i18n.js";
+import { errorText, locale, nested, setLocale, t, tf, timelineText } from "./i18n.js";
 import { icon } from "./icons.js";
 import { escapeHtml, renderMarkdown } from "./markdown.js";
 import { fitThumbnail, renderThumbnail } from "./thumbnail.js";
@@ -40,6 +40,11 @@ const EFFECTS = {
   "server.start": "process",
   "server.stop": "process",
   "server.open": "process",
+  "agent.continue": "write",
+  "agent.review": "write",
+  "agent.discard": "write",
+  "plan.discard": "write",
+  "agent.check": "process",
 };
 
 // ---------- Transport ----------
@@ -329,6 +334,7 @@ function renderStudio() {
       <div id="messages" class="messages">${messagesHtml()}</div>
       <div id="job-slot">${jobHtml()}</div>
       <div class="composer">
+        ${modeToggleHtml()}
         <div class="composer-box"><label class="sr-only" for="composer">${escapeHtml(t("composerLabel"))}</label><textarea id="composer" rows="1" maxlength="8000" placeholder="${escapeHtml(t("composerPlaceholder"))}" aria-describedby="composer-hint" ${models.available === false ? "disabled" : ""}>${escapeHtml(draft)}</textarea>${composerButton(draft)}</div>
         <p id="composer-hint" class="composer-hint">${escapeHtml(t("composerHint"))}</p>
         <p class="disclaimer">${escapeHtml(t("disclaimer"))}</p>
@@ -352,8 +358,22 @@ function renderStudio() {
   if (messages) messages.scrollTop = messages.scrollHeight;
 }
 
+/** Plan / Build: plan first on a new project's first message, build afterwards (owner Q3). */
+const modes = new Map();
+function modeOf(p) {
+  if (modes.has(p.id)) return modes.get(p.id);
+  const fresh = (p.revisions?.length ?? 0) <= 1 && !(p.chat ?? []).some((m) => m.role === "user");
+  return fresh ? "plan" : "build";
+}
+function modeToggleHtml() {
+  const mode = modeOf(current);
+  const seg = (value) =>
+    `<button type="button" role="radio" aria-checked="${mode === value}" class="seg ${mode === value ? "active" : ""}" data-action="mode" data-mode="${value}">${escapeHtml(t(value === "plan" ? "modePlan" : "modeBuild"))}</button>`;
+  return `<div class="mode-row"><div class="mode-toggle" role="radiogroup" aria-label="${escapeHtml(t("modeLabel"))}">${seg("plan")}${seg("build")}</div><span class="mode-hint">${escapeHtml(t(mode === "plan" ? "modeHintPlan" : "modeHintBuild"))}</span></div>`;
+}
+
 function composerButton(draft) {
-  if (job?.view.running && job.kind === "generate")
+  if (job?.view.running && (job.kind === "generate" || job.kind === "agent"))
     return `<button type="button" class="send-btn stop" data-action="cancel-job" aria-label="${escapeHtml(t("stop"))}" title="${escapeHtml(t("stop"))}">${icon("stop")}</button>`;
   const disabled = !draft.trim() || models.available === false || job?.view.running;
   return `<button type="button" class="send-btn" data-action="send" aria-label="${escapeHtml(t("send"))}" title="${escapeHtml(t("send"))}" ${disabled ? "disabled" : ""}>${icon("send")}</button>`;
@@ -385,7 +405,7 @@ function messagesHtml() {
               ? `${nested("notice", "generation_failed")} ${errorText(m.code ?? "operation_failed")}`
               : m.notice === "output_partial"
                 ? nested("notice", "output_partial", m.count ?? 0)
-                : nested("notice", m.notice ?? "applied");
+                : nested("notice", m.notice ?? "applied", m.count ?? 0);
         const warn = m.notice !== "applied";
         return `<div class="notice ${warn ? "warn" : "ok"}">${icon(warn ? "warning" : "check")}<span>${escapeHtml(text)}</span></div>`;
       }
@@ -393,19 +413,107 @@ function messagesHtml() {
         m.proposalId && current.proposal?.id === m.proposalId
           ? `<p>${button("tab-changes", `${icon("diff")}<span>${escapeHtml(t("reviewTitle"))}</span>`, "primary small")}</p>`
           : "";
+      if (m.plan) return planCardHtml(m, i);
       return `<div class="msg assistant"><span class="who">${escapeHtml(t("assistant"))}${m.fixAttempt ? ` <span class="badge warn">${escapeHtml(tf("fixLabel", m.fixAttempt, max))}</span>` : ""}${copyControls(i)}</span><div class="md">${renderMarkdown(m.text)}</div>${m.modelFallback ? `<p class="warn small">${icon("warning")}${escapeHtml(t("modelFallback"))}</p>` : ""}${review}</div>`;
     })
     .join("");
 }
 
+function planCardHtml(m, index) {
+  const d = m.plan.design;
+  const status = m.plan.status;
+  const swatches = (d?.palette ?? [])
+    .filter((c) => /^#[0-9a-f]{6}$/i.test(c.hex))
+    .map(
+      (c) =>
+        `<li><span class="swatch" style="background:${c.hex}" aria-hidden="true"></span><span>${escapeHtml(c.name)}</span><code class="swatch-hex">${escapeHtml(c.hex)}</code></li>`,
+    )
+    .join("");
+  const types = (d?.type ?? [])
+    .map((x) => `<li><strong>${escapeHtml(x.role)}</strong> ${escapeHtml(x.font)}</li>`)
+    .join("");
+  const principles = (d?.principles ?? []).map((x) => `<li>${escapeHtml(x)}</li>`).join("");
+  const design = d
+    ? `<section class="design" aria-label="${escapeHtml(t("designTitle"))}">
+        ${d.direction ? `<p class="direction">${escapeHtml(d.direction)}</p>` : ""}
+        ${swatches ? `<h4>${escapeHtml(t("palette"))}</h4><ul class="swatches">${swatches}</ul>` : ""}
+        ${types ? `<h4>${escapeHtml(t("typeRoles"))}</h4><ul class="types">${types}</ul>` : ""}
+        ${d.layout || d.wireframe ? `<h4>${escapeHtml(t("layout"))}</h4>${d.layout ? `<p>${escapeHtml(d.layout)}</p>` : ""}${d.wireframe ? `<pre class="wireframe">${escapeHtml(d.wireframe)}</pre>` : ""}` : ""}
+        ${principles ? `<h4>${escapeHtml(t("principles"))}</h4><ul>${principles}</ul>` : ""}
+      </section>`
+    : "";
+  const actions =
+    status === "pending"
+      ? `<div class="card-buttons">${button("build-plan", `${icon("play")}<span>${escapeHtml(t("buildPlan"))}</span>`, "primary small", `data-id="${escapeHtml(m.id)}"`)}${button("edit-plan", `${icon("edit")}<span>${escapeHtml(t("editPlan"))}</span>`, "outline small", `data-index="${index}"`)}${button("discard-plan", escapeHtml(t("discardPlan")), "ghost small", `data-id="${escapeHtml(m.id)}"`)}</div>`
+      : `<span class="badge ${status === "approved" ? "added" : ""}">${escapeHtml(t(status === "approved" ? "planApproved" : "planDiscarded"))}</span>`;
+  return `<div class="msg assistant plan-card"><span class="who">${escapeHtml(t("planTitle"))}${copyControls(index)}</span><div class="md">${renderMarkdown(m.text)}</div>${design}${actions}</div>`;
+}
+
 function stageText(step) {
+  if (step.key === "agentStep") return timelineText(step.args ?? {});
   return nested("stage", step.key, step.args ?? {});
 }
 
+/** Paused draft or a draft waiting for its build check (from the project's agent state). */
+function agentCardHtml() {
+  const a = current?.agent;
+  if (!a) return "";
+  if (a.phase === "needs_check")
+    return `<div class="job-card agent-state" role="status"><div class="job-head">${icon("spark")}<strong>${escapeHtml(t("needsCheckTitle"))}</strong></div><p class="hint">${escapeHtml(t("needsCheck"))}</p><div class="card-buttons">${button("agent-check", `${icon("refresh")}<span>${escapeHtml(t("runCheck"))}</span>`, "primary small")}${button("review-draft", escapeHtml(t("reviewDraft")), "ghost small")}</div></div>`;
+  if (a.phase !== "paused") return "";
+  return `<div class="job-card agent-state paused" role="status">
+    <div class="job-head">${icon("stop")}<strong>${escapeHtml(t("pausedTitle"))}</strong><span class="elapsed">${escapeHtml(tf("activityCounts", a.counts))}</span></div>
+    <p class="hint">${escapeHtml(nested("paused", a.pausedReason ?? "turns"))}</p>
+    <label class="field goal"><span>${escapeHtml(t("goalLabel"))}</span><textarea id="goal" class="goal-input" rows="2" maxlength="2000"></textarea></label>
+    <div class="card-buttons">${button("agent-continue", `${icon("play")}<span>${escapeHtml(t("continueBuild"))}</span>`, "primary small")}${button("review-draft", escapeHtml(t("reviewDraft")), "outline small")}${button("discard-draft", escapeHtml(t("discardDraft")), "ghost small danger-text")}</div>
+    ${timelineHtml(a.timeline ?? [])}
+  </div>`;
+}
+
+let stepsOpen = false;
+function timelineHtml(entries) {
+  if (!entries.length) return "";
+  const shown = stepsOpen ? entries : entries.slice(-6);
+  const items = shown
+    .map((e) => {
+      const name =
+        {
+          write: "file",
+          edit: "edit",
+          delete: "trash",
+          read: "eye",
+          progress: "spark",
+          check: "refresh",
+          fix: "warning",
+          error: "warning",
+          done: "check",
+          dependency: "box",
+          thinking: "spark",
+        }[e.kind] ?? "check";
+      return `<li class="tl-${escapeHtml(e.kind)}">${icon(name)}<span>${escapeHtml(timelineText(e))}</span></li>`;
+    })
+    .join("");
+  const toggle =
+    entries.length > 6
+      ? `<button type="button" class="link" data-action="toggle-steps" aria-expanded="${stepsOpen}">${escapeHtml(stepsOpen ? t("hideSteps") : t("showSteps"))}</button>`
+      : "";
+  return `<ol class="timeline" aria-label="${escapeHtml(t("activityTitle"))}">${items}</ol>${toggle}`;
+}
+
 function jobHtml() {
-  if (!job) return lastError ? errorCard(lastError) : "";
+  if (!job) return lastError ? errorCard(lastError) : agentCardHtml();
   const v = job.view;
-  if (!v.running) return lastError ? errorCard(lastError) : "";
+  if (!v.running) return lastError ? errorCard(lastError) : agentCardHtml();
+  if (job.raw?.agent) {
+    const a = job.raw.agent;
+    return `<div class="job-card activity" aria-busy="true">
+      <div class="job-head"><span class="spinner" aria-hidden="true"></span><strong class="job-stage">${escapeHtml(stageText(v.stage))}</strong><span class="elapsed" aria-label="${escapeHtml(tf("elapsed", v.elapsed))}">${escapeHtml(v.elapsed)}</span>${button("cancel-job", escapeHtml(t("cancel")), "ghost small")}</div>
+      <div class="progress indeterminate" role="progressbar" aria-label="${escapeHtml(t("activityTitle"))}"><span></span></div>
+      <p class="counts-line">${escapeHtml(tf("activityCounts", a.counts))}</p>
+      ${timelineHtml(a.timeline)}
+      ${v.slow ? `<p class="hint">${escapeHtml(t("stillWorking"))}</p>` : ""}
+    </div>`;
+  }
   const bar =
     v.percent === null
       ? `<div class="progress indeterminate" role="progressbar" aria-label="${escapeHtml(stageText(v.stage))}"><span></span></div>`
@@ -527,7 +635,7 @@ function reviewHtml() {
   const deps = Object.entries(proposal.dependencies ?? {})
     .map(
       ([name, version]) =>
-        `<li><label class="check"><input type="checkbox" data-item="dep:${escapeHtml(name)}" ${ticked.has(`dep:${name}`) ? "checked" : ""}><code>${escapeHtml(name)}@${escapeHtml(version)}</code></label></li>`,
+        `<li><label class="check"><input type="checkbox" data-item="dep:${escapeHtml(name)}" ${ticked.has(`dep:${name}`) ? "checked" : ""}><code>${escapeHtml(name)}@${escapeHtml(version)}</code></label>${name === "@astrojs/react" ? `<span class="muted small">${escapeHtml(t("featureAstroReact"))}</span>` : ""}</li>`,
     )
     .join("");
   const ignored = (proposal.ignored ?? [])
@@ -539,6 +647,7 @@ function reviewHtml() {
   return `<div class="review">
     <div class="review-head"><h2>${escapeHtml(t("reviewTitle"))}</h2>${proposal.fixAttempt ? `<span class="badge warn">${escapeHtml(tf("fixLabel", proposal.fixAttempt, max))}</span>` : ""}</div>
     <p class="summary">${escapeHtml(proposal.summary)}</p>
+    ${proposal.checkFailed ? `<div class="banner warn" role="note">${icon("warning")}<span>${escapeHtml(nested("notice", "agent_check_failed"))}</span></div>` : ""}
     ${proposal.partial ? `<div class="banner warn" role="note">${icon("warning")}<span>${escapeHtml(nested("notice", "output_partial", proposal.partial.received))}${proposal.partial.missing?.length ? ` ${escapeHtml(t("missing"))} ${escapeHtml(proposal.partial.missing.join(", "))}` : ""}</span></div>` : ""}
     <p class="muted small">${escapeHtml(t("reviewLead"))}</p>
     <ul class="review-files">${rows}</ul>
@@ -640,7 +749,8 @@ async function loadProject(id) {
     selectedFile = undefined;
     fileView = undefined;
   }
-  if (current.job && (!job || job.id !== current.job)) watchJob(current.job, "resume");
+  if (current.job && (!job || job.id !== current.job))
+    watchJob(current.job, "resume", afterBuildJob);
 }
 
 async function resume() {
@@ -732,21 +842,40 @@ async function runCheck() {
   });
 }
 
-async function sendMessage() {
-  const text = (drafts.get(current.id) ?? "").trim();
+async function sendMessage(extra = {}) {
+  const text = extra.text ?? (drafts.get(current.id) ?? "").trim();
   if (!text) return;
-  const { jobId } = await api("chat.send", { projectId: current.id, text, locale });
-  drafts.set(current.id, "");
-  current.chat = [...(current.chat ?? []), { role: "user", text, at: Date.now() }];
-  watchJob(jobId, "generate", async (raw) => {
-    if (raw?.state === "done" && raw.result?.proposalId) {
-      tab = "changes";
-      reviewPath = undefined;
-      if (window.matchMedia?.("(max-width: 900px)")?.matches) pane = "work";
-      announce(nested("stage", "reviewReady"));
-    }
+  const mode = extra.mode ?? modeOf(current);
+  const { jobId } = await api("chat.send", {
+    projectId: current.id,
+    text,
+    locale,
+    mode,
+    ...(extra.planId ? { planId: extra.planId } : {}),
   });
+  if (!extra.text) drafts.set(current.id, "");
+  modes.set(current.id, "build");
+  current.chat = [...(current.chat ?? []), { role: "user", text, at: Date.now() }];
+  watchJob(jobId, "agent", afterBuildJob);
   render();
+}
+
+/** What follows a generation or agent job: review, the draft's build check, or the pause card. */
+async function afterBuildJob(raw) {
+  if (raw?.state !== "done") return;
+  if (raw.result?.needsCheck) return startAgentCheck();
+  if (raw.result?.proposalId) {
+    tab = "changes";
+    reviewPath = undefined;
+    if (window.matchMedia?.("(max-width: 900px)")?.matches) pane = "work";
+    announce(nested("stage", "reviewReady"));
+    if (raw.result.checkFailed) toast(nested("notice", "agent_check_failed"), "error");
+  }
+}
+
+async function startAgentCheck() {
+  const { jobId } = await api("agent.check", { projectId: current.id });
+  watchJob(jobId, "agentCheck", afterBuildJob);
 }
 
 // ---------- Events ----------
@@ -826,6 +955,45 @@ async function onAction(action, target) {
       return render();
     case "send":
       return sendMessage();
+    case "mode":
+      modes.set(current.id, target.dataset.mode);
+      return render();
+    case "build-plan":
+      return sendMessage({ mode: "build", planId: target.dataset.id, text: t("buildPlanText") });
+    case "edit-plan": {
+      const m = current.chat[Number(target.dataset.index)];
+      drafts.set(current.id, m?.text ?? "");
+      modes.set(current.id, "plan");
+      render();
+      return document.querySelector("#composer")?.focus();
+    }
+    case "discard-plan":
+      current = await api("plan.discard", { projectId: current.id, messageId: target.dataset.id });
+      return render();
+    case "agent-continue": {
+      const goal = document.querySelector("#goal")?.value.trim();
+      const { jobId } = await api("agent.continue", {
+        projectId: current.id,
+        ...(goal ? { goal } : {}),
+      });
+      watchJob(jobId, "agent", afterBuildJob);
+      return render();
+    }
+    case "agent-check":
+      return startAgentCheck();
+    case "review-draft":
+      await api("agent.review", { projectId: current.id });
+      await loadProject(current.id);
+      tab = "changes";
+      pane = "work";
+      return render();
+    case "discard-draft":
+      if (!(await confirmDialog(t("discardDraft"), t("discardDraft")))) return;
+      current = await api("agent.discard", { projectId: current.id });
+      return render();
+    case "toggle-steps":
+      stepsOpen = !stepsOpen;
+      return refreshJobSlot();
     case "cancel-job":
       if (job) await api("jobs.cancel", { jobId: job.id });
       return;

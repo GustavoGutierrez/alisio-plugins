@@ -9,7 +9,9 @@ import { type Files, filePath } from "./safety.js";
 import { writeAtomic } from "./store.js";
 
 const sha = (content: string) => createHash("sha256").update(content).digest("hex");
-const MANIFEST = "work-manifest.json";
+/** The manifest of each synced folder (the project's `work`, or the agent's `draft-work`). */
+const manifestName = (folder: string) =>
+  folder === "work" ? "work-manifest.json" : `${folder}-manifest.json`;
 
 /** Each existing component under `work` must be a real folder (no symlink can redirect writes). */
 async function assertRealDirs(work: string, path: string) {
@@ -45,15 +47,16 @@ export interface SyncResult {
 export async function syncWork(
   projectDir: string,
   files: Files,
-  options: { verify?: boolean } = {},
+  options: { verify?: boolean; folder?: string } = {},
 ): Promise<SyncResult> {
-  const work = join(projectDir, "work");
+  const folder = options.folder ?? "work";
+  const work = join(projectDir, folder);
   const tmpDir = join(projectDir, "tmp");
   await mkdir(work, { recursive: true, mode: 0o700 });
   await mkdir(tmpDir, { recursive: true, mode: 0o700 });
   let previous: Record<string, string> = {};
   try {
-    previous = JSON.parse(await readFile(join(projectDir, MANIFEST), "utf8"));
+    previous = JSON.parse(await readFile(join(projectDir, manifestName(folder)), "utf8"));
   } catch {
     previous = {};
   }
@@ -103,6 +106,6 @@ export async function syncWork(
       parent = dirname(parent);
     }
   }
-  await writeAtomic(join(projectDir, MANIFEST), JSON.stringify(next));
+  await writeAtomic(join(projectDir, manifestName(folder)), JSON.stringify(next));
   return { written, deleted };
 }

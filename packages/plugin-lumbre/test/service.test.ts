@@ -424,3 +424,42 @@ async function fixtureFrom(f: Fixture) {
   const { Service } = await import("../src/service.js");
   return new Service({ ...f.service.deps }).init();
 }
+
+describe("Astro React feature through the review", () => {
+  it("never lets the model edit the config, and applies the vetted transform when approved", async () => {
+    const f = await setup();
+    const p = await f.call("projects.create", { title: "A", stack: "astro" });
+    f.answer({
+      summary: "Island",
+      files: [
+        { path: "astro.config.mjs", content: "export default {}" },
+        { path: "src/components/Counter.jsx", content: "export default () => null;" },
+      ],
+      dependencies: [{ name: "@astrojs/react", version: "7.1.1" }],
+    });
+    await f.waitJob((await f.call("chat.send", { projectId: p.id, text: "a counter" })).jobId);
+    const proposal = await f.call("proposal.get", { projectId: p.id });
+    expect(proposal.ignored).toEqual([{ path: "astro.config.mjs", reason: "managed" }]);
+    expect(proposal.dependencies).toEqual({ "@astrojs/react": "7.1.1" });
+    await f.call("proposal.apply", {
+      projectId: p.id,
+      proposalId: proposal.id,
+      files: ["src/components/Counter.jsx"],
+      dependencies: ["@astrojs/react"],
+    });
+    const config = await f.call("files.get", { projectId: p.id, path: "astro.config.mjs" });
+    expect(config.owned).toBe(true);
+    expect(config.content).toContain("integrations: [react()]");
+    expect(await readFile(work(f, p.id, "astro.config.mjs"), "utf8")).toContain(
+      "integrations: [react()]",
+    );
+    const pkg = JSON.parse(
+      (await f.call("files.get", { projectId: p.id, path: "package.json" })).content,
+    );
+    expect(pkg.dependencies).toMatchObject({
+      react: "19.3.1",
+      "react-dom": "19.3.1",
+      "@astrojs/react": "7.1.1",
+    });
+  });
+});
