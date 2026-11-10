@@ -44,7 +44,38 @@ npm install --save-dev @alisio/plugin-evalua
 alisio --plugin @alisio/plugin-evalua
 ```
 
-Requires Node 22.16 or newer and `@alisio/sdk` `>=0.3.0 <0.7.0`.
+Requires Node 22.16 or newer and `@alisio/sdk` `>=0.9.0 <0.12.0`. The chat flow works on every
+host in that range; the Evalua app needs Alisio 0.11.6 or newer (see below).
+
+## The Evalua app
+
+On Alisio 0.11.6 or newer, **Evalua** (**Evalúa** in Spanish) appears in the Apps group of the left
+panel: a full-page app that takes a teacher through the same flow with forms instead of chat
+answers. It follows Alisio's language (English or Spanish) and its light or dark theme.
+
+1. **Teacher profile**: name, school, subject, paper size and an optional logo (PNG, JPEG or WebP,
+   up to 2 MB).
+2. **New exam**: choose the grade, then a topic from the knowledge-base list, the level, the kinds
+   of questions, how many, the bank (if any) and the format. A summary follows every answer.
+3. **Review and approve** the plan (Gate A); the exam folder is created only then.
+4. **Wording**: keep the default sentence of each kind of exercise, write your own, or let the
+   model chosen in Settings draft it for you to review and edit. AI-drafted wording can contain
+   mistakes: read every sentence before you approve it. Without a connected model, drafting is off
+   and everything else works.
+5. **Questions**, then **Documents**: create the four documents with visible progress (and a
+   Cancel button), preview them and download the PDF or HTML.
+6. **Final approval** (Gate B). When the last build reported problems (for example a page limit it
+   could not reach), the app lists them and asks you to confirm.
+
+Older exams stay read only (preview and download). The chat commands and tools keep working as
+before and see the same exams; if the chat changes an exam while the app is open, the app reloads
+it, and while the app is creating documents the chat's `generate`, `build`, `approve` and
+`set-prompts` answer that a build is running. On Alisio 0.11.5 the app opens but every save is
+refused unless the session already allows it; older hosts have no app and keep the chat flow.
+Every save asks for Alisio's approval like the chat does: allow saving files, and running the PDF
+printer for the documents. Without Chrome, Chromium, Edge, Brave, Vivaldi or Opera the app writes
+and previews the HTML only. Exam documents are written in Spanish for now (the only shipped
+locale).
 
 ## How to use it
 
@@ -146,6 +177,7 @@ verified.
 ```
 <workspace>/
   .alisio/evalua/state.json     machine-owned state (atomic writes)
+  .alisio/evalua/app.json       Evalua app only: chosen model, pending AI wording, last build summary
   evalua/
     teacher.yaml                teacher profile, safe to edit by hand
     assets/logo.png             optional logo (PNG, JPEG or WebP, up to 2 MB; SVG is rejected)

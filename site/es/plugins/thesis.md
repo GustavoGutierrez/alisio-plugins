@@ -18,7 +18,8 @@ paquetes versionados y con fuentes, y las reglas de tu institución siempre prev
 
 ## Requisitos
 
-- Node.js 22.16 o superior y `@alisio/sdk` 0.3 a 0.6. No se necesitan credenciales.
+- Node.js 22.16 o superior y Alisio con `@alisio/sdk` 0.9 a 0.11 (rango de pares `>=0.9.0 <0.12.0`).
+  La app Estudio de tesis necesita Alisio 0.11.6 o posterior. No se necesitan credenciales.
 - Motor de PDF: ejecuta `/thesis:setup` una vez para instalar en la caché el Typst fijado (con SHA-256
   verificado). Sin Typst, `/thesis:build` recurre a Chrome o Chromium sin interfaz, y
   `/thesis:build --html` no necesita ninguno.
@@ -53,6 +54,46 @@ por defecto. Una carpeta con forma de idioma como `/thesis:init es` se rechaza; 
 usar realmente esa carpeta. En el chat, el agente `thesis-coordinator` responde en prosa y en tu
 idioma, y registra los datos de la entrevista que indiques en la conversación mediante
 `thesis_answer`, que pide tu confirmación antes de escribir.
+
+## App Estudio de tesis
+
+En Alisio **0.11.6 o posterior**, el plugin agrega una app de página completa, **Estudio de tesis**
+(en inglés "Thesis Studio"), a la lista de Aplicaciones de Alisio. Es una superficie guiada sobre el
+mismo coordinador que los comandos: todos los comandos, herramientas, agentes y el chat siguen
+funcionando exactamente igual. En versiones anteriores no cambia nada y `/thesis:status` indica qué
+versión de Alisio necesita la app.
+
+- **Inicio** muestra siempre dónde estás (una barra de avance de siete pasos) y un botón
+  **Siguiente paso** con la razón en una frase.
+- **Entrevista**, **Planes** (plan de investigación y plan de capítulos con las Puertas A, B y
+  OUTLINE), **Capítulos** (investigar, aprobar, escribir, pedir cambios, agregar figuras),
+  **Fuentes** (la biblioteca de evidencia, los registros rechazados y el registro de búsquedas),
+  **Revisión** (corregir o descartar hallazgos), **Generar y entregar** (verificaciones, generación
+  y vista previa del PDF, descarga, Puerta C y documento final) y **Configuración** (modelo, normas
+  y estilos, requisitos éticos, editores de archivos, instalación de Typst).
+- La app sigue el idioma de Alisio (inglés o español, con cambio en vivo) y su tema claro u oscuro.
+  El texto de la tesis se mantiene en el idioma de la tesis.
+- El trabajo largo (redacción, investigación, revisión, generación de PDF) se ejecuta en segundo
+  plano con una barra de progreso y un botón **Cancelar**. Mientras se ejecuta, un comando del chat
+  que cambia la tesis responde `Blocked: Thesis Studio is running ...`, y la app espera mientras se
+  ejecuta un comando del chat: solo una superficie cambia la tesis a la vez.
+- Las decisiones se aplican solo al estado que estás viendo: si el chat cambió la tesis mientras
+  tanto, la app se actualiza y te pide revisar de nuevo.
+- **Efectos y solicitudes de aprobación.** Leer siempre está permitido. Las acciones que escriben
+  archivos o inician asistentes son `write`; todo lo que ejecuta un programa (generación con Typst,
+  instalación, revisión de motores, el PDF/A final) es `process`. Alisio pide tu aprobación en el chat
+  cuando la sesión no permite ya ese efecto; un rechazo indica el permiso que falta. Aprobar un
+  capítulo es `write`; la generación parcial del PDF que sigue es una acción `process` aparte, con su
+  propia solicitud.
+- **Modelo.** En Configuración eliges un modelo para todos los asistentes de esta tesis (se guarda
+  como `settings.model` en el estado y también lo usan los comandos del chat). Si ese modelo
+  desaparece, los asistentes usan el modelo activo de Alisio y el resultado lo indica; la elección se
+  conserva.
+- **Red y privacidad.** La página nunca accede a la red. La investigación consulta bases académicas
+  públicas (OpenAlex, Crossref, arXiv) con tu tema, igual que los comandos, y el texto de la tesis se
+  envía al modelo elegido. Instalar Typst lo descarga desde GitHub.
+- Todo texto generado tiene los controles **Copiar texto** y **Copiar con formato**. El Estudio de
+  tesis puede cometer errores: verifica cada fuente y afirmación antes de entregar.
 
 ## Arquitectura
 
@@ -251,7 +292,7 @@ coordinador.
 ## Licencias
 
 MIT. Los paquetes Typst incluidos, las bibliotecas de navegador (Paged.js, KaTeX, Mermaid) y sus
-licencias figuran en `THIRD_PARTY_NOTICES.md`. Los estilos `apa.csl` e `ieee.csl` provienen del
+licencias figuran en `THIRD_PARTY_NOTICES.md`, igual que PDF.js, incluido en la página del Estudio de tesis. Los estilos `apa.csl` e `ieee.csl` provienen del
 repositorio Citation Style Language bajo CC BY-SA 3.0; `apa.csl` es un derivado modificado y documentado
 (una corrección de macro de fecha) y conserva la misma licencia. Las reglas de los paquetes de políticas
 citan sus fuentes.
