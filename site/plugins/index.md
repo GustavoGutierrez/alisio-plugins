@@ -18,6 +18,7 @@ Install any plugin with `alisio install npm:<package>`. See the [catalog home](/
 - [Google Chat](./google-chat) — Google Chat tools with a send-only webhook mode and a full OAuth user mode, read-first defaults, and untrusted-content framing (`tools`)
 - [Laya](./laya) — Local Laya decision provider: fast select, boolean and ordinal decisions from a managed, isolated server with consent-based setup (`decisions`)
 - [Literature Research](./literature-research) — Safe scholarly metadata and abstract research (`search`, `tools`)
+- [Lumbre](./lumbre) — Describe a landing page or a small web app and let your Alisio model build it, with reviewed changes and a live preview. (`tools`, `ui`)
 - [Material Icon Theme](./material-icons) — Material Icon Theme icons for the web UI (`ui`, `icon-theme`)
 - [OpenAI](./openai) — Official OpenAI Responses API provider (`model-provider`)
 - [OpenCode Console (Zen)](./opencode) — OpenCode Console gateway for Responses, Chat, and Messages models (`model-provider`)
