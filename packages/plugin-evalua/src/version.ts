@@ -1,2 +1,2 @@
 // Updated by scripts/sync-versions.mjs.
-export const VERSION = "0.11.3";
+export const VERSION = "0.12.0";
