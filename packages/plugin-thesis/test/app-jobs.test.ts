@@ -56,12 +56,12 @@ describe("JobRegistry", () => {
       { kind: "z", label: "z" },
       () => undefined,
       async () => {
-        throw new Error(`/home/someone/secret ${"x".repeat(10)}`);
+        throw new Error(`SECRET-DETAIL ${"x".repeat(10)}`);
       },
     );
     for (let i = 0; jobs.busy() && i < 100; i++) await new Promise((r) => setTimeout(r, 2));
     expect(jobs.get(crashed.id)).toMatchObject({ state: "failed", error: "operation_failed" });
-    expect(JSON.stringify(jobs.get(crashed.id))).not.toContain("secret");
+    expect(JSON.stringify(jobs.get(crashed.id))).not.toContain("SECRET-DETAIL");
 
     const ids: string[] = [];
     for (let i = 0; i < 25; i++)
