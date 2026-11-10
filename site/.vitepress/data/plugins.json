@@ -429,7 +429,7 @@
       "title": "Lumbre",
       "pluginId": "alisio.lumbre",
       "description": "Describe a landing page or a small web app and let your Alisio model build it, with reviewed changes and a live preview.",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "publishedAt": null,
       "firstPublishedAt": null,
       "author": "Alisio",

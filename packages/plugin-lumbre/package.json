@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-lumbre",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Lumbre for Alisio: describe a landing page or a small web app, let your Alisio model build it, review every change and preview it live in your browser.",
   "keywords": [
     "alisio-plugin",
