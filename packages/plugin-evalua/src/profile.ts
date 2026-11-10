@@ -135,14 +135,43 @@ export async function copyLogo(root: string, source: string): Promise<string> {
     throw error;
   }
   if (!info.isFile()) throw new Error("The logo must be a regular file");
-  if (info.size > MAX_LOGO_BYTES) throw new Error("The logo must be 2 MB or smaller");
-  const bytes = await readFile(source);
+  if (info.size > MAX_LOGO_BYTES)
+    throw new LogoError("The logo must be 2 MB or smaller", "too_large");
+  return storeLogo(root, await readFile(source));
+}
+
+/** Why a logo was refused: too big, or not a PNG/JPEG/WebP image by its content. */
+export class LogoError extends Error {
+  constructor(
+    message: string,
+    readonly reason: "too_large" | "bad_image",
+  ) {
+    super(message);
+    this.name = "LogoError";
+  }
+}
+
+/**
+ * Validate logo bytes (an upload from the Evalua app) and store them like `copyLogo`: the same
+ * size limit and magic-byte checks, the same `<root>/assets/logo.<ext>` target.
+ */
+export async function saveLogoBytes(root: string, bytes: Uint8Array): Promise<string> {
+  if (bytes.byteLength > MAX_LOGO_BYTES) {
+    throw new LogoError("The logo must be 2 MB or smaller", "too_large");
+  }
+  return storeLogo(root, bytes);
+}
+
+async function storeLogo(root: string, bytes: Uint8Array): Promise<string> {
   const kind = detectImageKind(bytes);
   if (kind === "svg") {
-    throw new Error("SVG logos are not supported; use a PNG, JPEG or WebP image");
+    throw new LogoError("SVG logos are not supported; use a PNG, JPEG or WebP image", "bad_image");
   }
   if (!kind)
-    throw new Error("The logo must be a PNG, JPEG or WebP image (checked by file content)");
+    throw new LogoError(
+      "The logo must be a PNG, JPEG or WebP image (checked by file content)",
+      "bad_image",
+    );
   const target = join(root, "assets", `logo.${kind}`);
   await ensureInside(root, target);
   await atomicWrite(target, bytes, 0o644);

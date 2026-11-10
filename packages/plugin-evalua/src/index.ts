@@ -1,4 +1,5 @@
 import { type CommandContext, definePlugin, type PluginAPI, type ToolResult } from "@alisio/sdk";
+import { registerEvaluaApp } from "./app/register.js";
 import { type CoordinatorOptions, EvaluaCoordinator } from "./coordinator.js";
 import { resourcePaths } from "./resources.js";
 import { VERSION } from "./version.js";
@@ -222,13 +223,13 @@ export function registerEvalua(
     );
   register(
     "init",
-    "Create the Evalua workspace and set up the teacher profile (asked once)",
+    "Create the Evalua workspace and set up the teacher profile (asked once); the Evalua app (Alisio 0.11.6+) does the same with forms",
     "[dir] [--edit]",
     coordinator.init.bind(coordinator),
   );
   register(
     "new",
-    "Start a new exam: a short interview whose draft waits for the teacher's approval",
+    "Start a new exam: a short interview whose draft waits for the teacher's approval (or open the Evalua app, Alisio 0.11.6+)",
     "[topic description | id=value ...]",
     coordinator.new.bind(coordinator),
   );
@@ -454,6 +455,9 @@ export function registerEvalua(
       return text(result.text, result.isError);
     },
   });
+  // The app comes last and is feature-detected: without `api.apps` (Alisio < 0.11.5), or if its
+  // registration fails, every command and tool above works exactly as before.
+  registerEvaluaApp(api, coordinator);
   return coordinator;
 }
 

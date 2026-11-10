@@ -2,9 +2,15 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import type { PluginAPI } from "@alisio/sdk";
 import { buildBlueprint } from "./blueprint.js";
-import { buildExam, type PdfPrinter } from "./build.js";
+import {
+  type BuildInput,
+  type BuildOutput,
+  type BuildProgress,
+  buildExam,
+  type PdfPrinter,
+} from "./build.js";
 import { verifyExam } from "./checks.js";
-import { detectChrome } from "./chrome/detect.js";
+import { type ChromeDetection, detectChrome } from "./chrome/detect.js";
 import { type Clock, systemClock } from "./clock.js";
 import { type ExamSpec, fromDraft, parseExam, stringifyExam, toSpecLike } from "./exam.js";
 import { families, familyIds } from "./families/index.js";
@@ -31,8 +37,10 @@ import {
   shippedQuotesDir,
   shippedThemesDir,
 } from "./knowledge/index.js";
+import type { CheckFinding } from "./knowledge/report.js";
 import type { LevelCalibration, LoadedKnowledge } from "./knowledge/types.js";
 import { loadLocale } from "./locales.js";
+import { Mutex } from "./lock.js";
 import { buildPlanProject, buildVersionLog } from "./plan.js";
 import {
   copyLogo,
@@ -69,7 +77,37 @@ export interface CoordinatorOptions {
   catalog?: TopicCatalog;
   /** Test seam: when given, the build uses this printer instead of launching a browser. */
   printer?: PdfPrinter;
+  /** Test seam: how the print browser is found (default: `detectChrome`). */
+  detectBrowser?: () => Promise<ChromeDetection>;
 }
+
+/** Chat answer to generate/build/approve/set-prompts while an app build job runs (app spec D3). */
+export const APP_BUILD_BUSY = "A build is running in the Evalua app; try again when it finishes.";
+
+/** What `prepareBuild` gathered: everything `buildExam` needs, read once under the lock. */
+export interface PreparedBuild {
+  examId: string;
+  folder: string;
+  root: string;
+  itemCount: number;
+  itemsText: string;
+  input: BuildInput;
+  browserFound: boolean;
+  spec: ExamSpec;
+}
+
+/** The result of Gate A or B, before it is phrased for the chat. */
+export interface ApproveResult {
+  gate: "a" | "b";
+  examId: string;
+  root: string;
+  folder?: string;
+}
+
+/** The result of a generation run, before it is phrased for the chat. */
+export type GenerateOutcome =
+  | { blocked: CheckFinding[] }
+  | { examId: string; count: number; sha: string };
 
 const profileKeys = ["language", "teacher_name", "institution", "logo", "subject"].flatMap(
   (key) => [key, `${key}:text`],
@@ -90,7 +128,11 @@ export class EvaluaCoordinator {
   private readonly clock: Clock;
   private readonly injectedCatalog: TopicCatalog | undefined;
   private readonly printer: PdfPrinter | undefined;
+  private readonly detectBrowser: () => Promise<ChromeDetection>;
   private readonly catalogCache = new Map<string, TopicCatalog>();
+  /** Serializes every state read-modify-write of this activation: chat, tools and app (D2). */
+  readonly lock = new Mutex();
+  private appBuildRunning: () => boolean = () => false;
 
   constructor(
     private readonly api: PluginAPI,
@@ -99,6 +141,67 @@ export class EvaluaCoordinator {
     this.clock = options.clock ?? systemClock;
     this.injectedCatalog = options.catalog;
     this.printer = options.printer;
+    this.detectBrowser = options.detectBrowser ?? (() => detectChrome());
+  }
+
+  /** The app reports its build job here, so the chat answers "busy" while it runs (D3). */
+  setAppBuildGuard(running: () => boolean): void {
+    this.appBuildRunning = running;
+  }
+
+  private locked<T>(section: () => Promise<T>): Promise<T> {
+    return this.lock.run(section);
+  }
+
+  // ---- seams for the Evalua app (callers that write hold `lock`) ----------------------------
+
+  /** The catalog the interview uses for this workspace (the app's topic list). */
+  async catalogForWorkspace(workspace: string): Promise<TopicCatalog> {
+    const state = (await readState(workspace)) ?? emptyState(DEFAULT_ROOT, this.now());
+    return this.catalogFor(workspace, state);
+  }
+
+  /** Absolute evalua root of a workspace (default root when there is no state yet). */
+  async rootFor(workspace: string, state?: EvaluaState): Promise<string> {
+    return this.rootOf(workspace, state);
+  }
+
+  /** Stamps `updatedAt` and writes the state atomically (caller holds `lock`). */
+  async saveState(workspace: string, state: EvaluaState): Promise<void> {
+    await this.save(workspace, state);
+  }
+
+  /** The current time as an ISO string, from the injected clock. */
+  nowIso(): string {
+    return this.now();
+  }
+
+  /** The clock (tests inject a fixed one). */
+  get clockSource(): Clock {
+    return this.clock;
+  }
+
+  /** The loaded knowledge base of a workspace (shipped plus workspace packs). */
+  knowledgeFor(workspace: string): Promise<LoadedKnowledge> {
+    return this.loadKnowledgeFor(workspace);
+  }
+
+  /** The exam folder whose `exam.yaml` has this id. */
+  examFolder(base: string, id: string) {
+    return this.findExamFolder(base, id);
+  }
+
+  /** The level calibration of an exam or draft, from its packs or topics. */
+  calibrationOf(
+    spec: { packs: string[]; topics: string[]; level: ExamSpec["level"] },
+    knowledge: LoadedKnowledge,
+  ): LevelCalibration {
+    return this.calibrationFor(spec as ExamSpec, knowledge);
+  }
+
+  /** Finds the print browser (injected in tests). */
+  detect(): Promise<ChromeDetection> {
+    return this.detectBrowser();
   }
 
   /** The knowledge-base catalog for a workspace: injected (tests) or loaded from packs. */
@@ -143,6 +246,10 @@ export class EvaluaCoordinator {
 
   /** `/evalua:init [dir] [--edit]`: set up the workspace and the teacher profile. */
   async init(args: string, sessionId?: string): Promise<string> {
+    return this.locked(() => this.initUnlocked(args, sessionId));
+  }
+
+  private async initUnlocked(args: string, sessionId?: string): Promise<string> {
     const workspace = this.workspace(sessionId);
     let state = await readState(workspace);
     const pending = state?.interview?.pending;
@@ -185,6 +292,10 @@ export class EvaluaCoordinator {
 
   /** `/evalua:new [description | id=value ...]`: run the interview and keep the draft until Gate A. */
   async new(args: string, sessionId?: string): Promise<string> {
+    return this.locked(() => this.newUnlocked(args, sessionId));
+  }
+
+  private async newUnlocked(args: string, sessionId?: string): Promise<string> {
     const workspace = this.workspace(sessionId);
     let state = await readState(workspace);
     const pending = state?.interview?.pending;
@@ -280,6 +391,13 @@ export class EvaluaCoordinator {
     workspace: string,
     input: Record<string, string | string[] | undefined>,
   ): Promise<{ text: string; isError: boolean }> {
+    return this.locked(() => this.answerUnlocked(workspace, input));
+  }
+
+  private async answerUnlocked(
+    workspace: string,
+    input: Record<string, string | string[] | undefined>,
+  ): Promise<{ text: string; isError: boolean }> {
     const state = await readState(workspace);
     const pending = state?.interview?.pending;
     if (!state || !pending) {
@@ -309,6 +427,13 @@ export class EvaluaCoordinator {
 
   /** `evalua_profile`: read or update the teacher profile with validation. */
   async profileTool(
+    workspace: string,
+    input: { action: "get" | "set" } & ProfileInput,
+  ): Promise<{ text: string; isError: boolean }> {
+    return this.locked(() => this.profileUnlocked(workspace, input));
+  }
+
+  private async profileUnlocked(
     workspace: string,
     input: { action: "get" | "set" } & ProfileInput,
   ): Promise<{ text: string; isError: boolean }> {
@@ -407,7 +532,7 @@ export class EvaluaCoordinator {
   /** `/evalua:doctor`: report the knowledge base and the available print browser. */
   async doctor(_args: string, sessionId?: string): Promise<string> {
     const workspace = this.workspace(sessionId);
-    const detection = await detectChrome();
+    const detection = await this.detectBrowser();
     const knowledge = await this.loadKnowledgeFor(workspace);
     const errors = knowledge.report.results.filter(
       (finding) => finding.severity === "error",
@@ -451,7 +576,8 @@ export class EvaluaCoordinator {
     return pack.levels[spec.level];
   }
 
-  private async approveAt(workspace: string, gate: string): Promise<string> {
+  /** Gate A or B (caller holds `lock`). Throws the same errors the chat shows. */
+  async approveCore(workspace: string, gate: "a" | "b"): Promise<ApproveResult> {
     const state = await readState(workspace);
     if (!state) throw new Error("No Evalua workspace here. Run /evalua:new first.");
     const base = await this.rootOf(workspace, state);
@@ -465,7 +591,7 @@ export class EvaluaCoordinator {
         gates: { ...progress.gates, b: { decision: "approved", at: this.now() } },
       };
       await this.save(workspace, state);
-      return "Gate B approved: the final package is approved.";
+      return { gate, examId: active, root: state.root };
     }
     const draft = state.draft;
     if (!draft) throw new Error("There is no draft exam to approve. Run /evalua:new first.");
@@ -482,17 +608,26 @@ export class EvaluaCoordinator {
     };
     delete state.draft;
     await this.save(workspace, state);
-    return `Gate A approved. Exam folder: ${state.root}/exams/${folder.name}. Run /evalua:generate to build the items.`;
+    return { gate, examId: id, root: state.root, folder: folder.name };
+  }
+
+  private async approveAt(workspace: string, gate: string): Promise<string> {
+    const result = await this.approveCore(workspace, gate === "b" ? "b" : "a");
+    if (result.gate === "b") return "Gate B approved: the final package is approved.";
+    return `Gate A approved. Exam folder: ${result.root}/exams/${result.folder}. Run /evalua:generate to build the items.`;
   }
 
   /** `/evalua:approve a|b`: Gate A allocates the folder and freezes exam.yaml; Gate B closes it. */
   async approveCommand(args: string, sessionId?: string): Promise<string> {
     const gate = args.trim().toLowerCase();
     if (gate !== "a" && gate !== "b") throw new Error("Usage: /evalua:approve a|b");
-    return this.approveAt(this.workspace(sessionId), gate);
+    const workspace = this.workspace(sessionId);
+    if (this.appBuildRunning()) return APP_BUILD_BUSY;
+    return this.locked(() => this.approveAt(workspace, gate));
   }
 
-  private async generateAt(workspace: string): Promise<string> {
+  /** Blueprint, generation, verification and items.json for the active exam (caller holds `lock`). */
+  async generateCore(workspace: string): Promise<GenerateOutcome> {
     const state = await readState(workspace);
     const active = state?.activeExamId;
     if (!state || !active) {
@@ -527,11 +662,7 @@ export class EvaluaCoordinator {
     const errors = [...result.findings, ...examFindings].filter(
       (finding) => finding.severity === "error",
     );
-    if (errors.length > 0) {
-      return `Generation blocked:\n${errors
-        .map((finding) => `- ${finding.id} ${finding.subject}: ${finding.message}`)
-        .join("\n")}`;
-    }
+    if (errors.length > 0) return { blocked: errors };
     const frozen = freezeItems(result.items);
     await atomicWrite(join(found.path, "items.json"), frozen, 0o644);
     const progress = state.exams[active];
@@ -543,16 +674,42 @@ export class EvaluaCoordinator {
       };
     }
     await this.save(workspace, state);
-    return `Generated ${result.items.length} items for ${active} (items.json SHA-256 ${itemsSha256(frozen).slice(0, 12)}).`;
+    return { examId: active, count: result.items.length, sha: itemsSha256(frozen) };
+  }
+
+  private async generateAt(workspace: string): Promise<string> {
+    const outcome = await this.generateCore(workspace);
+    if ("blocked" in outcome) {
+      return `Generation blocked:\n${outcome.blocked
+        .map((finding) => `- ${finding.id} ${finding.subject}: ${finding.message}`)
+        .join("\n")}`;
+    }
+    return `Generated ${outcome.count} items for ${outcome.examId} (items.json SHA-256 ${outcome.sha.slice(0, 12)}).`;
   }
 
   /** `/evalua:generate`: blueprint + generate + verify + freeze items.json. */
   async generateCommand(_args: string, sessionId?: string): Promise<string> {
-    return this.generateAt(this.workspace(sessionId));
+    const workspace = this.workspace(sessionId);
+    if (this.appBuildRunning()) return APP_BUILD_BUSY;
+    return this.locked(() => this.generateAt(workspace));
   }
 
   /** `evalua_exam`: approve a gate, report the active exam, or save item instructions. */
   async examTool(
+    workspace: string,
+    input: {
+      action: "approve" | "status" | "set-prompts";
+      gate?: string;
+      prompts?: Record<string, string[]>;
+    },
+  ): Promise<{ text: string; isError: boolean }> {
+    if (input.action !== "status" && this.appBuildRunning()) {
+      return { text: APP_BUILD_BUSY, isError: true };
+    }
+    return this.locked(() => this.examUnlocked(workspace, input));
+  }
+
+  private async examUnlocked(
     workspace: string,
     input: {
       action: "approve" | "status" | "set-prompts";
@@ -577,11 +734,8 @@ export class EvaluaCoordinator {
     }
   }
 
-  /** Saves agent-authored item instructions into the active exam's `exam.yaml`. */
-  private async setPromptsAt(
-    workspace: string,
-    prompts: Record<string, string[]>,
-  ): Promise<string> {
+  /** Saves item instructions into the active exam's `exam.yaml` (caller holds `lock`). */
+  async setPromptsCore(workspace: string, prompts: Record<string, string[]>): Promise<string[]> {
     const state = await readState(workspace);
     const active = state?.activeExamId;
     if (!state || !active) throw new Error("No approved exam. Run /evalua:approve a first.");
@@ -600,7 +754,14 @@ export class EvaluaCoordinator {
     if (Object.keys(clean).length > 0) spec.itemPrompts = clean;
     else delete spec.itemPrompts;
     await writeFile(join(found.path, "exam.yaml"), stringifyExam(spec), { mode: 0o644 });
-    const saved = Object.keys(clean);
+    return Object.keys(clean);
+  }
+
+  private async setPromptsAt(
+    workspace: string,
+    prompts: Record<string, string[]>,
+  ): Promise<string> {
+    const saved = await this.setPromptsCore(workspace, prompts);
     return saved.length > 0
       ? `Saved item instructions for: ${saved.join(", ")}.`
       : "Cleared item instructions; the families' defaults apply.";
@@ -608,18 +769,21 @@ export class EvaluaCoordinator {
 
   /** `evalua_generate`: run the generation pipeline and freeze items.json. */
   async generateTool(workspace: string): Promise<{ text: string; isError: boolean }> {
-    try {
-      return { text: await this.generateAt(workspace), isError: false };
-    } catch (error) {
-      return {
-        text: error instanceof Error ? error.message : "evalua_generate failed",
-        isError: true,
-      };
-    }
+    if (this.appBuildRunning()) return { text: APP_BUILD_BUSY, isError: true };
+    return this.locked(async () => {
+      try {
+        return { text: await this.generateAt(workspace), isError: false };
+      } catch (error) {
+        return {
+          text: error instanceof Error ? error.message : "evalua_generate failed",
+          isError: true,
+        };
+      }
+    });
   }
 
-  /** `/evalua:build`: read the approved exam folder and write the documents. */
-  private async buildAt(workspace: string): Promise<string> {
+  /** Reads everything a build needs for the active exam (caller holds `lock`). */
+  async prepareBuild(workspace: string): Promise<PreparedBuild> {
     const state = await readState(workspace);
     const active = state?.activeExamId;
     if (!state || !active) {
@@ -655,40 +819,69 @@ export class EvaluaCoordinator {
       examId: found.spec.id,
       entries: quotes.entries,
     });
-    const detection = await detectChrome();
-    const result = await buildExam({
-      spec: toSpecLike(found.spec),
-      profile,
-      items,
-      locale: localeResult.locale,
-      theme: resolution.theme,
-      paper: profile.paper,
-      columns: found.spec.columns,
-      blueprint,
-      closing,
-      topicNames: Object.fromEntries(
-        knowledge.topics.map((topic) => [
-          topic.fullId,
-          localized(topic.name, profile.language) || topic.fullId,
-        ]),
-      ),
-      executable: detection.path ?? "",
-      outDir: found.path,
-      maxPages: found.spec.maxPages,
-      ...(this.printer === undefined ? {} : { printer: this.printer }),
-    });
+    const detection = await this.detectBrowser();
+    return {
+      examId: active,
+      folder: found.name,
+      root: state.root,
+      itemCount: items.length,
+      itemsText,
+      browserFound: detection.path !== undefined,
+      spec: found.spec,
+      input: {
+        spec: toSpecLike(found.spec),
+        profile,
+        items,
+        locale: localeResult.locale,
+        theme: resolution.theme,
+        paper: profile.paper,
+        columns: found.spec.columns,
+        blueprint,
+        closing,
+        topicNames: Object.fromEntries(
+          knowledge.topics.map((topic) => [
+            topic.fullId,
+            localized(topic.name, profile.language) || topic.fullId,
+          ]),
+        ),
+        executable: detection.path ?? "",
+        outDir: found.path,
+        maxPages: found.spec.maxPages,
+        ...(this.printer === undefined ? {} : { printer: this.printer }),
+      },
+    };
+  }
+
+  /** Prints and writes the documents; needs no lock (the app runs it as a job). */
+  runBuild(
+    prepared: PreparedBuild,
+    options: { onProgress?: BuildProgress; signal?: AbortSignal } = {},
+  ): Promise<BuildOutput> {
+    return buildExam({ ...prepared.input, ...options });
+  }
+
+  /** Writes the plan and version log and marks the exam built (caller holds `lock`). */
+  async finishBuild(
+    workspace: string,
+    prepared: PreparedBuild,
+    result: BuildOutput,
+  ): Promise<void> {
+    const state = await readState(workspace);
+    if (!state) throw new Error("No Evalua workspace here. Run /evalua:new first.");
+    const spec = prepared.spec;
+    const active = prepared.examId;
     const progress = state.exams[active] ?? { phase: "generated", revision: 1, gates: {} };
     const planInput = {
-      examId: found.spec.id,
-      title: found.spec.title,
-      theme: found.spec.theme,
-      grade: found.spec.grade,
-      level: found.spec.level,
-      questionCount: found.spec.questionCount,
-      itemTypes: found.spec.itemTypes,
-      packs: found.spec.packs,
-      topics: found.spec.topics,
-      schoolYear: found.spec.schoolYear,
+      examId: spec.id,
+      title: spec.title,
+      theme: spec.theme,
+      grade: spec.grade,
+      level: spec.level,
+      questionCount: spec.questionCount,
+      itemTypes: spec.itemTypes,
+      packs: spec.packs,
+      topics: spec.topics,
+      schoolYear: spec.schoolYear,
       revision: progress.revision ?? 1,
       gates: progress.gates,
       phases: [
@@ -699,25 +892,29 @@ export class EvaluaCoordinator {
         { name: "Layout fit", status: "done" as const },
         { name: "Package", status: "done" as const },
       ],
-      seeds: [found.spec.id],
+      seeds: [spec.id],
       pluginVersion: VERSION,
-      itemsSha256: itemsSha256(itemsText),
+      itemsSha256: itemsSha256(prepared.itemsText),
       ...(result.engineVersion === undefined ? {} : { engine: result.engineVersion }),
       builtAt: this.now(),
     };
-    await atomicWrite(
-      join(found.path, "05_control_versiones.md"),
-      buildVersionLog(planInput),
-      0o644,
-    );
-    await atomicWrite(join(found.path, "00_plan_proyecto.md"), buildPlanProject(planInput), 0o644);
+    const outDir = prepared.input.outDir;
+    await atomicWrite(join(outDir, "05_control_versiones.md"), buildVersionLog(planInput), 0o644);
+    await atomicWrite(join(outDir, "00_plan_proyecto.md"), buildPlanProject(planInput), 0o644);
     state.exams[active] = { ...progress, phase: "built" };
     await this.save(workspace, state);
+  }
+
+  /** `/evalua:build`: read the approved exam folder and write the documents. */
+  private async buildAt(workspace: string): Promise<string> {
+    const prepared = await this.prepareBuild(workspace);
+    const result = await this.runBuild(prepared);
+    await this.finishBuild(workspace, prepared, result);
     const errors = result.findings.filter((finding) => finding.severity === "error");
     const warnings = result.findings.filter((finding) => finding.severity === "warning");
     return [
-      `Built ${items.length} items into ${state.root}/exams/${found.name} (${result.files.length} files).`,
-      detection.path === undefined
+      `Built ${prepared.itemCount} items into ${prepared.root}/exams/${prepared.folder} (${result.files.length} files).`,
+      !prepared.browserFound
         ? "No browser: HTML only, page limits not verified (EVL-LAY-000)."
         : `Engine: ${result.engineVersion ?? "unknown"}.`,
       ...(errors.length > 0
@@ -729,19 +926,24 @@ export class EvaluaCoordinator {
 
   /** `/evalua:build`: build the documents for the active exam. */
   async buildCommand(_args: string, sessionId?: string): Promise<string> {
-    return this.buildAt(this.workspace(sessionId));
+    const workspace = this.workspace(sessionId);
+    if (this.appBuildRunning()) return APP_BUILD_BUSY;
+    return this.locked(() => this.buildAt(workspace));
   }
 
   /** `evalua_build`: build the documents for the active exam. */
   async buildTool(workspace: string): Promise<{ text: string; isError: boolean }> {
-    try {
-      return { text: await this.buildAt(workspace), isError: false };
-    } catch (error) {
-      return {
-        text: error instanceof Error ? error.message : "evalua_build failed",
-        isError: true,
-      };
-    }
+    if (this.appBuildRunning()) return { text: APP_BUILD_BUSY, isError: true };
+    return this.locked(async () => {
+      try {
+        return { text: await this.buildAt(workspace), isError: false };
+      } catch (error) {
+        return {
+          text: error instanceof Error ? error.message : "evalua_build failed",
+          isError: true,
+        };
+      }
+    });
   }
 
   // ---- interview engine -------------------------------------------------------------------

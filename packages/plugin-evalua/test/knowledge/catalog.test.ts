@@ -44,4 +44,23 @@ describe("topic catalog", () => {
     expect(source.resolveTopic?.("basic-math/geometry")).toBe("basic-math/geometry");
     expect(source.resolveTopic?.("algo que no existe en la base")).toBeUndefined();
   });
+
+  it("looks a topic up by full id and lists every topic with its pack, grades and levels (app D1)", async () => {
+    const source = await catalog();
+    const fractions = source.topic?.("basic-math/fractions");
+    expect(fractions).toMatchObject({
+      id: "basic-math/fractions",
+      name: { es: "Fracciones" },
+      pack: "basic-math",
+      packName: { es: "Matemática básica", en: "Basic math" },
+      grades: ["Sexto", "Séptimo"],
+      supports: { single_choice: true, practice: true },
+    });
+    expect(fractions?.levels).toEqual(["basico", "intermedio", "avanzado", "genio"]);
+    expect(source.topic?.("fractions")).toBeUndefined();
+    expect(source.topic?.("basic-math/nope")).toBeUndefined();
+    const all = source.topics?.() ?? [];
+    expect(all.map((entry) => entry.id)).toContain("algebra/algebraic-expressions");
+    expect(all).toHaveLength(23);
+  });
 });
