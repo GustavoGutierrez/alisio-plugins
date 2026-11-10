@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Semantic">
+  <defs>
+    <linearGradient id="semantic-icon-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f0b24"/>
+      <stop offset="1" stop-color="#3a2384"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#semantic-icon-bg)"/>
+  <path d="M96 140 h130 a26 26 0 0 1 26 26 v220 h-130 a26 26 0 0 1 -26 -26 z" fill="#f4f1ff"/>
+  <path d="M416 140 h-130 a26 26 0 0 0 -26 26 v220 h130 a26 26 0 0 0 26 -26 z" fill="#e4ddff"/>
+  <path d="M128 196 h92 M128 298 h72" stroke="#a79fd0" stroke-width="22" stroke-linecap="round"/>
+  <path d="M128 247 h92" stroke="#f5b84a" stroke-width="30" stroke-linecap="round"/>
+  <path d="M292 196 h92 M292 298 h92" stroke="#a79fd0" stroke-width="22" stroke-linecap="round"/>
+  <path d="M292 247 h70" stroke="#f5b84a" stroke-width="30" stroke-linecap="round"/>
+  <circle cx="400" cy="100" r="34" fill="#f5b84a"/>
+</svg>

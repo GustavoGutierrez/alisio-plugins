@@ -1,0 +1,66 @@
+{
+  "name": "@alisio/plugin-semantic",
+  "version": "0.0.0",
+  "description": "Local semantic search engine for Alisio (LanceDB + multilingual-e5-small on ONNX) plus a Notebook app that answers only from your sources, with citations.",
+  "keywords": [
+    "alisio-plugin",
+    "semantic-search",
+    "rag",
+    "embeddings",
+    "lancedb"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-semantic"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-semantic",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "assets",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "cover.svg",
+    "icon.svg"
+  ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.11.7 <0.12.0"
+  },
+  "dependencies": {
+    "@huggingface/tokenizers": "0.2.0",
+    "@lancedb/lancedb": "0.30.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.11.7",
+    "esbuild": "0.28.2",
+    "jsdom": "31.0.0",
+    "pdfjs-dist": "6.5.438",
+    "typescript": "7.0.2",
+    "vitest": "5.0.4"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/build-ui.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  }
+}

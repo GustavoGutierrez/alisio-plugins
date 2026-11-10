@@ -1,0 +1,12 @@
+flowchart TD
+  question(["Question + ticked sources"]) --> vector["Vector search: top 20 (api.semantic.trySearch)"]
+  question --> keyword["Keyword search: FTS5 BM25 top 20"]
+  vector -->|"unavailable: skip"| fuse
+  vector --> fuse["Reciprocal Rank Fusion k=60, keep top 8"]
+  keyword --> fuse
+  fuse --> found{"Any passage?"}
+  found -->|no| notfound(["Fixed reply: not found in your sources (no model call)"])
+  found -->|yes| prompt["Prompt: rules + numbered passage blocks + last 6 messages"]
+  prompt --> complete["api.model.complete (no tools)"]
+  complete --> cite["Parse [n], drop unknown numbers"]
+  cite --> answer(["Answer with citations, or a not-grounded warning"])

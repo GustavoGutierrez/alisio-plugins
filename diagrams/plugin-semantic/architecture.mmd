@@ -1,0 +1,24 @@
+flowchart LR
+  subgraph frame["Notebook frame (sandboxed iframe)"]
+    ui["Sources, Chat, Guide"]
+    pdf["PDF.js text extraction"]
+  end
+  subgraph plugin["Semantic plugin (backend)"]
+    actions["App actions (read / write)"]
+    service["Notebook service and jobs"]
+    sqlite[("notebook.db: sources, chunks, FTS5, chat")]
+    embedder["Embedding provider semantic.e5 (worker thread, ONNX)"]
+    store["Vector store semantic.lance (LanceDB)"]
+  end
+  subgraph host["Alisio host"]
+    port["api.semantic ports"]
+    model["api.model.complete"]
+  end
+  ui -->|"MessagePort requests"| actions
+  pdf --> ui
+  actions --> service
+  service --> sqlite
+  service -->|"index, trySearch, drop"| port
+  service -->|"passages + question"| model
+  port --> embedder
+  port --> store

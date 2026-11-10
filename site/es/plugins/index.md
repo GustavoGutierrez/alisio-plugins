@@ -24,6 +24,7 @@ Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portad
 - [OpenCode Go](./opencode-go) — OpenCode Go multi-protocol model gateway (`model-provider`)
 - [OpenRouter](./openrouter) — OpenRouter OpenAI-compatible provider (`model-provider`)
 - [Scribe](./scribe) — Scientific writing studio with agent-assisted LaTeX, revisions and PDF builds. (`tools`, `ui`)
+- [Semantic](./semantic) — Local semantic search (LanceDB + multilingual-e5-small) and a Notebook app grounded in your sources. (`search`, `storage`)
 - [Swarm](./swarm) — Runs a handoff-driven pipeline of specialised agents, each in its own git worktree, with durable handoffs and human gates. (`methodology-harness`)
 - [Telemetry](./telemetry) — Privacy-first local agent observability with a SQLite source of truth, bounded read-only query tools, and opt-in OpenTelemetry-aligned OTLP export (`analytics`)
 - [Thesis Studio](./thesis) — Plans, researches, drafts and typesets university theses with verified evidence and deterministic quality gates. (`methodology-harness`)

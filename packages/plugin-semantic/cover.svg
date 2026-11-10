@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="semantic-cover-title semantic-cover-desc">
+  <title id="semantic-cover-title">Semantic</title>
+  <desc id="semantic-cover-desc">An open notebook whose highlighted passages connect to a constellation of points, next to the plugin name, representing local semantic search and answers grounded in your own sources.</desc>
+  <defs>
+    <linearGradient id="semantic-cover-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f0b24"/>
+      <stop offset="0.55" stop-color="#22175a"/>
+      <stop offset="1" stop-color="#3a2384"/>
+    </linearGradient>
+    <radialGradient id="semantic-cover-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#b9a4ff" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#b9a4ff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="semantic-cover-frame"><rect width="1600" height="900" rx="44"/></clipPath>
+  </defs>
+  <g clip-path="url(#semantic-cover-frame)">
+    <rect width="1600" height="900" fill="url(#semantic-cover-bg)"/>
+    <circle cx="1150" cy="430" r="380" fill="url(#semantic-cover-glow)"/>
+    <g fill="none" stroke="#b9a4ff" stroke-opacity="0.14" stroke-width="3">
+      <path d="M-40 790 C 360 680 700 880 1080 770 S 1620 660 1700 730"/>
+      <path d="M-40 840 C 380 740 720 920 1100 820 S 1620 720 1700 790"/>
+    </g>
+    <text x="110" y="420" font-family="Arial,Helvetica,sans-serif" font-size="128" font-weight="700" fill="#f4f1ff">Semantic</text>
+    <text x="116" y="500" font-family="Arial,Helvetica,sans-serif" font-size="36" fill="#cfc6f5">Ask your own sources. Get cited answers.</text>
+    <text x="116" y="600" font-family="Arial,Helvetica,sans-serif" font-size="28" fill="#f5b84a">Local semantic search and a Notebook for Alisio</text>
+    <g transform="translate(850 260) scale(0.88)">
+      <path d="M40 40 h250 a30 30 0 0 1 30 30 v380 h-250 a30 30 0 0 1 -30 -30 z" fill="#f4f1ff"/>
+      <path d="M600 40 h-250 a30 30 0 0 0 -30 30 v380 h250 a30 30 0 0 0 30 -30 z" fill="#e4ddff"/>
+      <path d="M320 70 v380" stroke="#22175a" stroke-width="6"/>
+      <path d="M85 110 h190 M85 160 h160 M85 260 h190 M85 310 h140 M85 360 h180" stroke="#a79fd0" stroke-width="16" stroke-linecap="round"/>
+      <path d="M85 210 h190" stroke="#f5b84a" stroke-width="22" stroke-linecap="round"/>
+      <path d="M365 110 h190 M365 160 h120 M365 210 h190 M365 310 h170 M365 360 h120" stroke="#a79fd0" stroke-width="16" stroke-linecap="round"/>
+      <path d="M365 260 h170" stroke="#f5b84a" stroke-width="22" stroke-linecap="round"/>
+      <g stroke="#f5b84a" stroke-width="5" stroke-opacity="0.8" fill="none">
+        <path d="M275 210 C 420 -40 560 -60 640 -10"/>
+        <path d="M535 260 C 640 200 680 110 700 60"/>
+      </g>
+      <g fill="#f5b84a">
+        <circle cx="640" cy="-10" r="16"/>
+        <circle cx="700" cy="60" r="16"/>
+      </g>
+      <g fill="#b9a4ff">
+        <circle cx="580" cy="-60" r="9"/>
+        <circle cx="720" cy="-40" r="11"/>
+        <circle cx="760" cy="30" r="8"/>
+        <circle cx="660" cy="120" r="9"/>
+      </g>
+      <g stroke="#b9a4ff" stroke-width="3" stroke-opacity="0.6">
+        <path d="M640 -10 L580 -60 M640 -10 L720 -40 M700 60 L760 30 M700 60 L660 120 M720 -40 L760 30"/>
+      </g>
+    </g>
+  </g>
+</svg>

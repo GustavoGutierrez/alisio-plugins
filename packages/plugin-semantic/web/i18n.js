@@ -1,0 +1,316 @@
+// Frame strings (en/es). The host locale decides; English is the fallback. No own selector.
+
+const en = {
+  appName: "Notebook",
+  tagline: "Ask questions about your own files. Every answer points to the passage it came from.",
+  newNotebook: "New notebook",
+  untitled: "Untitled notebook",
+  notebookTitle: "Notebook name",
+  create: "Create",
+  cancel: "Cancel",
+  continue: "Continue",
+  save: "Save",
+  close: "Close",
+  back: "All notebooks",
+  rename: "Rename",
+  delete: "Delete",
+  deleteNotebook: "Delete this notebook? Its sources, chat and search index are removed.",
+  deleteSource: "Remove this source from the notebook?",
+  emptyHome: "No notebooks yet. Create one and add a few files to start asking questions.",
+  source: "source",
+  sources: "sources",
+  updated: "Updated",
+  // Setup (one-time model download)
+  setupTitle: "Prepare semantic search",
+  setupNotice: (mb) =>
+    `Semantic search needs a one-time download of about ${mb} MB. After that it works offline.`,
+  setupWhy:
+    "It downloads a local search engine and model so passages are found by meaning, not only by exact words. Your files never leave this computer for this step.",
+  setupStart: "Download and prepare",
+  setupLater: "Not now",
+  setupLaterNote: "You can still use notebooks with keyword search.",
+  setupDownloading: "Downloading the search engine and model…",
+  setupOverall: (done, total) => `${done} of ${total} MB`,
+  setupFile: (index, count) => `File ${index} of ${count}`,
+  setupCancel: "Cancel download",
+  setupDone:
+    "Semantic search is ready. The engine and model are saved on this computer and will not be downloaded again.",
+  setupCancelled: "Download cancelled. Nothing was kept; you can start again at any time.",
+  setupFailed: "The download did not finish.",
+  setupRetry: "Try again",
+  activation: {
+    activated: "It is now turned on for Alisio.",
+    already_active: "It was already turned on.",
+    other_provider_active:
+      "Alisio already uses another semantic search provider, so nothing was changed.",
+    declined: "You chose not to turn it on. Run the setup again whenever you like.",
+    needs_confirmation:
+      "Alisio could not ask you to confirm here. Run /semantic:setup in the chat to turn it on.",
+    disabled: "Semantic search is turned off in Alisio's settings.",
+    unavailable: "Alisio could not turn it on right now.",
+    no_semantic_api: "This version of Alisio cannot use it yet; keyword search keeps working.",
+    activate_unsupported:
+      "Turn it on in Alisio's settings: semantic.embedding = semantic.e5 and semantic.store = semantic.lance.",
+  },
+  keywordOnly: "Keyword search only",
+  keywordOnlyHint:
+    "Answers use exact-word search. Prepare semantic search to also find passages by meaning.",
+  hostTooOld: (min) => `Semantic search needs Alisio ${min} or newer. Keyword search works.`,
+  // Notebook
+  sourcesPanel: "Sources",
+  chatPanel: "Chat",
+  guidePanel: "Guide",
+  addComputer: "Add from computer",
+  addWorkspace: "Add from workspace",
+  selectAll: "Use all sources",
+  noSources:
+    "Add files to this notebook: text, Markdown, CSV, JSON, HTML, Word (.docx), PowerPoint (.pptx), Excel (.xlsx) or PDF.",
+  status_indexing: (p) => `Reading… ${p}%`,
+  status_ready: "Ready",
+  status_keyword: "Ready (keyword search)",
+  status_failed: "Could not add",
+  summarize: "Summarize",
+  removeSource: "Remove",
+  includeSource: (name) => `Use ${name} in answers`,
+  fileTooLarge: (name) => `${name} is larger than 25 MB and was not added.`,
+  readingPdf: (name) => `Reading the text of ${name}…`,
+  workspaceTitle: "Add from workspace",
+  workspaceUp: "Up one folder",
+  workspaceEmpty: "No files here.",
+  workspaceRoot: "Workspace",
+  rebuildTitle: "The search model changed.",
+  rebuildText: "Rebuild the index so semantic search covers every source again.",
+  rebuild: "Rebuild index",
+  rebuilding: "Rebuilding the index…",
+  // Chat
+  emptyChatTitle: "Ask anything about your sources",
+  emptyChatText: "Answers use only the sources ticked on the left, with numbered citations.",
+  makeGuide: "Create a guide",
+  guideWorking: "Writing a guide…",
+  placeholder: "Ask a question about your sources…",
+  send: "Send",
+  stop: "Stop",
+  thinking: "Looking through your sources…",
+  you: "You",
+  assistant: "Notebook",
+  notGrounded: "This answer has no citation to your sources. Check it before relying on it.",
+  keywordAnswer: "Found with keyword search",
+  clearChat: "Clear chat",
+  clearChatConfirm: "Clear the whole chat of this notebook?",
+  noticeTitle: "Before your first question",
+  noticeText:
+    "To answer, the passages that match your question are sent to the AI model selected in Alisio, which may run outside this computer. Reading and indexing your files stays on this computer.",
+  noticeOk: "I understand, ask",
+  // Guide
+  summaryTitle: "Summary",
+  questionsTitle: "Suggested questions",
+  noGuide: "Create a guide to get a short summary and questions to start with.",
+  passageTitle: "Passage",
+  passageEmpty: "Click a citation number in an answer to read the exact passage here.",
+  page: (n) => `Page ${n}`,
+  slide: (n) => `Slide ${n}`,
+  sheet: (name) => `Sheet: ${name}`,
+  showSources: "Show sources panel",
+  hideSources: "Hide sources panel",
+  showGuide: "Show guide panel",
+  hideGuide: "Hide guide panel",
+  awaiting_approval: "Waiting for your approval in Alisio…",
+  unavailableTitle: "Notebook is unavailable",
+  unavailable:
+    "This app is no longer available. The plugin may have been turned off or updated; reopen Notebook from the Apps list.",
+  errors: {
+    invalid_input: "Something in the request was not valid.",
+    not_found: "That item no longer exists.",
+    limit_exceeded: "A notebook limit was reached (50 sources, 2 million characters per source).",
+    unsupported_format: "This file type is not supported.",
+    invalid_encoding: "The file is not valid UTF-8 text.",
+    no_text: "No readable text was found (scanned PDFs are not supported).",
+    path_outside_workspace: "That file is outside the workspace.",
+    file_too_large: "The file is larger than 25 MB.",
+    zip_invalid: "The Word file is damaged or too large.",
+    engine_unavailable: "Semantic search is not available right now (or not on this system).",
+    model_missing: "Prepare semantic search first.",
+    model_corrupt: "A downloaded file was damaged and was deleted. Try again.",
+    unknown_model: "The model chosen in the plugin settings is not supported.",
+    model_mismatch: "The search model changed. Rebuild the index.",
+    download_failed: "The download failed. Check your connection and try again.",
+    cancelled: "Cancelled.",
+    answer_failed: "The AI model did not answer. Check the model selected in Alisio.",
+    operation_failed: "Something went wrong. Please try again.",
+    not_permitted_write:
+      'Alisio did not allow Notebook to save changes. Set this session to Auto (or Full access), or approve the action in the chat with "Allow for session".',
+    not_permitted_process: "Alisio did not allow Notebook to run this action.",
+    timeout: "The action took too long. Check its status before trying again.",
+    too_large: "The request or its result is too large.",
+    too_many_requests: "Too many requests at once. Please try again.",
+    network: "Alisio could not be reached. Check your connection.",
+  },
+};
+
+const es = {
+  appName: "Cuaderno",
+  tagline:
+    "Haz preguntas sobre tus propios archivos. Cada respuesta indica el pasaje del que sale.",
+  newNotebook: "Nuevo cuaderno",
+  untitled: "Cuaderno sin título",
+  notebookTitle: "Nombre del cuaderno",
+  create: "Crear",
+  cancel: "Cancelar",
+  continue: "Continuar",
+  save: "Guardar",
+  close: "Cerrar",
+  back: "Todos los cuadernos",
+  rename: "Renombrar",
+  delete: "Eliminar",
+  deleteNotebook:
+    "¿Eliminar este cuaderno? Se borran sus fuentes, el chat y el índice de búsqueda.",
+  deleteSource: "¿Quitar esta fuente del cuaderno?",
+  emptyHome: "Aún no hay cuadernos. Crea uno y añade algunos archivos para empezar a preguntar.",
+  source: "fuente",
+  sources: "fuentes",
+  updated: "Actualizado",
+  setupTitle: "Preparar la búsqueda semántica",
+  setupNotice: (mb) =>
+    `La búsqueda semántica necesita una descarga única de unos ${mb} MB. Después funciona sin conexión.`,
+  setupWhy:
+    "Descarga un motor de búsqueda y un modelo locales para encontrar pasajes por su significado, no solo por palabras exactas. Tus archivos no salen de este equipo en este paso.",
+  setupStart: "Descargar y preparar",
+  setupLater: "Ahora no",
+  setupLaterNote: "Puedes usar los cuadernos con búsqueda por palabras clave.",
+  setupDownloading: "Descargando el motor y el modelo de búsqueda…",
+  setupOverall: (done, total) => `${done} de ${total} MB`,
+  setupFile: (index, count) => `Archivo ${index} de ${count}`,
+  setupCancel: "Cancelar descarga",
+  setupDone:
+    "La búsqueda semántica está lista. El motor y el modelo quedan guardados en este equipo y no se volverán a descargar.",
+  setupCancelled:
+    "Descarga cancelada. No se conservó nada; puedes empezar de nuevo cuando quieras.",
+  setupFailed: "La descarga no terminó.",
+  setupRetry: "Reintentar",
+  activation: {
+    activated: "Ya está activada en Alisio.",
+    already_active: "Ya estaba activada.",
+    other_provider_active:
+      "Alisio ya usa otro proveedor de búsqueda semántica, así que no se cambió nada.",
+    declined: "Elegiste no activarla. Ejecuta la preparación de nuevo cuando quieras.",
+    needs_confirmation:
+      "Alisio no pudo pedirte confirmación aquí. Ejecuta /semantic:setup en el chat para activarla.",
+    disabled: "La búsqueda semántica está desactivada en la configuración de Alisio.",
+    unavailable: "Alisio no pudo activarla en este momento.",
+    no_semantic_api:
+      "Esta versión de Alisio aún no puede usarla; la búsqueda por palabras clave sigue funcionando.",
+    activate_unsupported:
+      "Actívala en la configuración de Alisio: semantic.embedding = semantic.e5 y semantic.store = semantic.lance.",
+  },
+  keywordOnly: "Solo palabras clave",
+  keywordOnlyHint:
+    "Las respuestas usan búsqueda por palabras exactas. Prepara la búsqueda semántica para encontrar también por significado.",
+  hostTooOld: (min) =>
+    `La búsqueda semántica requiere Alisio ${min} o posterior. La búsqueda por palabras clave funciona.`,
+  sourcesPanel: "Fuentes",
+  chatPanel: "Chat",
+  guidePanel: "Guía",
+  addComputer: "Añadir desde el equipo",
+  addWorkspace: "Añadir del espacio de trabajo",
+  selectAll: "Usar todas las fuentes",
+  noSources:
+    "Añade archivos a este cuaderno: texto, Markdown, CSV, JSON, HTML, Word (.docx), PowerPoint (.pptx), Excel (.xlsx) o PDF.",
+  status_indexing: (p) => `Leyendo… ${p}%`,
+  status_ready: "Lista",
+  status_keyword: "Lista (palabras clave)",
+  status_failed: "No se pudo añadir",
+  summarize: "Resumir",
+  removeSource: "Quitar",
+  includeSource: (name) => `Usar ${name} en las respuestas`,
+  fileTooLarge: (name) => `${name} supera los 25 MB y no se añadió.`,
+  readingPdf: (name) => `Leyendo el texto de ${name}…`,
+  workspaceTitle: "Añadir del espacio de trabajo",
+  workspaceUp: "Subir una carpeta",
+  workspaceEmpty: "No hay archivos aquí.",
+  workspaceRoot: "Espacio de trabajo",
+  rebuildTitle: "El modelo de búsqueda cambió.",
+  rebuildText:
+    "Reconstruye el índice para que la búsqueda semántica cubra de nuevo todas las fuentes.",
+  rebuild: "Reconstruir índice",
+  rebuilding: "Reconstruyendo el índice…",
+  emptyChatTitle: "Pregunta lo que quieras sobre tus fuentes",
+  emptyChatText:
+    "Las respuestas usan solo las fuentes marcadas a la izquierda, con citas numeradas.",
+  makeGuide: "Crear una guía",
+  guideWorking: "Escribiendo una guía…",
+  placeholder: "Haz una pregunta sobre tus fuentes…",
+  send: "Enviar",
+  stop: "Detener",
+  thinking: "Buscando en tus fuentes…",
+  you: "Tú",
+  assistant: "Cuaderno",
+  notGrounded: "Esta respuesta no cita tus fuentes. Revísala antes de confiar en ella.",
+  keywordAnswer: "Encontrado con palabras clave",
+  clearChat: "Borrar chat",
+  clearChatConfirm: "¿Borrar todo el chat de este cuaderno?",
+  noticeTitle: "Antes de tu primera pregunta",
+  noticeText:
+    "Para responder, los pasajes que coinciden con tu pregunta se envían al modelo de IA elegido en Alisio, que puede funcionar fuera de este equipo. La lectura y el indexado de tus archivos se quedan en este equipo.",
+  noticeOk: "Entendido, preguntar",
+  summaryTitle: "Resumen",
+  questionsTitle: "Preguntas sugeridas",
+  noGuide: "Crea una guía para obtener un resumen breve y preguntas para empezar.",
+  passageTitle: "Pasaje",
+  passageEmpty: "Haz clic en un número de cita de una respuesta para leer aquí el pasaje exacto.",
+  page: (n) => `Página ${n}`,
+  slide: (n) => `Diapositiva ${n}`,
+  sheet: (name) => `Hoja: ${name}`,
+  showSources: "Mostrar panel de fuentes",
+  hideSources: "Ocultar panel de fuentes",
+  showGuide: "Mostrar panel de guía",
+  hideGuide: "Ocultar panel de guía",
+  awaiting_approval: "Esperando tu aprobación en Alisio…",
+  unavailableTitle: "Cuaderno no está disponible",
+  unavailable:
+    "Esta app ya no está disponible. Puede que el plugin se haya desactivado o actualizado; vuelve a abrir Cuaderno desde la lista de Aplicaciones.",
+  errors: {
+    invalid_input: "Algo en la solicitud no era válido.",
+    not_found: "Ese elemento ya no existe.",
+    limit_exceeded:
+      "Se alcanzó un límite del cuaderno (50 fuentes, 2 millones de caracteres por fuente).",
+    unsupported_format: "Este tipo de archivo no es compatible.",
+    invalid_encoding: "El archivo no es texto UTF-8 válido.",
+    no_text: "No se encontró texto legible (los PDF escaneados no son compatibles).",
+    path_outside_workspace: "Ese archivo está fuera del espacio de trabajo.",
+    file_too_large: "El archivo supera los 25 MB.",
+    zip_invalid: "El archivo de Word está dañado o es demasiado grande.",
+    engine_unavailable: "La búsqueda semántica no está disponible ahora (o no en este sistema).",
+    model_missing: "Prepara primero la búsqueda semántica.",
+    model_corrupt: "Un archivo descargado estaba dañado y se eliminó. Inténtalo de nuevo.",
+    unknown_model: "El modelo elegido en la configuración del plugin no es compatible.",
+    model_mismatch: "El modelo de búsqueda cambió. Reconstruye el índice.",
+    download_failed: "La descarga falló. Revisa tu conexión e inténtalo de nuevo.",
+    cancelled: "Cancelado.",
+    answer_failed: "El modelo de IA no respondió. Revisa el modelo elegido en Alisio.",
+    operation_failed: "Algo salió mal. Inténtalo de nuevo.",
+    not_permitted_write:
+      'Alisio no permitió que Cuaderno guarde cambios. Pon esta sesión en Auto (o Acceso total), o aprueba la acción en el chat con "Permitir en la sesión".',
+    not_permitted_process: "Alisio no permitió que Cuaderno ejecute esta acción.",
+    timeout: "La acción tardó demasiado. Revisa su estado antes de reintentar.",
+    too_large: "La solicitud o su resultado es demasiado grande.",
+    too_many_requests: "Demasiadas solicitudes a la vez. Inténtalo de nuevo.",
+    network: "No se pudo conectar con Alisio. Revisa tu conexión.",
+  },
+};
+
+export const messages = { en, es };
+export let locale = "en";
+export const t = (key) => messages[locale][key] ?? messages.en[key] ?? key;
+export const errorText = (code) =>
+  messages[locale].errors[code] ??
+  messages.en.errors[code] ??
+  messages[locale].errors.operation_failed;
+export function setLocale(value) {
+  locale = String(value ?? "")
+    .toLowerCase()
+    .startsWith("es")
+    ? "es"
+    : "en";
+  document.documentElement.lang = locale;
+  document.title = messages[locale].appName;
+}
