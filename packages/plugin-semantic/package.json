@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-semantic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local semantic search engine for Alisio (LanceDB + multilingual-e5-small on ONNX) plus a Notebook app that answers only from your sources, with citations.",
   "keywords": [
     "alisio-plugin",
