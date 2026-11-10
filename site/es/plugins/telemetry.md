@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-telemetry"
-description: "Privacy-first local agent observability for Alisio: a SQLite source of truth, bounded agent-facing query tools, and opt-in OpenTelemetry-aligned OTLP export."
+title: "Telemetry"
+description: "Privacy-first local agent observability with a SQLite source of truth, bounded read-only query tools, and opt-in OpenTelemetry-aligned OTLP export"
 pageClass: "plugin-detail"
 ---
 

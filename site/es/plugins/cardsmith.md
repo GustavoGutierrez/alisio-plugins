@@ -1,5 +1,5 @@
 ---
-title: "@alisio/plugin-cardsmith"
+title: "Cardsmith"
 description: "Generates finished card images from chat requests: social cards, certificates, badges, banners, photo composites, charts and dynamic data cards."
 pageClass: "plugin-detail"
 ---

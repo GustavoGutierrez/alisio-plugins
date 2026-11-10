@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-web-search"
-description: "Privacy-conscious, provider-neutral web search tools for Alisio."
+title: "Web Search"
+description: "Provider-neutral external web search and opt-in fetch tools"
 pageClass: "plugin-detail"
 ---
 

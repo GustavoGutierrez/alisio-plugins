@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-context7"
-description: "Resolve library names and fetch third-party documentation from the Context7 hosted service."
+title: "Context7 Docs"
+description: "Resolve library names and fetch third-party documentation from the Context7 hosted service"
 pageClass: "plugin-detail"
 ---
 

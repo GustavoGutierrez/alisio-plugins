@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-wayfinder"
-description: "Coordinates a resumable specification-driven development workflow by delegating bounded phases to fresh Alisio child sessions and persisting validated artifacts in the workspace."
+title: "Wayfinder"
+description: "Coordinates a durable specification-driven development workflow with bounded child sessions."
 pageClass: "plugin-detail"
 ---
 

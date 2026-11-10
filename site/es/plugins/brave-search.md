@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-brave-search"
-description: "Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback."
+title: "Brave Search"
+description: "Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback"
 pageClass: "plugin-detail"
 ---
 

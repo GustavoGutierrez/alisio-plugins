@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-openrouter"
-description: "OpenRouter OpenAI-compatible model provider for Alisio."
+title: "OpenRouter"
+description: "OpenRouter OpenAI-compatible provider"
 pageClass: "plugin-detail"
 ---
 

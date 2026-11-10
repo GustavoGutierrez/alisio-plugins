@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-opencode"
-description: "OpenCode Console (Zen) model provider for Alisio: fail-closed Responses, Chat Completions and Anthropic Messages routing over the unauthenticated OpenCode catalog."
+title: "OpenCode Console (Zen)"
+description: "OpenCode Console gateway for Responses, Chat, and Messages models"
 pageClass: "plugin-detail"
 ---
 

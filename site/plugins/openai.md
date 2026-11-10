@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-openai"
-description: "Official OpenAI Responses API model provider for Alisio."
+title: "OpenAI"
+description: "Official OpenAI Responses API provider"
 pageClass: "plugin-detail"
 ---
 

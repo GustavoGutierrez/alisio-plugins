@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-laya"
-description: "Local Laya decision provider for Alisio: fast select, boolean and ordinal decisions from a managed, isolated Laya server, with explicit-consent setup and no data leaving the machine."
+title: "Laya"
+description: "Local Laya decision provider: fast select, boolean and ordinal decisions from a managed, isolated server with consent-based setup"
 pageClass: "plugin-detail"
 ---
 

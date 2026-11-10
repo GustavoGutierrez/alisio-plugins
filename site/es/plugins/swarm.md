@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-swarm"
-description: "Runs a handoff-driven swarm of specialised agents, each in its own git worktree, with durable handoffs, deterministic quality gates and a human approval gate."
+title: "Swarm"
+description: "Runs a handoff-driven pipeline of specialised agents, each in its own git worktree, with durable handoffs and human gates."
 pageClass: "plugin-detail"
 ---
 

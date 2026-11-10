@@ -1,6 +1,6 @@
 ---
-title: "@alisio/plugin-atlassian"
-description: "Read-first Jira and Confluence Cloud tools for Alisio with strict environment configuration, opt-in writes, and untrusted-content framing."
+title: "Atlassian"
+description: "Read-first Jira, Confluence, and Agile tools with strict environment configuration, opt-in writes, and untrusted-content framing"
 pageClass: "plugin-detail"
 ---
 
