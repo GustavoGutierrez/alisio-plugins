@@ -1,6 +1,6 @@
 ---
-title: "Semantic"
-description: "Local semantic search (LanceDB + multilingual-e5-small) and a Notebook app grounded in your sources."
+title: "@alisio/plugin-semantic"
+description: "Local semantic search engine for Alisio (LanceDB + multilingual-e5-small on ONNX) plus a Notebook app that answers only from your sources, with citations."
 pageClass: "plugin-detail"
 ---
 

@@ -1,6 +1,6 @@
 ---
-title: "Material Icon Theme"
-description: "Material Icon Theme icons for the web UI"
+title: "@alisio/plugin-material-icons"
+description: "Material Icon Theme for the Alisio web UI: a self-contained icon-theme provider with the vendored Material Icon Theme SVGs and VSCode-style manifest."
 pageClass: "plugin-detail"
 ---
 

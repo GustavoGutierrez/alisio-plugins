@@ -1,6 +1,6 @@
 ---
-title: "OpenCode Go"
-description: "OpenCode Go multi-protocol model gateway"
+title: "@alisio/plugin-opencode-go"
+description: "OpenCode Go model provider for Alisio: fail-closed Responses, Chat Completions and Anthropic Messages routing over the unauthenticated OpenCode Go catalog."
 pageClass: "plugin-detail"
 ---
 

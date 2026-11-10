@@ -1,5 +1,5 @@
 ---
-title: "Frontsmith"
+title: "@alisio/plugin-frontsmith"
 description: "Runs a gated frontend engineering workflow with specialist agents, deterministic rule packs, architecture, accessibility and token checks, and a reproducible visual-fidelity pipeline."
 pageClass: "plugin-detail"
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Scribe"
-description: "Scientific writing studio with agent-assisted LaTeX, revisions and PDF builds."
+title: "@alisio/plugin-scribe"
+description: "Scientific writing studio with agent-assisted LaTeX drafts, revisions, assets and isolated PDF builds."
 pageClass: "plugin-detail"
 ---
 

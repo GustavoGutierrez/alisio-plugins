@@ -1,6 +1,6 @@
 ---
-title: "Google Chat"
-description: "Google Chat tools with a send-only webhook mode and a full OAuth user mode, read-first defaults, and untrusted-content framing"
+title: "@alisio/plugin-google-chat"
+description: "Google Chat tools for Alisio with two independent, fail-closed authentication modes, read-first defaults, and untrusted-content framing."
 pageClass: "plugin-detail"
 ---
 

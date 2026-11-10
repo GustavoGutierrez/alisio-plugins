@@ -1,6 +1,6 @@
 ---
-title: "Literature Research"
-description: "Safe scholarly metadata and abstract research"
+title: "@alisio/plugin-literature-research"
+description: "Safe zero-key scholarly metadata research tools for Alisio."
 pageClass: "plugin-detail"
 ---
 

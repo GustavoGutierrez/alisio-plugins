@@ -1,6 +1,6 @@
 ---
-title: "DeepSeek"
-description: "Dedicated DeepSeek Chat Completions and Responses provider"
+title: "@alisio/plugin-deepseek"
+description: "Dedicated DeepSeek model provider for Alisio: Chat Completions and Responses with metadata-rich catalog discovery and context windows."
 pageClass: "plugin-detail"
 ---
 
