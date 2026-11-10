@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import plugin from "../src/index.js";
 import { readState } from "../src/storage.js";
+import { recordChatFlow } from "./helpers/chat-flow.js";
 import {
   cleanup,
   harness,
@@ -450,4 +451,13 @@ describe("exam folder flow", () => {
     expect(files).toContain("05_control_versiones.md");
     expect(await h.run("approve", "b")).toMatch(/Gate B approved/);
   });
+});
+
+describe("chat surface golden (EVL-APP-AC-01)", () => {
+  it("keeps every command and tool text and every written file byte-identical", async () => {
+    const golden = JSON.parse(
+      await readFile(new URL("./fixtures/chat-golden.json", import.meta.url), "utf8"),
+    );
+    expect(await recordChatFlow()).toEqual(golden);
+  }, 120_000);
 });

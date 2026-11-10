@@ -1,7 +1,14 @@
 import { figureSvg } from "../figures/index.js";
 import type { DensityPreset } from "../layout/presets.js";
 import type { Locale } from "../locales.js";
-import { type Block, escapeHtml, type InlineToken, parseMarkup } from "../markup.js";
+import {
+  type Block,
+  escapeHtml,
+  type InlineToken,
+  type MarkupLine,
+  parseMarkup,
+  tokenizeInline,
+} from "../markup.js";
 import type {
   AnswerSheetModel,
   DocumentModel,
@@ -59,6 +66,16 @@ function renderBlocks(blocks: readonly Block[], math: MathRenderer, tone: ToneCu
       return `<table class="grid"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
     })
     .join("");
+}
+
+/** Markup lines (a stem or a solution) as the exam renders them: escaped text, typeset math. */
+export function markupHtml(lines: readonly MarkupLine[], math: MathRenderer): string {
+  return renderBlocks(parseMarkup(lines), math, toneCursor());
+}
+
+/** One inline text with `$…$` math (an option or an answer), as the exam renders it. */
+export function inlineHtml(text: string, math: MathRenderer): string {
+  return renderInline(tokenizeInline(text), math);
 }
 
 function renderHeader(header: HeaderModel, theme: Theme): string {

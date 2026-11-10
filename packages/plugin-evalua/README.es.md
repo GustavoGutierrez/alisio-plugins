@@ -37,7 +37,40 @@ npm install --save-dev @alisio/plugin-evalua
 alisio --plugin @alisio/plugin-evalua
 ```
 
-Requiere Node 22.16 o superior y `@alisio/sdk` `>=0.3.0 <0.7.0`.
+Requiere Node 22.16 o superior y `@alisio/sdk` `>=0.9.0 <0.12.0`. El flujo por chat funciona en
+cualquier host de ese rango; la app Evalúa necesita Alisio 0.11.6 o superior (ver abajo).
+
+## La app Evalúa
+
+En Alisio 0.11.6 o superior, **Evalúa** (**Evalua** en inglés) aparece en el grupo Apps del panel
+izquierdo: una app de página completa que lleva al docente por el mismo flujo con formularios en
+lugar de respuestas en el chat. Sigue el idioma de Alisio (inglés o español) y su tema claro u
+oscuro.
+
+1. **Perfil docente**: nombre, colegio, asignatura, tamaño del papel y un logo opcional (PNG, JPEG
+   o WebP, hasta 2 MB).
+2. **Nuevo examen**: elige el grado, luego un tema de la lista de la base de conocimiento, el
+   nivel, los tipos de preguntas, cuántas, el banco (si lo hay) y el formato. Un resumen acompaña
+   cada respuesta.
+3. **Revisa y aprueba** el plan (Gate A); solo entonces se crea la carpeta del examen.
+4. **Redacción**: deja la frase predeterminada de cada tipo de ejercicio, escribe la tuya o pide al
+   modelo elegido en Configuración un borrador para revisar y editar. La redacción hecha con IA
+   puede contener errores: lee cada frase antes de aprobarla. Sin un modelo conectado, la redacción
+   con IA se apaga y todo lo demás funciona.
+5. **Preguntas** y luego **Documentos**: crea los cuatro documentos con el progreso a la vista (y un
+   botón Cancelar), míralos y descarga el PDF o el HTML.
+6. **Aprobación final** (Gate B). Si la última creación informó problemas (por ejemplo, un límite de
+   páginas que no se pudo cumplir), la app los muestra y pide que los confirmes.
+
+Los exámenes anteriores quedan en solo lectura (ver y descargar). Los comandos y herramientas del
+chat siguen funcionando igual y ven los mismos exámenes; si el chat cambia un examen con la app
+abierta, la app lo vuelve a cargar, y mientras la app crea documentos, `generate`, `build`,
+`approve` y `set-prompts` del chat responden que hay una creación en curso. En Alisio 0.11.5 la app
+abre, pero cada guardado se rechaza salvo que la sesión ya lo permita; los hosts anteriores no
+tienen app y conservan el flujo por chat. Cada guardado pide la aprobación de Alisio igual que el
+chat: permite guardar archivos y, para los documentos, ejecutar la impresora de PDF. Sin Chrome,
+Chromium, Edge, Brave, Vivaldi u Opera, la app escribe y muestra solo el HTML. Por ahora los
+documentos del examen se escriben en español (el único idioma incluido).
 
 ## Cómo se usa
 
@@ -145,6 +178,7 @@ página.
 ```
 <workspace>/
   .alisio/evalua/state.json     estado de la máquina (escrituras atómicas)
+  .alisio/evalua/app.json       solo la app Evalúa: modelo elegido, redacción de IA pendiente, última creación
   evalua/
     teacher.yaml                perfil del docente, editable a mano
     assets/logo.png             logo opcional (PNG, JPEG o WebP, hasta 2 MB; SVG se rechaza)

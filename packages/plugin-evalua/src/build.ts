@@ -115,11 +115,18 @@ export function renderDocuments(input: RenderInput, density = defaultDensity()):
   };
 }
 
+/** Build progress: `step` of `total` prints finished; `phase` says which kind is running. */
+export type BuildProgress = (step: number, total: number, phase: "fit" | "print") => void;
+
 export interface FitInput {
   htmlForPreset: (preset: DensityPreset) => string;
   maxPages: "auto" | number;
   printer: PdfPrinter;
   ladder?: readonly DensityPreset[];
+  /** Called after each measuring print (app spec D1). */
+  onProgress?: (step: number, total: number) => void;
+  /** Checked before each print: a cancelled build stops after the print in progress. */
+  signal?: AbortSignal;
 }
 
 export interface FitOutput {
@@ -135,11 +142,15 @@ export async function fitDocuments(input: FitInput): Promise<FitOutput> {
   const pageCounts = new Map<string, number>();
   const audits = new Map<string, unknown>();
   let engineVersion: string | undefined;
+  let step = 0;
   for (const preset of ladder) {
+    input.signal?.throwIfAborted();
     const result = await input.printer(input.htmlForPreset(preset));
     engineVersion ??= result.engineVersion;
     pageCounts.set(preset.id, countPdfPages(result.pdf).leafPages);
     if (result.audit !== undefined) audits.set(preset.id, result.audit);
+    step += 1;
+    input.onProgress?.(step, ladder.length);
   }
   return {
     chosen: choosePreset({ pageCounts, maxPages: input.maxPages, ladder }),
@@ -156,7 +167,14 @@ export interface BuildInput extends RenderInput {
   timeoutMs?: number;
   /** Test seam: when given, this printer is used instead of launching Chrome. */
   printer?: PdfPrinter;
+  /** Progress over every print: the density ladder, then the four documents (app spec D1). */
+  onProgress?: BuildProgress;
+  /** Checked between prints; an aborted build rejects with the signal's reason. */
+  signal?: AbortSignal;
 }
+
+/** Prints of a full build with a browser: one per density preset, then one per document. */
+export const BUILD_PRINTS = densityLadder.length + 4;
 
 export interface BuildOutput {
   files: string[];
@@ -221,6 +239,10 @@ export async function buildExam(input: BuildInput): Promise<BuildOutput> {
     htmlForPreset: (preset) => renderDocuments(input, preset).exam,
     maxPages: input.maxPages,
     printer,
+    ...(input.onProgress === undefined
+      ? {}
+      : { onProgress: (step: number) => input.onProgress?.(step, BUILD_PRINTS, "fit") }),
+    ...(input.signal === undefined ? {} : { signal: input.signal }),
   });
   if (fit.chosen.failure) {
     findings.push({
@@ -262,14 +284,18 @@ export async function buildExam(input: BuildInput): Promise<BuildOutput> {
     });
     if (layoutReport)
       await write("layout-report.json", `${JSON.stringify(layoutReport, null, 2)}\n`);
+    let printed = 0;
     for (const [name, html] of [
       ["01_examen_estudiante.pdf", documents.exam],
       ["02_hoja_respuestas.pdf", documents.sheet],
       ["03_solucionario_completo.pdf", documents.book],
       ["04_rubrica_calificacion.pdf", documents.rubric],
     ] as const) {
+      input.signal?.throwIfAborted();
       const { pdf } = await printer(html);
       await write(name, pdf);
+      printed += 1;
+      input.onProgress?.(densityLadder.length + printed, BUILD_PRINTS, "print");
     }
   }
   return {

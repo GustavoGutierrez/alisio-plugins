@@ -1,5 +1,5 @@
-import type { TopicCatalog } from "../types.js";
-import { type LoadedKnowledge, localized } from "./types.js";
+import { type CatalogTopic, type Level, levels, type TopicCatalog } from "../types.js";
+import { type LoadedKnowledge, type LoadedTopic, localized } from "./types.js";
 
 /**
  * Adapts a loaded knowledge base to the interview's `TopicCatalog` seam: pack and topic
@@ -13,7 +13,29 @@ export function createTopicCatalog(knowledge: LoadedKnowledge): TopicCatalog {
   for (const topic of topics) {
     bareCount.set(topic.id, (bareCount.get(topic.id) ?? 0) + 1);
   }
+  const packNames = new Map(knowledge.packs.map((pack) => [pack.id, pack.name]));
+  const describe = (topic: LoadedTopic): CatalogTopic => {
+    const offered = new Set<Level>();
+    for (const source of topic.sources) {
+      if (source.kind === "family") for (const level of source.levels) offered.add(level);
+    }
+    for (const item of topic.bankItems) offered.add(item.level);
+    return {
+      id: topic.fullId,
+      name: { ...topic.name },
+      pack: topic.packId,
+      packName: { ...(packNames.get(topic.packId) ?? {}) },
+      grades: [...topic.grades],
+      levels: levels.filter((level) => offered.has(level)),
+      supports: { ...topic.supports },
+    };
+  };
   return {
+    topic: (fullId) => {
+      const found = byFullId.get(fullId);
+      return found === undefined ? undefined : describe(found);
+    },
+    topics: () => topics.map(describe),
     packs: () => packs.map((pack) => ({ value: pack.id, label: localized(pack.name) })),
     suggestions: (grade) => {
       const filtered =

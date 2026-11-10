@@ -44,6 +44,21 @@ export interface TopicCatalog {
   resolvePack(topic: string): string | undefined;
   /** Resolves a free-text description to a known topic full id, when it is unambiguous. */
   resolveTopic?(text: string): string | undefined;
+  /** Exact lookup by full id (`pack/topic`), for the app's catalog list. */
+  topic?(fullId: string): CatalogTopic | undefined;
+  /** Every topic of the knowledge base, in pack order. */
+  topics?(): CatalogTopic[];
+}
+
+/** A knowledge-base topic as the app lists it: localized names, pack, grades and levels. */
+export interface CatalogTopic {
+  id: string;
+  name: Record<string, string>;
+  pack: string;
+  packName: Record<string, string>;
+  grades: string[];
+  levels: Level[];
+  supports: Record<ItemType, boolean>;
 }
 
 export interface PendingRound {

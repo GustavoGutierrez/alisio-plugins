@@ -1,7 +1,13 @@
 import { readdir, readFile } from "node:fs/promises";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildBlueprint } from "../src/blueprint.js";
-import { buildExam, fitDocuments, type PdfPrinter, renderDocuments } from "../src/build.js";
+import {
+  BUILD_PRINTS,
+  buildExam,
+  fitDocuments,
+  type PdfPrinter,
+  renderDocuments,
+} from "../src/build.js";
 import { familyIds } from "../src/families/index.js";
 import { type ExamItem, generateExam } from "../src/generate.js";
 import {
@@ -11,6 +17,7 @@ import {
 } from "../src/knowledge/package.js";
 import { loadKnowledge } from "../src/knowledge/registry.js";
 import type { LevelCalibration } from "../src/knowledge/types.js";
+import { densityLadder } from "../src/layout/presets.js";
 import { type Locale, loadLocale } from "../src/locales.js";
 import type { ExamSpecLike } from "../src/model.js";
 import { loadThemeLayers, type Theme } from "../src/themes.js";
@@ -201,5 +208,43 @@ describe("buildExam", () => {
       printer: auditing,
     });
     expect(result.findings.map((finding) => finding.id)).toContain("EVL-LAY-002");
+  });
+
+  it("reports progress over every print and stops between prints when aborted (app D1)", async () => {
+    const steps: string[] = [];
+    await buildExam({
+      ...renderInput(),
+      executable: "/scratch/p/chrome",
+      outDir: await scratchDir(),
+      maxPages: "auto",
+      printer: fakePrinter,
+      onProgress: (step, total, phase) => steps.push(`${phase} ${step}/${total}`),
+    });
+    expect(BUILD_PRINTS).toBe(densityLadder.length + 4);
+    expect(steps).toEqual([
+      ...densityLadder.map((_, i) => `fit ${i + 1}/${BUILD_PRINTS}`),
+      ...[1, 2, 3, 4].map((i) => `print ${densityLadder.length + i}/${BUILD_PRINTS}`),
+    ]);
+
+    const controller = new AbortController();
+    let prints = 0;
+    const outDir = await scratchDir();
+    const stopping: PdfPrinter = async (html) => {
+      prints += 1;
+      if (prints === 2) controller.abort();
+      return fakePrinter(html);
+    };
+    await expect(
+      buildExam({
+        ...renderInput(),
+        executable: "/scratch/p/chrome",
+        outDir,
+        maxPages: "auto",
+        printer: stopping,
+        signal: controller.signal,
+      }),
+    ).rejects.toThrow();
+    expect(prints).toBe(2);
+    expect(await readdir(outDir)).toEqual([]);
   });
 });

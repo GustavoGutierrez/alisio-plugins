@@ -13,4 +13,12 @@ network access) and reproducible.
 - Use: server-side typesetting in an isolated `vm` context; the CSS and its `woff2` fonts are
   inlined as data URIs so the generated HTML references no network resource.
 
-The bundled KaTeX fonts are distributed under the same MIT license as KaTeX.
+The bundled KaTeX fonts are distributed under the same MIT license as KaTeX. The Evalua app page
+(`dist/embedded.html`) inlines the same KaTeX CSS and `woff2` fonts.
+
+## PDF.js
+
+- Package: `pdfjs-dist` 6.5.438 (Mozilla), a build-time dependency.
+- License: Apache-2.0 (see the package's `LICENSE`).
+- Use: bundled with esbuild into `dist/embedded.html` to preview the generated PDFs inside the
+  Evalua app, without eval or WebAssembly; its worker starts from a `blob:` URL.
