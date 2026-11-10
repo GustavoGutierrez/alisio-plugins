@@ -651,7 +651,7 @@
       "title": "Semantic",
       "pluginId": "semantic",
       "description": "Local semantic search (LanceDB + multilingual-e5-small) and a Notebook app grounded in your sources.",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "publishedAt": null,
       "firstPublishedAt": null,
       "author": "Alisio",
