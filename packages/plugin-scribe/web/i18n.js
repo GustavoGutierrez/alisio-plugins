@@ -12,6 +12,7 @@ export const messages = {
     too_large: "The request or its result is too large.",
     network: "Alisio could not be reached. Check your connection.",
     unavailableTitle: "Scribe is unavailable",
+    retry: "Try again",
     unavailable:
       "This app is no longer available. The plugin may have been disabled or updated; reopen Scribe from the Apps list.",
     tagline: "Your scientific writing space",
@@ -200,6 +201,7 @@ export const messages = {
     too_large: "La petición o su resultado es demasiado grande.",
     network: "No se pudo contactar con Alisio. Revisa tu conexión.",
     unavailableTitle: "Scribe no está disponible",
+    retry: "Reintentar",
     unavailable:
       "Esta aplicación ya no está disponible. Es posible que el plugin se haya desactivado o actualizado; vuelve a abrir Scribe desde la lista de aplicaciones.",
     tagline: "Tu espacio de escritura científica",

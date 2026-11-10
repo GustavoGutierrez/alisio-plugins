@@ -122,10 +122,23 @@ describe("frame handshake", () => {
 
     const host = channel();
     let unavailable = false;
+    let hostNotFoundOnce = false;
+    let pluginNotFound = false;
+    const actions: string[] = [];
     host.port1.onmessage = ({ data }) => {
       if (data.type !== "request") return;
-      if (unavailable)
+      actions.push(data.action);
+      if (unavailable || (hostNotFoundOnce && data.action !== "context")) {
+        hostNotFoundOnce = false;
         return host.port1.postMessage({ type: "response", id: data.id, error: "not_found" });
+      }
+      // A plugin-level not_found (e.g. an unknown job) is an action result, not a missing app.
+      if (pluginNotFound && data.action === "jobs.list")
+        return host.port1.postMessage({
+          type: "response",
+          id: data.id,
+          result: { error: "not_found" },
+        });
       const values: Record<string, unknown> = {
         context: { locale: "en", capabilities: { write: true, process: true } },
         "documents.list": [],
@@ -149,12 +162,38 @@ describe("frame handshake", () => {
     expect(rogueSeen).toEqual([]);
     expect(lateSeen).toEqual([]);
 
-    // The plugin was disabled: the next poll answers not_found and the studio says so.
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    // A plugin-level not_found never shows the unavailable screen.
+    pluginNotFound = true;
+    await sleep(150);
+    pluginNotFound = false;
+    expect(window.document.body.textContent).not.toContain("Scribe is unavailable");
+
+    // One transient host not_found (e.g. a poll right after the window is shown) is verified with
+    // a cheap read; the studio stays usable.
+    hostNotFoundOnce = true;
+    host.port1.postMessage({ type: "visibility", visible: true });
+    await sleep(1800);
+    // The initial load plus the verification read.
+    expect(actions.filter((a) => a === "context").length).toBeGreaterThanOrEqual(2);
+    expect(window.document.body.textContent).not.toContain("Scribe is unavailable");
+    expect(window.document.querySelector("#brief")).not.toBeNull();
+
+    // The plugin was disabled: requests keep answering not_found and the studio says so.
     unavailable = true;
-    for (let i = 0; !window.document.body.textContent?.includes("unavailable") && i < 200; i++)
-      await new Promise((r) => setTimeout(r, 10));
+    for (let i = 0; !window.document.body.textContent?.includes("unavailable") && i < 400; i++)
+      await sleep(10);
     expect(window.document.querySelector("h1")?.textContent).toBe("Scribe is unavailable");
-  });
+    const retry = window.document.querySelector("#retry-app") as HTMLButtonElement;
+    expect(retry.textContent).toBe("Try again");
+
+    // Re-enabled: "Try again" re-checks and restores the library view.
+    unavailable = false;
+    retry.click();
+    for (let i = 0; !window.document.querySelector("#brief") && i < 300; i++) await sleep(10);
+    expect(window.document.querySelector("#brief")).not.toBeNull();
+    expect(window.document.body.textContent).not.toContain("Scribe is unavailable");
+  }, 15_000);
 });
 
 describe("permission messages", () => {

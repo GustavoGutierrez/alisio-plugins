@@ -41,7 +41,8 @@ const connected = new Promise((resolve) => {
       }
       if (message?.type === "visibility") {
         visible = message.visible !== false;
-        if (visible) void poll();
+        // Shown again: re-check an unavailable app (Alisio may have reopened it), else poll.
+        if (visible) void (unavailable ? verifyAvailable() : poll());
       }
       if (message?.type === "response") {
         const request = pending.get(message.id);
@@ -53,7 +54,8 @@ const connected = new Promise((resolve) => {
         // `message.error` is a host transport code; `result.error` is a Scribe action code.
         const result = message.result;
         let error = message.error || result?.error;
-        if (message.error === "not_found") showUnavailable();
+        // Only the HOST's not_found can mean the app is gone, and only once confirmed (below).
+        if (message.error === "not_found") hostNotFound();
         // Name the missing permission. Newer hosts send the denied `effect`; older ones do not, so
         // fall back to the action: compiling runs a process, everything else that can be denied writes.
         if (message.error === "not_permitted") {
@@ -65,7 +67,10 @@ const connected = new Promise((resolve) => {
                 : "write";
           error = `not_permitted_${effect}`;
         }
-        error ? request.reject(new Error(error)) : request.resolve(result?.value);
+        if (!error) return request.resolve(result?.value);
+        const failure = new Error(error);
+        failure.transport = !!message.error;
+        request.reject(failure);
       }
     };
     hostPort.start();
@@ -265,14 +270,60 @@ function modelOptions(selected = "") {
       .join("")
   );
 }
-/** The app or its plugin is gone (disabled, removed or updated): stop and say so. */
+/**
+ * One host `not_found` never latches: it is confirmed with a cheap read (`context`) after a short
+ * delay, and only a second host `not_found` shows the unavailable screen. That screen keeps
+ * re-checking (button, and whenever the frame is shown again) and restores the previous view.
+ */
+const VERIFY_DELAY_MS = 1500;
+let verifying;
+function hostNotFound() {
+  if (unavailable || verifying) return;
+  verifying = new Promise((r) => setTimeout(r, VERIFY_DELAY_MS)).then(verifyAvailable);
+}
+async function verifyAvailable() {
+  try {
+    await send("context", {});
+    if (!unavailable) return;
+    unavailable = false;
+    await restoreView();
+  } catch (error) {
+    if (error?.transport && error.message === "not_found") showUnavailable();
+  } finally {
+    verifying = undefined;
+  }
+}
+/** Back from the unavailable screen: reopen the document (or the library) and resume polling. */
+async function restoreView() {
+  pollSignature = "";
+  try {
+    if (doc) {
+      const id = doc.id;
+      await refreshList();
+      await openDocument(id);
+      return;
+    }
+  } catch {
+    doc = undefined;
+  }
+  await refreshList().catch(() => {});
+  render();
+}
+/** The app or its plugin is gone (disabled, removed or updated): stop and say so, with a retry. */
 function showUnavailable() {
   if (unavailable) return;
   unavailable = true;
   dirty = false;
   closeMenu();
   if (dialog.open) dialog.close();
-  root.innerHTML = `<main class="shell"><div class="empty"><h1>${escapeHtml(t("unavailableTitle"))}</h1><p>${escapeHtml(t("unavailable"))}</p></div></main>`;
+  root.innerHTML = `<main class="shell"><div class="empty"><h1>${escapeHtml(t("unavailableTitle"))}</h1><p>${escapeHtml(t("unavailable"))}</p><button id="retry-app" class="primary">${escapeHtml(t("retry"))}</button></div></main>`;
+  const retry = root.querySelector("#retry-app");
+  retry.onclick = () => {
+    retry.disabled = true;
+    void verifyAvailable().finally(() => {
+      if (unavailable) retry.disabled = false;
+    });
+  };
 }
 
 /* ---------- Popover menus (card and file "⋯" actions) ---------- */

@@ -131,6 +131,38 @@ describe("plugin entry", () => {
     app.dispose?.();
   });
 
+  it("keeps one workspace's studio working when another workspace's activation is disposed", async () => {
+    // The host runs setup once per open workspace on the same module object.
+    const home = await harness(true);
+    const project = await harness(true);
+    home.apps[0]?.dispose?.();
+    const actions = project.apps[0]?.actions ?? {};
+    const context: PluginAppContext = {
+      sessionId: "s2",
+      workspace: "/workspace",
+      signal: new AbortController().signal,
+      idempotencyKey: randomUUID(),
+    };
+    const created = (await actions["documents.create"]?.handler(
+      { title: "Still here" },
+      context,
+    )) as {
+      value: { id: string };
+    };
+    expect(created.value.id).toMatch(/^[a-f0-9-]{36}$/);
+    // A fresh activation after dispose registers and works again.
+    const again = await harness(true);
+    expect(again.apps).toHaveLength(1);
+    expect(
+      await again.apps[0]?.actions?.["documents.list"]?.handler({}, {
+        ...context,
+        idempotencyKey: undefined,
+      } as PluginAppContext),
+    ).toEqual({ value: [] });
+    project.apps[0]?.dispose?.();
+    again.apps[0]?.dispose?.();
+  });
+
   it("declares action names and input schemas the host accepts", async () => {
     const h = await harness(true);
     const actions = h.apps[0]?.actions ?? {};

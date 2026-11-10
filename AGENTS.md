@@ -43,8 +43,9 @@
   `packages/plugin-evalua/README.md` / `README.es.md`,
   `packages/plugin-material-icons/README.md` / `README.es.md`,
   `packages/plugin-cardsmith/README.md` / `README.es.md`,
-  `packages/plugin-free-models/README.md` / `README.es.md` and
-  `packages/plugin-semantic/README.md` / `README.es.md`, under the same pairing rules as the
+  `packages/plugin-free-models/README.md` / `README.es.md`,
+  `packages/plugin-semantic/README.md` / `README.es.md` and
+  `packages/plugin-scribe/README.md` / `README.es.md`, under the same pairing rules as the
   repo-level docs. Usage samples under
   `packages/plugin-thesis/samples/` may be written in the language of the thesis they illustrate.
 - **English only:** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this file, all source,

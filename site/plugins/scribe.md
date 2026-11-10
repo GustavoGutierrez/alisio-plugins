@@ -8,6 +8,8 @@ pageClass: "plugin-detail"
 
 ![Scribe](https://gustavogutierrez.github.io/alisio-plugins/covers/scribe.svg)
 
+> Español: [README.es.md](https://github.com/GustavoGutierrez/alisio-plugins/blob/HEAD/packages/plugin-scribe/README.es.md). Both READMEs must be updated together.
+
 Scientific writing studio for Alisio: multiple LaTeX documents, agent-generated proposals that you
 review before they become revisions, attachments, revision history and offline PDF builds with a
 bundled TeX engine. It does not start another server, open a browser window or ask for provider
@@ -44,8 +46,10 @@ conversation.
   WASM, from bytes returned by an action.
 - The frame accepts only the first `alisio.app.connect` port from `window.parent` and sends every
   action over it to Alisio's authenticated server, never directly to providers. It keeps fewer
-  than 8 requests in flight, pauses polling while hidden and shows an unavailable state when the
-  host answers `not_found` (for example after the plugin is disabled).
+  than 8 requests in flight and pauses polling while hidden. When the host answers `not_found`, the
+  studio re-checks once after a short delay; only if the app is still missing (for example after the
+  plugin is disabled) does it show an unavailable state, which has a **Try again** button and
+  re-checks whenever the studio is shown again.
 - Long work (agent drafts and PDF builds) returns a job at once and the studio polls it, so no
   action holds the host's 30-second request limit.
 - The host gates every action by its effect with the session's existing permissions, without a

@@ -8,125 +8,139 @@ pageClass: "plugin-detail"
 
 ![Scribe](https://gustavogutierrez.github.io/alisio-plugins/covers/scribe.svg)
 
-Scientific writing studio for Alisio: multiple LaTeX documents, agent-generated proposals that you
-review before they become revisions, attachments, revision history and offline PDF builds with a
-bundled TeX engine. It does not start another server, open a browser window or ask for provider
-credentials.
+> English: [README.md](https://github.com/GustavoGutierrez/alisio-plugins/blob/HEAD/packages/plugin-scribe/README.md). Ambos README deben actualizarse en conjunto.
 
-## Requirements
+Estudio de redacción científica para Alisio: varios documentos LaTeX, propuestas generadas por un
+agente que revisas antes de que se conviertan en revisiones, adjuntos, historial de revisiones y
+compilación de PDF sin conexión con un motor TeX incluido. No inicia otro servidor, no abre una
+ventana del navegador ni pide credenciales de proveedores.
+
+## Requisitos
 
 - Node `>=22.16`.
-- **Alisio 0.11.6 or newer** for the full studio. The plugin apps API (`api.apps`) arrived in 0.11.5,
-  and 0.11.6 lets studio actions ask for approval like the chat: drafting needs `write` and building
-  a PDF needs `process`. Alisio shows the usual prompt (allow once, allow for the session, deny); a
-  denied or read-only session makes the studio say which permission is missing.
-- On older hosts (no `api.apps`), Scribe still loads: it registers the `scribe_documents` tool, the
-  read-only `documents` view, the agents/skills and the `help` command, and skips the studio. Since
-  documents are created only from the studio, the tool and view stay empty there and `help` says
-  that the studio is unavailable.
+- **Alisio 0.11.6 o posterior** para el estudio completo. La API de apps de plugins (`api.apps`)
+  llegó en 0.11.5, y 0.11.6 permite que las acciones del estudio pidan aprobación como el chat:
+  redactar necesita `write` y compilar un PDF necesita `process`. Alisio muestra el aviso habitual
+  (permitir una vez, permitir en la sesión, denegar); una sesión denegada o de solo lectura hace que
+  el estudio indique qué permiso falta.
+- En hosts anteriores (sin `api.apps`), Scribe se carga igualmente: registra la herramienta
+  `scribe_documents`, la vista de solo lectura `documents`, los agentes/skills y el comando `help`, y
+  omite el estudio. Como los documentos solo se crean desde el estudio, la herramienta y la vista
+  quedan vacías allí y `help` indica que el estudio no está disponible.
 
-## Install
+## Instalación
 
 ```bash
 alisio install npm:@alisio/plugin-scribe
 ```
 
-Open a trusted project and select **Scribe · Writing / Scribe · Redacción** in the **Apps** group
-above **Projects**. The projects panel remains available; **Back to chat** restores the
-conversation.
+Abre un proyecto de confianza y selecciona **Scribe · Writing / Scribe · Redacción** en el grupo
+**Aplicaciones**, encima de **Proyectos**. El panel de proyectos sigue disponible; **Volver al
+chat** recupera la conversación.
 
-## How it integrates
+## Cómo se integra
 
-- `api.apps.register` supplies a self-contained HTML bundle (`dist/embedded.html`, built from
-  `web/`) and declared read, write and process action handlers.
-- The host mounts it in a sandboxed iframe (opaque origin, no forms, no network). Its one inline
-  script carries the host nonce; PDF.js renders previews with a `blob:` worker, without eval or
-  WASM, from bytes returned by an action.
-- The frame accepts only the first `alisio.app.connect` port from `window.parent` and sends every
-  action over it to Alisio's authenticated server, never directly to providers. It keeps fewer
-  than 8 requests in flight, pauses polling while hidden and shows an unavailable state when the
-  host answers `not_found` (for example after the plugin is disabled).
-- Long work (agent drafts and PDF builds) returns a job at once and the studio polls it, so no
-  action holds the host's 30-second request limit.
-- The host gates every action by its effect with the session's existing permissions, without a
-  prompt: mutating actions, including job cancellation, need write permission and PDF builds also
-  need process permission.
-- The Alisio locale controls all UI labels (English/Spanish); the studio has no language selector
-  of its own. Manuscript language is separate.
-- The backend uses Alisio sessions, model configuration, tool permissions and private state paths.
+- `api.apps.register` aporta un paquete HTML autocontenido (`dist/embedded.html`, generado desde
+  `web/`) y manejadores de acciones declarados de lectura, escritura y proceso.
+- El host lo monta en un iframe aislado (origen opaco, sin formularios, sin red). Su único script en
+  línea lleva el nonce del host; PDF.js muestra las vistas previas con un worker `blob:`, sin eval ni
+  WASM, a partir de los bytes que devuelve una acción.
+- El marco acepta solo el primer puerto `alisio.app.connect` de `window.parent` y envía por él cada
+  acción al servidor autenticado de Alisio, nunca directamente a los proveedores. Mantiene menos de 8
+  peticiones en curso y pausa el sondeo mientras está oculto. Cuando el host responde `not_found`, el
+  estudio vuelve a comprobarlo una vez tras una breve espera; solo si la app sigue sin estar (por
+  ejemplo, tras desactivar el plugin) muestra un estado de no disponible, con un botón
+  **Reintentar** y una nueva comprobación cada vez que el estudio vuelve a mostrarse.
+- El trabajo largo (borradores del agente y compilaciones de PDF) devuelve un trabajo de inmediato y
+  el estudio lo consulta, así que ninguna acción ocupa el límite de 30 segundos por petición del
+  host.
+- El host controla cada acción según su efecto con los permisos existentes de la sesión, sin aviso:
+  las acciones que modifican, incluida la cancelación de trabajos, necesitan permiso de escritura y
+  las compilaciones de PDF también necesitan permiso de proceso.
+- El idioma de Alisio controla todas las etiquetas de la interfaz (inglés/español); el estudio no
+  tiene selector de idioma propio. El idioma del manuscrito es independiente.
+- El backend usa las sesiones de Alisio, la configuración de modelos, los permisos de herramientas y
+  las rutas privadas de estado.
 
-## Features
+## Funciones
 
-Multiple documents; physics/mathematics/computing starting points; model selection; agent-generated
-LaTeX proposals; explicit review/apply/discard; manual LaTeX/BibTeX editing; revision conflict checks;
-history/restore; attachments; document search/archive; JSON project import/export; `.tex` import;
-source ZIP export; PDF build jobs, cancellation and downloads; ES/EN messages.
+Varios documentos; puntos de partida de física, matemáticas e informática; selección de modelo;
+propuestas LaTeX generadas por un agente; revisión explícita con aplicar/descartar; edición manual de
+LaTeX/BibTeX; comprobación de conflictos de revisión; historial y restauración; adjuntos; búsqueda y
+archivo de documentos; importación/exportación de proyectos JSON; importación de `.tex`; exportación
+de las fuentes en ZIP; trabajos de compilación de PDF, cancelación y descargas; mensajes ES/EN.
 
-## Configuration
+## Configuración
 
-Set `pluginOverrides["alisio.scribe"].options` through Alisio configuration:
+Define `pluginOverrides["alisio.scribe"].options` en la configuración de Alisio:
 
-| Option | Meaning |
+| Opción | Significado |
 |---|---|
-| `locale` | `"es"` or `"en"`; default locale reported to the studio. |
-| `allowedTools` | Explicit existing effective tool names available to the child agent; empty by default. |
+| `locale` | `"es"` o `"en"`; idioma predeterminado que se informa al estudio. |
+| `allowedTools` | Nombres explícitos de herramientas efectivas existentes disponibles para el agente hijo; vacío por defecto. |
 
-Tools from other plugins go through the existing agent runner; this plugin does not import other
-plugins or bypass their effect gates. Child sessions deny write and process permissions; an
-allowlist never grants privileges absent from their parent.
+Las herramientas de otros plugins pasan por el ejecutor de agentes existente; este plugin no importa
+otros plugins ni omite sus controles de efecto. Las sesiones hijas deniegan los permisos de escritura
+y proceso; una lista de permitidos nunca concede privilegios que su sesión padre no tenga.
 
-## PDF compilation
+## Compilación de PDF
 
-Scribe uses Tectonic 0.16.9. No Docker or system TeX is needed.
+Scribe usa Tectonic 0.16.9. No se necesita Docker ni TeX del sistema.
 
-- **Linux x64:** the package ships the static (musl) upstream build at
-  `compiler/linux-x64/tectonic`, so builds work on any x86_64 Linux, glibc or musl (including
-  Ubuntu 22.04 and Debian 12). If that file is missing, Scribe falls back to the `node-tectonic`
-  binary, which needs glibc 2.39 or newer; on older systems PDF builds then fail with a build error.
-- **Windows x64, Linux arm64 and macOS x64/arm64:** the platform binary of `node-tectonic` 1.1.0,
-  installed automatically (Linux arm64 is already a static build). Do not omit optional
-  dependencies when installing.
+- **Linux x64:** el paquete incluye la compilación estática (musl) oficial en
+  `compiler/linux-x64/tectonic`, así que compila en cualquier Linux x86_64, glibc o musl (incluidos
+  Ubuntu 22.04 y Debian 12). Si falta ese archivo, Scribe recurre al binario de `node-tectonic`, que
+  necesita glibc 2.39 o posterior; en sistemas más antiguos las compilaciones de PDF fallan entonces
+  con un error de compilación.
+- **Windows x64, Linux arm64 y macOS x64/arm64:** el binario de plataforma de `node-tectonic` 1.1.0,
+  que se instala automáticamente (en Linux arm64 ya es una compilación estática). No omitas las
+  dependencias opcionales al instalar.
 
-The package contains a 106 MB compressed offline TeX archive (`compiler/bundle.zip`): a TeX Live
-2023 subset with LaTeX (recommended and extra), English, Spanish, Portuguese, French and German,
-mathematics and science (including `siunitx` and algorithm packages), graphics (`tikz`,
-`pgfplots`), bibliographies (`biblatex` with the BibTeX backend, `natbib`), recommended fonts and
-XeTeX font support. To stay within npm's package size limit it leaves out Type1 copies of fonts
-that XeTeX reads as OpenType (cm-super, Libertine, TeX Gyre), AFM metrics, MetaPost data and a few
-image-heavy novelty packages (see `scripts/tex-bundle-excludes.txt`). The first build creates the LaTeX format cache; later builds reuse it. Builds
-never download packages or send document contents anywhere. Before compiling, Scribe checks the
-document's classes, packages and babel languages against `compiler/bundle-manifest.json` and names
-anything missing. Packages outside the snapshot, `biber` and LuaLaTeX-only templates are not
-supported. The archive is produced by the maintainer script `scripts/vendor-tex-bundle.py`; end
-users never run it.
+El paquete contiene un archivo TeX comprimido sin conexión de 106 MB (`compiler/bundle.zip`): un
+subconjunto de TeX Live 2023 con LaTeX (recomendado y extra), inglés, español, portugués, francés y
+alemán, matemáticas y ciencias (incluidos `siunitx` y paquetes de algoritmos), gráficos (`tikz`,
+`pgfplots`), bibliografías (`biblatex` con el backend BibTeX, `natbib`), fuentes recomendadas y
+soporte de fuentes de XeTeX. Para no superar el límite de tamaño de paquete de npm omite las copias
+Type1 de las fuentes que XeTeX lee como OpenType (cm-super, Libertine, TeX Gyre), las métricas AFM,
+los datos de MetaPost y algunos paquetes recreativos con muchas imágenes (consulta
+`scripts/tex-bundle-excludes.txt`). La primera compilación crea la caché del formato LaTeX; las
+siguientes la reutilizan. Las compilaciones nunca descargan paquetes ni envían el contenido de los
+documentos a ninguna parte. Antes de compilar, Scribe comprueba las clases, los paquetes y los
+idiomas de babel del documento contra `compiler/bundle-manifest.json` e indica lo que falte. No se
+admiten paquetes fuera de la instantánea, `biber` ni plantillas solo para LuaLaTeX. El archivo lo
+genera el script de mantenimiento `scripts/vendor-tex-bundle.py`; los usuarios finales nunca lo
+ejecutan.
 
-Tectonic runs with `--untrusted`, a private temporary directory, a minimal allowlisted environment
-(path, home, temp, locale and cache variables only), a 180-second timeout, bounded log and PDF size,
-and cancellation. It is a native process under Alisio's process permission, not an OS sandbox.
-PDF.js is bundled for in-editor previews. See `THIRD_PARTY_NOTICES.md` and the archive's
-`LICENSES` directory for TeX and font licenses.
+Tectonic se ejecuta con `--untrusted`, un directorio temporal privado, un entorno mínimo con lista de
+permitidos (solo variables de ruta, inicio, temporales, idioma y caché), un tiempo límite de 180
+segundos, tamaños de registro y de PDF acotados, y cancelación. Es un proceso nativo bajo el permiso
+de proceso de Alisio, no un entorno aislado del sistema operativo. PDF.js se incluye para las vistas
+previas en el editor. Consulta `THIRD_PARTY_NOTICES.md` y el directorio `LICENSES` del archivo para
+las licencias de TeX y de las fuentes.
 
-## Persistence and limits
+## Persistencia y límites
 
-Atomic JSON storage (and atomic PDF writes) per workspace with an in-process write queue. Run one
-host process per Scribe state directory. A stored document that cannot be read is skipped (with a
-process warning) instead of breaking the document list. Jobs are persisted and marked interrupted
-after restart, never replayed. Idempotency covers retries within the running process only.
+Almacenamiento JSON atómico (y escritura atómica de PDF) por espacio de trabajo, con una cola de
+escritura dentro del proceso. Ejecuta un único proceso host por directorio de estado de Scribe. Un
+documento guardado que no se puede leer se omite (con un aviso del proceso) en lugar de romper la
+lista de documentos. Los trabajos se guardan y se marcan como interrumpidos tras un reinicio; nunca se
+repiten. La idempotencia cubre solo los reintentos dentro del proceso en ejecución.
 
-The same limits apply when editing and when importing, so every exported project can be imported:
+Los mismos límites se aplican al editar y al importar, así que todo proyecto exportado se puede
+importar:
 
-| Limit | Value |
+| Límite | Valor |
 |---|---|
-| Single attachment | 25 MiB |
-| All attachments of a document | 100 MiB, at most 200 files |
-| Revisions kept | 200 (older revisions are pruned when a new one is added) |
-| LaTeX source / bibliography | 400,000 / 100,000 characters per revision |
-| Project file selected in the studio | 256 MiB |
+| Un adjunto | 25 MiB |
+| Todos los adjuntos de un documento | 100 MiB, como máximo 200 archivos |
+| Revisiones conservadas | 200 (las más antiguas se eliminan al añadir una nueva) |
+| Fuente LaTeX / bibliografía | 400.000 / 100.000 caracteres por revisión |
+| Archivo de proyecto elegido en el estudio | 256 MiB |
 
-Binary attachments are not OCR-extracted or passed to the model. References require human
-verification.
+Los adjuntos binarios no se procesan con OCR ni se envían al modelo. Las referencias requieren
+verificación humana.
 
-## Development
+## Desarrollo
 
 ```bash
 pnpm --filter @alisio/plugin-scribe build
@@ -134,11 +148,13 @@ pnpm --filter @alisio/plugin-scribe typecheck
 pnpm --filter @alisio/plugin-scribe test
 ```
 
-Tests run with Vitest against `src`, including jsdom tests of the studio UI and its handshake, and
-a check that the built page meets the frame CSP. The real-engine PDF test is skipped when no
-Tectonic binary can run on the current machine.
+Las pruebas se ejecutan con Vitest sobre `src`, incluidas pruebas jsdom de la interfaz del estudio y
+de su handshake, y una comprobación de que la página generada cumple la CSP del marco. La prueba de
+PDF con el motor real se omite cuando no hay ningún binario de Tectonic que pueda ejecutarse en la
+máquina actual.
 
-Both vendored files are git-ignored (too large for the repository) and must exist before packing:
+Los dos archivos incluidos están ignorados por git (demasiado grandes para el repositorio) y deben
+existir antes de empaquetar:
 
 ```bash
 cd packages/plugin-scribe
@@ -154,15 +170,16 @@ python3 scripts/vendor-tex-bundle.py $TL/texmf-dist
 node scripts/vendor-tectonic.mjs       # compiler/linux-x64/tectonic, checksum-verified download
 ```
 
-`vendor-tex-bundle.py` leaves out what Tectonic never reads (listed in
-`scripts/tex-bundle-excludes.txt`) and fails if two different files would share a name in the flat
-archive. `compiler/bundle-manifest.json` is small and committed; `compiler/bundle.zip` is not.
+`vendor-tex-bundle.py` omite lo que Tectonic nunca lee (listado en
+`scripts/tex-bundle-excludes.txt`) y falla si dos archivos distintos fueran a compartir nombre en el
+archivo plano. `compiler/bundle-manifest.json` es pequeño y se incluye en el repositorio;
+`compiler/bundle.zip` no.
 
-`vendor-tectonic.mjs` downloads the pinned upstream release asset, verifies the tarball and binary
-SHA-256 digests and writes the binary atomically; `--from ` uses a local copy instead.
-`scripts/verify-host-integration.mjs ` exercises the plugin inside a locally
-built Alisio that ships the plugin apps API.
+`vendor-tectonic.mjs` descarga el recurso de la versión oficial fijada, verifica los resúmenes SHA-256
+del tarball y del binario y escribe el binario de forma atómica; `--from ` usa una copia local
+en su lugar. `scripts/verify-host-integration.mjs ` ejercita el plugin dentro de un
+Alisio compilado localmente que incluye la API de apps de plugins.
 
-## License
+## Licencia
 
 MIT
