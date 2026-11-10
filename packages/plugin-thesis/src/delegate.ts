@@ -1,4 +1,6 @@
+import { resolve } from "node:path";
 import type { ChildSessionSpec, PluginAPI } from "@alisio/sdk";
+import { resolveChildModel } from "./model-choice.js";
 import { loadRoleInstructions } from "./resources.js";
 import { parseChildJson, type Validated } from "./schemas.js";
 import type { ResourceRole } from "./types.js";
@@ -68,7 +70,18 @@ export class ChildRejectedError extends Error {
 }
 
 export class Delegator {
+  /** Fallback notices of the chosen model (D7), by resolved workspace, until taken. */
+  private readonly notices = new Map<string, string>();
+
   constructor(private readonly api: PluginAPI) {}
+
+  /** The pending "chosen model is not available" notice of a workspace, cleared on read. */
+  takeNotice(workspace: string): string | undefined {
+    const key = resolve(workspace);
+    const notice = this.notices.get(key);
+    this.notices.delete(key);
+    return notice;
+  }
 
   private async once(
     role: DelegatedRole,
@@ -78,12 +91,15 @@ export class Delegator {
     prompt: string,
   ): Promise<string> {
     const instructions = await loadRoleInstructions(role);
+    const choice = await resolveChildModel(this.api, workspace, parentId);
+    if (choice.notice) this.notices.set(resolve(workspace), choice.notice);
     const child = await this.api.sessions.create({
       parentId,
       workspace,
       title,
       instructions,
       ...childProfiles[role],
+      ...(choice.model ? { model: choice.model } : {}),
     });
     this.api.ui.status("phase", `${role}: running`, title);
     try {

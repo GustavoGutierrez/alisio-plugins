@@ -31,6 +31,8 @@ export interface LifecycleOptions {
   now?: () => Date;
   /** Extra coordinator options (environment, renderer registry, setup seams). */
   coordinator?: Partial<CoordinatorOptions>;
+  /** Extends the fake API before the plugin registers (apps, models, cancel, ...). */
+  extend?: (api: Record<string, unknown>) => void;
 }
 
 /** A fake PluginAPI with scripted child sessions; the real coordinator and workflows run on it. */
@@ -91,6 +93,7 @@ export async function lifecycle(options: LifecycleOptions = {}) {
       },
     },
   } as unknown as PluginAPI;
+  options.extend?.(api as unknown as Record<string, unknown>);
   const { client, network, clock } = fixtureClient();
   const scholar = options.scholar ?? client;
   const coordinator = registerThesis(api, {
@@ -112,6 +115,7 @@ export async function lifecycle(options: LifecycleOptions = {}) {
     asked,
     prompts,
     tools,
+    commands,
     run,
     setInteractive(value: boolean) {
       interactive = value;

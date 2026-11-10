@@ -157,6 +157,11 @@ export interface ThesisState {
     pdf: string;
     ms: number;
   };
+  /** Project settings chosen in Thesis Studio (D7). */
+  settings?: {
+    /** `provider/model` reference for every child session; null or absent inherits Alisio's. */
+    model?: string | null;
+  };
 }
 
 export const workTypes = [

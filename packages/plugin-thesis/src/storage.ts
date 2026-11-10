@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, realpath, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
 import {
@@ -333,6 +333,18 @@ export function validateState(value: unknown): ThesisState {
     return fail("finalBuild");
   }
   if (value.submittedAt !== undefined && !isIso(value.submittedAt)) return fail("submittedAt");
+  const settings = value.settings;
+  if (
+    settings !== undefined &&
+    (!isRecord(settings) ||
+      (settings.model !== undefined &&
+        settings.model !== null &&
+        (typeof settings.model !== "string" ||
+          settings.model.length === 0 ||
+          settings.model.length > 200)))
+  ) {
+    return fail("settings");
+  }
 
   for (const key of ["protocolAt", "outlineAt"] as const) {
     if (value[key] !== undefined && !isIso(value[key])) return fail(key);
@@ -363,6 +375,18 @@ export async function readState(workspace: string): Promise<ThesisState | undefi
     throw new Error("Invalid thesis state JSON");
   }
   return validateState(value);
+}
+
+/** SHA-256 of the state file bytes (D5), or "none" when there is no state yet. */
+export async function stateRevision(workspace: string): Promise<string> {
+  try {
+    return createHash("sha256")
+      .update(await readFile(statePath(workspace)))
+      .digest("hex");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return "none";
+    throw error;
+  }
 }
 
 export async function writeState(workspace: string, state: ThesisState): Promise<void> {

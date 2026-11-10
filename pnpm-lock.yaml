@@ -357,8 +357,17 @@ importers:
         version: 2.9.1
     devDependencies:
       '@alisio/sdk':
-        specifier: 0.11.4
-        version: 0.11.4
+        specifier: 0.11.7
+        version: 0.11.7
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
+      jsdom:
+        specifier: 31.0.0
+        version: 31.0.0(@napi-rs/canvas@1.1.0)
+      pdfjs-dist:
+        specifier: 6.5.438
+        version: 6.5.438
       typescript:
         specifier: 7.0.2
         version: 7.0.2

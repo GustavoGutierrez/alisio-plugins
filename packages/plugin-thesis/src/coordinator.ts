@@ -78,6 +78,12 @@ export interface CoordinatorOptions {
   env?: NodeJS.ProcessEnv;
   /** Scholarly HTTP client; tests inject one backed by recorded fixtures. */
   scholar?: ScholarClient;
+  /**
+   * False removes the coordinator's build from the workflows (Thesis Studio `write` actions, D8):
+   * approving a section then skips its partial build and finalize reports that no build is
+   * available. Defaults to true.
+   */
+  inlineBuild?: boolean;
 }
 
 /** Plain-text build summary shared by the command and the CLI. */
@@ -131,6 +137,7 @@ export class ThesisCoordinator {
   private readonly workflow: Workflow;
   private readonly registry: RendererRegistry;
   private readonly setupDeps: Partial<SetupDeps> | undefined;
+  private readonly delegator: Delegator;
 
   constructor(
     private readonly api: PluginAPI,
@@ -142,16 +149,42 @@ export class ThesisCoordinator {
     this.env = options.env ?? process.env;
     this.projectOptions = options.packsRoot ? { packsRoot: options.packsRoot } : {};
     this.scholar = options.scholar ?? new ScholarClient({ env: this.env });
+    this.delegator = new Delegator(api);
     this.workflow = new Workflow({
       api,
       now: this.now,
       projectOptions: this.projectOptions,
       scholar: this.scholar,
-      delegator: new Delegator(api),
+      delegator: this.delegator,
       env: this.env,
       cacheRoot: () => this.cacheRoot(),
-      build: (workspace, input) => this.buildRun(workspace, input),
+      ...(options.inlineBuild === false
+        ? {}
+        : {
+            build: (workspace: string, input: Parameters<ThesisCoordinator["buildRun"]>[1]) =>
+              this.buildRun(workspace, input),
+          }),
     });
+  }
+
+  /** The pending "chosen model is not available" notice of a workspace (D7), cleared on read. */
+  takeModelNotice(workspace: string): string | undefined {
+    return this.delegator.takeNotice(workspace);
+  }
+
+  /** The next recommended command for a state (`/thesis:...`), as `/thesis:status` prints it. */
+  nextCommandFor(state: ThesisState): string {
+    return this.workflow.nextCommand({ state });
+  }
+
+  /** What to do next for one section, as the status table prints it. */
+  sectionNextFor(state: ThesisState, id: string): string {
+    return this.workflow.sectionNext(state, id);
+  }
+
+  /** The structured `/thesis:doctor` report. */
+  doctorReport() {
+    return runDoctor({ env: this.env, cacheRoot: this.cacheRoot() });
   }
 
   private workspace(sessionId?: string): string {
@@ -425,6 +458,27 @@ export class ThesisCoordinator {
       mayAsk,
     );
     return { errors, message };
+  }
+
+  /**
+   * Thesis Studio's interview step: the same validation and persistence as `thesis_answer`, with
+   * the errors returned one per line (each starts with its question id) instead of agent text.
+   */
+  async answerFromApp(
+    workspace: string,
+    answers: Record<string, string>,
+  ): Promise<{ ok: boolean; errors: string[] }> {
+    const state = await readState(workspace);
+    const pending = state?.pendingQuestions;
+    if (!state || !pending) return { ok: false, errors: [] };
+    const ids = pending.questions.map((question) => question.id);
+    const unknown = Object.keys(answers).filter(
+      (key) => !ids.includes(key.endsWith(":text") ? key.slice(0, -5) : key),
+    );
+    if (unknown.length > 0)
+      return { ok: false, errors: unknown.map((key) => `Unknown question id: ${key}`) };
+    const outcome = await this.applyAnswers(workspace, state, answers, false);
+    return { ok: outcome.errors.length === 0, errors: outcome.errors };
   }
 
   /**

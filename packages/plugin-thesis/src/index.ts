@@ -1,5 +1,7 @@
 import { type CommandContext, definePlugin, type PluginAPI, type ToolResult } from "@alisio/sdk";
+import { registerStudioApp } from "./app/index.js";
 import { type CoordinatorOptions, ThesisCoordinator } from "./coordinator.js";
+import { blockedByLock, WorkspaceLock } from "./lock.js";
 import { resourcePaths } from "./resources.js";
 import { VERSION } from "./version.js";
 
@@ -46,20 +48,61 @@ export function registerThesis(
   api.resources.agents(resourcePaths.agents);
   api.resources.skills(resourcePaths.skills);
   const coordinator = new ThesisCoordinator(api, options);
+  // One state writer per workspace, shared with Thesis Studio (D4). Per activation, never global.
+  const lock = new WorkspaceLock();
+  let appRegistered = false;
+  const workspaceOf = (sessionId?: string): string | undefined => {
+    if (!sessionId) return undefined;
+    try {
+      return api.sessions.workspace(sessionId);
+    } catch {
+      return undefined;
+    }
+  };
+  /**
+   * Runs a state-mutating command under the lock. Without a session the command runs as before
+   * (it reports its own error). A fallback model notice (D7) is appended to the reply.
+   */
+  const guarded =
+    (name: string, handler: (args: string, sessionId?: string) => Promise<string>) =>
+    async (args: string, sessionId?: string): Promise<string> => {
+      const workspace = workspaceOf(sessionId);
+      if (!workspace) return handler(args, sessionId);
+      const release = lock.tryAcquire(workspace, "chat", `/thesis:${name}`);
+      if (!release) {
+        const holder = lock.holderOf(workspace);
+        return holder ? blockedByLock(holder) : handler(args, sessionId);
+      }
+      try {
+        const text = await handler(args, sessionId);
+        const notice = coordinator.takeModelNotice(workspace);
+        return notice ? `${text}\n\nNote: ${notice}.` : text;
+      } finally {
+        release();
+      }
+    };
+  /** `mutates` is false for read-only commands, or a predicate over the arguments. */
   const register = (
     name: string,
     description: string,
     argumentHint: string,
     handler: (args: string, sessionId?: string) => Promise<string>,
-  ) =>
-    api.commands.register(
+    mutates: boolean | ((args: string) => boolean) = true,
+  ) => {
+    const locked = guarded(name, handler);
+    return api.commands.register(
       name,
-      (args: string, context?: CommandContext) => handler(args, context?.sessionId),
+      (args: string, context?: CommandContext) =>
+        (typeof mutates === "function" ? mutates(args) : mutates)
+          ? locked(args, context?.sessionId)
+          : handler(args, context?.sessionId),
       {
         description,
         argumentHint,
       },
     );
+  };
+  const subcommandIsNew = (args: string) => /^(--\s*)?new(\s|$)/.test(args.trim());
   register(
     "init",
     "Create the thesis workspace and run the intake interview",
@@ -76,7 +119,13 @@ export function registerThesis(
     "status",
     "Show phase, gates, sections and the next step",
     "",
-    coordinator.status.bind(coordinator),
+    async (args, sessionId) =>
+      `${await coordinator.status(args, sessionId)}\n${
+        appRegistered
+          ? "App: Thesis Studio is available in Alisio's Apps list."
+          : "App: Thesis Studio needs Alisio 0.11.6 or newer."
+      }`,
+    false,
   );
   register(
     "check",
@@ -89,12 +138,14 @@ export function registerThesis(
     "Create, list, check and explain policy packs",
     "new <scope> <id> | list | check | explain <ruleId|value>",
     coordinator.pack.bind(coordinator),
+    subcommandIsNew,
   );
   register(
     "style",
     "Author, list and check citation styles and presentation profiles",
     "new <id> -- <guide text|URL|path> | list | check",
     coordinator.style.bind(coordinator),
+    subcommandIsNew,
   );
   register(
     "norms",
@@ -167,10 +218,15 @@ export function registerThesis(
     "Install the pinned Typst engine into the cache (checksum verified)",
     "",
     (args) => coordinator.setup(args),
+    false,
   );
   register("next", "Run the next recommended step", "", coordinator.next.bind(coordinator));
-  register("doctor", "Report engines, vendored packages and policy packs", "", () =>
-    coordinator.doctor(),
+  register(
+    "doctor",
+    "Report engines, vendored packages and policy packs",
+    "",
+    () => coordinator.doctor(),
+    false,
   );
 
   api.tools.register({
@@ -199,8 +255,17 @@ export function registerThesis(
           !Array.isArray(input.answers)
             ? (input.answers as Record<string, unknown>)
             : {};
-        const outcome = await coordinator.answerFromChat(context.workspace, answers);
-        return text(outcome.text, !outcome.ok);
+        const release = lock.tryAcquire(context.workspace, "chat", "thesis_answer");
+        if (!release) {
+          const holder = lock.holderOf(context.workspace);
+          return text(holder ? blockedByLock(holder) : "thesis_answer failed", true);
+        }
+        try {
+          const outcome = await coordinator.answerFromChat(context.workspace, answers);
+          return text(outcome.text, !outcome.ok);
+        } finally {
+          release();
+        }
       } catch (error) {
         return text(error instanceof Error ? error.message : "thesis_answer failed", true);
       }
@@ -343,6 +408,12 @@ export function registerThesis(
       }
     },
   });
+  // Thesis Studio last, and only on hosts with plugin apps (D1, O7): older hosts lose nothing.
+  try {
+    appRegistered = registerStudioApp(api, { coordinator, options, lock });
+  } catch {
+    appRegistered = false;
+  }
   return coordinator;
 }
 
