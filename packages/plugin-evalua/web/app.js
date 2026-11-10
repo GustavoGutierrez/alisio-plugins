@@ -12,11 +12,13 @@ import {
   filterTopics,
   formCount,
   fromEditable,
+  generationNotices,
   gradeList,
   jobView,
   MAX_TEMPLATES,
   missingFields,
   nextExamStep,
+  offeredTypes,
   POLL_MS,
   promptsToSave,
   responseError,
@@ -214,6 +216,10 @@ let form = emptyForm();
 let stepIndex = 0;
 let topicQuery = "";
 let fieldErrors = {};
+/** Capacity shortfalls behind a `capacity` field error, by field (plain-words messages). */
+let fieldCapacity = {};
+/** A logo chosen before the first profile exists: uploaded right after `profile.save`. */
+let pendingLogo;
 let summaryOpen = false;
 let wizardDirty = false;
 let draftView;
@@ -222,7 +228,7 @@ let edits = {};
 let wordingDirty = false;
 let items;
 let showAnswers = false;
-let generationFindings;
+let generationResult;
 let docTab = "exam";
 const docInfo = {};
 let buildJob;
@@ -249,6 +255,14 @@ const activeExam = () => status?.exams?.find((exam) => exam.id === status.active
 const gradeName = (grade) => t("gradeNames")[grade] ?? grade;
 const phaseText = (phase) => t("phase")[phase] ?? phase;
 const findingText = (finding) => t("findingText")[finding.id] ?? finding.message;
+/** One capacity shortfall in plain words: the topic, the kind of question and how many exist. */
+const capacityText = (entry) => {
+  const name = localName(entry.name) || entry.topic;
+  const type = t("itemTypes")[entry.type]?.[0] ?? entry.type;
+  return entry.available > 0
+    ? tf("capacityFew", name, type, entry.available)
+    : tf("capacityNone", name, type);
+};
 
 function showUnavailable() {
   unavailable = true;
@@ -348,6 +362,9 @@ function renderHome() {
 // ---------- Profile ----------
 function renderProfile() {
   const p = status.profile ?? {};
+  // First run: no profile to attach a logo to yet, so the chosen one waits here until it is saved.
+  const pending = !status.profile && pendingLogo ? pendingLogo : undefined;
+  const logoSrc = status.logo ?? pending?.preview;
   const locales = status.locales ?? ["es"];
   const err = (id) =>
     fieldErrors[id] ? `<p class="field-error" id="${id}-error">${esc(t("fieldRequired"))}</p>` : "";
@@ -363,8 +380,8 @@ function renderProfile() {
       </div></fieldset>
       <label class="field" for="language"><span>${esc(t("docLanguage"))}</span><select id="language">${locales.map((code) => `<option value="${attr(code)}" ${(p.language ?? "es") === code ? "selected" : ""}>${esc(t("languageNames")[code] ?? code)}</option>`).join("")}</select><small class="muted">${esc(t("docLanguageHint"))}</small></label>
       <div class="field"><span>${esc(t("logo"))}</span>
-        <div class="logo-row">${status.logo ? `<img class="logo-preview" src="${attr(status.logo)}" alt="${attr(t("logoPreview"))}">` : `<span class="logo-empty" aria-hidden="true">${icon("image", "icon big")}</span>`}
-        <div class="stack-tight">${status.profile ? iconLabel("choose-logo", "image", status.logo ? t("replaceLogo") : t("chooseLogo")) : ""}${status.logo ? iconLabel("remove-logo", "trash", t("removeLogo"), "ghost") : ""}<small class="muted">${esc(t("logoHint"))}</small></div></div>
+        <div class="logo-row">${logoSrc ? `<img class="logo-preview" src="${attr(logoSrc)}" alt="${attr(t("logoPreview"))}">` : `<span class="logo-empty" aria-hidden="true">${icon("image", "icon big")}</span>`}
+        <div class="stack-tight">${iconLabel("choose-logo", "image", logoSrc ? t("replaceLogo") : t("chooseLogo"))}${logoSrc ? iconLabel("remove-logo", "trash", t("removeLogo"), "ghost") : ""}<small class="muted">${esc(t("logoHint"))}</small>${pending ? `<small class="muted">${esc(t("logoPending"))}</small>` : ""}</div></div>
         <input id="logo-input" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
       <div class="row end">${button("save-profile", esc(t("saveProfile")), "primary", 'id="save-profile"')}</div>
     </section></main>`;
@@ -395,9 +412,12 @@ const stepTitle = (step) =>
 
 function fieldError(field) {
   const code = fieldErrors[field];
-  return code
-    ? `<p class="field-error" id="err-${field}">${icon("warning")}${esc(t("fieldErrors")[code] ?? t("fieldErrors").invalid)}</p>`
-    : "";
+  if (!code) return "";
+  const capacity = code === "capacity" ? (fieldCapacity[field] ?? []) : [];
+  const text = capacity.length
+    ? capacity.map(capacityText).join(" ")
+    : (t("fieldErrors")[code] ?? t("fieldErrors").invalid);
+  return `<p class="field-error" id="err-${field}">${icon("warning")}${esc(text)}</p>`;
 }
 const describedBy = (field) =>
   fieldErrors[field] ? `aria-invalid="true" aria-describedby="err-${field}"` : "";
@@ -451,7 +471,10 @@ function topicStep() {
 }
 
 function questionsStep() {
-  const types = Object.entries(t("itemTypes"));
+  // Only the kinds of question the chosen topic can produce (the chat's round 2 offers the same).
+  const offered = offeredTypes(catalog?.topics, form.topic);
+  form.types = form.types.filter((type) => offered.includes(type));
+  const types = offered.map((type) => [type, t("itemTypes")[type]]);
   return `<fieldset class="q"><legend>${esc(t("types"))}</legend><p class="muted small">${esc(t("typesHint"))}</p>
       <div class="choice-grid" ${describedBy("types")}>${types
         .map(
@@ -668,6 +691,11 @@ async function submitWizard(replace = false) {
   const result = await mutate("draft.create", { answers: toAnswers(form), replace });
   if (result?.errors) {
     fieldErrors = Object.fromEntries(result.errors.map((error) => [error.field, error.code]));
+    fieldCapacity = Object.fromEntries(
+      result.errors
+        .filter((error) => error.code === "capacity")
+        .map((error) => [error.field, error.capacity ?? []]),
+    );
     const step = stepOfField(result.errors[0]?.field);
     stepIndex = Math.max(0, steps().indexOf(step));
     focusTarget = "#view-heading";
@@ -857,8 +885,19 @@ const modelName = (reference) =>
 function questionsPanel(exam) {
   const editable = EDITABLE_PHASES.includes(exam.phase);
   const list = items?.items ?? [];
-  const blocked = generationFindings?.length
-    ? `<div class="banner warn" role="alert">${icon("warning")}<div><strong>${esc(t("generationBlocked"))}</strong><ul>${generationFindings.map((finding) => `<li>${esc(finding.message)} <small class="muted">${esc(finding.id)}</small></li>`).join("")}</ul></div></div>`
+  const notices = generationNotices(generationResult);
+  const blocked = notices.technical.length
+    ? `<div class="banner warn" role="alert">${icon("warning")}<div><strong>${esc(t("generationBlocked"))}</strong><ul>${[
+        ...notices.capacity.map((entry) => `<li class="capacity">${esc(capacityText(entry))}</li>`),
+        ...notices.others.map(
+          (finding) =>
+            `<li>${esc(finding.message)} <small class="muted">${esc(finding.id)}</small></li>`,
+        ),
+      ].join("")}</ul>${
+        notices.capacity.length
+          ? `<details class="technical"><summary class="small">${esc(t("technicalDetails"))}</summary><ul class="small muted">${notices.technical.map((finding) => `<li>${esc(finding.message)} <code>${esc(finding.id)}</code></li>`).join("")}</ul></details>`
+          : ""
+      }</div></div>`
     : "";
   const cards = list
     .map(
@@ -1342,12 +1381,28 @@ async function handle(action, target) {
       view.draftProfile = undefined;
       await loadStatus();
       toast(t("profileSaved"));
+      if (pendingLogo) {
+        const logo = pendingLogo;
+        pendingLogo = undefined;
+        try {
+          await mutate("profile.setLogo", { dataBase64: logo.dataBase64, mime: logo.mime });
+        } catch (error) {
+          // The profile is saved; the logo can be chosen again from the profile page.
+          fail(error);
+        }
+        await loadStatus();
+      }
       if (view.after === "wizard") return handle("new-exam", target);
       return render();
     }
     case "choose-logo":
       return document.querySelector("#logo-input")?.click();
     case "remove-logo":
+      if (!status.profile) {
+        view.draftProfile = readProfileForm();
+        pendingLogo = undefined;
+        return render({ keepFocus: true });
+      }
       await mutate("profile.removeLogo");
       await loadStatus();
       return render();
@@ -1444,6 +1499,7 @@ async function handle(action, target) {
       const prompts = promptsToSave(wording.families, edits);
       const result = await mutate("wording.save", { prompts });
       wordingDirty = false;
+      generationResult = result.findings?.length ? result : undefined;
       await loadStatus();
       await loadWording();
       toast(result.regenerated ? t("wordingRegenerated") : t("wordingSaved"));
@@ -1452,7 +1508,7 @@ async function handle(action, target) {
     }
     case "generate": {
       const result = await mutate("exam.generate");
-      generationFindings = result.findings;
+      generationResult = result.findings?.length ? result : undefined;
       await loadStatus();
       await loadItems();
       announce(result.count ? tf("generated", result.count) : t("generationBlocked"));
@@ -1522,7 +1578,18 @@ root.addEventListener("change", (event) => {
       let binary = "";
       for (let i = 0; i < bytes.length; i += 0x8000)
         binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-      await mutate("profile.setLogo", { dataBase64: btoa(binary), mime: file.type });
+      const dataBase64 = btoa(binary);
+      if (!status.profile) {
+        // Keep the unsaved form values across the re-render that shows the preview.
+        view.draftProfile = readProfileForm();
+        pendingLogo = {
+          dataBase64,
+          mime: file.type,
+          preview: `data:${file.type};base64,${dataBase64}`,
+        };
+        return render({ keepFocus: true });
+      }
+      await mutate("profile.setLogo", { dataBase64, mime: file.type });
       await loadStatus();
       render();
     })().catch(fail);

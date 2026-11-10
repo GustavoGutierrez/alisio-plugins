@@ -237,22 +237,55 @@ function round1(ctx: RoundContext): Question[] {
   return questions;
 }
 
+const typeOptions: Record<ItemType, { label: string; description?: string }> = {
+  single_choice: { label: "Selección única" },
+  multiple_choice: { label: "Selección múltiple" },
+  open: { label: "Abiertas" },
+  practice: { label: "Ejercicio de práctica", description: "Resolver con todo el procedimiento." },
+};
+
+/**
+ * The item types a topic can actually produce, from its `supports` flags. A free-text topic that
+ * resolves to a catalog topic uses that topic; an unknown one offers what any topic supports; a
+ * catalog without topic data (phase 1) offers every type.
+ */
+export function offeredItemTypes(ctx: Pick<RoundContext, "answers" | "catalog">): ItemType[] {
+  const raw = topicValue(ctx.answers);
+  const id =
+    raw === undefined
+      ? undefined
+      : ctx.answers.topic === "enter" || ctx.catalog.topic?.(raw) === undefined
+        ? (ctx.catalog.resolveTopic?.(raw) ?? raw)
+        : raw;
+  const topic = id === undefined ? undefined : ctx.catalog.topic?.(id);
+  if (topic !== undefined) {
+    const own = itemTypes.filter((type) => topic.supports[type]);
+    if (own.length > 0) return own;
+  }
+  const all = ctx.catalog.topics?.() ?? [];
+  if (all.length > 0) {
+    const any = itemTypes.filter((type) => all.some((entry) => entry.supports[type]));
+    if (any.length > 0) return any;
+  }
+  return [...itemTypes];
+}
+
 function round2(ctx: RoundContext): Question[] {
   const questions: Question[] = [];
   if (unanswered(ctx, "types")) {
+    const offered = offeredItemTypes(ctx);
+    const recommended = offered.includes("single_choice") ? "single_choice" : offered[0];
     questions.push({
       id: "types",
       header: "Tipos de ítems",
       question: "¿Qué tipos de ítems debe incluir el examen?",
       multiSelect: true,
-      options: [
-        option("single_choice", "Selección única", { recommended: true }),
-        option("multiple_choice", "Selección múltiple"),
-        option("open", "Abiertas"),
-        option("practice", "Ejercicio de práctica", {
-          description: "Resolver con todo el procedimiento.",
+      options: offered.map((type) =>
+        option(type, typeOptions[type].label, {
+          ...(typeOptions[type].description ? { description: typeOptions[type].description } : {}),
+          ...(type === recommended ? { recommended: true } : {}),
         }),
-      ],
+      ),
     });
   }
   if (unanswered(ctx, "count")) {

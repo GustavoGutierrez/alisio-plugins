@@ -60,6 +60,7 @@ const en = {
   languageNames: { es: "Spanish", en: "English" },
   logo: "School logo (optional)",
   logoHint: "PNG, JPEG or WebP, up to 2 MB.",
+  logoPending: "The logo is saved together with your profile.",
   chooseLogo: "Choose a logo",
   replaceLogo: "Replace logo",
   removeLogo: "Remove logo",
@@ -160,6 +161,7 @@ const en = {
     invalid: "This value is not allowed.",
     not_in_catalog: "Choose a topic from the list.",
     too_small: "The bank needs at least 5 more questions than the exam.",
+    capacity: "There are not enough different questions for this choice.",
   },
   // Review and Gate A
   reviewTitle: "Review and approve",
@@ -243,6 +245,11 @@ const en = {
   questionN: (n) => `Question ${n}`,
   answer: "Answer",
   generationBlocked: "The questions could not be created:",
+  capacityFew: (topic, type, n) =>
+    `The topic “${topic}” has only ${n} different “${type}” ${plural(n, "question", "questions")}. Lower the number of questions or choose another topic.`,
+  capacityNone: (topic, type) =>
+    `The topic “${topic}” has no “${type}” questions. Choose another kind of question or another topic.`,
+  technicalDetails: "Technical details",
   generated: (n) => `${n} ${plural(n, "question", "questions")} created.`,
   questionsN: (n) => `${n} ${plural(n, "question", "questions")}`,
   moreItems: "Show more",
@@ -390,6 +397,7 @@ const es = {
   languageNames: { es: "Español", en: "Inglés" },
   logo: "Logo del colegio (opcional)",
   logoHint: "PNG, JPEG o WebP, hasta 2 MB.",
+  logoPending: "El logo se guarda junto con tu perfil.",
   chooseLogo: "Elegir un logo",
   replaceLogo: "Cambiar el logo",
   removeLogo: "Quitar el logo",
@@ -492,6 +500,7 @@ const es = {
     invalid: "Este valor no está permitido.",
     not_in_catalog: "Elige un tema de la lista.",
     too_small: "El banco necesita al menos 5 preguntas más que el examen.",
+    capacity: "No hay suficientes preguntas distintas para esta elección.",
   },
   reviewTitle: "Revisar y aprobar",
   reviewIntro:
@@ -572,6 +581,11 @@ const es = {
   questionN: (n) => `Pregunta ${n}`,
   answer: "Respuesta",
   generationBlocked: "No se pudieron crear las preguntas:",
+  capacityFew: (topic, type, n) =>
+    `El tema «${topic}» tiene solo ${n} ${plural(n, "pregunta distinta", "preguntas distintas")} de tipo «${type}». Baja la cantidad o elige otro tema.`,
+  capacityNone: (topic, type) =>
+    `El tema «${topic}» no tiene preguntas de tipo «${type}». Elige otro tipo de pregunta u otro tema.`,
+  technicalDetails: "Detalles técnicos",
   generated: (n) => `${n} ${plural(n, "pregunta creada", "preguntas creadas")}.`,
   questionsN: (n) => `${n} ${plural(n, "pregunta", "preguntas")}`,
   moreItems: "Ver más",

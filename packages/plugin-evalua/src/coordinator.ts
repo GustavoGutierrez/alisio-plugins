@@ -9,6 +9,7 @@ import {
   buildExam,
   type PdfPrinter,
 } from "./build.js";
+import { type CapacityShortfall, capacityShortfalls, shortfallText } from "./capacity.js";
 import { verifyExam } from "./checks.js";
 import { type ChromeDetection, detectChrome } from "./chrome/detect.js";
 import { type Clock, systemClock } from "./clock.js";
@@ -55,6 +56,7 @@ import { atomicWrite, emptyState, readState, validateRootName, writeState } from
 import { loadThemeLayers, resolveTheme } from "./themes.js";
 import type {
   EvaluaState,
+  ExamDraft,
   InterviewFlow,
   InterviewState,
   RoundId,
@@ -202,6 +204,38 @@ export class EvaluaCoordinator {
   /** Finds the print browser (injected in tests). */
   detect(): Promise<ChromeDetection> {
     return this.detectBrowser();
+  }
+
+  /**
+   * The topic x type cells a draft cannot fill, from a deterministic dry run of the generation it
+   * will get after Gate A (seeded by the exam id it is about to receive, plus the next two ids).
+   * Empty when everything fits, or when the knowledge base cannot be read (generation then reports).
+   */
+  async capacityFor(
+    workspace: string,
+    draft: ExamDraft,
+    state?: EvaluaState,
+  ): Promise<CapacityShortfall[]> {
+    let knowledge: LoadedKnowledge;
+    try {
+      knowledge = await this.loadKnowledgeFor(workspace);
+    } catch {
+      return [];
+    }
+    if (knowledge.packs.length === 0) return [];
+    const current = state ?? (await readState(workspace)) ?? emptyState(DEFAULT_ROOT, this.now());
+    const base = await this.rootOf(workspace, current);
+    const folders = await listExamFolders(base).catch(() => [] as string[]);
+    const next = nextExamNumber(folders, current.lastExamNumber);
+    const seeds = [next, next + 1, next + 2].map((n) => `e${String(n).padStart(2, "0")}`);
+    return capacityShortfalls({
+      topics: draft.topics,
+      level: draft.level,
+      calibration: this.calibrationFor(draft as unknown as ExamSpec, knowledge),
+      itemTypes: draft.itemTypes,
+      knowledge: knowledge.topics,
+      seeds,
+    });
   }
 
   /** The knowledge-base catalog for a workspace: injected (tests) or loaded from packs. */
@@ -1149,6 +1183,25 @@ export class EvaluaCoordinator {
     }
     if (!profile) throw new Error("The teacher profile is missing; run /evalua:init");
     const draft = buildDraft(interview.answers, profile, this.clock, catalog);
+    const shortfalls = await this.capacityFor(workspace, draft, state);
+    if (shortfalls.length > 0) {
+      // Like the app's wizard: never record a draft whose questions cannot be created. Ask the
+      // question count (and the types, when one has no questions at all) again.
+      const answers = interview.answers;
+      delete answers.count;
+      delete answers["count:text"];
+      if (shortfalls.some((entry) => entry.available === 0)) delete answers.types;
+      interview.completedRounds = interview.completedRounds.filter((round) => round !== "2");
+      return this.park(
+        workspace,
+        state,
+        "2",
+        this.questionsFor("2", state, catalog),
+        shortfalls.map(
+          (entry) => `${entry.available === 0 ? "types" : "count"}: ${shortfallText(entry)}`,
+        ),
+      );
+    }
     state.draft = draft;
     delete state.interview;
     await this.save(workspace, state);

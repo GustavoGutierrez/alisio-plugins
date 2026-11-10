@@ -229,13 +229,20 @@ export function generateExam(input: GenerateInput): GenerateResult {
           const prompts = Array.isArray(rawPrompts)
             ? rawPrompts.filter((entry): entry is string => typeof entry === "string")
             : undefined;
-          let draft = family.generate({
-            rng: createRng(seedString),
-            level: input.level,
-            calibration: input.calibration,
-            ...(source.params === undefined ? {} : { params: source.params }),
-            ...(prompts === undefined || prompts.length === 0 ? {} : { prompts }),
-          });
+          let draft: ItemDraft;
+          try {
+            draft = family.generate({
+              rng: createRng(seedString),
+              level: input.level,
+              calibration: input.calibration,
+              ...(source.params === undefined ? {} : { params: source.params }),
+              ...(prompts === undefined || prompts.length === 0 ? {} : { prompts }),
+            });
+          } catch {
+            // A generator that cannot build this seed (e.g. too few distinct distractors) is a
+            // rejected candidate like a failed verification, never a crash of the whole exam.
+            continue;
+          }
           draft = applyPrompts(draft, prompts, createRng(`${seedString}|prompt`));
           const options = adaptOptions(draft, cell.type);
           if (options === undefined) continue;

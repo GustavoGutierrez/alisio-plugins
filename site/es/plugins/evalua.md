@@ -58,8 +58,9 @@ oscuro.
 1. **Perfil docente**: nombre, colegio, asignatura, tamaño del papel y un logo opcional (PNG, JPEG
    o WebP, hasta 2 MB).
 2. **Nuevo examen**: elige el grado, luego un tema de la lista de la base de conocimiento, el
-   nivel, los tipos de preguntas, cuántas, el banco (si lo hay) y el formato. Un resumen acompaña
-   cada respuesta.
+   nivel, los tipos de preguntas (solo los que el tema admite), cuántas, el banco (si lo hay) y el
+   formato. Un resumen acompaña cada respuesta. Si el tema tiene menos preguntas distintas de un
+   tipo de las que pediste, la app lo indica antes de aprobar, con el tema, el tipo y el máximo.
 3. **Revisa y aprueba** el plan (Gate A); solo entonces se crea la carpeta del examen.
 4. **Redacción**: deja la frase predeterminada de cada tipo de ejercicio, escribe la tuya o pide al
    modelo elegido en Configuración un borrador para revisar y editar. La redacción hecha con IA
@@ -94,7 +95,7 @@ La entrevista pregunta solo lo que aún no sabe:
 | --- | --- |
 | Perfil (una vez por espacio) | idioma, institución, nombre del docente, logo opcional |
 | 1 — qué | tema (sugerencias de la base de conocimiento), grado, nivel (básico/intermedio/avanzado/genio), base de conocimiento |
-| 2 — forma | tipos de ítems (selección múltiple), número de preguntas, mismo examen o banco, columnas |
+| 2 — forma | tipos de ítems que admite el tema (selección múltiple), número de preguntas, mismo examen o banco, columnas |
 | 2b — solo banco | tamaño del banco, número de variantes |
 | 3 — impresión y tono | límite de páginas (las mínimas legibles, 1, 2 o la cantidad que escribas), tiempo e instrumento, texto de cierre |
 
@@ -106,7 +107,9 @@ y continúas con `/evalua:new id=valor ...` (el texto libre va en `:text=...`).
 La tabla de especificaciones es una rejilla de tema × demanda cognitiva × tipo de ítem. Los
 candidatos salen primero de las familias de ítems y luego de los ítems estáticos del banco, y cada
 candidato se verifica por código antes de congelarse; un candidato que falla se vuelve a sortear
-(con límite) y una casilla que no se puede llenar se reporta.
+(con límite) y una casilla que no se puede llenar se reporta. La app y el chat ensayan esta
+generación con semilla antes de registrar el plan, así que un tema que no alcanza la cantidad pedida
+se detecta en la entrevista y no después del Gate A.
 
 ![Flujo de generación y revisión](https://raw.githubusercontent.com/GustavoGutierrez/alisio-plugins/HEAD/packages/plugin-evalua/assets/review-pipeline.svg)
 

@@ -61,7 +61,13 @@ describe("wizard answers to a draft (EVL-APP-AC-06)", () => {
 
   it("titles a topic outside the first suggestions with its catalog name, never its id", () => {
     const result = runWizard(
-      { ...base("basic-math/powers-roots"), grade: "other", "grade:text": "Noveno" },
+      {
+        ...base("basic-math/powers-roots"),
+        // Powers and roots supports single-choice and open questions, not practice.
+        types: ["single_choice", "open"],
+        grade: "other",
+        "grade:text": "Noveno",
+      },
       { catalog, profile, clock },
     );
     if (!("draft" in result)) throw new Error(JSON.stringify(result));

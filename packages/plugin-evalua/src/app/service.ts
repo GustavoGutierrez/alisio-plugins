@@ -3,6 +3,7 @@ import { mkdir, readdir, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import type { PluginAPI } from "@alisio/sdk";
 import { buildBlueprint } from "../blueprint.js";
+import { type CapacityShortfall, shortfallsFromFindings } from "../capacity.js";
 import { DEFAULT_ROOT, type EvaluaCoordinator } from "../coordinator.js";
 import { type ExamSpec, parseExam } from "../exam.js";
 import { familyIds } from "../families/index.js";
@@ -24,7 +25,7 @@ import { listExamFolders, nextExamNumber } from "../workspace.js";
 import { AppError } from "./errors.js";
 import type { AppJobs } from "./jobs.js";
 import { type BuildFinding, readPrefs, writePrefs } from "./prefs.js";
-import { runWizard, WIZARD_FIELDS, type WizardAnswers } from "./wizard.js";
+import { capacityErrors, runWizard, WIZARD_FIELDS, type WizardAnswers } from "./wizard.js";
 import { buildWordingPrompt, parseWordingOutput, validateTemplates } from "./wording.js";
 
 /** What a handler knows about the call (the host's `PluginAppContext`). */
@@ -697,6 +698,10 @@ export class EvaluaAppService {
       clock: this.coordinator.clockSource,
     });
     if ("errors" in result) return { errors: result.errors };
+    // A deterministic dry run of the generation: refuse a plan whose questions cannot be created
+    // instead of letting the teacher reach a dead "Create the questions" after Gate A.
+    const shortfalls = await this.coordinator.capacityFor(ws, result.draft, state);
+    if (shortfalls.length > 0) return { errors: capacityErrors(shortfalls) };
     if ((state.interview || state.draft) && !replace) {
       return { confirm: "replace", chatInterview: !!state.interview, draft: !!state.draft };
     }
@@ -782,6 +787,7 @@ export class EvaluaAppService {
     const saved = await this.coordinator.setPromptsCore(ws, templates);
     let regenerated = false;
     let findings: BuildFinding[] | undefined;
+    let capacity: CapacityShortfall[] | undefined;
     if (exam.phase === "generated" || exam.phase === "built") {
       const outcome = await this.coordinator.generateCore(ws);
       if ("blocked" in outcome) {
@@ -793,6 +799,11 @@ export class EvaluaAppService {
           await this.coordinator.saveState(ws, state);
         }
         findings = findingsOf(outcome.blocked);
+        capacity = shortfallsFromFindings(
+          outcome.blocked,
+          exam.blueprint.cells,
+          exam.knowledge.topics,
+        );
       } else regenerated = true;
     }
     const prefs = await readPrefs(ws);
@@ -800,7 +811,13 @@ export class EvaluaAppService {
       delete prefs.wording[exam.active];
       await writePrefs(ws, prefs);
     }
-    return { saved, dropped, regenerated, ...(findings ? { findings } : {}) };
+    return {
+      saved,
+      dropped,
+      regenerated,
+      ...(findings ? { findings } : {}),
+      ...(capacity?.length ? { capacity } : {}),
+    };
   }
 
   private async examGenerate(ws: string) {
@@ -808,12 +825,18 @@ export class EvaluaAppService {
     this.requireEditable(exam.phase);
     const outcome = await this.coordinator.generateCore(ws);
     if ("blocked" in outcome) {
+      const capacity = shortfallsFromFindings(
+        outcome.blocked,
+        exam.blueprint.cells,
+        exam.knowledge.topics,
+      );
       return {
         findings: outcome.blocked.map((finding) => ({
           id: finding.id,
           subject: finding.subject,
           message: finding.message,
         })),
+        ...(capacity.length > 0 ? { capacity } : {}),
       };
     }
     return { count: outcome.count, sha: outcome.sha };

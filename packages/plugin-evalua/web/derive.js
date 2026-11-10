@@ -387,3 +387,41 @@ export function blueprintRows(blueprint) {
     return { type, cognitive, count };
   });
 }
+
+/** Every item type, in the order the wizard lists them. */
+export const ITEM_TYPES = ["single_choice", "multiple_choice", "open", "practice"];
+
+/**
+ * The item types the wizard offers for a topic: its `supports` flags, like the chat's round 2.
+ * Without the topic, what any listed topic supports; without catalog data, every type.
+ */
+export function offeredTypes(topics, topicId) {
+  const topic = (topics ?? []).find((entry) => entry.id === topicId);
+  const own = ITEM_TYPES.filter((type) => topic?.supports?.[type]);
+  if (own.length) return own;
+  const any = ITEM_TYPES.filter((type) => (topics ?? []).some((entry) => entry.supports?.[type]));
+  return any.length ? any : [...ITEM_TYPES];
+}
+
+/**
+ * A blocked generation in the teacher's terms: each capacity shortfall as one notice (topic,
+ * type and how many distinct questions exist), plus the raw findings for a technical detail.
+ * The slot/count findings a shortfall explains are not repeated as separate problems.
+ */
+export function generationNotices(result) {
+  const findings = result?.findings ?? [];
+  const capacity = (result?.capacity ?? []).map((entry) => ({
+    topic: entry.topic,
+    name: entry.name,
+    type: entry.type,
+    requested: entry.requested,
+    available: entry.available,
+    kind: entry.available > 0 ? "few" : "none",
+  }));
+  const explained = capacity.length ? ["EVL-ITM-009", "EVL-EXM-002"] : [];
+  return {
+    capacity,
+    others: findings.filter((finding) => !explained.includes(finding.id)),
+    technical: findings,
+  };
+}

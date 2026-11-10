@@ -20,4 +20,5 @@ supports:
   open: true
   practice: false
 sources:
+  - { kind: family, family: powers-roots, levels: [basico, intermedio, avanzado, genio] }
   - { kind: bank, file: items/powers-roots.yaml }

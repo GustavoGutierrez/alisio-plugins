@@ -1,11 +1,41 @@
 import { latexPoly } from "../math/latex.js";
+import type { Rng } from "../math/rng.js";
 import { assembleOptions } from "./options.js";
-import { polyOfX, polyValue, pooled, rangeValue } from "./shared.js";
+import { polyOfX, polyValue, pooled } from "./shared.js";
 import type { Family, ItemDraft } from "./types.js";
 
 function factorX(root: number): string {
   if (root === 0) return "x";
   return `\\left(x ${root < 0 ? "-" : "+"} ${Math.abs(root)}\\right)`;
+}
+
+/**
+ * Every unordered pair of distinct, non-zero, non-opposite integer roots whose trinomial
+ * coefficients (sum and product) stay inside the level's coefficient range. Roots reach
+ * `bound` = the range's upper end clamped to 5..9, so each level offers dozens of distinct
+ * trinomials (38 at the narrowest shipped range) instead of the 12 a fixed bound of 3 gave.
+ */
+export function factoringRootPairs(range: readonly [number, number]): Array<[number, number]> {
+  const [low, high] = range;
+  const bound = Math.max(5, Math.min(9, high));
+  const pairs: Array<[number, number]> = [];
+  for (let p = -bound; p <= bound; p += 1) {
+    for (let q = p + 1; q <= bound; q += 1) {
+      if (p === 0 || q === 0 || p + q === 0) continue;
+      const b = p + q;
+      const c = p * q;
+      if (b < low || b > high || c < low || c > high) continue;
+      pairs.push([p, q]);
+    }
+  }
+  return pairs;
+}
+
+function rootPair(rng: Rng, range: readonly [number, number]): [number, number] {
+  const pairs = factoringRootPairs(range);
+  // A range too narrow for any valid pair still yields a well-formed item; verifyDraft rejects it.
+  const [p, q] = pairs.length > 0 ? rng.pick(pairs) : ([1, 2] as [number, number]);
+  return rng.int(0, 1) === 0 ? [p, q] : [q, p];
 }
 
 export const factoring: Family = {
@@ -16,17 +46,7 @@ export const factoring: Family = {
     return polyOfX([p * q, p + q, 1]);
   },
   generate({ rng, level, calibration }): ItemDraft {
-    const max = Math.max(4, calibration.coefficientRange[1]);
-    const bound = Math.max(1, Math.min(3, Math.floor(max / 2)));
-    const bounded: [number, number] = [-bound, bound];
-    const p = rangeValue(rng, bounded);
-    let q = rangeValue(rng, bounded);
-    let guard = 0;
-    while ((q === p || p + q === 0 || p * q === 0) && guard < 10) {
-      q = rangeValue(rng, bounded);
-      guard += 1;
-    }
-    if (q === p) q = p === 1 ? 2 : p - 1;
+    const [p, q] = rootPair(rng, calibration.coefficientRange);
     const b = p + q;
     const c = p * q;
     const answer = polyOfX([c, b, 1]);

@@ -14,10 +14,12 @@ import {
   examStepState,
   filterTopics,
   fromEditable,
+  generationNotices,
   gradeAnswer,
   gradeList,
   missingFields,
   nextExamStep,
+  offeredTypes,
   promptsToSave,
   responseError,
   templateParts,
@@ -101,7 +103,8 @@ describe("wizard view state (EVL-APP-AC-22)", () => {
       grade: "Octavo",
       topic: "basic-math/percentages",
       level: "avanzado",
-      types: ["single_choice", "open"],
+      // Only types the topic supports: percentages has no open questions.
+      types: ["single_choice", "practice"],
       count: "15",
       distribution: "bank",
       bankSize: "double",
@@ -244,5 +247,55 @@ describe("exam view state (EVL-APP-AC-22)", () => {
     expect(responseError({ error: "not_permitted" }, "write")).toBe("not_permitted_write");
     expect(responseError({ result: { error: "busy" } }, "write")).toBe("busy");
     expect(responseError({ result: { value: 1 } }, "read")).toBeNull();
+  });
+});
+
+describe("item types and capacity notices", () => {
+  const topics = [
+    {
+      id: "algebra/factoring",
+      supports: { single_choice: true, multiple_choice: false, open: false, practice: true },
+    },
+    {
+      id: "basic-math/natural-numbers",
+      supports: { single_choice: true, multiple_choice: false, open: true, practice: false },
+    },
+  ];
+
+  it("offers only the chosen topic's supported types, like the chat's round 2", () => {
+    expect(offeredTypes(topics, "algebra/factoring")).toEqual(["single_choice", "practice"]);
+    expect(offeredTypes(topics, undefined)).toEqual(["single_choice", "open", "practice"]);
+    expect(offeredTypes([], "x")).toEqual(["single_choice", "multiple_choice", "open", "practice"]);
+  });
+
+  it("turns slot findings into one plain notice per topic and type, keeping the raw codes", () => {
+    const findings = [
+      {
+        id: "EVL-ITM-009",
+        subject: "algebra/factoring single_choice",
+        message: "slot could not be filled within 50 attempts",
+      },
+      {
+        id: "EVL-EXM-002",
+        subject: "exam",
+        message: "the exam has 12 items, not the consecutive 1..15",
+      },
+      { id: "EVL-EXM-004", subject: "algebra/factoring", message: "cell mismatch" },
+    ];
+    const capacity = [
+      {
+        topic: "algebra/factoring",
+        name: { es: "Factorización" },
+        type: "single_choice",
+        requested: 15,
+        available: 12,
+      },
+    ];
+    const notices = generationNotices({ findings, capacity });
+    expect(notices.capacity).toEqual([{ ...capacity[0], kind: "few" }]);
+    expect(notices.others.map((finding: { id: string }) => finding.id)).toEqual(["EVL-EXM-004"]);
+    expect(notices.technical).toEqual(findings);
+    expect(generationNotices({ findings }).others).toEqual(findings);
+    expect(generationNotices(undefined).technical).toEqual([]);
   });
 });

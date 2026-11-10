@@ -48,7 +48,9 @@ answers. It follows Alisio's language (English or Spanish) and its light or dark
 1. **Teacher profile**: name, school, subject, paper size and an optional logo (PNG, JPEG or WebP,
    up to 2 MB).
 2. **New exam**: choose the grade, then a topic from the knowledge-base list, the level, the kinds
-   of questions, how many, the bank (if any) and the format. A summary follows every answer.
+   of questions (only those the topic supports), how many, the bank (if any) and the format. A
+   summary follows every answer. When the topic has fewer distinct questions of a kind than you
+   asked for, the app says so before you approve, naming the topic, the kind and the maximum.
 3. **Review and approve** the plan (Gate A); the exam folder is created only then.
 4. **Wording**: keep the default sentence of each kind of exercise, write your own, or let the
    model chosen in Settings draft it for you to review and edit. AI-drafted wording can contain
@@ -83,7 +85,7 @@ The interview asks only what it does not already know:
 | --- | --- |
 | Profile (once ever) | language, institution, teacher name, optional logo |
 | 1 — what | topic (suggestions from the knowledge base), grade, level (básico/intermedio/avanzado/genio), knowledge base |
-| 2 — shape | item types (multi-select), number of questions, same exam or bank, columns |
+| 2 — shape | item types the topic supports (multi-select), number of questions, same exam or bank, columns |
 | 2b — bank only | bank size, number of variants |
 | 3 — print and tone | page limit (fewest legible, 1, 2 or a number you type), time and instrument, closing text |
 
@@ -94,7 +96,9 @@ with `/evalua:new id=value ...` (free text goes in `<id>:text=...`).
 
 The blueprint is a table of topic × cognitive demand × item type. Candidates come from the item
 families first, then from static bank items, and every candidate is verified by code before it is
-frozen; a failing candidate is redrawn (bounded) and a slot that cannot be filled is reported.
+frozen; a failing candidate is redrawn (bounded) and a slot that cannot be filled is reported. The
+app and the chat dry-run this seeded generation before recording the plan, so a topic that cannot
+fill the requested count is caught at the interview, not after Gate A.
 
 ![Generation and review pipeline](./assets/review-pipeline.svg)
 

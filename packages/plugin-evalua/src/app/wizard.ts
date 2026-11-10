@@ -1,3 +1,4 @@
+import type { CapacityShortfall } from "../capacity.js";
 import type { Clock } from "../clock.js";
 import { acceptAnswers, answerText, buildDraft, buildRound, nextRound } from "../interview.js";
 import { localized } from "../knowledge/types.js";
@@ -36,10 +37,12 @@ export type WizardAnswers = Partial<Record<Exclude<WizardField, "types">, string
   types?: string[];
 };
 
-export type WizardErrorCode = "required" | "invalid" | "not_in_catalog" | "too_small";
+export type WizardErrorCode = "required" | "invalid" | "not_in_catalog" | "too_small" | "capacity";
 export interface WizardError {
   field: string;
   code: WizardErrorCode;
+  /** `capacity`: the topic x type cells that cannot be filled, for a plain-words message. */
+  capacity?: CapacityShortfall[];
 }
 export type WizardResult = { draft: ExamDraft } | { errors: WizardError[] };
 
@@ -60,6 +63,9 @@ export function pinTopic(catalog: TopicCatalog, topic: CatalogTopic): TopicCatal
     ...(catalog.resolveTopic
       ? { resolveTopic: (text: string) => catalog.resolveTopic?.(text) }
       : {}),
+    // Round 2 offers only the item types the topic supports, so the lookups must pass through.
+    ...(catalog.topic ? { topic: (fullId: string) => catalog.topic?.(fullId) } : {}),
+    ...(catalog.topics ? { topics: () => catalog.topics?.() ?? [] } : {}),
     suggestions: (grade) => {
       const list = catalog.suggestions(grade);
       const own = list.find((entry) => entry.value === topic.id) ?? {
@@ -130,4 +136,17 @@ export function runWizard(input: WizardAnswers, context: WizardContext): WizardR
   }
   if (errors.length > 0) return { errors };
   return { draft: buildDraft(answers, context.profile, context.clock, catalog) };
+}
+
+/**
+ * The capacity dry run as wizard errors: a type with no questions at all is a `types` problem,
+ * a type with too few distinct questions a `count` problem. Empty when everything fits.
+ */
+export function capacityErrors(shortfalls: readonly CapacityShortfall[]): WizardError[] {
+  const errors: WizardError[] = [];
+  const none = shortfalls.filter((entry) => entry.available === 0);
+  const few = shortfalls.filter((entry) => entry.available > 0);
+  if (none.length > 0) errors.push({ field: "types", code: "capacity", capacity: none });
+  if (few.length > 0) errors.push({ field: "count", code: "capacity", capacity: few });
+  return errors;
 }
