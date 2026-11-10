@@ -15,10 +15,26 @@ export async function serviceFixture(
   const fake = fakeSemantic();
   const semantic = options.semantic === null ? undefined : (options.semantic ?? fake.semantic);
   const completions: CompletionRequest[] = [];
+  const models = { current: options.models ?? ["acme/fast", "acme/smart"] };
   const db = new NotebookDb(openTestDb(join(root, "notebook.db")));
   const service = new NotebookService({
     db,
     semantic: () => semantic,
+    models: {
+      list: async () =>
+        models.current.map((reference) => ({
+          reference,
+          provider: reference.split("/")[0] ?? "",
+          profile: "default",
+          providerName: reference.split("/")[0] ?? "",
+          model: { id: reference.split("/")[1] ?? reference },
+        })),
+      resolve: async (reference: string) => {
+        if (!models.current.includes(reference)) throw new Error("unknown model");
+        return { reference };
+      },
+    },
+    activeModel: () => models.current[0],
     complete: async (request) => {
       completions.push(request);
       return options.answer ? options.answer(request) : "The answer is in the notes [1].";
@@ -55,5 +71,17 @@ export async function serviceFixture(
     db.close();
     await rm(root, { recursive: true, force: true });
   };
-  return { root, workspace, fake, service, db, completions, invoke, waitJob, upload, cleanup };
+  return {
+    root,
+    workspace,
+    fake,
+    service,
+    db,
+    completions,
+    models,
+    invoke,
+    waitJob,
+    upload,
+    cleanup,
+  };
 }

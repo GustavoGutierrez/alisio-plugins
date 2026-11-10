@@ -17,6 +17,7 @@ export const ERROR_CODES = [
   "download_failed",
   "cancelled",
   "answer_failed",
+  "no_model",
   "operation_failed",
 ] as const;
 export type SemanticPluginErrorCode = (typeof ERROR_CODES)[number];

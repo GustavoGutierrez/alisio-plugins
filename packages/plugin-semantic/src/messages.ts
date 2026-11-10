@@ -12,7 +12,7 @@ const en = {
     "Setup failed: unknown_model. options.model must be one of e5-small, e5-base, minilm.",
   help: {
     withApp:
-      "Open Notebook from the Apps group in the project sidebar: create a notebook, add files from your computer or the workspace, and ask questions answered only from them, with citations. Run /semantic:setup once to enable semantic search (a one-time model download); without it the Notebook uses keyword search.",
+      "Open Notebook from the Apps group in the project sidebar: create a notebook, add files from your computer or the workspace, and ask questions answered only from them, with citations. Run /semantic:setup once to enable semantic search (a one-time model download); without it the Notebook uses keyword search. The assistant can make mistakes, so check its answers against the cited sources.",
     withoutApp: `This Alisio host has no plugin apps API, so the Notebook app is unavailable: it needs Alisio ${MIN} or newer. /semantic:setup and /semantic:status still work.`,
   },
   status: {
@@ -82,7 +82,7 @@ const es: Messages = {
     "La preparación falló: unknown_model. options.model debe ser e5-small, e5-base o minilm.",
   help: {
     withApp:
-      "Abre Cuaderno desde el grupo Aplicaciones del panel de proyectos: crea un cuaderno, añade archivos de tu equipo o del espacio de trabajo y haz preguntas que se responden solo con ellos, con citas. Ejecuta /semantic:setup una vez para activar la búsqueda semántica (una descarga única del modelo); sin ella el Cuaderno usa búsqueda por palabras clave.",
+      "Abre Cuaderno desde el grupo Aplicaciones del panel de proyectos: crea un cuaderno, añade archivos de tu equipo o del espacio de trabajo y haz preguntas que se responden solo con ellos, con citas. Ejecuta /semantic:setup una vez para activar la búsqueda semántica (una descarga única del modelo); sin ella el Cuaderno usa búsqueda por palabras clave. El asistente puede cometer errores; comprueba sus respuestas con las fuentes citadas.",
     withoutApp: `Este host de Alisio no tiene la API de apps de plugins, así que la app Cuaderno no está disponible: requiere Alisio ${MIN} o posterior. /semantic:setup y /semantic:status siguen funcionando.`,
   },
   status: {

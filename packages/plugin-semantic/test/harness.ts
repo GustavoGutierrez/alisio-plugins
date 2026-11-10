@@ -21,6 +21,8 @@ export interface Harness {
   stores: VectorStoreProvider[];
   root: string;
   completions: unknown[];
+  /** Emulates the host closing this workspace: `plugin.dispose()`, then undo its registrations. */
+  close: () => Promise<void>;
   cleanup: () => Promise<void>;
 }
 
@@ -29,12 +31,26 @@ export interface HarnessOptions {
   apps?: boolean;
   options?: Record<string, unknown>;
   workspace?: string;
+  /** Reuse a state root (a second activation on the same machine). */
+  root?: string;
   complete?: (request: unknown) => Promise<string>;
+  models?: Array<{
+    reference: string;
+    provider?: string;
+    profile?: string;
+    providerName?: string;
+    model?: { id: string; name?: string };
+  }>;
 }
 
 /** Runs the real plugin entry against a fake host. */
 export async function harness(options: HarnessOptions = {}): Promise<Harness> {
-  const root = await mkdtemp(join(tmpdir(), "sem-plugin-"));
+  const root = options.root ?? (await mkdtemp(join(tmpdir(), "sem-plugin-")));
+  const undo: Array<() => void> = [];
+  const track = (fn: () => void) => {
+    undo.push(fn);
+    return fn;
+  };
   const h = {
     tools: new Map<string, ToolDefinition>(),
     commands: new Map<string, (args: string) => Promise<string>>(),
@@ -64,7 +80,26 @@ export async function harness(options: HarnessOptions = {}): Promise<Harness> {
     // Pin the command language so tests do not depend on the machine's LANG.
     options: options.options ?? { locale: "en" },
     storage: { sqlite: (path: string) => openTestDb(path) },
-    sessions: { workspace: () => options.workspace ?? root },
+    sessions: { workspace: () => options.workspace ?? root, model: () => "acme/fast" },
+    models: {
+      list: async () =>
+        options.models ?? [
+          {
+            reference: "acme/fast",
+            provider: "acme",
+            profile: "default",
+            providerName: "Acme",
+            model: { id: "fast", name: "Fast" },
+          },
+        ],
+      resolve: async (reference: string) => {
+        const found = (options.models ?? [{ reference: "acme/fast" }]).find(
+          (m) => m.reference === reference,
+        );
+        if (!found) throw new Error("unknown model");
+        return found;
+      },
+    },
     model: {
       complete: async (request: unknown) => {
         h.completions.push(request);
@@ -74,13 +109,13 @@ export async function harness(options: HarnessOptions = {}): Promise<Harness> {
     tools: {
       register: (tool: ToolDefinition) => {
         h.tools.set(tool.name, tool);
-        return () => h.tools.delete(tool.name);
+        return track(() => h.tools.delete(tool.name));
       },
     },
     commands: {
       register: (name: string, handler: (args: string) => Promise<string>) => {
         h.commands.set(name, handler);
-        return () => h.commands.delete(name);
+        return track(() => h.commands.delete(name));
       },
     },
     ...(semantic ? { semantic } : {}),
@@ -90,19 +125,34 @@ export async function harness(options: HarnessOptions = {}): Promise<Harness> {
           apps: {
             register: (app: PluginAppDefinition) => {
               h.apps.push(app);
-              return () => {};
+              // Like the host registry: unregistering removes the app and calls its dispose once.
+              let removed = false;
+              return track(() => {
+                if (removed) return;
+                removed = true;
+                h.apps.splice(h.apps.indexOf(app), 1);
+                app.dispose?.();
+              });
             },
           },
         }),
   } as unknown as PluginAPI;
   await plugin.setup(api);
+  let closed = false;
+  const close = async () => {
+    if (closed) return;
+    closed = true;
+    await plugin.dispose?.();
+    for (const fn of undo.reverse()) fn();
+  };
   return {
     ...h,
     api,
     root,
+    close,
     cleanup: async () => {
-      await plugin.dispose?.();
-      await rm(root, { recursive: true, force: true });
+      await close();
+      if (!options.root) await rm(root, { recursive: true, force: true });
     },
   };
 }

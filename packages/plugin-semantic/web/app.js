@@ -1,5 +1,5 @@
+import { copyPayload, copySourceFor, writeClipboard } from "./copy.js";
 import {
-  citationParts,
   countKey,
   jobView,
   MAX_UPLOAD_BYTES,
@@ -18,6 +18,7 @@ import {
 } from "./derive.js";
 import { errorText, locale, setLocale, t } from "./i18n.js";
 import { icon } from "./icons.js";
+import { escapeHtml, renderMarkdown } from "./markdown.js";
 
 const root = document.querySelector("#app");
 const dialog = document.querySelector("#dialog");
@@ -36,6 +37,8 @@ const WRITE_ACTIONS = new Set([
   "jobs.cancel",
   "notice.ack",
   "engine.setup",
+  "notebooks.setModel",
+  "notebooks.setScope",
 ]);
 
 // ---------- Transport ----------
@@ -60,7 +63,8 @@ const connected = new Promise((resolve) => {
       if (message?.type === "locale") changeLocale(message.locale);
       if (message?.type === "visibility") {
         visible = message.visible !== false;
-        if (visible) void poll();
+        // Coming back: re-check the app (it may have been reopened by Alisio) and the models.
+        if (visible) void (unavailable ? verifyAvailable() : refreshOnShow());
       }
       if (message?.type === "response") settle(message);
     };
@@ -76,12 +80,37 @@ function settle(message) {
   clearTimeout(request.timer);
   clearTimeout(request.approvalTimer);
   settleApprovalNotice();
-  if (message.error === "not_found") showUnavailable();
   // `message.error` is a host transport code; `result.error` a Notebook code. For not_permitted,
   // prefer the host's `effect`; older hosts omit it, so fall back to the action's own effect.
   const error = responseError(message, WRITE_ACTIONS.has(request.action) ? "write" : "read");
-  error ? request.reject(new Error(error)) : request.resolve(message.result?.value);
+  if (!error) return request.resolve(message.result?.value);
+  const failure = new Error(error);
+  // Only the HOST's not_found can mean "app gone"; a plugin's not_found is an unknown item.
+  failure.transport = !!message.error;
+  if (message.error === "not_found") hostNotFound();
+  request.reject(failure);
 }
+
+// O13: one host not_found never latches. It is confirmed with a `status` request after a short
+// delay; only a second host not_found shows the unavailable screen, which keeps retrying.
+let verifying;
+function hostNotFound() {
+  if (unavailable || verifying) return;
+  verifying = new Promise((r) => setTimeout(r, VERIFY_DELAY_MS)).then(verifyAvailable);
+}
+async function verifyAvailable() {
+  try {
+    await send("status", {});
+    const wasUnavailable = unavailable;
+    unavailable = false;
+    if (wasUnavailable) await reloadAll();
+  } catch (error) {
+    if (error?.transport && error.message === "not_found") showUnavailable();
+  } finally {
+    verifying = undefined;
+  }
+}
+const VERIFY_DELAY_MS = 1500;
 
 // The host runs at most PLUGIN_APP_LIMITS.inFlight (8) requests per frame; stay below it.
 const MAX_IN_FLIGHT = 6;
@@ -149,6 +178,8 @@ const fail = (error) => {
 };
 
 // ---------- State ----------
+/** Configured models (O12): an empty list blocks asking, not indexing or keyword search. */
+let models = { models: [], active: null, available: true };
 let status = {};
 let notebooks = [];
 let current; // { ...notebook, sources }
@@ -170,11 +201,6 @@ let tab = "chat";
 let pollBusy = false;
 let draft = "";
 
-const escapeHtml = (value) =>
-  String(value ?? "").replace(
-    /[&<>"']/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
-  );
 const tf = (key, ...args) => {
   const value = t(key);
   return typeof value === "function" ? value(...args) : value;
@@ -190,7 +216,7 @@ const announce = (text) => {
 
 function showUnavailable() {
   unavailable = true;
-  root.innerHTML = `<main class="unavailable"><span class="mark" aria-hidden="true"></span><h1>${escapeHtml(t("unavailableTitle"))}</h1><p>${escapeHtml(t("unavailable"))}</p></main>`;
+  root.innerHTML = `<main class="unavailable"><span class="mark" aria-hidden="true"></span><h1>${escapeHtml(t("unavailableTitle"))}</h1><p>${escapeHtml(t("unavailable"))}</p>${button("retry", escapeHtml(t("retry")), "primary")}</main>`;
 }
 
 // ---------- Rendering ----------
@@ -306,12 +332,13 @@ function renderNotebook() {
         <div class="stack">${button("add-computer", `${icon("upload")}<span>${escapeHtml(t("addComputer"))}</span>`, "full")}${button("add-workspace", `${icon("folder")}<span>${escapeHtml(t("addWorkspace"))}</span>`, "full outline")}</div>
         <input id="file-input" type="file" multiple hidden accept="${SOURCE_EXTENSIONS.join(",")}">
         <div id="sources-list"></div></aside>
-      <section class="panel chat" aria-label="${escapeHtml(t("chatPanel"))}"><div id="banner"></div><div id="messages" class="messages"></div>
-        <div class="composer"><label class="sr-only" for="question">${escapeHtml(t("placeholder"))}</label><textarea id="question" rows="2" maxlength="4000" placeholder="${escapeHtml(t("placeholder"))}">${escapeHtml(draft)}</textarea><div id="composer-actions"></div></div>
+      <section class="panel chat" aria-label="${escapeHtml(t("chatPanel"))}"><div id="chat-head" class="chat-head"></div><div id="banner"></div><div id="messages" class="messages"></div>
+        <div class="composer"><div class="composer-box"><label class="sr-only" for="question">${escapeHtml(t("placeholder"))}</label><textarea id="question" rows="1" maxlength="4000" placeholder="${escapeHtml(t("placeholder"))}" aria-describedby="composer-hint">${escapeHtml(draft)}</textarea><div id="composer-actions" class="composer-actions"></div></div><p id="composer-hint" class="composer-hint">${escapeHtml(t("composerHint"))}</p><p class="disclaimer">${escapeHtml(t("disclaimer"))}</p></div>
         <p id="live" class="sr-only" aria-live="polite"></p></section>
       <aside class="panel guide" aria-label="${escapeHtml(t("guidePanel"))}" id="guide"></aside>
     </main>`;
   renderSources();
+  renderChatHead();
   renderMessages();
   renderGuide();
   renderComposer();
@@ -342,34 +369,58 @@ function renderSources() {
               : t(`status_${view.key}`);
         return `<li class="source ${view.key}"><label class="check"><input type="checkbox" data-source="${s.id}" ${checked.has(s.id) ? "checked" : ""} ${usable ? "" : "disabled"} aria-label="${escapeHtml(tf("includeSource", s.name))}"></label>
           <span class="source-main">${icon("file")}<span class="source-name" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</span><span class="source-state small">${escapeHtml(label)}</span></span>
-          <span class="source-actions">${usable ? iconButton("summarize", "sparkle", t("summarize"), `data-id="${s.id}"`) : ""}${iconButton("delete-source", "trash", t("removeSource"), `data-id="${s.id}"`)}</span></li>`;
+          <span class="source-actions">${usable ? iconButton("summarize", "sparkle", t("summarize"), `data-id="${s.id}" ${canAsk() || s.summary ? "" : "disabled"}`) : ""}${iconButton("delete-source", "trash", t("removeSource"), `data-id="${s.id}"`)}</span></li>`;
       })
       .join("")}</ul>`;
   const selectAll = document.querySelector("#select-all");
   if (selectAll) selectAll.indeterminate = all === "mixed";
 }
 
-function citedHtml(text, citations) {
-  return citationParts(text, citations)
-    .map((part) =>
-      part.type === "text"
-        ? escapeHtml(part.text)
-        : `<button type="button" class="cite" data-action="cite" data-source="${part.citation.sourceId}" data-ordinal="${part.citation.ordinal}" aria-label="${escapeHtml(`${part.n}: ${part.citation.sourceName}`)}" title="${escapeHtml(part.citation.sourceName)}">${part.n}</button>`,
+const canAsk = () => models.available !== false;
+
+/** Copy controls for an answer, the guide or a summary (O14). */
+const copyControls = (ref) =>
+  `<span class="copy-controls">${iconButton("copy-text", "copy", t("copyText"), `data-copy="${ref}"`)}${iconButton("copy-formatted", "copyRich", t("copyFormatted"), `data-copy="${ref}"`)}</span>`;
+
+/** Model selector and the no-model state above the chat (O12). */
+function renderChatHead() {
+  const el = document.querySelector("#chat-head");
+  if (!el || !current) return;
+  if (!canAsk()) {
+    el.innerHTML = `<div class="banner block-state" role="alert">${icon("warning")}<span><strong>${escapeHtml(t("noModelTitle"))}</strong> ${escapeHtml(t("noModel"))}</span></div>${clearChatButton()}`;
+    return;
+  }
+  const chosen = current.model ?? "";
+  const groups = new Map();
+  for (const m of models.models) {
+    if (!groups.has(m.provider)) groups.set(m.provider, []);
+    groups.get(m.provider).push(m);
+  }
+  const options = [...groups.entries()]
+    .map(
+      ([provider, list]) =>
+        `<optgroup label="${escapeHtml(provider)}">${list.map((m) => `<option value="${escapeHtml(m.reference)}" ${m.reference === chosen ? "selected" : ""}>${escapeHtml(m.name)}</option>`).join("")}</optgroup>`,
     )
     .join("");
+  el.innerHTML = `<label class="model-picker"><span>${escapeHtml(t("model"))}</span><select id="model-select"><option value="" ${chosen ? "" : "selected"}>${escapeHtml(tf("modelDefault", models.active ?? ""))}</option>${options}</select></label>${clearChatButton()}`;
 }
+const clearChatButton = () =>
+  chat.length && !askJob ? iconButton("clear-chat", "trash", t("clearChat")) : "";
 
-function messageHtml(m) {
+function messageHtml(m, index) {
   if (m.role === "user")
     return `<div class="msg user"><span class="who">${escapeHtml(t("you"))}</span><p>${escapeHtml(m.text)}</p></div>`;
-  const body = citedHtml(m.text, m.citations);
+  const body = renderMarkdown(m.text, m.citations);
   const warnings = [
+    m.modelFallback
+      ? `<p class="warn small">${icon("warning")}${escapeHtml(t("modelFallback"))}</p>`
+      : "",
     !m.grounded && !m.notFound
       ? `<p class="warn small">${icon("warning")}${escapeHtml(t("notGrounded"))}</p>`
       : "",
     m.keywordOnly ? `<span class="badge small">${escapeHtml(t("keywordAnswer"))}</span>` : "",
   ].join("");
-  return `<div class="msg assistant"><span class="who">${escapeHtml(t("assistant"))}</span><p>${body.replaceAll("\n", "<br>")}</p>${warnings}</div>`;
+  return `<div class="msg assistant copyable"><span class="who">${escapeHtml(t("assistant"))}${m.notFound ? "" : copyControls(`chat:${index}`)}</span><div class="md">${body}</div>${warnings}</div>`;
 }
 
 function renderMessages() {
@@ -378,13 +429,13 @@ function renderMessages() {
   if (chat.length === 0 && !askJob) {
     const questions = suggestions(guide);
     el.innerHTML = `<div class="empty-chat">${icon("quote", "icon big")}<h2>${escapeHtml(t("emptyChatTitle"))}</h2><p class="muted">${escapeHtml(t("emptyChatText"))}</p>
-      ${guide?.summary ? `<p class="guide-summary">${citedHtml(guide.summary, guide.citations)}</p>` : ""}
-      ${questions.length ? `<div class="chips">${questions.map((q, i) => button("suggest", escapeHtml(q), "chip", `data-index="${i}"`)).join("")}</div>` : current?.sources.length ? button("guide", `${icon("sparkle")}<span>${escapeHtml(guideJob ? t("guideWorking") : t("makeGuide"))}</span>`, "outline", guideJob ? "disabled" : "") : ""}
+      ${guide?.summary ? `<div class="guide-summary md">${renderMarkdown(guide.summary, guide.citations)}</div>` : ""}
+      ${questions.length ? `<div class="chips">${questions.map((q, i) => button("suggest", escapeHtml(q), "chip", `data-index="${i}" ${canAsk() ? "" : "disabled"}`)).join("")}</div>` : current?.sources.length ? button("guide", `${icon("sparkle")}<span>${escapeHtml(guideJob ? t("guideWorking") : t("makeGuide"))}</span>`, "outline", guideJob || !canAsk() ? "disabled" : "") : ""}
     </div>`;
     return;
   }
   el.innerHTML =
-    chat.map(messageHtml).join("") +
+    chat.map((m, i) => messageHtml(m, i)).join("") +
     (askJob
       ? `<div class="msg assistant pending"><span class="spinner" aria-hidden="true"></span>${escapeHtml(t("thinking"))}</div>`
       : "");
@@ -394,9 +445,23 @@ function renderMessages() {
 function renderComposer() {
   const el = document.querySelector("#composer-actions");
   if (!el) return;
+  // One compact round button inside the composer: Send, or Stop while an answer is running.
+  const empty = !draft.trim();
   el.innerHTML = askJob
-    ? button("stop", `${icon("stop")}<span>${escapeHtml(t("stop"))}</span>`)
-    : `${chat.length ? iconButton("clear-chat", "trash", t("clearChat")) : ""}${button("send", `${icon("send")}<span>${escapeHtml(t("send"))}</span>`, "primary")}`;
+    ? `<button type="button" class="send-btn stop" data-action="stop" aria-label="${escapeHtml(t("stop"))}" title="${escapeHtml(t("stop"))}">${icon("stop")}</button>`
+    : `<button type="button" class="send-btn" data-action="send" aria-label="${escapeHtml(t("send"))}" title="${escapeHtml(t("send"))}" ${canAsk() && !empty ? "" : "disabled"}>${icon("arrowUp")}</button>`;
+  const box = document.querySelector("#question");
+  if (box) {
+    box.disabled = !canAsk();
+    autoGrow(box);
+  }
+}
+/** 1 line minimum, about 6 lines maximum, then the textarea scrolls. */
+function autoGrow(box) {
+  box.style.height = "auto";
+  const max = 6 * 22 + 16;
+  box.style.height = `${Math.min(box.scrollHeight || 0, max) || ""}px`;
+  box.style.overflowY = box.scrollHeight > max ? "auto" : "hidden";
 }
 
 function renderBanner() {
@@ -413,10 +478,14 @@ function renderGuide() {
   if (!el) return;
   const questions = suggestions(guide);
   el.innerHTML = `<h2>${escapeHtml(t("guidePanel"))}</h2>
-    <section class="block"><h3>${escapeHtml(t("summaryTitle"))}</h3>${guide?.summary ? `<p>${citedHtml(guide.summary, guide.citations)}</p>` : `<p class="muted small">${escapeHtml(t("noGuide"))}</p>${current?.sources.length ? button("guide", `${icon("sparkle")}<span>${escapeHtml(guideJob ? t("guideWorking") : t("makeGuide"))}</span>`, "small", guideJob ? "disabled" : "") : ""}`}</section>
-    ${questions.length ? `<section class="block"><h3>${escapeHtml(t("questionsTitle"))}</h3><div class="chips column">${questions.map((q, i) => button("suggest", escapeHtml(q), "chip", `data-index="${i}"`)).join("")}</div></section>` : ""}
-    ${summary ? `<section class="block"><h3>${escapeHtml(summary.name)}</h3><p>${escapeHtml(summary.text)}</p></section>` : ""}
-    <section class="block passage" aria-live="polite"><h3>${escapeHtml(t("passageTitle"))}</h3>${
+    <section class="block copyable"><h3>${escapeHtml(t("summaryTitle"))}${guide?.summary ? copyControls("guide") : ""}</h3>${
+      guide?.summary
+        ? `${guide.outdated ? `<p class="warn small">${icon("warning")}${escapeHtml(t("outdated"))} ${button("guide", escapeHtml(guideJob ? t("guideWorking") : t("regenerate")), "small", guideJob || !canAsk() ? "disabled" : "")}</p>` : ""}<div class="md">${renderMarkdown(guide.summary, guide.citations)}</div>`
+        : `<p class="muted small">${escapeHtml(t("noGuide"))}</p>${current?.sources.length ? button("guide", `${icon("sparkle")}<span>${escapeHtml(guideJob ? t("guideWorking") : t("makeGuide"))}</span>`, "small", guideJob || !canAsk() ? "disabled" : "") : ""}`
+    }</section>
+    ${questions.length ? `<section class="block copyable"><h3>${escapeHtml(t("questionsTitle"))}${copyControls("questions")}</h3><div class="chips column">${questions.map((q, i) => button("suggest", escapeHtml(q), "chip", `data-index="${i}" ${canAsk() ? "" : "disabled"}`)).join("")}</div></section>` : ""}
+    ${summary ? `<section class="block copyable"><h3>${escapeHtml(summary.name)}${copyControls("summary")}</h3><div class="md">${renderMarkdown(summary.summary, summary.citations)}</div><p>${button("summarize-again", escapeHtml(t("regenerate")), "small", `data-id="${summary.sourceId}" ${canAsk() ? "" : "disabled"}`)}</p></section>` : ""}
+    <section class="block passage copyable" aria-live="polite"><h3>${escapeHtml(t("passageTitle"))}${passage ? copyControls("passage") : ""}</h3>${
       passage
         ? `<p class="muted small">${escapeHtml(passage.sourceName)}${placeLabel(passage) ? ` · ${escapeHtml(tf(...placeLabel(passage)))}` : ""}</p><blockquote>${escapeHtml(passage.text)}</blockquote>`
         : `<p class="muted small">${escapeHtml(t("passageEmpty"))}</p>`
@@ -442,16 +511,67 @@ async function refreshNotebook() {
       checked.add(s.id);
   current = fresh;
 }
+async function loadModels() {
+  try {
+    models = (await api("models.list")) ?? models;
+  } catch {
+    // Keep the last known list; a transport problem is handled by the not_found check.
+  }
+}
 async function openNotebook(id) {
   current = await api("notebooks.get", { id });
+  // The ticked scope, the guide and the chat persist in the notebook (O15).
   checked.clear();
-  for (const s of current.sources) if (s.status !== "failed") checked.add(s.id);
+  const excluded = new Set(current.excluded ?? []);
+  for (const s of current.sources)
+    if (s.status !== "failed" && !excluded.has(s.id)) checked.add(s.id);
   chat = await api("chat.history", { notebookId: id });
-  guide = undefined;
+  guide = current.guide ?? undefined;
   passage = undefined;
   summary = undefined;
   tab = "chat";
+  await loadModels();
   render();
+}
+/** Visible again: refresh what may have changed while hidden (models, notebook, status). */
+async function refreshOnShow() {
+  try {
+    await loadStatus();
+    if (current) {
+      await loadModels();
+      await refreshNotebook();
+      render();
+    } else {
+      await loadHome();
+      render();
+    }
+  } catch (error) {
+    fail(error);
+  }
+  void poll();
+}
+/** After the app comes back from the unavailable state. */
+async function reloadAll() {
+  await loadStatus();
+  await loadHome();
+  if (current) {
+    try {
+      await openNotebook(current.id);
+      return;
+    } catch {
+      current = undefined;
+    }
+  }
+  render();
+}
+function saveScope() {
+  if (!current) return;
+  const usable = current.sources.filter(
+    (s) => s.status === "ready" || s.status === "ready_keyword",
+  );
+  const excluded = usable.filter((s) => !checked.has(s.id)).map((s) => s.id);
+  current.excluded = excluded;
+  api("notebooks.setScope", { id: current.id, excluded }).catch(fail);
 }
 
 function track(jobId, info) {
@@ -465,7 +585,18 @@ async function poll() {
   pollBusy = true;
   try {
     if (setupJob && jobView(setupJob).running) {
-      setupJob = await api("jobs.get", { jobId: setupJob.id });
+      try {
+        setupJob = await api("jobs.get", { jobId: setupJob.id });
+      } catch (error) {
+        // The backend no longer knows this job (e.g. it was restarted): stop polling it.
+        if (error?.message !== "not_found" || error.transport) throw error;
+        setupJob = undefined;
+        await loadStatus();
+      }
+      if (!setupJob) {
+        render();
+        return;
+      }
       const slot = document.querySelector("#setup");
       if (slot) slot.innerHTML = setupCard();
       if (!jobView(setupJob).running) {
@@ -476,7 +607,13 @@ async function poll() {
     }
     let changed = false;
     for (const [jobId, info] of jobs) {
-      const job = await api("jobs.get", { jobId });
+      let job;
+      try {
+        job = await api("jobs.get", { jobId });
+      } catch (error) {
+        if (error?.message !== "not_found" || error.transport) throw error;
+        job = { state: "failed", error: "not_found" };
+      }
       jobState.set(jobId, job);
       if (jobView(job).running) {
         if (info.kind === "index") renderSources();
@@ -504,7 +641,8 @@ async function poll() {
 
 async function finished(info, job) {
   const view = jobView(job);
-  if (view.failed && info.kind !== "index") fail(new Error(view.error));
+  if (view.failed && info.kind !== "index" && view.error !== "not_found")
+    fail(new Error(view.error));
   if (!current || info.notebookId !== current.id) return;
   if (info.kind === "index" || info.kind === "rebuild") {
     if (info.kind === "rebuild") rebuildJob = undefined;
@@ -517,16 +655,28 @@ async function finished(info, job) {
     chat = await api("chat.history", { notebookId: current.id });
     renderMessages();
     renderComposer();
+    renderChatHead();
     announce(chat.at(-1)?.text ?? "");
   } else if (info.kind === "guide") {
     guideJob = undefined;
     if (view.done) guide = job.result;
     renderGuide();
     renderMessages();
-  } else if (info.kind === "summary" && view.done) {
-    const source = current.sources.find((s) => s.id === info.sourceId);
-    summary = { name: source?.name ?? "", text: job.result?.summary ?? "" };
+  } else if (info.kind === "summary") {
+    if (view.done) {
+      const source = current.sources.find((s) => s.id === info.sourceId);
+      summary = { name: source?.name ?? "", ...job.result };
+      await refreshNotebook();
+    }
     renderGuide();
+  }
+  if (view.failed && view.error === "not_found") {
+    // A job the backend no longer knows: just refresh what it was about.
+    if (info.kind === "ask") askJob = undefined;
+    if (info.kind === "guide") guideJob = undefined;
+    if (info.kind === "rebuild") rebuildJob = undefined;
+    await refreshNotebook();
+    render();
   }
 }
 
@@ -674,7 +824,7 @@ async function workspaceBrowser(dir = "") {
 
 async function ask(question) {
   const text = question.trim();
-  if (!text || askJob || !current) return;
+  if (!text || askJob || !current || !canAsk()) return;
   if (needsRemoteNotice(current)) {
     const ok = await confirmDialog("noticeText", "noticeOk", "noticeTitle");
     if (!ok) return;
@@ -758,6 +908,17 @@ async function handle(action, target) {
       await refreshNotebook();
       return renderSources();
     case "summarize": {
+      // A stored summary is shown as is; it is regenerated only on request (O15).
+      const source = current.sources.find((s) => s.id === target.dataset.id);
+      if (source?.summary) {
+        summary = { name: source.name, sourceId: source.id, ...source.summary };
+        if (!panels.guide) panels.guide = true;
+        tab = "guide";
+        return renderNotebook();
+      }
+      return handle("summarize-again", target);
+    }
+    case "summarize-again": {
       const { jobId } = await api("sources.summary", { sourceId: target.dataset.id, locale });
       track(jobId, { kind: "summary", notebookId: current.id, sourceId: target.dataset.id });
       return;
@@ -768,6 +929,20 @@ async function handle(action, target) {
       track(jobId, { kind: "guide", notebookId: current.id });
       renderGuide();
       return renderMessages();
+    }
+    case "retry":
+      root.querySelector('[data-action="retry"]')?.setAttribute("disabled", "");
+      return verifyAvailable();
+    case "copy-text":
+    case "copy-formatted": {
+      const source = copySource(target.dataset.copy);
+      if (!source) return;
+      const { text, html } = copyPayload(source, renderMarkdown, action === "copy-formatted");
+      const path = await writeClipboard({ text, ...(html ? { html } : {}) });
+      lastCopyPath = path;
+      if (path === "manual") return manualCopy(text, html);
+      toast(t("copied"));
+      return announce(t("copied"));
     }
     case "suggest":
       return ask(suggestions(guide)[Number(target.dataset.index)] ?? "");
@@ -826,13 +1001,30 @@ root.addEventListener("change", (event) => {
       if (s.status === "ready" || s.status === "ready_keyword")
         target.checked ? checked.add(s.id) : checked.delete(s.id);
     renderSources();
+    saveScope();
   } else if (target.dataset.source) {
     target.checked ? checked.add(target.dataset.source) : checked.delete(target.dataset.source);
     renderSources();
+    saveScope();
+  } else if (target.id === "model-select") {
+    const model = target.value || null;
+    api("notebooks.setModel", { id: current.id, model })
+      .then(() => {
+        current.model = model;
+      })
+      .catch((error) => {
+        fail(error);
+        renderChatHead();
+      });
   }
 });
 root.addEventListener("input", (event) => {
-  if (event.target.id === "question") draft = event.target.value;
+  if (event.target.id === "question") {
+    const wasEmpty = !draft.trim();
+    draft = event.target.value;
+    autoGrow(event.target);
+    if (wasEmpty !== !draft.trim()) renderComposer();
+  }
 });
 root.addEventListener("keydown", (event) => {
   if (
@@ -845,6 +1037,47 @@ root.addEventListener("keydown", (event) => {
     ask(event.target.value).catch(fail);
   }
 });
+
+/** Text and citations behind a copy button (one shared component for every generated block). */
+const copySource = (ref) =>
+  copySourceFor(ref, {
+    chat,
+    guide,
+    summary,
+    passage,
+    place: (p) => (placeLabel(p) ? tf(...placeLabel(p)) : ""),
+  });
+
+/** Last resort when the frame may not write the clipboard: show the content preselected. */
+function manualCopy(text, html) {
+  openDialog(
+    () =>
+      `<div class="dialog-body wide"><p class="lead">${escapeHtml(t("copyManual"))}</p>${
+        html
+          ? `<div id="copy-area" class="copy-area md" contenteditable="true">${html}</div>`
+          : `<textarea id="copy-area" class="copy-area" readonly rows="10">${escapeHtml(text)}</textarea>`
+      }<div class="row end">${button("dialog-cancel", escapeHtml(t("close")))}</div></div>`,
+    () => {
+      const area = dialog.querySelector("#copy-area");
+      if (!area) return;
+      if (area.select) area.select();
+      else {
+        const range = document.createRange();
+        range.selectNodeContents(area);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+      area.focus();
+    },
+  );
+  dialog.onclick = (event) => {
+    if (event.target.closest("[data-action]")?.dataset.action === "dialog-cancel") closeDialog();
+  };
+}
+/** Which copy path worked last ("clipboard", "execCommand", "manual"); read by the visual check. */
+let lastCopyPath;
+globalThis.semanticLastCopyPath = () => lastCopyPath;
 
 // ---------- Start ----------
 await connected;

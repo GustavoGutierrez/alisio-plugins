@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { basename } from "node:path";
-import type { CompletionRequest, ToolSemantic } from "@alisio/sdk";
+import type { AvailableProviderModel, CompletionRequest, ToolSemantic } from "@alisio/sdk";
 import { errorCode, SemanticPluginError } from "../errors.js";
 import { buildPrompt, type ChatTurn, NOT_FOUND, type Passage, parseCitations } from "./answer.js";
 import { chunkSegments, type Segment } from "./chunk.js";
@@ -33,10 +33,18 @@ export interface ServiceDeps {
   /** The consumer side of `api.semantic` (absent on an older host). */
   semantic: () => ToolSemantic | undefined;
   complete: (request: CompletionRequest) => Promise<string>;
+  /** `api.models` (credential-free list of the user's configured models). */
+  models?: {
+    list(signal?: AbortSignal): Promise<AvailableProviderModel[]>;
+    resolve(reference: string, signal?: AbortSignal): Promise<unknown>;
+  };
+  /** Model a new child of this session would use: Alisio's active model. */
+  activeModel?: (sessionId: string) => string | undefined;
 }
 
 const ID = /^[a-z2-7]{12}$/;
 const READS = new Set([
+  "models.list",
   "notebooks.list",
   "notebooks.get",
   "workspace.list",
@@ -154,7 +162,19 @@ export class NotebookService {
         return this.db.notebooks();
       case "notebooks.get": {
         const row = this.notebook(id(input, "id"));
-        return { ...row, sources: this.db.sources(row.id) };
+        const sources = this.db.sources(row.id);
+        const current = this.sourceSet(row.id);
+        const guide = row.guide
+          ? { ...row.guide, outdated: (row.guide.sources as string | undefined) !== current }
+          : null;
+        return { ...row, guide, sources };
+      }
+      case "notebooks.setScope": {
+        const row = this.notebook(id(input, "id"));
+        const known = new Set(this.db.sources(row.id).map((s) => s.id));
+        const excluded = (ids(input, "excluded") ?? []).filter((x) => known.has(x));
+        this.db.setExcluded(row.id, [...new Set(excluded)]);
+        return { ok: true, excluded };
       }
       case "notebooks.create": {
         const title = text(input, "title", LIMITS.titleChars).trim() || "Untitled";
@@ -176,6 +196,25 @@ export class NotebookService {
         this.db.deleteNotebook(row.id);
         return { ok: true };
       }
+      case "models.list":
+        return this.modelList(ctx);
+      case "notebooks.setModel": {
+        const row = this.notebook(id(input, "id"));
+        const model = input.model;
+        if (model === null || model === "") {
+          this.db.setModel(row.id, null);
+          return { ok: true, model: null };
+        }
+        if (typeof model !== "string" || model.length > 300) invalid();
+        if (!this.deps.models) throw new SemanticPluginError("no_model");
+        try {
+          await this.deps.models.resolve(model as string, ctx.signal);
+        } catch {
+          throw new SemanticPluginError("not_found");
+        }
+        this.db.setModel(row.id, model as string);
+        return { ok: true, model };
+      }
       case "notice.ack":
         this.db.ackNotice(this.notebook(id(input, "notebookId")).id);
         return { ok: true };
@@ -195,6 +234,12 @@ export class NotebookService {
         const source = this.source(id(input, "sourceId"));
         await this.removeVectors(source).catch(() => {});
         this.db.deleteSource(source.id);
+        const owner = this.db.notebook(source.notebookId);
+        if (owner?.excluded.includes(source.id))
+          this.db.setExcluded(
+            owner.id,
+            owner.excluded.filter((x) => x !== source.id),
+          );
         return { ok: true };
       }
       case "sources.passage": {
@@ -231,6 +276,7 @@ export class NotebookService {
             grounded: m.meta.grounded ?? true,
             keywordOnly: m.meta.keywordOnly ?? false,
             notFound: m.meta.notFound ?? false,
+            modelFallback: m.meta.modelFallback ?? false,
           }));
       }
       case "chat.clear":
@@ -515,12 +561,81 @@ export class NotebookService {
     return { passages, keywordOnly };
   }
 
-  private ask(input: Input, ctx: ActionContext) {
+  /** Configured models (credential-free) and Alisio's active one; empty when none is connected. */
+  private async modelList(ctx: ActionContext) {
+    const active = (() => {
+      try {
+        return this.deps.activeModel?.(ctx.sessionId) || null;
+      } catch {
+        return null;
+      }
+    })();
+    if (!this.deps.models) return { models: [], active, available: true };
+    let list: AvailableProviderModel[] = [];
+    try {
+      list = await this.deps.models.list(ctx.signal);
+    } catch {
+      list = [];
+    }
+    const models = list.slice(0, 1000).map((m) => ({
+      reference: m.reference,
+      name: m.model?.name || m.model?.id || m.reference,
+      provider: m.providerName || m.provider,
+    }));
+    return { models, active, available: models.length > 0 };
+  }
+
+  /** Identity of the indexed sources a guide was built from: a new or removed source outdates it. */
+  private sourceSet(notebookId: string) {
+    return this.db
+      .sources(notebookId)
+      .filter((s) => s.chunkCount > 0)
+      .map((s) => s.id)
+      .sort()
+      .join(",");
+  }
+
+  /** The model that actually answers: the notebook's choice, else Alisio's active model. */
+  private modelName(model: string | undefined, ctx: ActionContext) {
+    if (model) return model;
+    try {
+      return this.deps.activeModel?.(ctx.sessionId) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** WHEN no model is configured, asking is refused before any job starts (O12). */
+  private async requireModel(ctx: ActionContext) {
+    if (!this.deps.models) return;
+    const { available } = await this.modelList(ctx);
+    if (!available) throw new SemanticPluginError("no_model");
+  }
+
+  /**
+   * The notebook's chosen model, resolved before each call. A model that no longer exists falls
+   * back to Alisio's active model (the choice is cleared) and the answer says so.
+   */
+  private async modelFor(notebookId: string, signal: AbortSignal) {
+    const chosen = this.db.notebook(notebookId)?.model;
+    if (!chosen || !this.deps.models) return { model: undefined, fallback: false };
+    try {
+      await this.deps.models.resolve(chosen, signal);
+      return { model: chosen, fallback: false };
+    } catch {
+      if (signal.aborted) throw new SemanticPluginError("cancelled");
+      this.db.setModel(notebookId, null);
+      return { model: undefined, fallback: true };
+    }
+  }
+
+  private async ask(input: Input, ctx: ActionContext) {
     const notebook = this.notebook(id(input, "notebookId"));
     const question = text(input, "question", LIMITS.questionChars).trim();
     if (!question) invalid();
     const sourceIds = ids(input, "sourceIds");
     const locale = localeOf(input);
+    await this.requireModel(ctx);
     const jobId = this.jobs.start(notebook.id, "ask", null, async ({ signal, progress }) => {
       const history: ChatTurn[] = this.db
         .messages(notebook.id, 6)
@@ -541,12 +656,14 @@ export class NotebookService {
         return { messageId, keywordOnly, grounded: false, notFound: true };
       }
       const prompt = buildPrompt(question, passages, history, locale);
+      const { model, fallback } = await this.modelFor(notebook.id, signal);
       let answer: string;
       try {
         answer = await this.deps.complete({
           ...prompt,
           maxTokens: 1500,
           sessionId: ctx.sessionId,
+          ...(model ? { model } : {}),
           signal,
         });
       } catch (error) {
@@ -558,9 +675,10 @@ export class NotebookService {
         citations: parsed.citations,
         grounded: parsed.grounded,
         keywordOnly,
+        ...(fallback ? { modelFallback: true } : {}),
       });
       this.db.touchNotebook(notebook.id);
-      return { messageId, keywordOnly, grounded: parsed.grounded };
+      return { messageId, keywordOnly, grounded: parsed.grounded, modelFallback: fallback };
     });
     return { jobId };
   }
@@ -602,24 +720,29 @@ export class NotebookService {
     ctx: ActionContext,
     signal: AbortSignal,
     locale: "en" | "es",
+    notebookId: string,
   ) {
     const prompt = buildPrompt("", passages, [], locale, instruction);
+    const { model } = await this.modelFor(notebookId, signal);
     try {
-      return await this.deps.complete({
+      const answer = await this.deps.complete({
         ...prompt,
         maxTokens: 1500,
         sessionId: ctx.sessionId,
+        ...(model ? { model } : {}),
         signal,
       });
+      return { answer, model: this.modelName(model, ctx) };
     } catch (error) {
       if (signal.aborted) throw error;
       throw new SemanticPluginError("answer_failed");
     }
   }
 
-  private guide(input: Input, ctx: ActionContext) {
+  private async guide(input: Input, ctx: ActionContext) {
     const notebook = this.notebook(id(input, "notebookId"));
     const locale = localeOf(input);
+    await this.requireModel(ctx);
     const jobId = this.jobs.start(notebook.id, "guide", null, async ({ signal }) => {
       const passages = this.overviewPassages(
         this.db.sources(notebook.id).filter((s) => s.chunkCount > 0),
@@ -627,7 +750,15 @@ export class NotebookService {
       );
       if (passages.length === 0)
         return { summary: NOT_FOUND[locale], questions: [], citations: [], grounded: false };
-      const answer = await this.completeWith(passages, GUIDE_INSTRUCTION, ctx, signal, locale);
+      const built = this.sourceSet(notebook.id);
+      const { answer, model } = await this.completeWith(
+        passages,
+        GUIDE_INSTRUCTION,
+        ctx,
+        signal,
+        locale,
+        notebook.id,
+      );
       const questions = [...answer.matchAll(/^\s*Q:\s*(.+)$/gm)]
         .map((m) => (m[1] as string).trim())
         .slice(0, 3);
@@ -636,32 +767,47 @@ export class NotebookService {
         .replace(/^\s*Summary:\s*/im, "")
         .trim();
       const parsed = parseCitations(summaryText, passages);
-      return {
+      const guide = {
         summary: parsed.text,
         questions,
         citations: parsed.citations,
         grounded: parsed.grounded,
+        model,
+        createdAt: Date.now(),
+        sources: built,
       };
+      // Persisted (O15): shown again on re-entry and after restarts; never regenerated by itself.
+      this.db.setGuide(notebook.id, guide);
+      return { ...guide, outdated: false };
     });
     return { jobId };
   }
 
-  private summary(input: Input, ctx: ActionContext) {
+  private async summary(input: Input, ctx: ActionContext) {
     const source = this.source(id(input, "sourceId"));
     const locale = localeOf(input);
+    await this.requireModel(ctx);
     const jobId = this.jobs.start(source.notebookId, "summary", source.id, async ({ signal }) => {
       const passages = this.overviewPassages([source], RETRIEVE_KEEP);
       if (passages.length === 0) throw new SemanticPluginError("no_text");
-      const parsed = parseCitations(
-        await this.completeWith(passages, SUMMARY_INSTRUCTION, ctx, signal, locale),
+      const { answer, model } = await this.completeWith(
         passages,
+        SUMMARY_INSTRUCTION,
+        ctx,
+        signal,
+        locale,
+        source.notebookId,
       );
-      return {
-        sourceId: source.id,
+      const parsed = parseCitations(answer, passages);
+      const summary = {
         summary: parsed.text,
         citations: parsed.citations,
         grounded: parsed.grounded,
+        model,
+        createdAt: Date.now(),
       };
+      this.db.setSourceSummary(source.id, summary);
+      return { sourceId: source.id, ...summary };
     });
     return { jobId };
   }

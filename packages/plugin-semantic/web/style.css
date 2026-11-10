@@ -349,13 +349,24 @@ textarea {
 .nb-card:focus-within {
   border-color: var(--border-strong);
 }
+/* "New notebook": icon and label centered, same height as the notebook cards. */
 .nb-card.new {
+  display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 12px;
   color: var(--accent);
   border-style: dashed;
   font-weight: 650;
   width: 100%;
+  height: 100%;
+  min-height: 170px;
+  padding: 18px;
+  text-align: center;
+}
+.nb-card.new .nb-glyph {
+  margin-bottom: 0;
 }
 .nb-open {
   display: flex;
@@ -598,19 +609,167 @@ textarea {
   gap: 10px;
   color: var(--muted);
 }
+/* Citation chip: clearly a control, not a bare number. */
 .cite {
   min-height: 0;
   min-width: 22px;
-  height: 22px;
+  height: 20px;
   padding: 0 6px;
-  margin: 0 2px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  vertical-align: 1px;
+  margin: 0 1px 0 3px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 750;
+  line-height: 1;
+  vertical-align: 2px;
   background: var(--amber-bg);
   color: var(--amber);
+  border: 1px solid var(--amber);
+}
+.cite:hover {
+  background: var(--amber);
+  color: var(--bg);
+}
+/* Rendered Markdown in answers, the guide and summaries. */
+.md > :first-child {
+  margin-top: 0;
+}
+.md > :last-child {
+  margin-bottom: 0;
+}
+.md p,
+.md ul,
+.md ol,
+.md blockquote,
+.md pre,
+.md .table-wrap {
+  margin: 0 0 10px;
+}
+.md ul,
+.md ol {
+  padding-left: 22px;
+}
+.md li + li {
+  margin-top: 4px;
+}
+.md h3,
+.md h4,
+.md h5 {
+  margin: 14px 0 6px;
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
+.md h3 {
+  font-size: 17px;
+}
+.md code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  background: var(--raised);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.md pre {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  overflow: auto;
+}
+.md pre code {
+  background: none;
+  padding: 0;
+}
+.md blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding: 2px 0 2px 12px;
+  background: none;
+  border-radius: 0;
+  white-space: normal;
+}
+.md hr {
+  border: none;
+  border-top: 1px solid var(--border-strong);
+  margin: 12px 0;
+}
+.md .table-wrap {
+  overflow-x: auto;
+}
+.md table {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.md th,
+.md td {
+  border: 1px solid var(--border-strong);
+  padding: 5px 9px;
+  text-align: left;
+  vertical-align: top;
+}
+.md th {
+  background: var(--raised);
+}
+.msg .who {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.copy-controls {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: auto;
+}
+.copy-controls .icon-btn {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  color: var(--muted);
+}
+.block h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chat-head:empty {
+  display: none;
+}
+.chat-head {
+  padding: 12px 18px 0;
+}
+.model-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 100%;
+}
+.model-picker select {
+  min-height: 34px;
+  max-width: 340px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  padding: 4px 8px;
+}
+.block-state {
+  background: var(--amber-bg);
   border-color: transparent;
+  margin: 0;
+}
+textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.copy-area {
+  max-height: 50vh;
+  overflow: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px;
 }
 .warn {
   display: flex;
@@ -647,16 +806,113 @@ textarea {
   justify-content: flex-start;
   border-radius: var(--radius-sm);
 }
+/* Composer: one rounded container with an auto-growing textarea and a round send button inside. */
 .composer {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  padding: 14px 18px;
+  padding: 12px 18px 10px;
   border-top: 1px solid var(--border);
 }
-#composer-actions {
+.composer-box {
   display: flex;
-  gap: 6px;
+  align-items: flex-end;
+  gap: 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 6px 6px 6px 14px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.composer-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.composer-box textarea {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 7px 0;
+  min-height: 22px;
+  line-height: 22px;
+  resize: none;
+  overflow-y: hidden;
+}
+.composer-box textarea:focus,
+.composer-box textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.composer-actions {
+  display: flex;
+  flex: none;
+}
+.send-btn {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.send-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.send-btn:disabled {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--faint);
+  opacity: 1;
+}
+.send-btn.stop {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+.send-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+.composer-hint,
+.disclaimer {
+  margin: 6px 4px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--faint);
+  text-align: center;
+}
+.disclaimer {
+  margin-top: 2px;
+}
+/* Copy controls: top right of each generated block; shown on hover and keyboard focus, always
+   on touch screens and narrow layouts. */
+.copyable .copy-controls {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.copyable:hover .copy-controls,
+.copyable:focus-within .copy-controls {
+  opacity: 1;
+}
+@media (hover: none), (max-width: 899px) {
+  .copyable .copy-controls {
+    opacity: 1;
+  }
+}
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-head > .banner {
+  flex: 1;
+}
+.chat-head > .icon-btn {
+  margin-left: auto;
 }
 .spinner {
   width: 16px;
@@ -746,6 +1002,9 @@ dialog::backdrop {
   margin: 15vh auto;
   padding: 0 24px;
   text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
 }
 
 /* ---------- Narrow layout: tabs under 900 px ---------- */

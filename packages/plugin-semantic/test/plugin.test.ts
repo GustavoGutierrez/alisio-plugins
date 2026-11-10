@@ -67,6 +67,7 @@ describe("plugin entry", () => {
     expect(status).toMatch(/solo con búsqueda por palabras clave/);
     expect(status).not.toMatch(/keyword search only|Notebooks|Disk use/);
     expect(await es.commands.get("help")?.("")).toMatch(/^Abre Cuaderno/);
+    expect(await es.commands.get("help")?.("")).toContain("El asistente puede cometer errores");
     expect(resolveLocale(undefined, { LANG: "es_CO.UTF-8" })).toBe("es");
     expect(resolveLocale(undefined, { LC_ALL: "es", LANG: "en_US.UTF-8" })).toBe("es");
     expect(resolveLocale(undefined, { LANG: "fr_FR.UTF-8" })).toBe("en");
@@ -79,9 +80,12 @@ describe("plugin entry", () => {
 
   it("disposes twice without throwing", async () => {
     const h = await start();
-    expect(h.commands.size).toBe(3);
     await plugin.dispose?.();
     await expect(Promise.resolve(plugin.dispose?.())).resolves.toBeUndefined();
+    // An activation whose app is still registered is not torn down by a context-free dispose.
+    expect(h.apps).toHaveLength(1);
+    await h.close();
     expect(h.commands.size).toBe(0);
+    expect(h.apps).toHaveLength(0);
   });
 });

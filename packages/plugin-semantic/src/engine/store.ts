@@ -39,6 +39,11 @@ const KEY = /^[A-Za-z_][A-Za-z0-9_]{0,63}$/;
 const ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const NAME_MAX = 200;
 const DELETE_BATCH = 500;
+/**
+ * Write queue per database directory. Process-wide on purpose: two activations of the plugin (two
+ * open workspaces) share one `collections.json`. It holds no data, only pending writes.
+ */
+const QUEUES = new Map<string, Promise<unknown>>();
 
 function invalid(): never {
   throw new SemanticPluginError("invalid_input");
@@ -71,8 +76,6 @@ export class LanceStore implements VectorStoreProvider {
   private readonly dir: string;
   private readonly indexThreshold: number;
   private connection: Promise<Connection> | undefined;
-  private sidecar: Promise<Sidecar> | undefined;
-  private queue: Promise<unknown> = Promise.resolve();
 
   constructor(options: LanceStoreOptions) {
     this.dir = options.dir;
@@ -258,9 +261,15 @@ export class LanceStore implements VectorStoreProvider {
     }
   }
 
+  /** Writes are serialized per database directory, across every store instance in the process. */
   private serial<T>(work: () => Promise<T>): Promise<T> {
-    const run = this.queue.then(work, work);
-    this.queue = run.catch(() => {});
+    const previous = QUEUES.get(this.dir) ?? Promise.resolve();
+    const run = previous.then(work, work);
+    const tail = run.catch(() => {});
+    QUEUES.set(this.dir, tail);
+    void tail.then(() => {
+      if (QUEUES.get(this.dir) === tail) QUEUES.delete(this.dir);
+    });
     return run;
   }
 
@@ -300,18 +309,17 @@ export class LanceStore implements VectorStoreProvider {
     return this.connection;
   }
 
+  /** Always read from disk: another activation (another open workspace) may have written it. */
   private readSidecar(): Promise<Sidecar> {
-    if (!this.sidecar)
-      this.sidecar = readFile(join(this.dir, "collections.json"), "utf8").then(
-        (text) => {
-          const parsed = JSON.parse(text) as Sidecar;
-          return parsed?.version === 1 && parsed.collections
-            ? parsed
-            : { version: 1, collections: {} };
-        },
-        () => ({ version: 1, collections: {} }) as Sidecar,
-      );
-    return this.sidecar;
+    return readFile(join(this.dir, "collections.json"), "utf8").then(
+      (text) => {
+        const parsed = JSON.parse(text) as Sidecar;
+        return parsed?.version === 1 && parsed.collections
+          ? parsed
+          : { version: 1, collections: {} };
+      },
+      () => ({ version: 1, collections: {} }) as Sidecar,
+    );
   }
 
   private async writeSidecar(sidecar: Sidecar) {
@@ -320,6 +328,5 @@ export class LanceStore implements VectorStoreProvider {
     const temp = `${target}.${process.pid}.${Date.now()}.tmp`;
     await writeFile(temp, JSON.stringify(sidecar), { mode: 0o600 });
     await rename(temp, target);
-    this.sidecar = Promise.resolve(sidecar);
   }
 }

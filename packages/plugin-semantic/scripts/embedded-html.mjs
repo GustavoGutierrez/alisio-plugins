@@ -33,7 +33,7 @@ export async function buildEmbeddedHtml() {
   // The plain browser modules share one function scope: drop their `export` keywords and the
   // app's `import` lines (every module the app imports is inlined here, in dependency order).
   const modules = [];
-  for (const name of ["i18n.js", "derive.js", "icons.js"])
+  for (const name of ["i18n.js", "derive.js", "icons.js", "markdown.js", "copy.js"])
     modules.push((await read(name)).replace(/^export /gm, ""));
   const app = (await read("app.js")).replace(/^import [\s\S]*?;\n/gm, "");
   const js =

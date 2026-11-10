@@ -88,6 +88,22 @@ clave.
 
 ![Arquitectura: marco, acciones, servicio del cuaderno, api.semantic y los proveedores](./assets/architecture.svg)
 
+## Uso de un cuaderno
+
+- **Modelo.** La cabecera del chat tiene un selector **Modelo** con los modelos que conectaste en
+  Alisio (`/connect`); por defecto un cuaderno usa el modelo actual de Alisio. Si el modelo elegido
+  se elimina, la respuesta usa el modelo actual de Alisio y lo indica. Sin ningún modelo conectado,
+  Cuaderno muestra "conecta un modelo" y desactiva preguntas, guía y resúmenes; añadir fuentes y la
+  búsqueda por palabras clave siguen funcionando.
+- **Las respuestas** se muestran con formato (listas, negritas, tablas, código) y cada `[n]` es una
+  cita que abre el pasaje. Cada respuesta, la guía y cada resumen tienen **Copiar texto** (el
+  Markdown, citas como `[n]`) y **Copiar con formato** (texto enriquecido para documentos y correo).
+- **Se conserva:** el chat, la guía (marcada como "desactualizada" con un botón **Regenerar** cuando
+  cambian las fuentes; nunca se regenera sola), los resúmenes de fuentes, las fuentes marcadas y el
+  modelo elegido.
+
+El asistente puede cometer errores; comprueba sus respuestas con las fuentes citadas.
+
 ## Privacidad
 
 La lectura, la división en fragmentos y el indexado de tus archivos ocurren en este equipo. **Al

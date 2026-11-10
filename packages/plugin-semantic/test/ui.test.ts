@@ -211,3 +211,14 @@ describe("presentations and workbooks in the frame (O10)", () => {
       expect(messages[locale].noSources).toMatch(/\.pptx.*\.xlsx/);
   });
 });
+
+describe("assistant disclaimer (0.1.1)", () => {
+  it("is worded in both languages", () => {
+    expect(messages.en.disclaimer).toBe(
+      "The assistant can make mistakes, so check its answers against the cited sources.",
+    );
+    expect(messages.es.disclaimer).toBe(
+      "El asistente puede cometer errores; comprueba sus respuestas con las fuentes citadas.",
+    );
+  });
+});

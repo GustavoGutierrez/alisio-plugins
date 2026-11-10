@@ -64,6 +64,12 @@ const MIGRATIONS: string[] = [
      created_at INTEGER NOT NULL,
      updated_at INTEGER NOT NULL
    );`,
+  // 2 (0.1.1): per-notebook model choice; null means Alisio's active model.
+  "ALTER TABLE notebooks ADD COLUMN model TEXT;",
+  // 3 (0.1.1, O15): the generated guide, the excluded sources and per-source summaries persist.
+  `ALTER TABLE notebooks ADD COLUMN guide_json TEXT;
+   ALTER TABLE notebooks ADD COLUMN excluded_json TEXT;
+   ALTER TABLE sources ADD COLUMN summary_json TEXT;`,
 ];
 
 export interface NotebookRow {
@@ -72,6 +78,10 @@ export interface NotebookRow {
   createdAt: number;
   updatedAt: number;
   remoteNoticeAck: boolean;
+  /** `<provider>/<model>` chosen for this notebook, or null for Alisio's active model. */
+  model: string | null;
+  guide: Record<string, unknown> | null;
+  excluded: string[];
 }
 export type SourceStatus = "indexing" | "ready" | "ready_keyword" | "failed";
 export interface SourceRow {
@@ -86,6 +96,7 @@ export interface SourceRow {
   error: string | null;
   chunkCount: number;
   createdAt: number;
+  summary: Record<string, unknown> | null;
 }
 export interface ChunkRow {
   id: number;
@@ -124,6 +135,9 @@ const notebook = (r: SqlRow): NotebookRow => ({
   createdAt: Number(r.created_at),
   updatedAt: Number(r.updated_at),
   remoteNoticeAck: Number(r.remote_notice_ack) === 1,
+  model: typeof r.model === "string" && r.model ? r.model : null,
+  guide: parse(r.guide_json) ?? null,
+  excluded: Array.isArray(parse(r.excluded_json)) ? (parse(r.excluded_json) as string[]) : [],
 });
 const source = (r: SqlRow): SourceRow => ({
   id: r.id,
@@ -137,6 +151,7 @@ const source = (r: SqlRow): SourceRow => ({
   error: r.error ?? null,
   chunkCount: Number(r.chunk_count),
   createdAt: Number(r.created_at),
+  summary: parse(r.summary_json) ?? null,
 });
 const chunk = (r: SqlRow): ChunkRow => ({
   id: Number(r.id),
@@ -240,6 +255,9 @@ export class NotebookDb {
   touchNotebook(id: string) {
     this.sql.prepare("UPDATE notebooks SET updated_at = ? WHERE id = ?").run(this.now(), id);
   }
+  setModel(id: string, model: string | null) {
+    this.sql.prepare("UPDATE notebooks SET model = ? WHERE id = ?").run(model, id);
+  }
   ackNotice(id: string) {
     this.sql.prepare("UPDATE notebooks SET remote_notice_ack = 1 WHERE id = ?").run(id);
   }
@@ -261,7 +279,22 @@ export class NotebookDb {
   }
 
   // Sources
-  insertSource(row: Omit<SourceRow, "chunkCount" | "createdAt" | "error">) {
+  setGuide(id: string, guide: Record<string, unknown> | null) {
+    this.sql
+      .prepare("UPDATE notebooks SET guide_json = ? WHERE id = ?")
+      .run(guide ? JSON.stringify(guide) : null, id);
+  }
+  setExcluded(id: string, excluded: string[]) {
+    this.sql
+      .prepare("UPDATE notebooks SET excluded_json = ? WHERE id = ?")
+      .run(JSON.stringify(excluded), id);
+  }
+  setSourceSummary(id: string, summary: Record<string, unknown> | null) {
+    this.sql
+      .prepare("UPDATE sources SET summary_json = ? WHERE id = ?")
+      .run(summary ? JSON.stringify(summary) : null, id);
+  }
+  insertSource(row: Omit<SourceRow, "chunkCount" | "createdAt" | "error" | "summary">) {
     this.sql
       .prepare(
         "INSERT INTO sources (id, notebook_id, name, kind, mime, sha256, bytes, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",

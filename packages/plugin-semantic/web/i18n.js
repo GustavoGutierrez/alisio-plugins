@@ -97,6 +97,8 @@ const en = {
   keywordAnswer: "Found with keyword search",
   clearChat: "Clear chat",
   clearChatConfirm: "Clear the whole chat of this notebook?",
+  composerHint: "Enter to send, Shift+Enter for a new line",
+  disclaimer: "The assistant can make mistakes, so check its answers against the cited sources.",
   noticeTitle: "Before your first question",
   noticeText:
     "To answer, the passages that match your question are sent to the AI model selected in Alisio, which may run outside this computer. Reading and indexing your files stays on this computer.",
@@ -115,6 +117,21 @@ const en = {
   showGuide: "Show guide panel",
   hideGuide: "Hide guide panel",
   awaiting_approval: "Waiting for your approval in Alisio…",
+  model: "Model",
+  modelDefault: (name) => (name ? `Alisio's current model (${name})` : "Alisio's current model"),
+  modelFallback:
+    "The model chosen for this notebook is no longer available; Alisio's current model answered.",
+  noModelTitle: "Connect a model to chat",
+  noModel:
+    "To chat with your sources, first connect a model in Alisio (/connect). Indexing and keyword search still work.",
+  outdated: "Outdated: sources changed since it was written.",
+  regenerate: "Regenerate",
+  copyText: "Copy text",
+  copyFormatted: "Copy formatted",
+  copied: "Copied",
+  copyManual: "Press Ctrl+C / ⌘C to copy",
+  retry: "Try again",
+  checking: "Checking…",
   unavailableTitle: "Notebook is unavailable",
   unavailable:
     "This app is no longer available. The plugin may have been turned off or updated; reopen Notebook from the Apps list.",
@@ -136,6 +153,7 @@ const en = {
     download_failed: "The download failed. Check your connection and try again.",
     cancelled: "Cancelled.",
     answer_failed: "The AI model did not answer. Check the model selected in Alisio.",
+    no_model: "Connect a model in Alisio (/connect) to chat with your sources.",
     operation_failed: "Something went wrong. Please try again.",
     not_permitted_write:
       'Alisio did not allow Notebook to save changes. Set this session to Auto (or Full access), or approve the action in the chat with "Allow for session".',
@@ -246,8 +264,11 @@ const es = {
   assistant: "Cuaderno",
   notGrounded: "Esta respuesta no cita tus fuentes. Revísala antes de confiar en ella.",
   keywordAnswer: "Encontrado con palabras clave",
-  clearChat: "Borrar chat",
-  clearChatConfirm: "¿Borrar todo el chat de este cuaderno?",
+  clearChat: "Limpiar chat",
+  clearChatConfirm: "¿Limpiar todo el chat de este cuaderno?",
+  composerHint: "Enter para enviar, Shift+Enter para nueva línea",
+  disclaimer:
+    "El asistente puede cometer errores; comprueba sus respuestas con las fuentes citadas.",
   noticeTitle: "Antes de tu primera pregunta",
   noticeText:
     "Para responder, los pasajes que coinciden con tu pregunta se envían al modelo de IA elegido en Alisio, que puede funcionar fuera de este equipo. La lectura y el indexado de tus archivos se quedan en este equipo.",
@@ -265,6 +286,21 @@ const es = {
   showGuide: "Mostrar panel de guía",
   hideGuide: "Ocultar panel de guía",
   awaiting_approval: "Esperando tu aprobación en Alisio…",
+  model: "Modelo",
+  modelDefault: (name) => (name ? `Modelo actual de Alisio (${name})` : "Modelo actual de Alisio"),
+  modelFallback:
+    "El modelo elegido para este cuaderno ya no está disponible; respondió el modelo actual de Alisio.",
+  noModelTitle: "Conecta un modelo para chatear",
+  noModel:
+    "Para chatear con tus fuentes, primero conecta un modelo en Alisio (/connect). El indexado y la búsqueda por palabras clave siguen funcionando.",
+  outdated: "Desactualizado: las fuentes cambiaron desde que se escribió.",
+  regenerate: "Regenerar",
+  copyText: "Copiar texto",
+  copyFormatted: "Copiar con formato",
+  copied: "Copiado",
+  copyManual: "Pulsa Ctrl+C / ⌘C para copiar",
+  retry: "Reintentar",
+  checking: "Comprobando…",
   unavailableTitle: "Cuaderno no está disponible",
   unavailable:
     "Esta app ya no está disponible. Puede que el plugin se haya desactivado o actualizado; vuelve a abrir Cuaderno desde la lista de Aplicaciones.",
@@ -287,6 +323,7 @@ const es = {
     download_failed: "La descarga falló. Revisa tu conexión e inténtalo de nuevo.",
     cancelled: "Cancelado.",
     answer_failed: "El modelo de IA no respondió. Revisa el modelo elegido en Alisio.",
+    no_model: "Conecta un modelo en Alisio (/connect) para chatear con tus fuentes.",
     operation_failed: "Algo salió mal. Inténtalo de nuevo.",
     not_permitted_write:
       'Alisio no permitió que Cuaderno guarde cambios. Pon esta sesión en Auto (o Acceso total), o aprueba la acción en el chat con "Permitir en la sesión".',

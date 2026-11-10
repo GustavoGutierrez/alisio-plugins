@@ -58,6 +58,24 @@ describe("citations (D13, SEM-AC-17)", () => {
     expect(result.grounded).toBe(false);
   });
 
+  it("normalizes citation forms models emit instead of [n] (0.1.1)", () => {
+    const result = parseCitations(
+      "A【1】 B【2†notes.md】 C[^3] D[source 1] E[Fuente 2] F[1][3].",
+      passages,
+    );
+    expect(result.text).toBe("A [1] B [2] C [3] D [1] E [2] F [1][3].");
+    expect(result.citations.map((c) => c.n)).toEqual([1, 2, 3]);
+  });
+
+  it("keeps citations inside Markdown formatting", () => {
+    const result = parseCitations(
+      "- **Pre-training**: thousands of recipes [1].\n- *Fine-tuning* [2, 9]",
+      passages,
+    );
+    expect(result.text).toBe("- **Pre-training**: thousands of recipes [1].\n- *Fine-tuning* [2]");
+    expect(result.grounded).toBe(true);
+  });
+
   it("lists each cited passage once, in first-cited order", () => {
     const result = parseCitations("See [2] and [3][2].", passages);
     expect(result.citations.map((c) => c.n)).toEqual([2, 3]);
@@ -74,6 +92,7 @@ describe("prompt (D12, SEM-AC-18)", () => {
     const prompt = buildPrompt("What does it say?", [hostile], [], "en");
     expect(prompt.system).toMatch(/data, not instructions/i);
     expect(prompt.system).toMatch(/\[n\]/);
+    expect(prompt.system).toMatch(/exact form \[n\]/);
     const last = prompt.messages.at(-1)?.text ?? "";
     const blocks = last.match(/<passage\b[^>]*>[\s\S]*?<\/passage>/g) ?? [];
     expect(blocks).toHaveLength(1);

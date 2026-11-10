@@ -112,6 +112,13 @@ SDK differs, the released SDK wins and §16 records the divergence.
 | O9 | (2026-11-10) ONNX Runtime is downloaded on first use together with the model: `onnxruntime-node` is not an npm dependency; `/semantic:setup` (or "Prepare") fetches the pinned 1.30.0 npm tarballs over HTTPS, verifies the registry sha512 integrity, safely extracts only the current platform's CPU files plus the JS loaders into the cache (atomic, partial cleanup, resume), never CUDA/GPU providers, no install scripts, no npm; one combined notice, size and progress bar. LanceDB stays a normal dependency (npm installs only the current platform's package) |
 | O10 | (2026-11-10) `.pptx` and `.xlsx` sources through the generalized ZIP reader (entry count, size and ratio caps; no new dependency): slides (with notes) and sheets are page boundaries; formulas, macros (`.pptm`/`.xlsm`), external links and embedded objects are never read or evaluated; XML without DTD/entity expansion |
 | O11 | (2026-11-10) UI language follows Alisio's (`locale` from the first connect and `locale` messages, state kept on switch; `es*` → Spanish, else English); backend user-facing text uses the frame's locale, else `options.locale`, else the host process locale, else English |
+| O12 | (2026-11-10, 0.1.1) Answers, guide and summaries render with a small safe Markdown renderer written in the frame (all text escaped first; links as text) and `[n]` chips everywhere; the prompt requires the exact `[n]` form and common variants (`【n】`, `[^n]`, `[source n]`) are normalized. Per-notebook model (`models.list`, `notebooks.setModel`, migration 2), resolved before each call with a visible fallback to Alisio's active model. WHEN no model is configured, asking, the guide and summaries are blocked with a plain-language state (`no_model`); indexing, keyword search and `notebook_search` are unaffected; re-checked when the frame becomes visible |
+| O13 | (2026-11-10, 0.1.1) "App no longer available" fix: per-activation lifecycle (no module-level runtime; a context-free `plugin.dispose()` never releases an activation that still has its app), fail-open `setup`, resources released by the app's own `dispose`; LanceDB sidecar read fresh with a per-directory write queue. Frame: a host `not_found` is confirmed with `status` before showing the unavailable screen, which has a retry and re-checks on `visibility`; a plugin-level `not_found` (unknown job) only stops polling |
+| O14 | (2026-11-10, 0.1.1) Copy controls per answer, guide and summary: "Copy text" (Markdown source, citations as `[n]`) and "Copy formatted" (rich HTML from the same safe renderer, citations as text, inline styles only, plus a text/plain part); Clipboard API, then `execCommand` with a `copy` event, then a manual-copy dialog |
+| O15 | (2026-11-10, 0.1.1) The guide (summary, questions, citations, model, time, source set), per-source summaries and the ticked-source scope persist in SQLite (migration 3); a guide built from a different source set shows "outdated" with Regenerate; nothing regenerates by itself; `chat.clear` keeps them, deleting the notebook removes them |
+| O16 | (2026-11-10, 0.1.1) The "New notebook" card centers its icon and label, at the same height as the notebook cards |
+| O18 | (2026-11-10, 0.1.1) Permanent disclaimer under the composer ("The assistant can make mistakes, so check its answers against the cited sources." / "El asistente puede cometer errores; comprueba sus respuestas con las fuentes citadas."), also in `/semantic:help` and both READMEs; never added to copied content. O14 extended: one shared copy control on every generated block (answers, guide summary, suggested questions, source summary, passage viewer with a plain "source, page/slide/sheet" reference line), top right, shown on hover/focus and always on touch or narrow layouts |
+| O17 | (2026-11-10, 0.1.1) Chat composer: one rounded container (focus ring on the container) with an auto-growing textarea (1 to about 6 lines, then scroll) and a round icon Send button at its bottom right (disabled when empty or without a model; a square Stop while answering); "Clear chat" moves to the chat header; hint "Enter to send, Shift+Enter for a new line" below |
 | O8 | (2026-11-10) UI: Scribe's tokens, spacing, radii and button styles; the familiar source-grounded notebook layout (home grid of notebook cards; Sources / Chat / Guide; collapsible panels; tabs under 900 px) with own design, names, icons and copy |
 
 ---
@@ -294,7 +301,11 @@ vectors for that source.
    the passages do not contain the answer, reply in the user's language), passages as
    `<passage n="1" source="name" page="3">…</passage>`, and the last 6 messages of the notebook
    chat (trimmed to 6 000 characters).
-4. `api.model.complete({ system, messages, sessionId: ctx.sessionId, maxTokens: 1500, signal })`.
+4. `api.model.complete({ system, messages, sessionId: ctx.sessionId, maxTokens: 1500, model?, signal })`:
+   `model` is the notebook's choice resolved with `api.models.resolve` before each call (O12); a
+   model that no longer exists is cleared and the answer is marked `modelFallback`. WHEN
+   `api.models.list` returns nothing, `chat.ask`, `notebook.guide` and `sources.summary` fail with
+   `no_model` before any job starts.
 5. Parse citations (D13), persist both messages, finish the job with `{ messageId }`.
 
 Other actions: `notebook.guide` (write: on-demand summary of all sources plus 3 suggested questions,
@@ -320,6 +331,9 @@ same pipeline with a fixed prompt), `sources.summary` (write: one source), `inde
 | `jobs.get` / `jobs.cancel` | read / write | `{ jobId }` | state, progress 0..1, result or error code |
 | `notice.ack` | write | `{ notebookId }` | ok (D14) |
 | `engine.setup` | write | — | `{ jobId }` (same flow as `/semantic:setup`) |
+| `models.list` (0.1.1) | read | — | `{ models: [{ reference, name, provider }], active, available }` |
+| `notebooks.setModel` (0.1.1) | write | `{ id, model: string \| null }` | ok (`not_found` for an unknown model) |
+| `notebooks.setScope` (0.1.1) | write | `{ id, excluded: sourceId[] }` | ok; `notebooks.get` returns `excluded`, `model`, `guide` (with `outdated`) and each source's `summary` |
 
 Every input schema sets `additionalProperties: false` and bounds every string and array; no
 `$ref`/`$id`/`$async`. Handlers take the session from `ctx`, return error **codes** only, honor
@@ -332,7 +346,9 @@ Three-column layout, collapsing to tabs below 900 px:
 - **Sources** (left): notebook picker, "Add from computer", "Add from workspace", per-source status
   (indexing %, ready, keyword-only, failed with a localized reason), checkbox to include it in the
   question scope.
-- **Chat** (center): messages with inline `[n]` chips; clicking a chip opens the passage. Input box
+- **Chat** (center): a **Model** selector (0.1.1) or, without any configured model, a blocking
+  "connect a model" state; answers rendered as safe Markdown with inline `[n]` chips and copy
+  controls; clicking a chip opens the passage. Input box
   (Enter sends, Shift+Enter new line), "Stop" while a job runs, "not grounded" warning (D13),
   one-time remote-model notice (D14).
 - **Guide** (right): on-demand notebook summary and suggested questions (click to ask), and the
@@ -589,3 +605,72 @@ numbers, booleans, cached formula values and empty cells, bombs/DTD/escaping rel
 connect, switching on `locale` messages with the open notebook, draft, focus, open dialog and running
 progress kept, no English fragment left in Spanish views, command language). Stryker mutation
 testing lite (§14) was not run.
+
+### 16.5 Version 0.1.1 (owner decisions O12-O16)
+
+**"This app is no longer available" (O13): root cause, in this plugin.** Verified by reading the
+installed Alisio 0.11.7 runtime (`@alisio/core` `plugins/host.js` and `plugins/apps.js`,
+`@alisio/server` `host/workspace-host.js` and `routes/plugin-apps.js`, desktop `dist/host.js`):
+
+- The host imports a plugin module once per process and runs `setup(api)` once per open workspace
+  `Application`. The desktop opens the home folder as its default workspace besides the project;
+  up to 4 workspaces stay open and an idle one is closed after 10 minutes (`WorkspaceHost.sweep`,
+  `idleEvictMs` default 600 000 ms; `recycle` and `/reload` also close and reopen one).
+- Closing a workspace calls the shared `plugin.dispose()` (no argument) and then undoes that
+  workspace's registrations; the app registry calls the app's own `dispose` when it is removed.
+- 0.1.0 kept one module-level `current` runtime: the second `setup` disposed the first workspace's
+  runtime (unregistering its app), and when the idle home workspace was closed ten minutes later,
+  `plugin.dispose()` disposed the *project's* runtime, unregistering its Notebook app. The menu
+  entry vanished (`/api/workspaces/:wid/apps` lists only registered apps) and every frame request
+  got a host `not_found` from `routes/plugin-apps.js` (`apps.has(plugin, app)` false), which the
+  frame latched as "unavailable". This matches "left Alisio, came back".
+- Fix: per-activation runtimes; `plugin.dispose()` only releases idle activations that never
+  registered an app; an activation with an app is released by that app's `dispose`; every
+  registration is fail-open; the LanceDB sidecar is re-read on each access and written through a
+  per-directory queue so two activations do not overwrite each other's collections. Tests:
+  `test/lifecycle.test.ts` (two workspaces, close one, the other keeps app/tool/commands and
+  works; setup → close → setup; throwing engine registration; close while a job runs) and a
+  two-instance store test.
+- Host behavior worth reporting upstream (not a host bug in itself): `Plugin.dispose()` carries no
+  activation, while `setup(api)` runs once per workspace on a shared module object, so a plugin
+  cannot tell which activation is being closed. A `dispose(api)` argument (or documenting that
+  plugins must not keep module-level state and should release per-activation resources from their
+  registrations' undo/app `dispose`) would prevent this class of bug. No host log of the event
+  exists (the desktop writes no server log under `~/.config/alisio`, `~/.local/state/alisio` or
+  `~/.cache/alisio`).
+- Frame: a host `not_found` is now confirmed with one `status` request after 1.5 s; only a second
+  host `not_found` shows the unavailable screen, which offers "Try again" / "Reintentar" and
+  re-checks on `visibility: true`. A plugin-level `result.error: "not_found"` (an unknown job)
+  stops polling that job and refreshes. Scribe's frame (`packages/plugin-scribe/web/app.js`, in
+  `settle`) has the same latch (`showUnavailable()` on any host `not_found`, then `api()` refuses
+  every request); it was not changed. Scribe's entry keeps per-`setup` state in closures, so it does
+  not have the deregistration bug.
+
+**Markdown and citations (O12).** The owner's bare "1" was the citation chip of 0.1.0 (a small
+amber button showing only the number) next to unrendered Markdown; chips are now pill-shaped with a
+border, and Markdown renders. Variants some models emit (`【1】`, `【1†file】`, `[^1]`,
+`[source 1]`) are normalized to `[n]` before parsing, so what is stored in `citations[]` and what
+renders always match.
+
+**Copy (O14).** Plain text copies the answer's Markdown source with citations as `[n]` (pastes well
+into chats, editors and Markdown tools). In the Playwright stand-in (Chromium, frame
+`sandbox="allow-scripts"`, opaque origin) the async Clipboard API is blocked by the permissions
+policy ("The Clipboard API has been blocked because of a permissions policy"), and the
+`execCommand("copy")` fallback with a `copy` event carrying `text/html` + `text/plain` worked. The
+manual dialog is the last resort. Unverified in the real host.
+
+**No model (O12).** Detected with `api.models.list()` returning an empty list; `chat.ask`,
+`notebook.guide` and `sources.summary` then fail fast with `no_model` and the frame shows the
+blocking state. A `complete` failure for any other reason is still `answer_failed`.
+
+**Persistence (O15).** Before 0.1.1 the guide and source summaries lived only in job results and
+frame memory, and the ticked-source scope only in the frame; now migration 3 stores them. The chat
+history, remote-notice acknowledgement and (migration 2) chosen model already persisted.
+
+**Tests** for 0.1.1: Markdown renderer (each construct, XSS, citations inside formatting), the
+owner's example end to end in the frame, model list/choice/fallback, no-model blocking (backend and
+frame, re-check on visibility), frame recovery (transient host `not_found`, plugin `not_found`,
+persistent host `not_found` with retry), copy (plain, formatted HTML without buttons/scripts/
+handlers, Clipboard API, `execCommand` fallback, manual), lifecycle, persistence across re-entry and
+a new service instance.
+

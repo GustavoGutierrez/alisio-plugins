@@ -134,3 +134,21 @@ describe("LanceDB vector store (D8)", () => {
     expect(found).toHaveLength(1);
   });
 });
+
+describe("two activations sharing one database directory", () => {
+  it("keeps both collections when two store instances create them concurrently", async () => {
+    const { store: a, dir } = await store();
+    const b = new LanceStore({ dir });
+    await Promise.all([
+      a.ensureCollection("semantic/nb-aaaaaaaaaaaa", spec, signal),
+      b.ensureCollection("semantic/nb-bbbbbbbbbbbb", spec, signal),
+      a.ensureCollection("semantic/nb-cccccccccccc", spec, signal),
+    ]);
+    const names = (await b.listCollections("semantic/", signal)).map((c) => c.name).sort();
+    expect(names).toEqual([
+      "semantic/nb-aaaaaaaaaaaa",
+      "semantic/nb-bbbbbbbbbbbb",
+      "semantic/nb-cccccccccccc",
+    ]);
+  });
+});

@@ -15,17 +15,36 @@ import { VERSION } from "./version.js";
 
 export const MIN_HOST = "0.11.7";
 
+/**
+ * One activation of the plugin. The host imports the plugin module once per process and calls
+ * `setup` once per open workspace (the desktop app keeps a home workspace and a project open, and
+ * evicts idle ones after 10 minutes), but `dispose()` carries no context. So nothing here is
+ * module-global: each activation owns its resources and releases them when ITS app is unregistered
+ * (the host does that when it closes that workspace). Registrations are undone by the host.
+ */
 interface Runtime {
-  dispose(): void;
+  /** Releases this activation's resources (worker, SQLite, setup download). Idempotent, sync. */
+  release(): void;
+  hasApp(): boolean;
+  idle(): boolean;
 }
-let current: Runtime | undefined;
+const runtimes = new Set<Runtime>();
 
 function createRuntime(api: PluginAPI): Runtime {
   const options = api.options ?? {};
   const locale: Locale = resolveLocale(options.locale);
   const m = messagesFor(locale);
   const paths = resolvePaths(api.paths);
-  const disposers: Array<() => void> = [];
+  /** Fail-open registration: one failing piece never prevents the others (app, tool, commands). */
+  const attempt = (register: () => unknown) => {
+    try {
+      register();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  let appRegistered = false;
   let spec: ModelSpec | undefined;
   try {
     spec = resolveModel(options.model);
@@ -39,12 +58,9 @@ function createRuntime(api: PluginAPI): Runtime {
       ? new SetupManager({ spec, cacheRoot: paths.models, embedder, semantic: api.semantic })
       : undefined;
   if (api.semantic && embedder) {
-    try {
-      disposers.push(api.semantic.registerEmbedding(embedder));
-      disposers.push(api.semantic.registerStore(store));
-    } catch {
-      // A duplicate id (another copy of this plugin) keeps the previous registration (core SE-R2).
-    }
+    // A duplicate id (another copy of this plugin) keeps the previous registration (core SE-R2).
+    attempt(() => api.semantic?.registerEmbedding(embedder));
+    attempt(() => api.semantic?.registerStore(store));
   }
 
   let service: NotebookService | undefined;
@@ -55,12 +71,14 @@ function createRuntime(api: PluginAPI): Runtime {
         db: new NotebookDb(api.storage.sqlite(paths.notebook)),
         semantic: () => api.semantic,
         complete: (request) => api.model.complete(request),
+        ...(api.models ? { models: api.models } : {}),
+        activeModel: (sessionId) => api.sessions?.model?.(sessionId),
       });
     }
     return service;
   };
 
-  disposers.push(
+  attempt(() =>
     api.tools.register({
       name: "notebook_search",
       description:
@@ -114,7 +132,7 @@ function createRuntime(api: PluginAPI): Runtime {
     }),
   );
 
-  disposers.push(
+  attempt(() =>
     api.commands.register(
       "setup",
       async (args) => {
@@ -134,7 +152,7 @@ function createRuntime(api: PluginAPI): Runtime {
       },
     ),
   );
-  disposers.push(
+  attempt(() =>
     api.commands.register(
       "status",
       async () => {
@@ -177,7 +195,7 @@ function createRuntime(api: PluginAPI): Runtime {
       { description: "Show semantic engine health, model, disk use and notebooks." },
     ),
   );
-  disposers.push(
+  attempt(() =>
     api.commands.register("help", async () => (api.apps ? m.help.withApp : m.help.withoutApp), {
       description: "Explain the Notebook app and semantic search.",
     }),
@@ -213,14 +231,15 @@ function createRuntime(api: PluginAPI): Runtime {
         cancel: (id) => setup?.cancel(id) ?? false,
       },
     });
-    disposers.push(
-      api.apps.register({
+    appRegistered = attempt(() =>
+      api.apps?.register({
         id: "notebook",
         label: { en: "Notebook", es: "Cuaderno" },
         html: () => readFile(new URL("./embedded.html", import.meta.url), "utf8"),
         actions,
         busy: () => (service?.busy() ?? false) || (setup?.running() ?? false),
-        dispose: () => closeNotebooks(),
+        // Called by the host when it closes this workspace: release this activation only.
+        dispose: () => runtime.release(),
       }),
     );
   }
@@ -236,23 +255,20 @@ function createRuntime(api: PluginAPI): Runtime {
       .then(() => closing.db.close());
   }
 
-  let disposed = false;
-  return {
-    dispose() {
-      if (disposed) return;
-      disposed = true;
+  let released = false;
+  const runtime: Runtime = {
+    release() {
+      if (released) return;
+      released = true;
+      runtimes.delete(runtime);
       setup?.dispose();
       embedder?.close();
       closeNotebooks();
-      for (const dispose of disposers.splice(0)) {
-        try {
-          dispose();
-        } catch {
-          // Host already removed it.
-        }
-      }
     },
+    hasApp: () => appRegistered,
+    idle: () => !(service?.busy() ?? false) && !(setup?.running() ?? false),
   };
+  return runtime;
 }
 
 export default definePlugin({
@@ -264,11 +280,15 @@ export default definePlugin({
     "Local semantic search (LanceDB + multilingual-e5-small) and a Notebook app grounded in your sources.",
   categories: ["search", "storage"],
   setup(api) {
-    current?.dispose();
-    current = createRuntime(api);
+    runtimes.add(createRuntime(api));
   },
+  /**
+   * The host gives no activation here, so this must not touch an activation that is still in use
+   * by another workspace (0.1.0 did, which unregistered the live Notebook app: O13). Activations
+   * with an app are released by their app's `dispose`; idle ones without an app (hosts without
+   * `api.apps`) only hold resources that are reopened on demand.
+   */
   dispose() {
-    current?.dispose();
-    current = undefined;
+    for (const runtime of [...runtimes]) if (!runtime.hasApp() && runtime.idle()) runtime.release();
   },
 });

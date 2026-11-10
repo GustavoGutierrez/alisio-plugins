@@ -14,6 +14,7 @@ export const READ_ACTIONS = [
   "sources.passage",
   "chat.history",
   "jobs.get",
+  "models.list",
 ] as const;
 export const WRITE_ACTIONS = [
   "notebooks.create",
@@ -30,6 +31,8 @@ export const WRITE_ACTIONS = [
   "jobs.cancel",
   "notice.ack",
   "engine.setup",
+  "notebooks.setModel",
+  "notebooks.setScope",
 ] as const;
 
 const notebookId = { type: "string", pattern: "^[a-z2-7]{12}$" };
@@ -89,6 +92,15 @@ export const SCHEMAS: Record<string, JsonSchema> = {
   "jobs.cancel": object({ jobId }, ["jobId"]),
   "notice.ack": object({ notebookId }, ["notebookId"]),
   "engine.setup": object({}),
+  "models.list": object({}),
+  "notebooks.setScope": object(
+    { id: notebookId, excluded: { type: "array", maxItems: 50, items: sourceId } },
+    ["id", "excluded"],
+  ),
+  "notebooks.setModel": object(
+    { id: notebookId, model: { type: ["string", "null"], maxLength: 300 } },
+    ["id", "model"],
+  ),
 };
 
 /** Keywords the host rejects in an action `inputSchema`. */

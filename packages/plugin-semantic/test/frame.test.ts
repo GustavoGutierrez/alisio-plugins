@@ -5,7 +5,17 @@ import { afterAll, describe, expect, it } from "vitest";
 // @ts-expect-error -- plain Node build module without declarations.
 import { buildEmbeddedHtml, NONCE_MARKER } from "../scripts/embedded-html.mjs";
 
-const SOURCES = ["index.html", "app.js", "i18n.js", "derive.js", "icons.js", "style.css", "pdf.js"];
+const SOURCES = [
+  "index.html",
+  "app.js",
+  "i18n.js",
+  "derive.js",
+  "icons.js",
+  "markdown.js",
+  "copy.js",
+  "style.css",
+  "pdf.js",
+];
 
 describe("embedded HTML builder (SEM-AC-21)", () => {
   it("emits one self-contained page the frame CSP and sandbox accept", async () => {
