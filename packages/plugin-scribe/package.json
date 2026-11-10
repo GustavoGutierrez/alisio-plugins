@@ -1,6 +1,6 @@
 {
   "name": "@alisio/plugin-scribe",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Scientific writing studio with agent-assisted LaTeX drafts, revisions, assets and isolated PDF builds.",
   "keywords": [
     "alisio-plugin",
