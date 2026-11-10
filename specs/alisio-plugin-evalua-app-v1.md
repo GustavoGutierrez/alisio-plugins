@@ -1,7 +1,7 @@
 # Spec: `@alisio/plugin-evalua` app v1 (a web UI for teachers)
 
-Status: **Draft for owner review (2026-11-10). Not implemented.** Owner decisions of 2026-11-10 are
-in §3 (O1-O9); the open questions are in §13.
+Status: **Implemented (2026-11-10), not released.** Owner decisions of 2026-11-10 are in §3 (O1-O9,
+plus the answers to Q1-Q5 and O10-O12); implementation notes and deviations are in §15.
 Audience: a coding agent adding a plugin app to `packages/plugin-evalua` with no prior context.
 Companion specs: `specs/alisio-plugin-evalua-v1.md` (the plugin's behavior, which this app must not
 change) and `specs/alisio-plugin-semantic-v1.md` (newest app precedent).
@@ -91,6 +91,14 @@ app and the chat flow is unchanged.
 | O7 | UI language follows Alisio's locale (`en`/`es`) |
 | O8 | The app works without a model ("write it myself") and without a browser (HTML preview) |
 | O9 | Evalua README is bilingual: update `README.md` and `README.es.md` together |
+| Q1 | App label `{ en: "Evalua", es: "Evalúa" }` |
+| Q2 | Gate B is allowed when the last build had problems, after the teacher confirms the listed problems |
+| Q3 | Older, non-active exams are read-only (preview and download) |
+| Q4 | One topic per exam |
+| Q5 | Hide English exam documents in the app for now; the UI itself still follows Alisio's locale |
+| O10 | The topic is picked from the knowledge-base catalog list (restates O3) |
+| O11 | Question wording is drafted by the user-selected model via `api.model.complete({ model, … })`, reviewable and editable before approval, with "Write it myself" when no model exists (restates O4/O8) |
+| O12 | Concurrent chat/app writes: the second writer is blocked with a clear message (`state_changed` or `busy`); there is no queue of pending writes |
 
 ## 4. Design decisions (binding)
 
@@ -273,7 +281,7 @@ contrast ≥ 4.5:1 in both themes (gold `#f5b82e` only as accent on navy, never 
 
 Not tested: PDF.js internals, CSS details. Real-Chrome tests stay behind the existing skip guard.
 
-## 13. Open questions (each with a recommended answer)
+## 13. Open questions (answered 2026-11-10; see §3 Q1-Q5)
 
 | ID | Question | Recommended |
 | --- | --- | --- |
@@ -294,3 +302,18 @@ Not tested: PDF.js internals, CSS details. Real-Chrome tests stay behind the exi
 | Old hosts lack the SDK value exports | No runtime import of `PLUGIN_APP_LIMITS` (D12); `api.apps` feature-detected |
 | Teachers on 0.11.5 see mutations rejected | README and help text state Alisio 0.11.6; denial message names the permission |
 | The `en` profile option in the chat fails at build | Out of scope here (Q5); the app never offers it |
+
+## 15. Implementation notes (2026-11-10)
+
+| Topic | What was built, and why it differs from the text above |
+| --- | --- |
+| Frame CSP | **Verified** in the installed Alisio 0.11.7 server (`routes/plugin-apps.js`): `style-src 'unsafe-inline'`, `font-src data: blob:`, `img-src data: blob:`. KaTeX HTML output with `data:` fonts and shadow-root `<style>` previews work, so the MathML fallback of §8 was not needed. |
+| Build steps | The density ladder has **5** presets, not 7: a build with a browser reports 5 + 4 = **9** steps (`BUILD_PRINTS`), not 11. |
+| Revision (D2) | `expectedRevision` is a content hash of `state.json`, `teacher.yaml` and the active exam's `exam.yaml` (24 hex chars) instead of `state.updatedAt`: with a fixed clock or two writes in one millisecond `updatedAt` does not change, and chat `set-prompts` does not touch `state.json`. A retried mutation with the same idempotency key returns its first result. |
+| Lock waits | App mutations wait at most 10 s for the coordinator lock (a chat command may hold it while the interactive interview waits for the teacher), then answer `busy`. |
+| Logo MIME (AC-09) | A declared MIME that disagrees with the bytes is not an error: the file is stored by its magic bytes, as AC-09 requires; non-images and SVG are `bad_image`. |
+| Stale documents | A cancelled or failed app build of a `built` exam drops it to `generated`; saving wording whose regeneration is blocked drops the exam to `approved-a`. Gate B therefore never approves documents that no longer match the questions. |
+| Gate B (Q2) | `exam.approveB` returns `{ confirm: "findings", findings }` when the last app build had error findings; the frame lists them and retries with `acknowledgeFindings: true`. |
+| Wording samples | Each family's sample is the first stem line of a deterministic generation of the active exam without prompts; the frame shows `{expr}` as a localized marker in the editor and as a chip in the preview. |
+| Chat golden (AC-01) | `test/fixtures/chat-golden.json` was recorded on the unchanged 0.11.3 sources (first commit of this change) and is compared byte for byte (plugin version and the detected browser line normalized). Command descriptions of `init` and `new` now mention the app; outputs are unchanged. |
+| Visual check | Done in a stand-in host serving the built frame with the host's real CSP and sandbox and running the real plugin actions (real Chrome for PDFs), in en/es, light/dark, 1280 px and 400 px, with and without a browser and a model, plus a `not_permitted` denial. Not yet checked inside a real `alisio serve` (approval prompt UI, hidden-tab pause). |
