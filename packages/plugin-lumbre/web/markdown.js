@@ -1,0 +1,151 @@
+// Small, safe Markdown renderer for assistant messages. Every piece of model text is HTML-escaped
+// before any formatting is applied, so the only tags in the output are the ones built here.
+// Supports paragraphs, line breaks, # to ### headings, bold, italic, inline code, fenced code,
+// nested lists, blockquotes, simple tables and rules. Links are shown as plain text.
+
+const ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+export const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ESCAPES[c]);
+
+export function renderInline(raw) {
+  const slots = [];
+  const hold = (html) => `${slots.push(html) - 1}`;
+  let s = escapeHtml(String(raw ?? "").replace(//g, ""));
+  s = s.replace(/`([^`]+)`/g, (_, code) => hold(`<code>${code}</code>`));
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) =>
+    text === url ? text : `${text} (${url})`,
+  );
+  s = s.replace(/\*\*(?=\S)([\s\S]*?\S)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/__(?=\S)([\s\S]*?\S)__/g, "<strong>$1</strong>");
+  s = s.replace(/(^|[^\w*])\*(?=[^\s*])([^*]*?[^\s*])\*(?!\*)/g, "$1<em>$2</em>");
+  s = s.replace(/(^|[^\w])_(?=[^\s_])([^_]*?[^\s_])_(?![\w])/g, "$1<em>$2</em>");
+  return s.replace(/(\d+)/g, (_, i) => slots[Number(i)]);
+}
+
+const LIST = /^(\s*)([-*+]|\d{1,9}[.)])\s+(.*)$/;
+const RULE = /^\s{0,3}([-*_])(\s*\1){2,}\s*$/;
+const FENCE = /^\s{0,3}(```|~~~)/;
+const HEADING = /^\s{0,3}(#{1,3})\s+(.*?)\s*#*\s*$/;
+const QUOTE = /^\s{0,3}>\s?(.*)$/;
+const TABLE_RULE = /^\s*\|?\s*:?-{1,}:?\s*(\|\s*:?-{1,}:?\s*)*\|?\s*$/;
+const cells = (line) =>
+  line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((c) => c.trim());
+const indentOf = (s) => s.replace(/\t/g, "    ").length;
+
+function renderList(lines) {
+  const root = { items: [] };
+  const stack = [];
+  for (const line of lines) {
+    const m = LIST.exec(line);
+    if (!m) {
+      const item = stack.at(-1)?.list.items.at(-1);
+      if (item) item.text += `\n${line.trim()}`;
+      continue;
+    }
+    const indent = indentOf(m[1]);
+    while (stack.length && indent < stack.at(-1).indent) stack.pop();
+    let top = stack.at(-1);
+    if (!top || indent > top.indent) {
+      const parent = top?.list.items.at(-1);
+      const list = { ordered: /\d/.test(m[2]), items: [] };
+      if (parent) parent.children.push(list);
+      else root.items.push(list);
+      top = { indent, list };
+      stack.push(top);
+    }
+    top.list.items.push({ text: m[3], children: [] });
+  }
+  const html = (list) =>
+    `<${list.ordered ? "ol" : "ul"}>${list.items
+      .map(
+        (item) =>
+          `<li>${item.text.split("\n").map(renderInline).join("<br>")}${item.children.map(html).join("")}</li>`,
+      )
+      .join("")}</${list.ordered ? "ol" : "ul"}>`;
+  return root.items.map(html).join("");
+}
+
+function renderTable(rows) {
+  const [head, , ...body] = rows.map(cells);
+  const th = (head ?? []).map((c) => `<th>${renderInline(c)}</th>`).join("");
+  const tr = body
+    .map((r) => `<tr>${r.map((c) => `<td>${renderInline(c)}</td>`).join("")}</tr>`)
+    .join("");
+  return `<div class="table-wrap"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
+}
+
+export function renderMarkdown(text) {
+  const lines = String(text ?? "")
+    .replace(/\r\n?/g, "\n")
+    .split("\n");
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
+    const fence = FENCE.exec(line);
+    if (fence) {
+      const code = [];
+      i++;
+      while (i < lines.length && !lines[i].trimStart().startsWith(fence[1])) code.push(lines[i++]);
+      i++;
+      out.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+      continue;
+    }
+    const heading = HEADING.exec(line);
+    if (heading) {
+      const level = heading[1].length + 2;
+      out.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      i++;
+      continue;
+    }
+    if (RULE.test(line)) {
+      out.push("<hr>");
+      i++;
+      continue;
+    }
+    if (QUOTE.test(line)) {
+      const inner = [];
+      while (i < lines.length && QUOTE.test(lines[i])) inner.push(QUOTE.exec(lines[i++])[1]);
+      out.push(`<blockquote>${renderMarkdown(inner.join("\n"))}</blockquote>`);
+      continue;
+    }
+    if (line.includes("|") && i + 1 < lines.length && TABLE_RULE.test(lines[i + 1])) {
+      const rows = [];
+      while (i < lines.length && lines[i].trim() && lines[i].includes("|")) rows.push(lines[i++]);
+      out.push(renderTable(rows));
+      continue;
+    }
+    if (LIST.test(line)) {
+      const block = [];
+      while (
+        i < lines.length &&
+        lines[i].trim() &&
+        (LIST.test(lines[i]) || /^\s+\S/.test(lines[i]))
+      )
+        block.push(lines[i++]);
+      out.push(renderList(block));
+      continue;
+    }
+    const paragraph = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !FENCE.test(lines[i]) &&
+      !HEADING.test(lines[i]) &&
+      !QUOTE.test(lines[i]) &&
+      !LIST.test(lines[i]) &&
+      !RULE.test(lines[i])
+    )
+      paragraph.push(lines[i++]);
+    out.push(`<p>${paragraph.map(renderInline).join("<br>")}</p>`);
+  }
+  return out.join("");
+}
