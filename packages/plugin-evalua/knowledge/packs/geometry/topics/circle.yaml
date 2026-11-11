@@ -1,0 +1,28 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 6-7 (pensamiento métrico). Answers exact in pi.
+id: circle
+name:
+  es: "Longitud y área del círculo"
+code: CIR
+grades: ["Sexto", "Séptimo"]
+prerequisites: [geometry]
+objectives:
+  - id: circumference
+    text:
+      es: "Calcula la longitud de la circunferencia en términos de π."
+    levels: [basico, intermedio]
+  - id: circle-area
+    text:
+      es: "Calcula el área del círculo, el semicírculo y la corona circular en términos de π."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: radius-back
+    text:
+      es: "Halla el radio a partir de la longitud o del área."
+    levels: [intermedio, avanzado, genio]
+keywords: [círculo, circunferencia, radio, diámetro, pi, área del círculo]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: circle-measure, levels: [basico, intermedio, avanzado, genio] }

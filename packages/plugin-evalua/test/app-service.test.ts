@@ -31,11 +31,14 @@ describe("status, catalog and doctor", () => {
   it("lists catalog topics filtered by grade with localized names", async () => {
     const h = await appHarness();
     const all = (await h.call("catalog.list")).value;
-    expect(all.topics.length).toBe(36);
+    expect(all.topics.length).toBe(49);
     expect(all.packs.map((pack: { id: string }) => pack.id)).toEqual([
       "algebra",
       "basic-math",
+      "functions",
+      "geometry",
       "primary-math",
+      "probability-statistics",
     ]);
     const sexto = (await h.call("catalog.list", { grade: "Sexto" })).value;
     expect(sexto.topics.every((t: { grades: string[] }) => t.grades.includes("Sexto"))).toBe(true);

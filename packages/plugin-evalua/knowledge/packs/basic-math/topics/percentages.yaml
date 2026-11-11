@@ -1,6 +1,6 @@
 id: percentages
 name:
-  es: "Porcentajes"
+  es: "Porcentajes, razones y proporciones"
 code: POR
 grades: ["Séptimo", "Octavo"]
 prerequisites: [decimals]
@@ -9,7 +9,12 @@ objectives:
     text:
       es: "Calcula el porcentaje de una cantidad."
     levels: [basico, intermedio, avanzado, genio]
-keywords: [porcentaje, tanto por ciento, proporción]
+  # Merged from the "ratio and proportion" topic, MEN DBA grados 6-7 (proporcionalidad).
+  - id: ratio-proportion
+    text:
+      es: "Resuelve problemas de razones, repartos y proporcionalidad directa e inversa."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [porcentaje, tanto por ciento, proporción, razón, regla de tres, reparto proporcional]
 supports:
   single_choice: true
   multiple_choice: false
@@ -17,3 +22,4 @@ supports:
   practice: true
 sources:
   - { kind: family, family: percent, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: proportion, levels: [basico, intermedio, avanzado, genio] }

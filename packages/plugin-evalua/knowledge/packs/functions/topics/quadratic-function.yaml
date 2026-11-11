@@ -1,0 +1,29 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 9 #2 (función cuadrática); CCSS F-IF.C.8a.
+id: quadratic-function
+name:
+  es: "Función cuadrática: vértice y raíces"
+code: FCU
+grades: ["Noveno"]
+# Prerequisites stay in basic-math, so a workspace override of the algebra pack never breaks it.
+prerequisites: [powers-roots, integers]
+objectives:
+  - id: evaluate
+    text:
+      es: "Evalúa una función cuadrática y halla el corte con el eje y."
+    levels: [basico, intermedio]
+  - id: vertex-axis
+    text:
+      es: "Halla el vértice, el eje de simetría y el valor máximo o mínimo."
+    levels: [intermedio, avanzado, genio]
+  - id: roots-graph
+    text:
+      es: "Halla las raíces y lee el vértice en la gráfica de la parábola."
+    levels: [avanzado, genio]
+keywords: [función cuadrática, parábola, vértice, eje de simetría, raíces]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: quadratic-function, levels: [basico, intermedio, avanzado, genio] }

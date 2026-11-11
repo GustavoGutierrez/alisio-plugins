@@ -1,10 +1,16 @@
+import { absoluteValue } from "./absolute-value.js";
 import { addSubtract } from "./add-subtract.js";
 import { angleMeasure } from "./angle-measure.js";
+import { boxPlot } from "./box-plot.js";
+import { circleMeasure } from "./circle-measure.js";
 import { clockTime } from "./clock-time.js";
+import { compoundProbability } from "./compound-probability.js";
 import { coordinates } from "./coordinates.js";
+import { counting } from "./counting.js";
 import { dataGraph } from "./data-graph.js";
 import { decimalOps } from "./decimal-ops.js";
 import { division } from "./division.js";
+import { expLog } from "./exp-log.js";
 import { expressionEvaluate } from "./expression-evaluate.js";
 import { factoring } from "./factoring.js";
 import { fractionDecimalPercent } from "./fraction-decimal-percent.js";
@@ -19,6 +25,7 @@ import { linearEquation } from "./linear-equation.js";
 import { linearFunction } from "./linear-function.js";
 import { linearInequality } from "./linear-inequality.js";
 import { linearSystem2x2 } from "./linear-system-2x2.js";
+import { mapScale } from "./map-scale.js";
 import { measurement } from "./measurement.js";
 import { missingNumber } from "./missing-number.js";
 import { mixedNumbers } from "./mixed-numbers.js";
@@ -26,6 +33,7 @@ import { moneyProblems } from "./money.js";
 import { multiples } from "./multiples.js";
 import { multiplication } from "./multiplication.js";
 import { numberPattern } from "./number-pattern.js";
+import { numberSets } from "./number-sets.js";
 import { orderOfOperations } from "./order-of-operations.js";
 import { percent } from "./percent.js";
 import { perimeterArea } from "./perimeter-area.js";
@@ -35,12 +43,19 @@ import { powersRoots } from "./powers-roots.js";
 import { primeFactorization } from "./prime-factorization.js";
 import { prismVolume } from "./prism-volume.js";
 import { proportion } from "./proportion.js";
+import { pythagorean } from "./pythagorean.js";
 import { quadraticEquation } from "./quadratic-equation.js";
+import { quadraticFunction } from "./quadratic-function.js";
 import { rationalCompare } from "./rational-compare.js";
 import { rationalExpression } from "./rational-expression.js";
+import { roundSolids } from "./round-solids.js";
+import { scientificNotation } from "./scientific-notation.js";
+import { sequences } from "./sequences.js";
+import { similarityThales } from "./similarity-thales.js";
 import { simpleProbability } from "./simple-probability.js";
 import { specialProducts } from "./special-products.js";
 import { statistics } from "./statistics.js";
+import { triangleAngles } from "./triangle-angles.js";
 import type { Family } from "./types.js";
 import { wordProblemLinear } from "./word-problem-linear.js";
 
@@ -90,6 +105,21 @@ export const families: Record<string, Family> = {
   [placeValue.id]: placeValue,
   [prismVolume.id]: prismVolume,
   [simpleProbability.id]: simpleProbability,
+  [absoluteValue.id]: absoluteValue,
+  [boxPlot.id]: boxPlot,
+  [circleMeasure.id]: circleMeasure,
+  [compoundProbability.id]: compoundProbability,
+  [counting.id]: counting,
+  [expLog.id]: expLog,
+  [mapScale.id]: mapScale,
+  [numberSets.id]: numberSets,
+  [pythagorean.id]: pythagorean,
+  [quadraticFunction.id]: quadraticFunction,
+  [roundSolids.id]: roundSolids,
+  [scientificNotation.id]: scientificNotation,
+  [sequences.id]: sequences,
+  [similarityThales.id]: similarityThales,
+  [triangleAngles.id]: triangleAngles,
 };
 
 export const familyIds: readonly string[] = Object.keys(families).sort();

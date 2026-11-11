@@ -165,21 +165,29 @@ alisio-evalua doctor   # salud de la base de conocimiento y navegador
   forma explícita con `EVL-LAY-001` cuando no puede. Una auditoría in-page revisa desbordamiento
   horizontal, cajas solapadas, texto bajo el piso, ajuste de fórmulas y espacio de respuesta
   (`EVL-LAY-002`, `EVL-LAY-004`).
-- **Cobertura.** Tres packs incluidos siguen los DBA y los Estándares del MEN: `primary-math` de
+- **Cobertura.** Seis packs incluidos siguen los DBA y los Estándares del MEN: `primary-math` de
   Primero a Quinto (valor posicional, operaciones con naturales, dinero en pesos, la hora, secuencias
   y patrones, el signo igual y el número desconocido, fracciones como parte de un todo, pictogramas
   y gráficas de barras, perímetro y área, volumen con cubos, ángulos, fracción/decimal/porcentaje,
   probabilidad simple y medición), `basic-math` de Cuarto a Noveno (incluye divisibilidad con
-  paridad y múltiplos, estadística y el plano cartesiano del primer cuadrante a los cuatro) y
-  `algebra`.
+  paridad y múltiplos, estadística con cuartiles y diagramas de caja, el plano cartesiano del
+  primer cuadrante a los cuatro, valor absoluto, notación científica, números racionales e
+  irracionales, y porcentajes con razones y proporciones), `geometry` de Sexto a Noveno (escalas en
+  planos y mapas, ángulos en triángulos y polígonos, longitud y área del círculo, teorema de
+  Pitágoras, semejanza y Tales, y volumen de cilindro, cono y esfera, con respuestas exactas en π),
+  `probability-statistics` (diagramas de árbol y eventos compuestos, conteo con y sin reemplazo),
+  `functions` (sucesiones aritméticas y geométricas, funciones exponenciales y logaritmos, función
+  cuadrática) y `algebra`.
 - **Figuras.** Se generan por código figuras SVG deterministas a partir de los mismos parámetros que
   la respuesta y se incrustan en los ítems con un bloque `figure`: diagramas de conjuntos (Venn),
   planos cartesianos y cuadrículas de coordenadas numeradas, triángulos, cuadrados, rectángulos y
   figuras en L con sus lados rotulados, polígonos regulares, circunferencias, elipses, prismas
   (también rotulados o armados con cubos unidad), cilindros, conos, rectas numéricas, barras y
   círculos de fracción, gráficas de barras y pictogramas, ángulos a escala, relojes de manecillas,
-  ruletas y bolsas de bolas con letras. Cada figura tiene un título accesible en español, se imprime
-  en blanco y negro y no necesita assets externos ni red.
+  ruletas y bolsas de bolas con letras, triángulos rectángulos con lados rotulados y triángulos
+  trazados desde sus ángulos, triángulos semejantes y paralelas de Tales, esferas, mapas y planos a
+  escala, diagramas de árbol, diagramas de caja y gráficas de funciones. Cada figura tiene un
+  título accesible en español, se imprime en blanco y negro y no necesita assets externos ni red.
 - **Temas.** Se envían tres temas por datos (`classic`, `blue`, `dark`), elegidos por
   `exam.yaml.template` y extensibles desde `templates/themes//`.
 - **Textos de cierre.** Un catálogo con fuente (frases célebres y versículos de la Reina-Valera 1909

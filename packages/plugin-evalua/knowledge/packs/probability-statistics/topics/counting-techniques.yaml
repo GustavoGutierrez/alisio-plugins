@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 9 #11.
+id: counting-techniques
+name:
+  es: "Técnicas de conteo con y sin reemplazo"
+code: CON
+grades: ["Noveno"]
+prerequisites: [compound-probability]
+objectives:
+  - id: multiplicative-principle
+    text:
+      es: "Usa el principio multiplicativo para contar combinaciones."
+    levels: [basico, intermedio]
+  - id: with-without-repetition
+    text:
+      es: "Cuenta ordenaciones con y sin repetición (con y sin reemplazo)."
+    levels: [intermedio, avanzado, genio]
+  - id: factorial
+    text:
+      es: "Cuenta las ordenaciones de n objetos con el factorial."
+    levels: [avanzado, genio]
+keywords: [conteo, principio multiplicativo, factorial, con reemplazo, sin reemplazo, combinaciones]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: counting, levels: [basico, intermedio, avanzado, genio] }

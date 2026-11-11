@@ -27,7 +27,10 @@ describe("alisio-evalua CLI", () => {
     expect(JSON.parse(kb.lines.join("\n")).packs.map((pack: { id: string }) => pack.id)).toEqual([
       "algebra",
       "basic-math",
+      "functions",
+      "geometry",
       "primary-math",
+      "probability-statistics",
     ]);
     const check = capture();
     expect(await main(["check"], check.io)).toBe(0);

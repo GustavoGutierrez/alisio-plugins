@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 8 #7 and grado 9 #5.
+id: pythagorean
+name:
+  es: "Teorema de Pitágoras"
+code: PIT
+grades: ["Octavo", "Noveno"]
+prerequisites: [powers-roots]
+objectives:
+  - id: find-sides
+    text:
+      es: "Calcula la hipotenusa o un cateto de un triángulo rectángulo."
+    levels: [basico, intermedio, avanzado]
+  - id: converse
+    text:
+      es: "Decide si un triángulo es rectángulo a partir de sus lados."
+    levels: [intermedio, avanzado, genio]
+  - id: applications
+    text:
+      es: "Resuelve problemas de escaleras y diagonales, con resultados exactos en radicales."
+    levels: [avanzado, genio]
+keywords: [pitágoras, teorema de pitágoras, hipotenusa, cateto, triángulo rectángulo]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: pythagorean, levels: [basico, intermedio, avanzado, genio] }

@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 8 #6 and grado 9 #5-6.
+id: similarity-thales
+name:
+  es: "Semejanza y teorema de Tales"
+code: SEM
+grades: ["Octavo", "Noveno"]
+prerequisites: [fractions]
+objectives:
+  - id: similar-triangles
+    text:
+      es: "Halla lados y la razón de semejanza de triángulos semejantes."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: thales
+    text:
+      es: "Aplica el teorema de Tales y la semejanza a problemas de sombras."
+    levels: [intermedio, avanzado, genio]
+  - id: area-ratio
+    text:
+      es: "Relaciona la razón de las áreas con el cuadrado de la razón de semejanza."
+    levels: [genio]
+keywords: [semejanza, tales, teorema de tales, triángulos semejantes, razón de semejanza, sombras]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: similarity-thales, levels: [basico, intermedio, avanzado, genio] }

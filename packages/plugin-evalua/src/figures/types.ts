@@ -23,7 +23,13 @@ export type FigureKind =
   | "cube-stack"
   | "coordinate-grid"
   | "spinner"
-  | "urn";
+  | "urn"
+  | "sphere"
+  | "tree-diagram"
+  | "box-plot"
+  | "function-plot"
+  | "similar-triangles"
+  | "scale-drawing";
 
 export interface FigureSpec {
   kind: FigureKind;

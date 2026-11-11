@@ -8,6 +8,7 @@
  */
 
 export { compositeVertices } from "./components/composite-rect.js";
+export { type Curve, evaluateCurve } from "./components/function-plot.js";
 export { figureKinds, figureRegistry } from "./registry.js";
 export { figureSvg } from "./render.js";
 export type { FigureComponent, FigureKind, FigureSpec } from "./types.js";

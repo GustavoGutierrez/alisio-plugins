@@ -694,7 +694,7 @@ export const FAMILY_LABELS = {
   "gcd-lcm": { en: "GCD and LCM", es: "MCD y MCM" },
   "prime-factorization": { en: "Prime factorization", es: "Descomposición en primos" },
   percent: { en: "Percentages", es: "Porcentajes" },
-  proportion: { en: "Proportions", es: "Proporciones" },
+  proportion: { en: "Ratios and proportions", es: "Razones y proporciones" },
   measurement: { en: "Measurement", es: "Medición" },
   geometry: { en: "Geometry", es: "Geometría" },
   statistics: { en: "Statistics", es: "Estadística" },
@@ -727,6 +727,27 @@ export const FAMILY_LABELS = {
   },
   "simple-probability": { en: "Simple probability", es: "Probabilidad simple" },
   multiples: { en: "Parity and multiples", es: "Paridad y múltiplos" },
+  "absolute-value": { en: "Absolute value", es: "Valor absoluto" },
+  "scientific-notation": { en: "Scientific notation", es: "Notación científica" },
+  "map-scale": { en: "Scales on maps and plans", es: "Escalas en planos y mapas" },
+  "triangle-angles": {
+    en: "Angles in triangles and polygons",
+    es: "Ángulos en triángulos y polígonos",
+  },
+  "circle-measure": { en: "Circumference and area of a circle", es: "Longitud y área del círculo" },
+  "compound-probability": { en: "Compound probability", es: "Probabilidad de eventos compuestos" },
+  pythagorean: { en: "Pythagorean theorem", es: "Teorema de Pitágoras" },
+  "similarity-thales": { en: "Similarity and Thales", es: "Semejanza y Tales" },
+  "round-solids": { en: "Volume of round solids", es: "Volumen de cilindro, cono y esfera" },
+  sequences: {
+    en: "Arithmetic and geometric sequences",
+    es: "Sucesiones aritméticas y geométricas",
+  },
+  counting: { en: "Counting techniques", es: "Técnicas de conteo" },
+  "exp-log": { en: "Exponentials and logarithms", es: "Exponenciales y logaritmos" },
+  "quadratic-function": { en: "Quadratic functions", es: "Función cuadrática" },
+  "number-sets": { en: "Rational and irrational numbers", es: "Racionales e irracionales" },
+  "box-plot": { en: "Quartiles and box plots", es: "Cuartiles y diagramas de caja" },
 };
 
 export const messages = { en, es };

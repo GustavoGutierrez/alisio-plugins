@@ -385,7 +385,14 @@ describe("knowledge tools", () => {
       packs: { id: string; topics: string[] }[];
     };
     expect(kb.ok).toBe(true);
-    expect(kb.packs.map((pack) => pack.id)).toEqual(["algebra", "basic-math", "primary-math"]);
+    expect(kb.packs.map((pack) => pack.id)).toEqual([
+      "algebra",
+      "basic-math",
+      "functions",
+      "geometry",
+      "primary-math",
+      "probability-statistics",
+    ]);
     expect(kb.packs[1]?.topics).toContain("basic-math/fractions");
     const check = JSON.parse((await h.tool("evalua_check")).text) as { ok: boolean };
     expect(check.ok).toBe(true);

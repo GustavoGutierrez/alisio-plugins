@@ -1,5 +1,6 @@
 import { angle } from "./components/angle.js";
 import { barChart } from "./components/bar-chart.js";
+import { boxPlot } from "./components/box-plot.js";
 import { cartesian } from "./components/cartesian.js";
 import { circle } from "./components/circle.js";
 import { clock } from "./components/clock.js";
@@ -11,13 +12,18 @@ import { cylinder } from "./components/cylinder.js";
 import { ellipse } from "./components/ellipse.js";
 import { fractionBar } from "./components/fraction-bar.js";
 import { fractionCircle } from "./components/fraction-circle.js";
+import { functionPlot } from "./components/function-plot.js";
 import { numberLine } from "./components/number-line.js";
 import { pictogram } from "./components/pictogram.js";
 import { polygon } from "./components/polygon.js";
 import { prism } from "./components/prism.js";
 import { rectangle } from "./components/rectangle.js";
+import { scaleDrawing } from "./components/scale-drawing.js";
+import { similarTriangles } from "./components/similar-triangles.js";
+import { sphere } from "./components/sphere.js";
 import { spinner } from "./components/spinner.js";
 import { square } from "./components/square.js";
+import { treeDiagram } from "./components/tree-diagram.js";
 import { triangle } from "./components/triangle.js";
 import { urn } from "./components/urn.js";
 import { venn } from "./components/venn.js";
@@ -48,6 +54,12 @@ export const figureRegistry: Readonly<Record<FigureKind, FigureComponent>> = {
   "coordinate-grid": coordinateGrid,
   spinner,
   urn,
+  sphere,
+  "tree-diagram": treeDiagram,
+  "box-plot": boxPlot,
+  "function-plot": functionPlot,
+  "similar-triangles": similarTriangles,
+  "scale-drawing": scaleDrawing,
 };
 
 /** Every registered kind, in registry order. */

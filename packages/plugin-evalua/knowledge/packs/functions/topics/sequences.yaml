@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 9 #3.
+id: sequences
+name:
+  es: "Sucesiones aritméticas y geométricas"
+code: SUC
+grades: ["Noveno"]
+prerequisites: [integers]
+objectives:
+  - id: next-terms
+    text:
+      es: "Continúa sucesiones aritméticas y geométricas."
+    levels: [basico, intermedio]
+  - id: general-term
+    text:
+      es: "Halla el término n-ésimo y el término general."
+    levels: [intermedio, avanzado, genio]
+  - id: classify-and-sum
+    text:
+      es: "Clasifica sucesiones y suma términos de una sucesión aritmética."
+    levels: [avanzado, genio]
+keywords: [sucesión, progresión, término general, diferencia común, razón]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: sequences, levels: [basico, intermedio, avanzado, genio] }

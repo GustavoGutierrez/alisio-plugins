@@ -1,0 +1,28 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 6-7 (pensamiento espacial).
+id: triangle-angles
+name:
+  es: "Ángulos en triángulos y polígonos"
+code: ATR
+grades: ["Sexto", "Séptimo", "Octavo"]
+prerequisites: [geometry]
+objectives:
+  - id: triangle-sum
+    text:
+      es: "Usa la suma de los ángulos interiores de un triángulo, incluido el isósceles."
+    levels: [basico, intermedio]
+  - id: exterior-angle
+    text:
+      es: "Calcula ángulos exteriores de un triángulo."
+    levels: [intermedio, avanzado, genio]
+  - id: polygon-angles
+    text:
+      es: "Calcula la suma y la medida de los ángulos interiores y exteriores de polígonos."
+    levels: [intermedio, avanzado, genio]
+keywords: [ángulos, triángulo, polígono, ángulo exterior, suma de ángulos]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: triangle-angles, levels: [basico, intermedio, avanzado, genio] }

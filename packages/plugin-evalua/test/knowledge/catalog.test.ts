@@ -15,7 +15,10 @@ describe("topic catalog", () => {
     expect(source.packs().map((entry) => entry.value)).toEqual([
       "algebra",
       "basic-math",
+      "functions",
+      "geometry",
       "primary-math",
+      "probability-statistics",
     ]);
     const suggestions = source.suggestions("Séptimo");
     expect(suggestions.map((entry) => entry.value)).toContain("basic-math/fractions");
@@ -81,6 +84,6 @@ describe("topic catalog", () => {
     expect(source.topic?.("basic-math/nope")).toBeUndefined();
     const all = source.topics?.() ?? [];
     expect(all.map((entry) => entry.id)).toContain("algebra/algebraic-expressions");
-    expect(all).toHaveLength(36);
+    expect(all).toHaveLength(49);
   });
 });

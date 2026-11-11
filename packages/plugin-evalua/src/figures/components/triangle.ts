@@ -1,8 +1,15 @@
 import { text, wrap } from "../svg.js";
 import type { FigureComponent } from "../types.js";
+import { angledTriangle, rightTriangle } from "./triangle-measured.js";
 
-/** A labelled triangle ABC in one of four shapes (`equilateral`, `right`, `isosceles`, `scalene`). */
-export const triangle: FigureComponent = (params) => {
+/**
+ * A labelled triangle ABC in one of four shapes (`equilateral`, `right`, `isosceles`, `scalene`).
+ * With `legs` it is a right triangle drawn to scale; with `angles`, a triangle built from its
+ * angles (see `triangle-measured.ts`). Without either param the drawing is the original one.
+ */
+export const triangle: FigureComponent = (params, title) => {
+  if (Array.isArray(params.legs)) return rightTriangle(params, title);
+  if (Array.isArray(params.angles)) return angledTriangle(params, title);
   const variant = typeof params.variant === "string" ? params.variant : "equilateral";
   const width = 260;
   const height = 190;

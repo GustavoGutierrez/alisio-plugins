@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 9 #4. Answers exact in pi.
+id: round-solids-volume
+name:
+  es: "Volumen de cilindro, cono y esfera"
+code: VSR
+grades: ["Noveno"]
+prerequisites: [circle]
+objectives:
+  - id: cylinder-cone
+    text:
+      es: "Calcula el volumen de cilindros y conos en términos de π."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: sphere
+    text:
+      es: "Calcula el volumen de la esfera y la semiesfera."
+    levels: [intermedio, avanzado, genio]
+  - id: composite
+    text:
+      es: "Calcula volúmenes compuestos y una dimensión a partir del volumen."
+    levels: [genio]
+keywords: [volumen, cilindro, cono, esfera, sólidos de revolución]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: round-solids, levels: [basico, intermedio, avanzado, genio] }

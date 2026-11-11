@@ -1,0 +1,28 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 8-9 and 10-11 (pensamiento variacional).
+id: exp-log
+name:
+  es: "Funciones exponenciales y logaritmos"
+code: EXP
+grades: ["Noveno", "Décimo"]
+prerequisites: [powers-roots]
+objectives:
+  - id: exponential
+    text:
+      es: "Evalúa funciones exponenciales y modela crecimiento."
+    levels: [basico, intermedio, genio]
+  - id: logarithms
+    text:
+      es: "Calcula logaritmos y aplica sus propiedades."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: exp-equations
+    text:
+      es: "Resuelve ecuaciones exponenciales sencillas y lee la base en una gráfica."
+    levels: [avanzado, genio]
+keywords: [exponencial, logaritmo, crecimiento exponencial, base, función exponencial]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: exp-log, levels: [basico, intermedio, avanzado, genio] }

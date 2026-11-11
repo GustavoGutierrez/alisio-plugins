@@ -15,7 +15,12 @@ objectives:
     text:
       es: "Interpreta el rango como medida de dispersión de los datos."
     levels: [avanzado, genio]
-keywords: [estadística, media, mediana, moda, rango, datos, promedio]
+  # Merged from the "box plot and quartiles" topic (grades 8-9, CCSS 6.SP.B.4-5).
+  - id: quartiles-boxplot
+    text:
+      es: "Calcula cuartiles y el rango intercuartílico, y lee diagramas de caja."
+    levels: [avanzado, genio]
+keywords: [estadística, media, mediana, moda, rango, datos, promedio, cuartiles, diagrama de caja]
 supports:
   single_choice: true
   multiple_choice: false
@@ -23,3 +28,4 @@ supports:
   practice: true
 sources:
   - { kind: family, family: statistics, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: box-plot, levels: [avanzado, genio] }

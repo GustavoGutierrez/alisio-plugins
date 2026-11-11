@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 6 #3.
+id: absolute-value
+name:
+  es: "Valor absoluto y recta numérica"
+code: VAB
+grades: ["Sexto", "Séptimo"]
+prerequisites: [integers]
+objectives:
+  - id: distance-to-zero
+    text:
+      es: "Interpreta el valor absoluto como la distancia de un número al cero."
+    levels: [basico, intermedio]
+  - id: distance-between
+    text:
+      es: "Calcula la distancia entre dos enteros y opera con valores absolutos."
+    levels: [intermedio, avanzado, genio]
+  - id: absolute-equations
+    text:
+      es: "Resuelve ecuaciones de la forma |x - a| = b."
+    levels: [avanzado, genio]
+keywords: [valor absoluto, recta numérica, distancia al cero, opuesto]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: absolute-value, levels: [basico, intermedio, avanzado, genio] }

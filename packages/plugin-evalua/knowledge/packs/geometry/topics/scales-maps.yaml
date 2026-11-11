@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 7 #4.
+id: scales-maps
+name:
+  es: "Escalas en planos y mapas"
+code: ESC
+grades: ["Séptimo"]
+prerequisites: [decimals]
+objectives:
+  - id: real-distances
+    text:
+      es: "Calcula distancias reales a partir de un plano o mapa a escala, y al contrario."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: find-scale
+    text:
+      es: "Determina la escala de un plano a partir de una medida y su valor real."
+    levels: [intermedio, avanzado, genio]
+  - id: real-areas
+    text:
+      es: "Calcula áreas reales a partir de un plano a escala."
+    levels: [genio]
+keywords: [escala, mapa, plano a escala, distancia real, maqueta]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: map-scale, levels: [basico, intermedio, avanzado, genio] }

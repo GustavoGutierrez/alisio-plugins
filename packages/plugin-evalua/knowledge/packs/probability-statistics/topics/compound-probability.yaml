@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 6 #12 and grado 7 #9.
+id: compound-probability
+name:
+  es: "Diagramas de árbol y eventos compuestos"
+code: PCO
+grades: ["Séptimo"]
+prerequisites: [fractions]
+objectives:
+  - id: sample-space
+    text:
+      es: "Cuenta los resultados de un experimento compuesto con un diagrama de árbol."
+    levels: [basico, intermedio]
+  - id: compound-events
+    text:
+      es: "Calcula la probabilidad de eventos compuestos e independientes."
+    levels: [intermedio, avanzado, genio]
+  - id: with-without-replacement
+    text:
+      es: "Compara extracciones con y sin reemplazo."
+    levels: [genio]
+keywords: [diagrama de árbol, eventos compuestos, espacio muestral, probabilidad, monedas, dados]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: compound-probability, levels: [basico, intermedio, avanzado, genio] }

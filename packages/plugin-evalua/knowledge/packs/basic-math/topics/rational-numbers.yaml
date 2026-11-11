@@ -17,7 +17,12 @@ objectives:
     text:
       es: "Compara y ordena números racionales."
     levels: [basico, intermedio, avanzado, genio]
-keywords: [racional, números racionales, conjunto Q, fracción, decimal]
+  # Merged from the "real numbers (rational vs irrational)" topic, MEN DBA grado 8 #1.
+  - id: rational-irrational
+    text:
+      es: "Distingue números racionales e irracionales y escribe decimales periódicos como fracción."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [racional, números racionales, conjunto Q, fracción, decimal, irracional, decimal periódico]
 supports:
   single_choice: true
   multiple_choice: false
@@ -29,3 +34,4 @@ sources:
   - { kind: family, family: decimal-ops, levels: [basico, intermedio, avanzado, genio] }
   - { kind: family, family: rational-compare, levels: [basico, intermedio, avanzado, genio] }
   - { kind: family, family: percent, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: number-sets, levels: [basico, intermedio, avanzado, genio] }

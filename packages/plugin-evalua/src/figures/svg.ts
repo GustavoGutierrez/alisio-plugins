@@ -32,6 +32,14 @@ export const numbers = (value: unknown): number[] =>
     ? value.filter((entry): entry is number => typeof entry === "number" && Number.isFinite(entry))
     : [];
 
+/** `value unit`, `?` when the measure is the unknown. */
+export function measureText(value: unknown, unit: unknown): string {
+  if (typeof value === "string") return value;
+  if (typeof value !== "number" || !Number.isFinite(value)) return "?";
+  const shown = String(Math.round(value * 100) / 100).replace(".", ",");
+  return typeof unit === "string" && unit !== "" ? `${shown} ${unit}` : shown;
+}
+
 /** Coordinates with at most one decimal, trailing zeros trimmed (stable, compact output). */
 export const fmt = (value: number): string => {
   const rounded = Math.round(value * 10) / 10;

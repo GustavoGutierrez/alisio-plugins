@@ -1,0 +1,24 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 8-9 (pensamiento numérico); CCSS 8.EE.A.3-4.
+id: scientific-notation
+name:
+  es: "Notación científica"
+code: NCI
+grades: ["Octavo", "Noveno"]
+prerequisites: [powers-roots]
+objectives:
+  - id: write-scientific
+    text:
+      es: "Escribe números muy grandes o muy pequeños en notación científica y en forma decimal."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: operate-scientific
+    text:
+      es: "Multiplica y divide números escritos en notación científica."
+    levels: [avanzado, genio]
+keywords: [notación científica, potencias de 10, números grandes, números pequeños, mantisa]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: scientific-notation, levels: [basico, intermedio, avanzado, genio] }
