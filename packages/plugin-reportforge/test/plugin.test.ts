@@ -60,7 +60,7 @@ describe("plugin registration", () => {
     const app = apps[0] as PluginAppDefinition;
     expect(app.id).toBe("reportforge");
     expect(app.id).toMatch(/^[a-z][a-z0-9-]{0,39}$/);
-    expect(app.label).toEqual({ en: "ReportForge", es: "ReportForge" });
+    expect(app.label).toEqual({ en: "ReportForge", es: "Generador de informes" });
     expect(typeof app.busy).toBe("function");
     expect(typeof app.dispose).toBe("function");
     expect(tools.map((t) => [t.name, t.effect])).toEqual([["reportforge_reports", "read"]]);

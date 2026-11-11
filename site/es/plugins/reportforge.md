@@ -34,7 +34,7 @@ no forman parte de la versión 0.1.0.*
 alisio install npm:@alisio/plugin-reportforge
 ```
 
-Después abra **ReportForge** desde el grupo **Aplicaciones** de su proyecto.
+Después abra **Generador de informes** (ReportForge) desde el grupo **Aplicaciones** de su proyecto.
 
 ## Uso del estudio
 

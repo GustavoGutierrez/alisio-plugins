@@ -97,7 +97,7 @@ export function createReportForgePlugin(options: Omit<ServiceDeps, "api"> = {}) 
         disposers.push(
           api.apps.register({
             id: "reportforge",
-            label: { en: "Report Forge", es: "Forja de Reportes" },
+            label: { en: "ReportForge", es: "Generador de informes" },
             html: loadHtml,
             actions,
             busy: service.busy,
