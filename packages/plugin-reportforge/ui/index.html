@@ -28,14 +28,14 @@
 <div class="field"><label for="audience" data-i="audience">Intended audience</label><input id="audience" maxlength="200"></div>
 <h2 data-i="palette">Suggested palette</h2><div id="palettes" class="palettes" role="radiogroup"></div>
 <div class="actions"><button type="button" class="primary" id="createAction" data-i="create">Create report</button></div></div>
-<div class="panel"><h2 data-i="workflow">How it works</h2><p class="help" data-i="steps">1. Describe the report and choose the model and creative freedom. 2. Add CSV, text, documents or a public web page. 3. Pick a palette; you can change it later. 4. Generate the report with SVG charts. 5. Review, ask for changes, then print to PDF or download HTML.</p><div class="notice" data-i="noFabrication">Printable design with vector charts. Missing figures are never invented.</div></div></div></section>
+<div class="panel"><h2 data-i="workflow">How it works</h2><p class="help" data-i="steps">1. Describe the report and choose the model and creative freedom. 2. Add CSV, text, documents or a public web page. 3. Pick a palette; you can change it later. 4. Generate the report with SVG charts. 5. Review, ask for changes, then download a PDF or HTML.</p><div class="notice" data-i="noFabrication">Printable design with vector charts. Missing figures are never invented.</div></div></div></section>
 <section id="edit" class="hidden">
 <div class="toolbar"><button type="button" class="secondary" id="back">← <span data-i="reports">My reports</span></button>
 <label class="sr" for="paletteEdit" data-i="palette">Palette</label><select style="width:155px" id="paletteEdit"></select>
 <label class="sr" for="columns" data-i="columns">Columns</label><select style="width:95px" id="columns"><option value="1">1 col.</option><option value="2">2 col.</option><option value="3">3 col.</option></select>
 <label class="sr" for="pageSize" data-i="pageSize">Page size</label><select style="width:125px" id="pageSize"><option value="A4">A4</option><option value="Letter">Letter</option></select>
 <label class="sr" for="mode" data-i="layout">Layout</label><select style="width:165px" id="mode"><option value="multipage" data-i="multipage">Multiple pages</option><option value="singlepage" data-i="singlepage">Fit to one page</option></select>
-<button type="button" class="secondary" id="exportHtml" data-i="exportHtml">↓ HTML</button><button type="button" class="primary" id="printPdf" data-i="print">PDF / Print</button><button type="button" class="secondary" id="deleteReport" data-i="deleteReport">Delete report</button></div>
+<button type="button" class="secondary" id="exportHtml" data-i="exportHtml">↓ HTML</button><button type="button" class="primary" id="printPdf" data-i="print">↓ PDF</button><button type="button" class="secondary" id="deleteReport" data-i="deleteReport">Delete report</button></div>
 <p id="fitNote" class="fitnote" role="status" aria-live="polite"></p>
 <div class="grid"><div class="panel"><h2 id="docTitle">—</h2><p class="help" id="docMeta"></p>
 <div class="field"><label for="editModel" data-i="editModel">Model for the next generation</label><select id="editModel"><option value="">Alisio default model</option></select><p id="modelNote" class="fitnote warn" role="status" aria-live="polite"></p></div>
@@ -54,7 +54,7 @@
 <p id="jobState" class="help" role="status" aria-live="polite"></p>
 <div class="field" style="margin-top:24px"><label for="revisionPrompt" data-i="editPrompt">Request a change</label><textarea id="revisionPrompt" data-ip="revisionPh" placeholder="Make the conclusion clearer, compare by quarter…"></textarea></div>
 <button type="button" class="secondary" id="revise" data-i="modify">Apply change</button></div>
-<div class="panel"><h2 data-i="preview">Preview</h2><div class="preview"><iframe id="frame" title="Report preview" sandbox="allow-same-origin allow-modals"></iframe></div></div></div></section>
+<div class="panel"><h2 data-i="preview">Preview</h2><div class="preview"><iframe id="frame" title="Report preview" sandbox="allow-same-origin"></iframe></div></div></div></section>
 <div id="confirmBox" class="confirm hidden" role="alertdialog" aria-modal="true" aria-labelledby="confirmText"><div class="panel"><p id="confirmText"></p><div class="actions"><button type="button" class="secondary" id="confirmCancel" data-i="cancel">Cancel</button><button type="button" class="danger" id="confirmDelete" data-i="delete">Delete</button></div></div></div>
 <iframe id="measure" class="measure" title="Layout measurement" aria-hidden="true" tabindex="-1" sandbox="allow-same-origin"></iframe>
 </main></div>
@@ -79,10 +79,10 @@ const DICT = {
     goalPh: "What should the reader understand and decide?", context: "Additional context",
     contextPh: "Company, period, audience, constraints…", audience: "Intended audience",
     audienceDefault: "Leadership", palette: "Palette", create: "Create report", workflow: "How it works",
-    steps: "1. Describe the report and choose the model and creative freedom. 2. Add CSV, text, documents or a public web page. 3. Pick a palette; you can change it later. 4. Generate the report with SVG charts. 5. Review, ask for changes, then print to PDF or download HTML.",
+    steps: "1. Describe the report and choose the model and creative freedom. 2. Add CSV, text, documents or a public web page. 3. Pick a palette; you can change it later. 4. Generate the report with SVG charts. 5. Review, ask for changes, then download a PDF or HTML.",
     noFabrication: "Printable design with vector charts. Missing figures are never invented.",
     columns: "Columns", pageSize: "Page size", layout: "Layout", multipage: "Multiple pages",
-    singlepage: "Fit to one page", exportHtml: "↓ HTML", print: "PDF / Print", sources: "Information sources",
+    singlepage: "Fit to one page", exportHtml: "↓ HTML", print: "↓ PDF", sources: "Information sources",
     url: "Public web page (HTTPS)", addUrl: "+ Add page",
     formats: "CSV, Excel XLSX, Word DOCX, text PDF, TXT, Markdown, JSON, HTML and public HTTPS pages, up to 8 MB per file. Scanned PDFs need OCR, which is not included.",
     widgets: "Components", span: "Columns used", height: "Chart height (px)",
@@ -94,7 +94,7 @@ const DICT = {
     fit: "Fitted to one {page} page at {pct}% scale.", fitSmall: "Fitted at {pct}%: text will be small. Consider fewer components or multiple pages.",
     fitOverflow: "Too much content for one readable page even at {pct}%. Use multiple pages.",
     fitUnmeasured: "Could not measure the layout here; the page prints at full size.",
-    printHint: "If no print dialog opens, use ↓ HTML, open the file in your browser and print it (Save as PDF).",
+    pdfWorking: "Creating the PDF…", pdfDone: "PDF downloaded.",
     types: { executive: "Executive", financial: "Financial", technical: "Technical", marketing: "Marketing", operations: "Operations", research: "Research", infographic: "Infographic", custom: "Custom" },
     errors: {
       not_permitted: "Alisio did not allow this change. Allow write access for this session and try again.",
@@ -116,6 +116,12 @@ const DICT = {
       report_not_found: "That report no longer exists.",
       revision_conflict: "The report changed while generating. Generate again.", invalid_chart_data: "Chart data must be labels and numbers of equal length (at most 35).",
       request_timeout: "No answer from Alisio.", invalid_json: "The chart data is not valid JSON.",
+      not_permitted_process: "Alisio did not allow running programs in this session, which the PDF needs (it uses your local browser). Allow running programs for this session and try again, or use ↓ HTML.",
+      browser_not_found: "No browser was found to create the PDF (Chrome, Edge, Brave, Chromium…). Use ↓ HTML and save it as PDF from your browser.",
+      pdf_timeout: "Creating the PDF took too long. Try again, or use ↓ HTML.", pdf_too_large: "The PDF is too large to download from here. Use ↓ HTML and save it as PDF from your browser.",
+      pdf_invalid: "The browser did not produce a valid PDF. Try again, or use ↓ HTML.", pdf_browser_failed: "The browser could not create the PDF. Try again, or use ↓ HTML.",
+      pdf_failed: "The PDF could not be created. Try again, or use ↓ HTML.", pdf_not_found: "That PDF is no longer available. Create it again.",
+      pdf_cancelled: "PDF cancelled.",
     },
   },
   es: {
@@ -133,10 +139,10 @@ const DICT = {
     goalPh: "¿Qué debe comprender y decidir el lector?", context: "Contexto adicional",
     contextPh: "Empresa, período, público, restricciones…", audience: "Público destinatario",
     audienceDefault: "Dirección", palette: "Paleta", create: "Crear informe", workflow: "Cómo funciona",
-    steps: "1. Describe el informe y elige el modelo y la libertad creativa. 2. Agrega CSV, texto, documentos o una página web pública. 3. Elige una paleta; puedes cambiarla después. 4. Genera el informe con gráficos SVG. 5. Revisa, pide cambios e imprime a PDF o descarga el HTML.",
+    steps: "1. Describe el informe y elige el modelo y la libertad creativa. 2. Agrega CSV, texto, documentos o una página web pública. 3. Elige una paleta; puedes cambiarla después. 4. Genera el informe con gráficos SVG. 5. Revisa, pide cambios y descarga el PDF o el HTML.",
     noFabrication: "Diseño imprimible con gráficos vectoriales. Nunca se inventan cifras ausentes.",
     columns: "Columnas", pageSize: "Tamaño de página", layout: "Diseño", multipage: "Varias páginas",
-    singlepage: "Ajustar a una página", exportHtml: "↓ HTML", print: "PDF / Imprimir", sources: "Fuentes de información",
+    singlepage: "Ajustar a una página", exportHtml: "↓ HTML", print: "↓ PDF", sources: "Fuentes de información",
     url: "Página web pública (HTTPS)", addUrl: "+ Añadir página",
     formats: "CSV, Excel XLSX, Word DOCX, PDF con texto, TXT, Markdown, JSON, HTML y páginas HTTPS públicas, hasta 8 MB por archivo. Los PDF escaneados requieren OCR, que no se incluye.",
     widgets: "Componentes", span: "Columnas ocupadas", height: "Altura del gráfico (px)",
@@ -148,7 +154,7 @@ const DICT = {
     fit: "Ajustado a una página {page} al {pct} %.", fitSmall: "Ajustado al {pct} %: el texto será pequeño. Considera menos componentes o varias páginas.",
     fitOverflow: "Hay demasiado contenido para una página legible incluso al {pct} %. Usa varias páginas.",
     fitUnmeasured: "No se pudo medir el diseño aquí; la página se imprime a tamaño completo.",
-    printHint: "Si no se abre el diálogo de impresión, usa ↓ HTML, abre el archivo en tu navegador e imprímelo (Guardar como PDF).",
+    pdfWorking: "Creando el PDF…", pdfDone: "PDF descargado.",
     types: { executive: "Ejecutivo", financial: "Financiero", technical: "Técnico", marketing: "Marketing", operations: "Operaciones", research: "Investigación", infographic: "Infografía", custom: "Personalizado" },
     errors: {
       not_permitted: "Alisio no permitió este cambio. Concede acceso de escritura a esta sesión e inténtalo de nuevo.",
@@ -170,6 +176,12 @@ const DICT = {
       report_not_found: "Ese informe ya no existe.",
       revision_conflict: "El informe cambió durante la generación. Genera de nuevo.", invalid_chart_data: "Los datos deben ser etiquetas y números de igual longitud (máximo 35).",
       request_timeout: "Alisio no respondió.", invalid_json: "Los datos del gráfico no son JSON válido.",
+      not_permitted_process: "Alisio no permitió ejecutar programas en esta sesión, y el PDF lo necesita (usa tu navegador local). Permite ejecutar programas en esta sesión e inténtalo de nuevo, o usa ↓ HTML.",
+      browser_not_found: "No se encontró un navegador para crear el PDF (Chrome, Edge, Brave, Chromium…). Usa ↓ HTML y guárdalo como PDF desde tu navegador.",
+      pdf_timeout: "Crear el PDF tardó demasiado. Inténtalo de nuevo o usa ↓ HTML.", pdf_too_large: "El PDF es demasiado grande para descargarlo desde aquí. Usa ↓ HTML y guárdalo como PDF desde tu navegador.",
+      pdf_invalid: "El navegador no produjo un PDF válido. Inténtalo de nuevo o usa ↓ HTML.", pdf_browser_failed: "El navegador no pudo crear el PDF. Inténtalo de nuevo o usa ↓ HTML.",
+      pdf_failed: "No se pudo crear el PDF. Inténtalo de nuevo o usa ↓ HTML.", pdf_not_found: "Ese PDF ya no está disponible. Créalo de nuevo.",
+      pdf_cancelled: "PDF cancelado.",
     },
   },
 };
@@ -222,6 +234,8 @@ function onHostMessage(m) {
   clearTimeout(entry.timer);
   if (m.error) {
     if (m.error === "not_found") showUnavailable();
+    // A denied process effect needs its own hint: the PDF runs the local browser.
+    if (m.error === "not_permitted" && m.effect === "process") return entry.reject(new AppError("not_permitted_process"));
     return entry.reject(new AppError(m.error));
   }
   const result = m.result;
@@ -508,7 +522,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function work(action, prompt) {
   const r = state.current;
-  const buttons = [$("generate"), $("revise")];
+  const buttons = [$("generate"), $("revise"), $("printPdf")];
   for (const b of buttons) b.disabled = true;
   $("jobState").textContent = t("working");
   try {
@@ -544,8 +558,9 @@ async function work(action, prompt) {
   }
 }
 
-function download(text, filename) {
-  const blob = new Blob([text], { type: "text/html;charset=utf-8" });
+/** Downloads text or bytes with a Blob and <a download> (the same path for HTML and PDF). */
+function download(data, filename, type = "text/html;charset=utf-8") {
+  const blob = new Blob([data], { type });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = filename;
@@ -685,17 +700,52 @@ $("exportHtml").onclick = async () => {
     showError(error);
   }
 };
-$("printPdf").onclick = async () => {
+function bytesOf(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+/** The plugin prints the PDF with a local browser in a job; the frame polls it and downloads it. */
+async function exportPdf() {
+  const r = state.current;
+  const buttons = [$("generate"), $("revise"), $("printPdf")];
+  for (const b of buttons) b.disabled = true;
+  clearError();
+  $("jobState").textContent = t("pdfWorking");
   try {
-    await refresh();
-    $("fitNote").textContent = `${$("fitNote").textContent} ${t("printHint")}`.trim();
-    const win = $("frame").contentWindow;
-    win?.focus();
-    win?.print();
+    if (r.mode === "singlepage") await fitToPage();
+    const job = await call("report.pdf", { id: r.id });
+    state.job = job;
+    $("cancelJob").classList.remove("hidden");
+    for (;;) {
+      await sleep(POLL_MS);
+      if (!state.visible) continue;
+      const status = await call("jobs.get", { jobId: job.id });
+      if (status.status === "running") continue;
+      if (status.status === "succeeded") {
+        const { base64, filename } = await call("report.pdf.get", { jobId: job.id });
+        download(bytesOf(base64), filename, "application/pdf");
+        $("jobState").textContent = t("pdfDone");
+      } else if (status.status === "cancelled") {
+        $("jobState").textContent = t("cancelled");
+      } else {
+        $("jobState").textContent = "";
+        showError(new AppError(status.error || "pdf_failed"));
+      }
+      return;
+    }
   } catch (error) {
+    $("jobState").textContent = "";
     showError(error);
+  } finally {
+    state.job = null;
+    $("cancelJob").classList.add("hidden");
+    for (const b of buttons) b.disabled = false;
   }
-};
+}
+$("printPdf").onclick = () => exportPdf();
 
 localize();
 init();

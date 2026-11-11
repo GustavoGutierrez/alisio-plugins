@@ -7,8 +7,10 @@ import { createHash, randomUUID } from "node:crypto";
 import { join } from "node:path";
 import type { PluginAPI } from "@alisio/sdk";
 import { extractDocument } from "./extract.js";
-import { fitScale } from "./fit.js";
+import { fitScale, printableArea } from "./fit.js";
 import { type GeneratedReport, generateWithAlisio } from "./generate.js";
+import { printPdf as printWithBrowser } from "./pdf/cdp.js";
+import { findBrowser as detectBrowser } from "./pdf/detect.js";
 import { fitIsCurrent, renderReport } from "./render.js";
 import { importPublicUrl, MAX_FILE_BYTES, sourceText, type UrlImportOptions } from "./sources.js";
 import { Store } from "./store.js";
@@ -22,6 +24,8 @@ export type JobStatus = "running" | "succeeded" | "failed" | "cancelled";
 export interface Job {
   id: string;
   reportId: string;
+  /** `pdf` for a PDF print; absent for a generation. */
+  kind?: "pdf";
   status: JobStatus;
   error?: string;
   /** Invalid components the model returned and ReportForge left out. */
@@ -45,16 +49,41 @@ export interface ServiceDeps {
     signal: AbortSignal,
   ) => Promise<GeneratedReport>;
   urlOptions?: UrlImportOptions;
+  /** Finds the local browser that prints PDFs (tests); `undefined` when none is installed. */
+  findBrowser?: () => Promise<string | undefined>;
+  /** Replaces the browser print (tests). */
+  printPdf?: (request: PdfJobRequest) => Promise<Uint8Array>;
 }
+
+export interface PdfJobRequest {
+  executable: string;
+  html: string;
+  signal: AbortSignal;
+  /** One-page reports: the printable height the print browser re-checks the zoom against. */
+  fitHeight?: number;
+}
+
+/** Printed PDFs kept for the frame to download; the oldest is dropped beyond this. */
+const MAX_PDF_RESULTS = 3;
 
 const str = (value: unknown, max = 4000) => (typeof value === "string" ? value.slice(0, max) : "");
 
-export function exportName(name: string): string {
-  const base = name
+/** A download-safe base name: letters, digits, dots, dashes and underscores; never hidden. */
+function fileBase(name: string): string {
+  return name
     .replace(/[^\p{L}\p{N}._-]+/gu, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 90);
-  return `${base || "report"}.html`;
+    .replace(/^[-.]+|[-.]+$/g, "")
+    .slice(0, 90)
+    .replace(/[-.]+$/g, "");
+}
+
+export function exportName(name: string): string {
+  return `${fileBase(name) || "report"}.html`;
+}
+
+/** The PDF download name: the report's title (or its name when untitled), sanitised. */
+export function pdfName(r: Pick<Report, "title" | "name">): string {
+  return `${fileBase(r.title ?? "") || fileBase(r.name ?? "") || "report"}.pdf`;
 }
 
 type ModelEntry = Awaited<ReturnType<HostApi["models"]["list"]>>[number];
@@ -72,6 +101,10 @@ export function createService(deps: ServiceDeps) {
   const stores = new Map<string, Promise<Store>>();
   const running = new Map<string, { controller: AbortController; done: Promise<void> }>();
   const jobs = new Map<string, Job>();
+  const printing = new Map<string, AbortController>();
+  const pdfs = new Map<string, { data: Uint8Array; filename: string }>();
+  const findBrowser = deps.findBrowser ?? (async () => (await detectBrowser()).path);
+  const printPdf = deps.printPdf ?? ((request: PdfJobRequest) => printWithBrowser(request));
   const generate =
     deps.generate ??
     ((sessionId: string, r: Report, instruction: string, signal: AbortSignal) =>
@@ -172,6 +205,43 @@ export function createService(deps: ServiceDeps) {
     return job;
   }
 
+  /** Prints the report as rendered for export, in the background (an app call ends at 30 s). */
+  async function startPdf(r: Report): Promise<Job> {
+    const executable = await findBrowser();
+    if (!executable) throw new Error("browser_not_found");
+    const html = renderReport(r);
+    const filename = pdfName(r);
+    const fitHeight = r.mode === "singlepage" ? printableArea(r.pageSize).height : undefined;
+    const controller = new AbortController();
+    const job: Job = { id: randomUUID(), reportId: r.id, kind: "pdf", status: "running" };
+    rememberJob(job);
+    printing.set(job.id, controller);
+    void (async () => {
+      try {
+        const data = await printPdf({
+          executable,
+          html,
+          signal: controller.signal,
+          ...(fitHeight === undefined ? {} : { fitHeight }),
+        });
+        controller.signal.throwIfAborted();
+        pdfs.set(job.id, { data, filename });
+        for (const old of pdfs.keys()) {
+          if (pdfs.size <= MAX_PDF_RESULTS) break;
+          pdfs.delete(old);
+        }
+        job.status = "succeeded";
+      } catch (error) {
+        job.status = controller.signal.aborted ? "cancelled" : "failed";
+        const code = error instanceof Error ? error.message : "";
+        job.error = /^[a-z][a-z0-9_]{0,60}$/.test(code) ? code : "pdf_failed";
+      } finally {
+        printing.delete(job.id);
+      }
+    })();
+    return { ...job };
+  }
+
   async function run(
     action: string,
     input: Record<string, unknown>,
@@ -190,8 +260,21 @@ export function createService(deps: ServiceDeps) {
       case "jobs.cancel": {
         const job = jobs.get(str(input.jobId, 64));
         if (!job) throw new Error("job_not_found");
-        running.get(job.reportId)?.controller.abort();
+        if (job.kind === "pdf") printing.get(job.id)?.abort();
+        else running.get(job.reportId)?.controller.abort();
         return { ...job };
+      }
+      case "report.pdf.get": {
+        // One download per print: the bytes are released once handed to the frame.
+        const jobId = str(input.jobId, 64);
+        const pdf = pdfs.get(jobId);
+        if (!pdf) throw new Error("pdf_not_found");
+        pdfs.delete(jobId);
+        return {
+          base64: Buffer.from(pdf.data).toString("base64"),
+          filename: pdf.filename,
+          bytes: pdf.data.byteLength,
+        };
       }
     }
     const store = await storeFor(sessionId);
@@ -223,6 +306,8 @@ export function createService(deps: ServiceDeps) {
         };
       case "report.export":
         return { html: renderReport(r), filename: exportName(r.name) };
+      case "report.pdf":
+        return startPdf(r);
       case "report.settings": {
         if (typeof input.paletteId === "string") {
           const palette = PALETTES.find((p) => p.id === input.paletteId);
@@ -329,10 +414,13 @@ export function createService(deps: ServiceDeps) {
 
   return {
     run,
-    busy: () => running.size > 0,
+    busy: () => running.size > 0 || printing.size > 0,
     dispose(): void {
       for (const task of running.values()) task.controller.abort();
+      for (const controller of printing.values()) controller.abort();
       running.clear();
+      printing.clear();
+      pdfs.clear();
       jobs.clear();
       stores.clear();
     },
@@ -355,7 +443,7 @@ const object = (properties: Record<string, unknown>, required: string[] = []) =>
 /** Action effects and input schemas, as registered with the host. */
 export const ACTIONS: Record<
   string,
-  { effect: "read" | "write"; inputSchema: Record<string, unknown> }
+  { effect: "read" | "write" | "process"; inputSchema: Record<string, unknown> }
 > = {
   context: { effect: "read", inputSchema: object({}) },
   models: { effect: "read", inputSchema: object({}) },
@@ -366,6 +454,9 @@ export const ACTIONS: Record<
     inputSchema: object({ id, measure: { type: "boolean" } }, ["id"]),
   },
   "report.export": { effect: "read", inputSchema: object({ id }, ["id"]) },
+  // Runs a local browser to print the PDF, so the session must allow running programs.
+  "report.pdf": { effect: "process", inputSchema: object({ id }, ["id"]) },
+  "report.pdf.get": { effect: "read", inputSchema: object({ jobId: id }, ["jobId"]) },
   "jobs.get": { effect: "read", inputSchema: object({ jobId: id }, ["jobId"]) },
   "jobs.cancel": { effect: "write", inputSchema: object({ jobId: id }, ["jobId"]) },
   "reports.create": {

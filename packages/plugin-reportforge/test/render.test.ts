@@ -7,6 +7,20 @@ function report(patch: Partial<Report> = {}): Report {
 }
 
 describe("renderReport", () => {
+  it("lets chart cards fill their column and keeps the donut visible in narrow cards", () => {
+    const html = renderReport(
+      report({
+        blocks: [
+          { id: "d", type: "donut", title: "Mix", labels: ["A", "B"], values: [60, 40], span: 1 },
+        ],
+      }),
+    );
+    // A <figure> keeps the browser's 40 px side margins unless they are reset.
+    expect(html).toContain("figure{margin:0}");
+    expect(html).toMatch(/\.donut-wrap svg\{[^}]*min-width:96px[^}]*flex-shrink:0/);
+    expect(html).toMatch(/\.donut-wrap\{[^}]*flex-wrap:wrap/);
+  });
+
   it("escapes every user and model string", () => {
     const r = report({
       title: "<script>alert(1)</script>",

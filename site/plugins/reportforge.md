@@ -25,6 +25,10 @@ not part of 0.1.0.*
 - Alisio **0.11.6 or newer within 0.11.x** (the studio is a plugin app with approval prompts). On
   older hosts only the read-only tool `reportforge_reports` and the help command work.
 - A connected model provider (`/connect`). ReportForge asks for no credentials of its own.
+- For **↓ PDF**: a Chromium-family browser installed on the machine that runs Alisio (Google
+  Chrome, Chromium, Microsoft Edge, Brave, Vivaldi or Opera; nothing is downloaded), and a session
+  that allows running programs. Set `ALISIO_REPORTFORGE_CHROME` to the browser's executable if it
+  is installed in an unusual place.
 
 ## Install
 
@@ -52,7 +56,8 @@ Then open **ReportForge** from your project's **Apps** group.
    (A4 or Letter) and layout change instantly without calling the model. **Model for the next
    generation** changes the report's model (or picks the Alisio default model); if the saved model
    is no longer available, the studio says so and uses the default.
-5. **Export**: **PDF / Print** opens the print dialog for the preview (choose *Save as PDF*);
+5. **Export**: **↓ PDF** creates the PDF with your local browser (headless, offline, in a
+   throwaway profile) and downloads it, named after the report's title; you can **Cancel** it.
    **↓ HTML** downloads a single self-contained HTML file.
 6. **Delete**: **Delete report** (in the open report or the list) asks for confirmation, stops a
    generation in progress and removes the report with its sources.
@@ -71,8 +76,12 @@ The studio follows Alisio's language (English or Spanish).
   past 20% it recommends multiple pages. The fit is stored with the report, so the downloaded HTML
   prints the same way.
 
-If your Alisio window does not open a print dialog, download the HTML, open it in your browser and
-print it from there (*Save as PDF*).
+- **PDF**: the same HTML printed by the local browser with its backgrounds, the report's page size
+  (A4 or Letter) and margins. For one-page reports the printing browser re-checks the stored zoom
+  and lowers it slightly if the page would otherwise spill onto a second sheet.
+
+If no browser is found, or the session does not allow running programs, the studio says so: use
+**↓ HTML**, open the file in your browser and save it as PDF from there.
 
 ## Safety
 
@@ -81,6 +90,10 @@ print it from there (*Save as PDF*).
   before it reaches the report. It runs in a read-only child session with no tools and no write or
   process permission. Text inside your sources is treated as data, never as instructions.
 - Everything shown in a report is escaped; exported HTML contains no scripts.
+- **↓ PDF** is the only action that runs a program (the session's *process* permission): the local
+  browser starts headless with a temporary profile that is deleted afterwards, the report is
+  injected without a file or URL, host names do not resolve, the network is offline and every
+  request except inline `data:` content is blocked. A cancel or a two-minute limit kills it.
 - Web pages: only public HTTPS addresses on port 443. Every DNS answer must be a public address
   (private, loopback, link-local, cloud metadata and special IPv6 ranges are refused), the
   connection is pinned to the checked address, every redirect is checked again, and pages are
@@ -99,8 +112,9 @@ Reports live in Alisio's private plugin state, one folder per workspace, one JSO
 - Generation asks for up to 32,768 output tokens (less when the model's catalog allows less) and a
   report of at most 12 components; models with very small output limits may produce shorter
   reports.
-- The studio has been tested against a simulated host and in unit tests; printing depends on the
-  host window allowing the print dialog (otherwise use the HTML download, as above).
+- The studio has been tested against a simulated host and in unit tests. **↓ PDF** needs a
+  Chromium-family browser on the machine that runs Alisio and a session that allows running
+  programs; PDFs larger than 40 MB are refused (use the HTML download, as above).
 
 ## Resources
 

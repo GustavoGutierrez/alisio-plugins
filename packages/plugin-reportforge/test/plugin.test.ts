@@ -82,7 +82,9 @@ describe("plugin registration", () => {
     expect(Object.keys(actions).sort()).toEqual(Object.keys(ACTIONS).sort());
     for (const [name, action] of Object.entries(actions)) {
       expect(name).toMatch(/^[A-Za-z][A-Za-z0-9_.-]{0,63}$/);
-      expect(["read", "write"]).toContain(action.effect);
+      // Only the PDF print runs a program (the local browser); everything else reads or writes.
+      expect(action.effect === "process").toBe(name === "report.pdf");
+      expect(["read", "write", "process"]).toContain(action.effect);
       expect(action.inputSchema).toMatchObject({ type: "object" });
       expect(JSON.stringify(action.inputSchema)).not.toMatch(/"\$(ref|id|async)"/);
     }

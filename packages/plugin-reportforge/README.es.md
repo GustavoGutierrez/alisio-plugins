@@ -21,6 +21,10 @@ no forman parte de la versión 0.1.0.*
   solicitudes de aprobación). En versiones anteriores solo funcionan la herramienta de lectura
   `reportforge_reports` y el comando de ayuda.
 - Un proveedor de modelos conectado (`/connect`). ReportForge no solicita credenciales propias.
+- Para **↓ PDF**: un navegador de la familia Chromium instalado en el equipo donde se ejecuta Alisio
+  (Google Chrome, Chromium, Microsoft Edge, Brave, Vivaldi u Opera; no se descarga nada), y una
+  sesión que permita ejecutar programas. Defina `ALISIO_REPORTFORGE_CHROME` con el ejecutable del
+  navegador si está instalado en una ubicación poco habitual.
 
 ## Instalación
 
@@ -51,8 +55,9 @@ Después abra **Generador de informes** (ReportForge) desde el grupo **Aplicacio
    **Modelo para la próxima generación** cambia el modelo del informe (o elige el Modelo
    predeterminado de Alisio); si el modelo guardado ya no está disponible, el estudio lo indica y
    usa el predeterminado.
-5. **Exportación**: **PDF / Imprimir** abre el diálogo de impresión de la vista previa (elija
-   *Guardar como PDF*); **↓ HTML** descarga un único archivo HTML autocontenido.
+5. **Exportación**: **↓ PDF** crea el PDF con su navegador local (sin ventana, sin conexión y con un
+   perfil temporal) y lo descarga con el título del informe como nombre; puede **Cancelar**.
+   **↓ HTML** descarga un único archivo HTML autocontenido.
 6. **Borrado**: **Borrar informe** (en el informe abierto o en la lista) pide confirmación, detiene
    una generación en curso y elimina el informe con sus fuentes.
 
@@ -71,8 +76,13 @@ El estudio sigue el idioma de Alisio (español o inglés).
   recomienda usar varias páginas. El ajuste se guarda con el informe, por lo que el HTML descargado
   se imprime igual.
 
-Si la ventana de Alisio no abre el diálogo de impresión, descargue el HTML, ábralo en su navegador
-e imprímalo desde allí (*Guardar como PDF*).
+- **PDF**: el mismo HTML impreso por el navegador local con sus fondos, el tamaño de página del
+  informe (A4 o Carta) y sus márgenes. En los informes de una página, el navegador que imprime
+  vuelve a comprobar la escala guardada y la reduce un poco si la página fuera a pasar a una segunda
+  hoja.
+
+Si no se encuentra un navegador, o la sesión no permite ejecutar programas, el estudio lo indica:
+use **↓ HTML**, abra el archivo en su navegador y guárdelo como PDF desde allí.
 
 ## Seguridad
 
@@ -82,6 +92,11 @@ e imprímalo desde allí (*Guardar como PDF*).
   herramientas ni permisos de escritura o de procesos. El texto de las fuentes se trata como datos,
   nunca como instrucciones.
 - Todo lo que se muestra en un informe se escapa; el HTML exportado no contiene scripts.
+- **↓ PDF** es la única acción que ejecuta un programa (el permiso de *procesos* de la sesión): el
+  navegador local se inicia sin ventana con un perfil temporal que se elimina al terminar, el informe
+  se inyecta sin archivo ni URL, los nombres de host no se resuelven, la red queda sin conexión y se
+  bloquea toda solicitud salvo el contenido `data:` integrado. Cancelar o un límite de dos minutos lo
+  detienen.
 - Páginas web: solo direcciones HTTPS públicas en el puerto 443. Cada respuesta DNS debe ser una
   dirección pública (se rechazan rangos privados, de bucle local, de enlace local, de metadatos en
   la nube y rangos IPv6 especiales), la conexión se fija a la dirección comprobada, cada
@@ -102,9 +117,10 @@ reconstruye a partir de ese documento y nunca se almacena.
 - La generación solicita hasta 32 768 tokens de salida (menos si el catálogo del modelo admite
   menos) y un informe de 12 componentes como máximo; los modelos con límites de salida muy pequeños
   pueden producir informes más breves.
-- El estudio se ha probado con un host simulado y con pruebas unitarias; la impresión depende de
-  que la ventana del host permita el diálogo de impresión (en caso contrario, use la descarga HTML,
-  como se indica arriba).
+- El estudio se ha probado con un host simulado y con pruebas unitarias. **↓ PDF** requiere un
+  navegador de la familia Chromium en el equipo donde se ejecuta Alisio y una sesión que permita
+  ejecutar programas; se rechazan los PDF de más de 40 MB (use la descarga HTML, como se indica
+  arriba).
 
 ## Recursos
 
