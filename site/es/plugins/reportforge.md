@@ -47,12 +47,20 @@ Después abra **ReportForge** desde el grupo **Aplicaciones** de su proyecto.
    Elimine una fuente con **Quitar**.
 3. **Generar informe**: el modelo redacta el informe como bloques estructurados mientras usted
    espera; puede **Cancelar**. Diez tipos de bloque: texto destacado, párrafo, cita, indicador,
-   gráficos de barras, líneas y anillo, tabla, línea de tiempo y llamada de atención.
+   gráficos de barras, líneas y anillo, tabla, línea de tiempo y llamada de atención. Si la respuesta
+   no se puede usar (incompleta, ilegible o sin suficientes bloques válidos), ReportForge pide al
+   modelo una vez más un informe compacto; los bloques no válidos se omiten y el estudio indica
+   cuántos. Cuando la generación falla, el mensaje explica el motivo.
 4. **Ajuste**: pida un cambio con sus palabras (**Pide una modificación**) o edite un gráfico
    directamente: columnas que ocupa, altura y datos (etiquetas y valores). La paleta, las columnas
    (de 1 a 3), el tamaño de página (A4 o Carta) y el diseño cambian al instante sin llamar al modelo.
+   **Modelo para la próxima generación** cambia el modelo del informe (o elige el Modelo
+   predeterminado de Alisio); si el modelo guardado ya no está disponible, el estudio lo indica y
+   usa el predeterminado.
 5. **Exportación**: **PDF / Imprimir** abre el diálogo de impresión de la vista previa (elija
    *Guardar como PDF*); **↓ HTML** descarga un único archivo HTML autocontenido.
+6. **Borrado**: **Borrar informe** (en el informe abierto o en la lista) pide confirmación, detiene
+   una generación en curso y elimina el informe con sus fuentes.
 
 El estudio sigue el idioma de Alisio (español o inglés).
 
@@ -97,7 +105,9 @@ reconstruye a partir de ese documento y nunca se almacena.
 
 - Los PDF escaneados requieren OCR, que no se incluye; las imágenes dentro de los documentos se
   ignoran.
-- La generación necesita un modelo capaz de devolver unos 12 000 tokens de salida en una respuesta.
+- La generación solicita hasta 32 768 tokens de salida (menos si el catálogo del modelo admite
+  menos) y un informe de 12 componentes como máximo; los modelos con límites de salida muy pequeños
+  pueden producir informes más breves.
 - El estudio se ha probado con un host simulado y con pruebas unitarias; la impresión depende de
   que la ventana del host permita el diálogo de impresión (en caso contrario, use la descarga HTML,
   como se indica arriba).

@@ -44,12 +44,18 @@ Then open **ReportForge** from your project's **Apps** group.
    **Remove**.
 3. **Generate report**: the model writes the report as structured blocks while you wait; you can
    **Cancel**. Ten block types: lead, paragraph, quote, KPI, bar, line and donut charts, table,
-   timeline and callout.
+   timeline and callout. If the answer cannot be used (cut off, unreadable or without enough valid
+   blocks), ReportForge asks the model once more for a compact report; invalid blocks are left out
+   and the studio says how many. When generation fails, the message says why.
 4. **Refine**: ask for a change in plain words (**Request a change**), or edit a chart directly:
    columns it spans, height and its data (labels and values). Palette, columns (1 to 3), page size
-   (A4 or Letter) and layout change instantly without calling the model.
+   (A4 or Letter) and layout change instantly without calling the model. **Model for the next
+   generation** changes the report's model (or picks the Alisio default model); if the saved model
+   is no longer available, the studio says so and uses the default.
 5. **Export**: **PDF / Print** opens the print dialog for the preview (choose *Save as PDF*);
    **↓ HTML** downloads a single self-contained HTML file.
+6. **Delete**: **Delete report** (in the open report or the list) asks for confirmation, stops a
+   generation in progress and removes the report with its sources.
 
 The studio follows Alisio's language (English or Spanish).
 
@@ -90,7 +96,9 @@ Reports live in Alisio's private plugin state, one folder per workspace, one JSO
 ## Limitations
 
 - Scanned PDFs need OCR, which is not included; images inside documents are ignored.
-- Generation needs a model that can return about 12,000 output tokens in one answer.
+- Generation asks for up to 32,768 output tokens (less when the model's catalog allows less) and a
+  report of at most 12 components; models with very small output limits may produce shorter
+  reports.
 - The studio has been tested against a simulated host and in unit tests; printing depends on the
   host window allowing the print dialog (otherwise use the HTML download, as above).
 

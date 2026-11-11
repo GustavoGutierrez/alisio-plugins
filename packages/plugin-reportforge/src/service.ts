@@ -24,7 +24,14 @@ export interface Job {
   reportId: string;
   status: JobStatus;
   error?: string;
+  /** Invalid components the model returned and ReportForge left out. */
+  dropped?: number;
+  /** The report's model no longer exists; the Alisio default wrote it. */
+  modelFallback?: boolean;
 }
+
+/** Longest wait for a cancelled generation to stop before its report is deleted anyway. */
+const CANCEL_WAIT_MS = 10_000;
 
 export type HostApi = Pick<PluginAPI, "models" | "sessions" | "paths" | "options">;
 
@@ -50,10 +57,20 @@ export function exportName(name: string): string {
   return `${base || "report"}.html`;
 }
 
+type ModelEntry = Awaited<ReturnType<HostApi["models"]["list"]>>[number];
+
+/** A readable label: provider (and profile, when not the default) · model name. */
+export function modelLabel(m: ModelEntry): string {
+  const provider = m.providerName || m.provider || "";
+  const profile = m.profile && m.profile !== "default" ? ` (${m.profile})` : "";
+  const name = m.model?.name || m.model?.id || m.reference;
+  return provider ? `${provider}${profile} · ${name}` : name;
+}
+
 export function createService(deps: ServiceDeps) {
   const { api } = deps;
   const stores = new Map<string, Promise<Store>>();
-  const running = new Map<string, AbortController>();
+  const running = new Map<string, { controller: AbortController; done: Promise<void> }>();
   const jobs = new Map<string, Job>();
   const generate =
     deps.generate ??
@@ -80,6 +97,15 @@ export function createService(deps: ServiceDeps) {
       stores.set(dir, pending);
     }
     return pending;
+  }
+
+  async function listModels(): Promise<ModelEntry[]> {
+    try {
+      const list = await api.models.list();
+      return Array.isArray(list) ? list.filter((m) => typeof m?.reference === "string") : [];
+    } catch {
+      throw new Error("models_unavailable");
+    }
   }
 
   function addSource(r: Report, source: Source): void {
@@ -115,17 +141,25 @@ export function createService(deps: ServiceDeps) {
   ): Promise<Job> {
     if (running.has(r.id)) throw new Error("report_busy");
     const controller = new AbortController();
-    running.set(r.id, controller);
     const job: Job = { id: randomUUID(), reportId: r.id, status: "running" };
     rememberJob(job);
-    void (async () => {
+    const done = (async () => {
       try {
         const result = await generate(sessionId, r, prompt || r.goal, controller.signal);
+        // A cancelled (or deleted) report never gets a late write.
+        controller.signal.throwIfAborted();
         const latest = await store.get(r.id);
+        controller.signal.throwIfAborted();
         if (latest.revision !== r.revision) throw new Error("revision_conflict");
-        Object.assign(latest, result);
+        latest.title = result.title;
+        latest.subtitle = result.subtitle;
+        latest.eyebrow = result.eyebrow;
+        latest.summary = result.summary;
+        latest.blocks = result.blocks;
         bump(latest, prompt || "Generated");
         await store.put(latest);
+        if (result.dropped) job.dropped = result.dropped;
+        if (result.modelFallback) job.modelFallback = true;
         job.status = "succeeded";
       } catch (error) {
         job.status = controller.signal.aborted ? "cancelled" : "failed";
@@ -134,6 +168,7 @@ export function createService(deps: ServiceDeps) {
         running.delete(r.id);
       }
     })();
+    running.set(r.id, { controller, done });
     return job;
   }
 
@@ -145,13 +180,8 @@ export function createService(deps: ServiceDeps) {
     switch (action) {
       case "context":
         return { locale: api.options?.locale === "en" ? "en" : "es", palettes: PALETTES };
-      case "models": {
-        const models = await api.models.list();
-        return models.map((m) => ({
-          reference: m.reference,
-          label: `${m.providerName} · ${m.model.name ?? m.reference}`,
-        }));
-      }
+      case "models":
+        return (await listModels()).map((m) => ({ reference: m.reference, label: modelLabel(m) }));
       case "jobs.get": {
         const job = jobs.get(str(input.jobId, 64));
         if (!job) throw new Error("job_not_found");
@@ -160,13 +190,28 @@ export function createService(deps: ServiceDeps) {
       case "jobs.cancel": {
         const job = jobs.get(str(input.jobId, 64));
         if (!job) throw new Error("job_not_found");
-        running.get(job.reportId)?.abort();
+        running.get(job.reportId)?.controller.abort();
         return { ...job };
       }
     }
     const store = await storeFor(sessionId);
     if (action === "reports.list") return store.list();
     if (action === "reports.create") return store.put(initialReport(input));
+    if (action === "reports.delete") {
+      const id = str(input.id, 64);
+      store.check(id);
+      const task = running.get(id);
+      if (task) {
+        // The user confirmed the deletion: stop the generation instead of refusing with `busy`.
+        task.controller.abort();
+        await Promise.race([
+          task.done,
+          new Promise((resolve) => setTimeout(resolve, CANCEL_WAIT_MS)),
+        ]);
+      }
+      await store.remove(id);
+      return { id, deleted: true };
+    }
     const r = await store.get(str(input.id, 64));
     switch (action) {
       case "reports.get":
@@ -189,7 +234,14 @@ export function createService(deps: ServiceDeps) {
         if (input.mode === "singlepage" || input.mode === "multipage") r.mode = input.mode;
         if (input.pageSize === "A4" || input.pageSize === "Letter") r.pageSize = input.pageSize;
         if (input.language === "es" || input.language === "en") r.language = input.language;
-        if (typeof input.model === "string") r.model = input.model.slice(0, 256);
+        return store.put(r);
+      }
+      case "report.setModel": {
+        const model = str(input.model, 256);
+        if (model && !(await listModels()).some((m) => m.reference === model)) {
+          throw new Error("unknown_model");
+        }
+        r.model = model;
         return store.put(r);
       }
       case "report.fit": {
@@ -279,7 +331,7 @@ export function createService(deps: ServiceDeps) {
     run,
     busy: () => running.size > 0,
     dispose(): void {
-      for (const controller of running.values()) controller.abort();
+      for (const task of running.values()) task.controller.abort();
       running.clear();
       jobs.clear();
       stores.clear();
@@ -340,11 +392,15 @@ export const ACTIONS: Record<
         mode: { type: "string", enum: ["multipage", "singlepage"] },
         pageSize: { type: "string", enum: ["A4", "Letter"] },
         language: { type: "string", enum: ["es", "en"] },
-        model: { type: "string", maxLength: 256 },
       },
       ["id"],
     ),
   },
+  "report.setModel": {
+    effect: "write",
+    inputSchema: object({ id, model: { type: "string", maxLength: 256 } }, ["id", "model"]),
+  },
+  "reports.delete": { effect: "write", inputSchema: object({ id }, ["id"]) },
   "report.fit": {
     effect: "write",
     inputSchema: object(

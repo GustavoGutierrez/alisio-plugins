@@ -18,14 +18,22 @@ export { PALETTES, type Report } from "./types.js";
 export { VERSION } from "./version.js";
 
 /**
- * The studio frame. The build copies `ui/index.html` to `dist/ui.html`, next to this module; the
- * fallback only serves the source file when running from `src/` (tests, development).
+ * The studio frame. The build writes `dist/ui.html` (from `ui/index.html`, with `icon.svg` inlined
+ * in the brand) next to this module; the fallback only runs from `src/` (tests, development) and
+ * builds the same page with the same script, which is not shipped.
  */
 export async function loadHtml(): Promise<string> {
   try {
     return await readFile(new URL("./ui.html", import.meta.url), "utf8");
   } catch {
-    return readFile(new URL("../ui/index.html", import.meta.url), "utf8");
+    const builder = new URL("../scripts/copy-ui.mjs", import.meta.url).href;
+    const { buildUi } = (await import(builder)) as {
+      buildUi: (html: string, svg: string) => string;
+    };
+    return buildUi(
+      await readFile(new URL("../ui/index.html", import.meta.url), "utf8"),
+      await readFile(new URL("../icon.svg", import.meta.url), "utf8"),
+    );
   }
 }
 
@@ -89,7 +97,7 @@ export function createReportForgePlugin(options: Omit<ServiceDeps, "api"> = {}) 
         disposers.push(
           api.apps.register({
             id: "reportforge",
-            label: { en: "ReportForge", es: "ReportForge" },
+            label: { en: "Report Forge", es: "Forja de Reportes" },
             html: loadHtml,
             actions,
             busy: service.busy,

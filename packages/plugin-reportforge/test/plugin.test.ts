@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import type { PluginAppDefinition } from "@alisio/sdk";
 import { describe, expect, it } from "vitest";
+// @ts-expect-error -- plain build script without declarations
+import { buildUi } from "../scripts/copy-ui.mjs";
 import { createReportForgePlugin, loadHtml, VERSION } from "../src/index.js";
 import { ACTIONS } from "../src/service.js";
 import { fakeHost } from "./helpers/fake-api.js";
@@ -125,7 +127,10 @@ describe("studio frame html", () => {
       new URL("../scripts/copy-ui.mjs", import.meta.url).pathname,
     ]);
     const built = await readFile(new URL("../dist/ui.html", import.meta.url), "utf8");
-    expect(built).toBe(await readFile(UI, "utf8"));
+    const icon = await readFile(new URL("../icon.svg", import.meta.url), "utf8");
+    expect(built).toBe(buildUi(await readFile(UI, "utf8"), icon));
+    for (const shape of icon.match(/<(path|rect)\b[^>]*\/>/g) ?? []) expect(built).toContain(shape);
+    expect(built).not.toContain("◈");
     expect(await loadHtml()).toBe(built);
   });
 

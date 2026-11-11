@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { JSDOM } from "jsdom";
+// @ts-expect-error -- plain build script without declarations
+import { buildUi } from "../../scripts/copy-ui.mjs";
 
 export type Request = { type: string; id: string; action: string; input: Record<string, unknown> };
 /** What the fake host answers: a plugin result (`value` or `error`), or a host error code. */
@@ -10,7 +12,11 @@ export type Reply = { value?: unknown; error?: string } | { hostError: string; e
  * MessageChannel, exactly as Alisio does (alisio.app.connect + transferred port).
  */
 export async function frameEnv() {
-  const html = await readFile(new URL("../../ui/index.html", import.meta.url), "utf8");
+  // The frame exactly as the build ships it (icon inlined in the brand).
+  const html = buildUi(
+    await readFile(new URL("../../ui/index.html", import.meta.url), "utf8"),
+    await readFile(new URL("../../icon.svg", import.meta.url), "utf8"),
+  );
   const dom = new JSDOM(html, {
     url: "https://alisio.test/frame",
     runScripts: "dangerously",

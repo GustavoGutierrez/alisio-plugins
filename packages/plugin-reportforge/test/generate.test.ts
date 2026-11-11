@@ -90,11 +90,11 @@ describe("parseAnswer", () => {
   });
 
   it.each([
-    ["prose only", "I cannot do that."],
-    ["broken JSON", '{"title": '],
-    ["an array", "[1,2]"],
-  ])("rejects %s", (_label, text) => {
-    expect(() => parseAnswer(text)).toThrow("generation_malformed");
+    ["prose only", "I cannot do that.", "generation_unreadable"],
+    ["broken JSON", '{"title": ', "generation_truncated"],
+    ["an array", "[1,2]", "generation_unreadable"],
+  ])("rejects %s", (_label, text, code) => {
+    expect(() => parseAnswer(text)).toThrow(code);
   });
 
   it("rejects an oversized answer before parsing it", () => {

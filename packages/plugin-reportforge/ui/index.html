@@ -6,11 +6,11 @@
 <title>ReportForge</title>
 <style>
 :root{font-family:Inter,system-ui,'Segoe UI',sans-serif;color:#e8edf9;background:#0b1020;--line:#29314d;--soft:#141b30;--accent:#8f75f8}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.shell{display:grid;grid-template-columns:235px minmax(0,1fr);min-height:100vh}.side{padding:24px 16px;background:#10162a;border-right:1px solid var(--line)}.brand{font-weight:850;font-size:22px;letter-spacing:-.04em}.brand b{color:#b9a7ff}.side p{color:#8592ad;font-size:12px;line-height:1.5}.nav{margin-top:34px;display:grid;gap:8px}.nav button{text-align:left;background:transparent;border:0;color:#b9c4e0;padding:13px 12px;border-radius:11px}.nav button.current,.nav button:hover{background:#252a49;color:white}.content{padding:30px;min-width:0}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:25px}.top h1{font-size:25px;margin:0;letter-spacing:-.04em}.top small{color:#929bb3}.primary{background:#8871f8;color:#fff;border:0;border-radius:10px;padding:11px 17px;font-weight:750}.secondary{background:#1b2541;color:#d7dff5;border:1px solid #354064;border-radius:10px;padding:11px 17px}.muted{color:#96a3c2}.grid{display:grid;grid-template-columns: minmax(280px,410px) minmax(0,1fr);gap:22px}.panel{background:var(--soft);border:1px solid var(--line);border-radius:17px;padding:22px;min-width:0}.panel h2{font-size:17px;margin:0 0 18px}.field{display:grid;gap:7px;margin-bottom:15px}.field label{font-size:12px;color:#b3bdd6;font-weight:700}input,select,textarea{width:100%;background:#0c1428;color:#f0f2ff;border:1px solid #323e5b;border-radius:9px;padding:11px;outline:none}input:focus,select:focus,textarea:focus{border-color:#9382fa}textarea{resize:vertical;min-height:80px}.stephead{display:flex;gap:8px;align-items:center;margin-bottom:18px}.step{background:#25304c;color:#a8b6d1;border-radius:99px;padding:7px 12px;font-size:11px;font-weight:700}.step.active{background:#6f5fd3;color:white}.palettes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.palette{border:1px solid #3c4660;border-radius:11px;padding:8px;background:#0e172c;color:#cbd2e3;text-align:left}.palette.selected{outline:2px solid #c4b8ff}.palette i{display:block;height:18px;border-radius:5px;margin-bottom:8px}.palette span{font-size:10px}.help{font-size:12px;color:#97a4bd;line-height:1.55}.preview{border-radius:13px;overflow:hidden;background:#e6ecf3;height:67vh;min-height:500px}.preview iframe{border:0;width:100%;height:100%;background:white}.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:15px}.toolbar>*{flex-shrink:0}.list{display:grid;gap:10px}.list button{background:#19223a;border:1px solid #35405f;color:#e6eaff;text-align:left;border-radius:12px;padding:16px}.list small{color:#96a2bf}.notice{border-left:3px solid #9685ff;background:#262445;border-radius:4px;padding:12px;font-size:12px;color:#d6d2ff;margin:14px 0}.hidden{display:none!important}.error{color:#ffbcb8;font-size:12px;white-space:pre-wrap}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:1100px){.shell{grid-template-columns:1fr}.side{display:none}.grid{grid-template-columns:1fr}.content{padding:14px}}@media(max-width:650px){.formrow{grid-template-columns:1fr}.palettes{grid-template-columns:repeat(2,1fr)}.top{align-items:start}.preview{height:55vh}}
-.measure{position:absolute;left:-10000px;top:0;width:1200px;height:800px;border:0;visibility:hidden}.fitnote{font-size:12px;color:#c9d2ea;margin:8px 0 0}.fitnote.warn{color:#ffd59a}.banner{background:#3b1d2a;border:1px solid #7a3550;color:#ffd6e0;border-radius:10px;padding:14px;margin-bottom:16px}.srcrow{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#19223a;border:1px solid #35405f;border-radius:10px;padding:8px 10px}.srcrow small{overflow-wrap:anywhere}.link{background:none;border:0;color:#b9a7ff;padding:4px;text-decoration:underline}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}</style>
+.measure{position:absolute;left:-10000px;top:0;width:1200px;height:800px;border:0;visibility:hidden}.fitnote{font-size:12px;color:#c9d2ea;margin:8px 0 0}.fitnote.warn{color:#ffd59a}.banner{background:#3b1d2a;border:1px solid #7a3550;color:#ffd6e0;border-radius:10px;padding:14px;margin-bottom:16px}.srcrow{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#19223a;border:1px solid #35405f;border-radius:10px;padding:8px 10px}.srcrow small{overflow-wrap:anywhere}.link{background:none;border:0;color:#b9a7ff;padding:4px;text-decoration:underline}.reportrow{display:flex;gap:8px;align-items:stretch}.reportrow>button:first-child{flex:1}.list .rowdel{background:transparent;border:1px solid #5a3346;color:#ffb8c8;padding:0 14px;text-align:center}.danger{background:#a8324f;color:#fff;border:0;border-radius:10px;padding:11px 17px;font-weight:750}.confirm{position:fixed;inset:0;background:rgba(5,8,18,.72);display:grid;place-items:center;z-index:10;padding:16px}.confirm .panel{max-width:440px}.brand{display:flex;align-items:center;gap:10px}.logo{display:inline-flex;width:30px;height:30px;flex:none;border-radius:7px;box-shadow:0 0 0 1px #343f66}.logo svg{width:30px;height:30px;display:block}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}</style>
 </head>
 <body>
 <div class="shell">
-<aside class="side"><div class="brand">◈ Report<b>Forge</b></div><p data-i="tagline">Reports that impress, data that explains.</p>
+<aside class="side"><div class="brand"><span class="logo" aria-hidden="true"><!--rf-icon--></span><span>Report<b>Forge</b></span></div><p data-i="tagline">Reports that impress, data that explains.</p>
 <nav class="nav"><button type="button" class="current" id="navReports">▤ <span data-i="reports">My reports</span></button><button type="button" id="navCreate">✦ <span data-i="new">New report</span></button></nav></aside>
 <main class="content">
 <header class="top"><div><h1 id="heading">ReportForge</h1><small data-i="subheading">Editorial report studio</small></div><button type="button" class="primary" id="newTop">+ <span data-i="new">New report</span></button></header>
@@ -21,7 +21,7 @@
 <div class="field"><label for="name" data-i="name">Report name</label><input id="name" maxlength="120" data-ip="namePh" placeholder="Q4 strategy report"></div>
 <div class="formrow"><div class="field"><label for="type" data-i="type">Report type</label><select id="type"></select></div>
 <div class="field"><label for="language" data-i="language">Report language</label><select id="language"><option value="es">Español</option><option value="en">English</option></select></div></div>
-<div class="field"><label for="model" data-i="model">Alisio model</label><select id="model"><option value="" data-i="defaultModel">Default model</option></select></div>
+<div class="field"><label for="model" data-i="model">Alisio model</label><select id="model"><option value="">Alisio default model</option></select><p id="modelsNote" class="help" role="status"></p></div>
 <div class="field"><label for="creativity" data-i="creativity">Creative freedom</label><select id="creativity"><option value="strict" data-i="strict">Conservative · evidence only</option><option value="balanced" data-i="balanced" selected>Balanced · recommended</option><option value="bold" data-i="bold">Bold · experimental design</option></select></div>
 <div class="field"><label for="goal" data-i="goal">Goal and intended decisions</label><textarea id="goal" data-ip="goalPh" placeholder="What should the reader understand and decide?"></textarea></div>
 <div class="field"><label for="context" data-i="context">Additional context</label><textarea id="context" data-ip="contextPh" placeholder="Company, period, audience, constraints…"></textarea></div>
@@ -35,9 +35,10 @@
 <label class="sr" for="columns" data-i="columns">Columns</label><select style="width:95px" id="columns"><option value="1">1 col.</option><option value="2">2 col.</option><option value="3">3 col.</option></select>
 <label class="sr" for="pageSize" data-i="pageSize">Page size</label><select style="width:125px" id="pageSize"><option value="A4">A4</option><option value="Letter">Letter</option></select>
 <label class="sr" for="mode" data-i="layout">Layout</label><select style="width:165px" id="mode"><option value="multipage" data-i="multipage">Multiple pages</option><option value="singlepage" data-i="singlepage">Fit to one page</option></select>
-<button type="button" class="secondary" id="exportHtml" data-i="exportHtml">↓ HTML</button><button type="button" class="primary" id="printPdf" data-i="print">PDF / Print</button></div>
+<button type="button" class="secondary" id="exportHtml" data-i="exportHtml">↓ HTML</button><button type="button" class="primary" id="printPdf" data-i="print">PDF / Print</button><button type="button" class="secondary" id="deleteReport" data-i="deleteReport">Delete report</button></div>
 <p id="fitNote" class="fitnote" role="status" aria-live="polite"></p>
 <div class="grid"><div class="panel"><h2 id="docTitle">—</h2><p class="help" id="docMeta"></p>
+<div class="field"><label for="editModel" data-i="editModel">Model for the next generation</label><select id="editModel"><option value="">Alisio default model</option></select><p id="modelNote" class="fitnote warn" role="status" aria-live="polite"></p></div>
 <div class="field"><label for="file" data-i="sources">Information sources</label><input id="file" type="file" multiple accept=".csv,.txt,.md,.json,.html,.xlsx,.docx,.pdf"></div>
 <div id="sources" class="list"></div>
 <div class="field" style="margin-top:14px"><label for="sourceUrl" data-i="url">Public web page (HTTPS)</label><input id="sourceUrl" type="url" placeholder="https://example.org/report"></div>
@@ -54,6 +55,7 @@
 <div class="field" style="margin-top:24px"><label for="revisionPrompt" data-i="editPrompt">Request a change</label><textarea id="revisionPrompt" data-ip="revisionPh" placeholder="Make the conclusion clearer, compare by quarter…"></textarea></div>
 <button type="button" class="secondary" id="revise" data-i="modify">Apply change</button></div>
 <div class="panel"><h2 data-i="preview">Preview</h2><div class="preview"><iframe id="frame" title="Report preview" sandbox="allow-same-origin allow-modals"></iframe></div></div></div></section>
+<div id="confirmBox" class="confirm hidden" role="alertdialog" aria-modal="true" aria-labelledby="confirmText"><div class="panel"><p id="confirmText"></p><div class="actions"><button type="button" class="secondary" id="confirmCancel" data-i="cancel">Cancel</button><button type="button" class="danger" id="confirmDelete" data-i="delete">Delete</button></div></div></div>
 <iframe id="measure" class="measure" title="Layout measurement" aria-hidden="true" tabindex="-1" sandbox="allow-same-origin"></iframe>
 </main></div>
 <script nonce="__ALISIO_NONCE__">
@@ -65,7 +67,13 @@ const DICT = {
   en: {
     tagline: "Reports that impress, data that explains.", subheading: "Editorial report studio",
     reports: "My reports", new: "New report", name: "Report name", namePh: "Q4 strategy report",
-    type: "Report type", language: "Report language", model: "Alisio model", defaultModel: "Default model",
+    type: "Report type", language: "Report language", model: "Alisio model", defaultModel: "Alisio default model",
+    editModel: "Model for the next generation", modelGone: "The model {model} is no longer available; the Alisio default model will be used.",
+    modelsFailed: "Could not list the Alisio models; the Alisio default model will be used.",
+    modelsEmpty: "No models are configured in Alisio (/connect); the Alisio default model will be used.",
+    deleteReport: "Delete report", delete: "Delete",
+    confirmDelete: "Delete “{name}”? Its sources and history are removed too. This cannot be undone.",
+    dropped: "{n} invalid components were left out.", modelFallback: "The report's model is no longer available; the Alisio default model was used.",
     creativity: "Creative freedom", strict: "Conservative · evidence only", balanced: "Balanced · recommended",
     bold: "Bold · experimental design", goal: "Goal and intended decisions",
     goalPh: "What should the reader understand and decide?", context: "Additional context",
@@ -97,7 +105,15 @@ const DICT = {
       url_not_html: "That page is not HTML.", url_too_large: "That page is larger than 2 MB.",
       url_no_extractable_text: "No readable text was found on that page.", report_busy: "This report is already being generated.",
       generation_malformed: "The model's answer could not be read. Try again or choose another model.",
-      generation_too_large: "The model's answer was too large.", generation_incomplete: "The model did not finish. Try again.",
+      generation_too_large: "The model's answer was too large.",
+      generation_truncated: "The model's answer was cut off (too long). Try again; ReportForge will ask for a more compact report.",
+      generation_unreadable: "The model's answer did not contain a readable report. Try again or choose another model.",
+      generation_invalid_structure: "The model returned a report without enough valid components. Try again or choose another model.",
+      generation_incomplete: "The model did not finish answering (timeout or interrupted session). Try again.",
+      generation_model_error: "The model provider returned an error. Check the model connection in Alisio or choose another model.",
+      unknown_model: "That model is not available in Alisio. Choose another one.",
+      models_unavailable: "Could not list the Alisio models. Try again in a moment.",
+      report_not_found: "That report no longer exists.",
       revision_conflict: "The report changed while generating. Generate again.", invalid_chart_data: "Chart data must be labels and numbers of equal length (at most 35).",
       request_timeout: "No answer from Alisio.", invalid_json: "The chart data is not valid JSON.",
     },
@@ -105,7 +121,13 @@ const DICT = {
   es: {
     tagline: "Informes que impresionan, datos que explican.", subheading: "Estudio de informes editoriales",
     reports: "Mis informes", new: "Nuevo informe", name: "Nombre del informe", namePh: "Informe estratégico T4",
-    type: "Tipo de informe", language: "Idioma del informe", model: "Modelo de Alisio", defaultModel: "Modelo predeterminado",
+    type: "Tipo de informe", language: "Idioma del informe", model: "Modelo de Alisio", defaultModel: "Modelo predeterminado de Alisio",
+    editModel: "Modelo para la próxima generación", modelGone: "El modelo {model} ya no está disponible; se usará el Modelo predeterminado de Alisio.",
+    modelsFailed: "No se pudieron listar los modelos de Alisio; se usará el Modelo predeterminado de Alisio.",
+    modelsEmpty: "No hay modelos configurados en Alisio (/connect); se usará el Modelo predeterminado de Alisio.",
+    deleteReport: "Borrar informe", delete: "Borrar",
+    confirmDelete: "¿Borrar «{name}»? También se eliminan sus fuentes y su historial. No se puede deshacer.",
+    dropped: "Se omitieron {n} componentes no válidos.", modelFallback: "El modelo del informe ya no está disponible; se usó el Modelo predeterminado de Alisio.",
     creativity: "Libertad creativa", strict: "Conservadora · solo evidencia", balanced: "Equilibrada · recomendada",
     bold: "Audaz · diseño experimental", goal: "Objetivo y decisiones esperadas",
     goalPh: "¿Qué debe comprender y decidir el lector?", context: "Contexto adicional",
@@ -137,7 +159,15 @@ const DICT = {
       url_not_html: "Esa página no es HTML.", url_too_large: "Esa página supera los 2 MB.",
       url_no_extractable_text: "No se encontró texto legible en esa página.", report_busy: "Este informe ya se está generando.",
       generation_malformed: "No se pudo leer la respuesta del modelo. Inténtalo de nuevo o elige otro modelo.",
-      generation_too_large: "La respuesta del modelo era demasiado grande.", generation_incomplete: "El modelo no terminó. Inténtalo de nuevo.",
+      generation_too_large: "La respuesta del modelo era demasiado grande.",
+      generation_truncated: "La respuesta del modelo quedó incompleta (demasiado larga). Inténtalo de nuevo; ReportForge pedirá un informe más compacto.",
+      generation_unreadable: "La respuesta del modelo no contenía un informe legible. Inténtalo de nuevo o elige otro modelo.",
+      generation_invalid_structure: "El modelo devolvió un informe sin suficientes componentes válidos. Inténtalo de nuevo o elige otro modelo.",
+      generation_incomplete: "El modelo no terminó de responder (tiempo agotado o sesión interrumpida). Inténtalo de nuevo.",
+      generation_model_error: "El proveedor del modelo devolvió un error. Revisa la conexión del modelo en Alisio o elige otro modelo.",
+      unknown_model: "Ese modelo no está disponible en Alisio. Elige otro.",
+      models_unavailable: "No se pudieron listar los modelos de Alisio. Inténtalo de nuevo en un momento.",
+      report_not_found: "Ese informe ya no existe.",
       revision_conflict: "El informe cambió durante la generación. Genera de nuevo.", invalid_chart_data: "Los datos deben ser etiquetas y números de igual longitud (máximo 35).",
       request_timeout: "Alisio no respondió.", invalid_json: "Los datos del gráfico no son JSON válido.",
     },
@@ -149,7 +179,7 @@ const MAX_IN_FLIGHT = 6;
 const RESPONSE_GUARD_MS = 11 * 60 * 1000;
 const POLL_MS = 1000;
 
-const state = { locale: "en", palettes: [], current: null, html: "", job: null, visible: true };
+const state = { locale: "en", palettes: [], current: null, html: "", job: null, visible: true, models: [], modelsStatus: "ok", deleting: null };
 const t = (key) => DICT[state.locale][key] ?? DICT.en[key] ?? key;
 const fill = (text, values) => text.replace(/\{(\w+)\}/g, (_, k) => String(values[k] ?? ""));
 
@@ -248,6 +278,7 @@ function localize() {
     $("audience").value = t("audienceDefault");
   }
   $("language").value = state.locale;
+  renderModels();
 }
 function option(value, label) {
   const node = document.createElement("option");
@@ -255,6 +286,38 @@ function option(value, label) {
   node.textContent = label;
   return node;
 }
+/** Fills a model select: the Alisio default first, then the listed models (and `extra`, if any). */
+function fillModels(select, selected, extra) {
+  const options = [option("", t("defaultModel")), ...state.models.map((m) => option(m.reference, m.label || m.reference))];
+  if (extra) options.push(option(extra, extra));
+  select.replaceChildren(...options);
+  select.value = [...select.options].some((o) => o.value === selected) ? selected : "";
+}
+function catalogNote() {
+  return state.modelsStatus === "failed" ? t("modelsFailed") : state.modelsStatus === "empty" ? t("modelsEmpty") : "";
+}
+function renderModels() {
+  fillModels($("model"), $("model").value);
+  $("modelsNote").textContent = catalogNote();
+  const r = state.current;
+  if (!r) return;
+  const stored = r.model || "";
+  const listed = !stored || state.models.some((m) => m.reference === stored);
+  // A stored model we cannot check (listing failed) stays visible; a model that is gone does not.
+  fillModels($("editModel"), stored, !listed && state.modelsStatus === "failed" ? stored : "");
+  $("modelNote").textContent = !listed && state.modelsStatus !== "failed" ? fill(t("modelGone"), { model: stored }) : catalogNote();
+}
+function askDelete(id, name) {
+  state.deleting = id;
+  $("confirmText").textContent = fill(t("confirmDelete"), { name });
+  $("confirmBox").classList.remove("hidden");
+  $("confirmCancel").focus?.();
+}
+function closeConfirm() {
+  state.deleting = null;
+  $("confirmBox").classList.add("hidden");
+}
+
 function renderPalettes() {
   const box = $("palettes");
   box.replaceChildren();
@@ -287,10 +350,15 @@ async function init() {
     const context = await call("context");
     state.palettes = Array.isArray(context?.palettes) ? context.palettes : [];
     renderPalettes();
-    const models = await call("models").catch(() => []);
-    for (const m of Array.isArray(models) ? models : []) {
-      if (m?.reference) $("model").append(option(m.reference, m.label || m.reference));
+    try {
+      const models = await call("models");
+      state.models = (Array.isArray(models) ? models : []).filter((m) => typeof m?.reference === "string" && m.reference);
+      state.modelsStatus = state.models.length ? "ok" : "empty";
+    } catch {
+      state.models = [];
+      state.modelsStatus = "failed";
     }
+    renderModels();
     await listing();
   } catch (error) {
     showError(error);
@@ -313,7 +381,17 @@ async function listing() {
     const date = new Date(r.updatedAt);
     button.textContent = `${r.name} · ${t("types")[r.type] ?? r.type} · ${Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(state.locale)}`;
     button.onclick = () => openReport(r.id).catch(showError);
-    list.append(button);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "rowdel";
+    remove.dataset.delete = r.id;
+    remove.textContent = t("delete");
+    remove.setAttribute("aria-label", `${t("deleteReport")}: ${r.name}`);
+    remove.onclick = () => askDelete(r.id, r.name);
+    const row = document.createElement("div");
+    row.className = "reportrow";
+    row.append(button, remove);
+    list.append(row);
   }
 }
 
@@ -327,6 +405,7 @@ async function openReport(id) {
   $("columns").value = String(r.columns);
   $("pageSize").value = r.pageSize;
   $("mode").value = r.mode;
+  renderModels();
   const select = $("blockSelect");
   select.replaceChildren(option("", "—"), ...r.blocks.map((b, i) => option(b.id, `${i + 1}. ${b.title || b.label || b.type}`)));
   $("blockData").value = "";
@@ -442,7 +521,10 @@ async function work(action, prompt) {
       const status = await call("jobs.get", { jobId: job.id });
       if (status.status === "running") continue;
       if (status.status === "succeeded") {
-        $("jobState").textContent = t("done");
+        const notes = [t("done")];
+        if (Number(status.dropped) > 0) notes.push(fill(t("dropped"), { n: Number(status.dropped) }));
+        if (status.modelFallback) notes.push(t("modelFallback"));
+        $("jobState").textContent = notes.join(" ");
         await openReport(r.id);
       } else if (status.status === "cancelled") {
         $("jobState").textContent = t("cancelled");
@@ -544,6 +626,36 @@ $("addUrl").onclick = async () => {
     showError(error);
   }
 };
+$("editModel").onchange = async () => {
+  const r = state.current;
+  if (!r) return;
+  try {
+    await call("report.setModel", { id: r.id, model: $("editModel").value });
+    await openReport(r.id);
+  } catch (error) {
+    showError(error);
+    renderModels();
+  }
+};
+$("deleteReport").onclick = () => {
+  if (state.current) askDelete(state.current.id, state.current.name);
+};
+$("confirmCancel").onclick = closeConfirm;
+$("confirmDelete").onclick = async () => {
+  const id = state.deleting;
+  closeConfirm();
+  if (!id) return;
+  try {
+    await call("reports.delete", { id });
+    if (state.current?.id === id) state.current = null;
+    await listing();
+  } catch (error) {
+    showError(error);
+  }
+};
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && state.deleting) closeConfirm();
+});
 $("generate").onclick = () => work("report.generate", "");
 $("revise").onclick = () => work("report.revise", $("revisionPrompt").value);
 $("cancelJob").onclick = () => {
