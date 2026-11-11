@@ -1,0 +1,29 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 5 #7 (first quadrant) and grados 6-7 (four
+# quadrants). Basico stays in the first quadrant for Quinto; intermedio and up use all four.
+id: coordinates
+name:
+  es: "Ubicación en el plano cartesiano"
+code: COO
+grades: ["Quinto", "Sexto", "Séptimo"]
+prerequisites: [integers]
+objectives:
+  - id: first-quadrant
+    text:
+      es: "Ubica y lee puntos con coordenadas naturales en el primer cuadrante."
+    levels: [basico]
+  - id: four-quadrants
+    text:
+      es: "Ubica y lee puntos en los cuatro cuadrantes e identifica el cuadrante de un punto."
+    levels: [intermedio, avanzado, genio]
+  - id: axis-distances
+    text:
+      es: "Calcula distancias horizontales o verticales y completa figuras en el plano."
+    levels: [avanzado, genio]
+keywords: [plano cartesiano, coordenadas, par ordenado, cuadrante, eje x, eje y, ubicación]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: family, family: coordinates, levels: [basico, intermedio, avanzado, genio] }

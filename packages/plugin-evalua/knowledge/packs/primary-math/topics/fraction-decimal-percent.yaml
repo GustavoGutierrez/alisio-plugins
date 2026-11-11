@@ -1,0 +1,24 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 4 #2-3.
+id: fraction-decimal-percent
+name:
+  es: "Fracción, decimal y porcentaje"
+code: FDP
+grades: ["Cuarto", "Quinto"]
+prerequisites: [intro-fractions]
+objectives:
+  - id: fraction-decimal
+    text:
+      es: "Expresa fracciones como decimales y decimales como fracciones simplificadas."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: percent
+    text:
+      es: "Relaciona fracciones y decimales con porcentajes."
+    levels: [intermedio, avanzado, genio]
+keywords: [fracción decimal, decimal, equivalencia, décimas, centésimas, fracción a porcentaje]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: fraction-decimal-percent, levels: [basico, intermedio, avanzado, genio] }

@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 3 #4 and grado 5 #5.
+id: perimeter-area
+name:
+  es: "Perímetro y área de rectángulos y formas compuestas"
+code: PER
+grades: ["Tercero", "Cuarto", "Quinto"]
+prerequisites: [whole-number-operations]
+objectives:
+  - id: rectangle-perimeter-area
+    text:
+      es: "Calcula el perímetro y el área de rectángulos."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: composite-figures
+    text:
+      es: "Calcula el perímetro y el área de figuras compuestas por rectángulos."
+    levels: [intermedio, avanzado, genio]
+  - id: missing-side
+    text:
+      es: "Halla un lado desconocido a partir del perímetro o del área."
+    levels: [avanzado, genio]
+keywords: [perímetro, área, rectángulo, figura compuesta, centímetros cuadrados, lados]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: perimeter-area, levels: [basico, intermedio, avanzado, genio] }

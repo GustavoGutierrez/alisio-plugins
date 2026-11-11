@@ -2,7 +2,9 @@ id: statistics
 name:
   es: "Estadística descriptiva: media, mediana y moda"
 code: EST
-grades: ["Sexto", "Séptimo", "Octavo", "Noveno"]
+# Cuarto and Quinto merged in from the primary "mean and median" topic (DBA grado 4-5): basico
+# keeps small natural data sets.
+grades: ["Cuarto", "Quinto", "Sexto", "Séptimo", "Octavo", "Noveno"]
 prerequisites: [natural-numbers]
 objectives:
   - id: central-measures

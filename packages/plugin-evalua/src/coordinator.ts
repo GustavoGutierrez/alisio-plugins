@@ -50,7 +50,7 @@ import {
   validateProfile,
   writeProfile,
 } from "./profile.js";
-import { loadQuotes, selectClosing } from "./quotes.js";
+import { closingKeywords, loadQuotes, selectClosing } from "./quotes.js";
 import { cleanText } from "./schemas.js";
 import { atomicWrite, emptyState, readState, validateRootName, writeState } from "./storage.js";
 import { loadThemeLayers, resolveTheme } from "./themes.js";
@@ -849,7 +849,7 @@ export class EvaluaCoordinator {
       kind: found.spec.closing.kind,
       pinned: found.spec.closing.pinned,
       language: profile.language,
-      keywords: [],
+      keywords: closingKeywords(found.spec.topics, found.spec.packs),
       examId: found.spec.id,
       entries: quotes.entries,
     });

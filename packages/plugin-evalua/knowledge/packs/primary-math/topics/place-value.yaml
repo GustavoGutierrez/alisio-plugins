@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 1 #3 and grado 2 #3.
+id: place-value
+name:
+  es: "Valor posicional y comparación de números"
+code: VPO
+grades: ["Primero", "Segundo", "Tercero"]
+prerequisites: []
+objectives:
+  - id: digit-value
+    text:
+      es: "Reconoce el valor de una cifra según su posición (unidades, decenas, centenas, unidades de mil)."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: compose-numbers
+    text:
+      es: "Compone y descompone números a partir de sus unidades, decenas y centenas."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: compare-numbers
+    text:
+      es: "Compara y ordena números naturales e identifica el mayor y el menor."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [valor posicional, unidades, decenas, centenas, comparar, mayor, menor, ordenar]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: place-value, levels: [basico, intermedio, avanzado, genio] }

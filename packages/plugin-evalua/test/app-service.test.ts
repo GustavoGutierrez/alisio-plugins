@@ -31,7 +31,7 @@ describe("status, catalog and doctor", () => {
   it("lists catalog topics filtered by grade with localized names", async () => {
     const h = await appHarness();
     const all = (await h.call("catalog.list")).value;
-    expect(all.topics.length).toBe(23);
+    expect(all.topics.length).toBe(36);
     expect(all.packs.map((pack: { id: string }) => pack.id)).toEqual([
       "algebra",
       "basic-math",
@@ -42,6 +42,11 @@ describe("status, catalog and doctor", () => {
     expect(sexto.topics.find((t: { id: string }) => t.id === "basic-math/fractions").name).toEqual({
       es: "Fracciones",
     });
+    const primero = (await h.call("catalog.list", { grade: "Primero" })).value;
+    expect(primero.topics.map((t: { id: string }) => t.id)).toContain("primary-math/place-value");
+    expect(primero.topics.map((t: { id: string }) => t.id)).not.toContain(
+      "primary-math/prism-volume",
+    );
   });
 
   it("reports the knowledge base and the browser", async () => {

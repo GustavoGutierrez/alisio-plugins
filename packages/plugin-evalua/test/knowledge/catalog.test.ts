@@ -29,6 +29,26 @@ describe("topic catalog", () => {
     expect(sexto).not.toContain("basic-math/percentages");
   });
 
+  it("matches primary grades typed as free text in the chat", async () => {
+    const source = await catalog();
+    const first = source.suggestions("Primero").map((entry) => entry.value);
+    expect(first).toContain("primary-math/place-value");
+    expect(first).toContain("primary-math/whole-number-operations");
+    expect(first).not.toContain("primary-math/angles-basic");
+    for (const typed of ["primero", "PRIMERO", "1", "1º", "grado 1", "primer grado"]) {
+      expect(
+        source.suggestions(typed).map((entry) => entry.value),
+        typed,
+      ).toEqual(first);
+    }
+    expect(source.suggestions("septimo").map((entry) => entry.value)).toEqual(
+      source.suggestions("Séptimo").map((entry) => entry.value),
+    );
+    expect(source.suggestions("Tercero").map((entry) => entry.value)).toContain(
+      "primary-math/intro-fractions",
+    );
+  });
+
   it("resolves a pack from a full id, a bare id or a keyword", async () => {
     const source = await catalog();
     expect(source.resolvePack("basic-math/fractions")).toBe("basic-math");
@@ -61,6 +81,6 @@ describe("topic catalog", () => {
     expect(source.topic?.("basic-math/nope")).toBeUndefined();
     const all = source.topics?.() ?? [];
     expect(all.map((entry) => entry.id)).toContain("algebra/algebraic-expressions");
-    expect(all).toHaveLength(23);
+    expect(all).toHaveLength(36);
   });
 });

@@ -1,0 +1,24 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 2 #4-5.
+id: time-clock
+name:
+  es: "La hora y duración de eventos"
+code: HOR
+grades: ["Segundo", "Tercero"]
+prerequisites: [whole-number-operations]
+objectives:
+  - id: read-clock
+    text:
+      es: "Lee la hora en un reloj de manecillas (en punto, y cuarto, y media, menos cuarto y minutos exactos)."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: elapsed-time
+    text:
+      es: "Calcula la duración de un evento y la hora en que termina."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [hora, reloj, minutos, duración, tiempo transcurrido, manecillas]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: clock-time, levels: [basico, intermedio, avanzado, genio] }

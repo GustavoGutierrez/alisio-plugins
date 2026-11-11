@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 4 #5 and grado 5 #4.
+id: prism-volume
+name:
+  es: "Volumen con cubos y prismas"
+code: VOL
+grades: ["Cuarto", "Quinto"]
+prerequisites: [perimeter-area]
+objectives:
+  - id: count-unit-cubes
+    text:
+      es: "Calcula el volumen de un prisma contando cubos unidad."
+    levels: [basico, intermedio, avanzado]
+  - id: prism-volume
+    text:
+      es: "Calcula el volumen de un prisma rectangular como largo por ancho por alto."
+    levels: [intermedio, avanzado, genio]
+  - id: missing-edge-capacity
+    text:
+      es: "Halla una arista desconocida y relaciona el volumen con la capacidad en litros."
+    levels: [avanzado, genio]
+keywords: [volumen, prisma, cubos, centímetros cúbicos, capacidad, litros]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: prism-volume, levels: [basico, intermedio, avanzado, genio] }

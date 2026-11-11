@@ -710,6 +710,23 @@ export const FAMILY_LABELS = {
   "linear-system-2x2": { en: "Systems of two equations", es: "Sistemas de dos ecuaciones" },
   "quadratic-equation": { en: "Quadratic equations", es: "Ecuaciones cuadráticas" },
   "word-problem-linear": { en: "Word problems", es: "Problemas con enunciado" },
+  "place-value": { en: "Place value", es: "Valor posicional" },
+  "clock-time": { en: "Time and clocks", es: "La hora" },
+  "money-problems": { en: "Money problems", es: "Problemas con dinero" },
+  "number-pattern": { en: "Number patterns", es: "Patrones numéricos" },
+  "missing-number": { en: "Missing numbers", es: "Número desconocido" },
+  "fraction-part": { en: "Fractions of a whole", es: "Fracción de un todo" },
+  "data-graph": { en: "Pictograms and bar charts", es: "Pictogramas y gráficas de barras" },
+  "perimeter-area": { en: "Perimeter and area", es: "Perímetro y área" },
+  "prism-volume": { en: "Volume of prisms", es: "Volumen de prismas" },
+  "angle-measure": { en: "Angles", es: "Ángulos" },
+  coordinates: { en: "Coordinate plane", es: "Plano cartesiano" },
+  "fraction-decimal-percent": {
+    en: "Fractions, decimals and percentages",
+    es: "Fracción, decimal y porcentaje",
+  },
+  "simple-probability": { en: "Simple probability", es: "Probabilidad simple" },
+  multiples: { en: "Parity and multiples", es: "Paridad y múltiplos" },
 };
 
 export const messages = { en, es };

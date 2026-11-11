@@ -2,9 +2,14 @@ id: divisibility
 name:
   es: "Divisibilidad, MCD y MCM"
 code: DIV
-grades: ["Sexto", "Séptimo"]
+grades: ["Cuarto", "Quinto", "Sexto", "Séptimo"]
 prerequisites: [natural-numbers]
 objectives:
+  # Merged from the primary "parity and multiples" topic (DBA grado 4-5): the multiples family.
+  - id: parity-multiples
+    text:
+      es: "Reconoce números pares e impares, múltiplos y divisores de un número."
+    levels: [basico, intermedio, avanzado, genio]
   - id: gcd-lcm
     text:
       es: "Calcula el máximo común divisor y el mínimo común múltiplo."
@@ -13,7 +18,7 @@ objectives:
     text:
       es: "Descompone un número en factores primos."
     levels: [intermedio, avanzado]
-keywords: [múltiplo, divisor, primo, mcm, mcd]
+keywords: [múltiplo, divisor, primo, mcm, mcd, par, impar, paridad]
 supports:
   single_choice: true
   multiple_choice: false
@@ -21,3 +26,4 @@ supports:
   practice: true
 sources:
   - { kind: family, family: gcd-lcm, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: multiples, levels: [basico, intermedio, avanzado, genio] }

@@ -1,9 +1,15 @@
 import { addSubtract } from "./add-subtract.js";
+import { angleMeasure } from "./angle-measure.js";
+import { clockTime } from "./clock-time.js";
+import { coordinates } from "./coordinates.js";
+import { dataGraph } from "./data-graph.js";
 import { decimalOps } from "./decimal-ops.js";
 import { division } from "./division.js";
 import { expressionEvaluate } from "./expression-evaluate.js";
 import { factoring } from "./factoring.js";
+import { fractionDecimalPercent } from "./fraction-decimal-percent.js";
 import { fractionOps } from "./fraction-ops.js";
+import { fractionPart } from "./fraction-part.js";
 import { fractionSimplify } from "./fraction-simplify.js";
 import { gcdLcm } from "./gcd-lcm.js";
 import { geometry } from "./geometry.js";
@@ -14,17 +20,25 @@ import { linearFunction } from "./linear-function.js";
 import { linearInequality } from "./linear-inequality.js";
 import { linearSystem2x2 } from "./linear-system-2x2.js";
 import { measurement } from "./measurement.js";
+import { missingNumber } from "./missing-number.js";
 import { mixedNumbers } from "./mixed-numbers.js";
+import { moneyProblems } from "./money.js";
+import { multiples } from "./multiples.js";
 import { multiplication } from "./multiplication.js";
+import { numberPattern } from "./number-pattern.js";
 import { orderOfOperations } from "./order-of-operations.js";
 import { percent } from "./percent.js";
+import { perimeterArea } from "./perimeter-area.js";
+import { placeValue } from "./place-value.js";
 import { polynomialOps } from "./polynomial-ops.js";
 import { powersRoots } from "./powers-roots.js";
 import { primeFactorization } from "./prime-factorization.js";
+import { prismVolume } from "./prism-volume.js";
 import { proportion } from "./proportion.js";
 import { quadraticEquation } from "./quadratic-equation.js";
 import { rationalCompare } from "./rational-compare.js";
 import { rationalExpression } from "./rational-expression.js";
+import { simpleProbability } from "./simple-probability.js";
 import { specialProducts } from "./special-products.js";
 import { statistics } from "./statistics.js";
 import type { Family } from "./types.js";
@@ -62,6 +76,20 @@ export const families: Record<string, Family> = {
   [division.id]: division,
   [measurement.id]: measurement,
   [statistics.id]: statistics,
+  [angleMeasure.id]: angleMeasure,
+  [clockTime.id]: clockTime,
+  [coordinates.id]: coordinates,
+  [dataGraph.id]: dataGraph,
+  [fractionDecimalPercent.id]: fractionDecimalPercent,
+  [fractionPart.id]: fractionPart,
+  [missingNumber.id]: missingNumber,
+  [moneyProblems.id]: moneyProblems,
+  [multiples.id]: multiples,
+  [numberPattern.id]: numberPattern,
+  [perimeterArea.id]: perimeterArea,
+  [placeValue.id]: placeValue,
+  [prismVolume.id]: prismVolume,
+  [simpleProbability.id]: simpleProbability,
 };
 
 export const familyIds: readonly string[] = Object.keys(families).sort();

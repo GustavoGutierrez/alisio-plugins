@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 2 #11, grado 3 #11 and grado 5 #12.
+id: simple-probability
+name:
+  es: "Probabilidad de eventos simples"
+code: PRO
+grades: ["Segundo", "Tercero", "Cuarto", "Quinto"]
+prerequisites: [intro-fractions]
+objectives:
+  - id: likelihood
+    text:
+      es: "Describe un suceso como seguro, muy probable, poco probable o imposible."
+    levels: [basico, intermedio]
+  - id: most-likely
+    text:
+      es: "Compara la posibilidad de varios resultados."
+    levels: [intermedio, avanzado]
+  - id: probability-fraction
+    text:
+      es: "Expresa la probabilidad de un suceso simple como una fracción."
+    levels: [intermedio, avanzado, genio]
+keywords: [probabilidad, seguro, posible, imposible, azar, bolsa, ruleta, suceso]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: family, family: simple-probability, levels: [basico, intermedio, avanzado, genio] }

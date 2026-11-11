@@ -1,4 +1,5 @@
 import { type CatalogTopic, type Level, levels, type TopicCatalog } from "../types.js";
+import { gradeMatches } from "./grades.js";
 import { type LoadedKnowledge, type LoadedTopic, localized } from "./types.js";
 
 /**
@@ -39,7 +40,7 @@ export function createTopicCatalog(knowledge: LoadedKnowledge): TopicCatalog {
     packs: () => packs.map((pack) => ({ value: pack.id, label: localized(pack.name) })),
     suggestions: (grade) => {
       const filtered =
-        grade === undefined ? topics : topics.filter((topic) => topic.grades.includes(grade));
+        grade === undefined ? topics : topics.filter((topic) => gradeMatches(topic.grades, grade));
       return filtered.map((topic) => ({ value: topic.fullId, label: localized(topic.name) }));
     },
     resolvePack: (topic) => {

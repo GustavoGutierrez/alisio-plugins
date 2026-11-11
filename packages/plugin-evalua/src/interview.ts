@@ -194,7 +194,7 @@ function round1(ctx: RoundContext): Question[] {
         option("sexto", "Sexto"),
         option("septimo", "Séptimo", { recommended: true }),
         option("octavo", "Octavo"),
-        option("other", "Otro grado", { placeholder: "Por ejemplo: Noveno" }),
+        option("other", "Otro grado", { placeholder: "Por ejemplo: Tercero o Noveno" }),
       ],
     });
   }

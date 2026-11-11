@@ -1,0 +1,24 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 3 #2.
+id: intro-fractions
+name:
+  es: "Fracciones como parte de un todo"
+code: FRI
+grades: ["Tercero"]
+prerequisites: [whole-number-operations]
+objectives:
+  - id: shaded-fraction
+    text:
+      es: "Escribe la fracción que representa la parte sombreada de una figura."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: fraction-of-a-set
+    text:
+      es: "Calcula una fracción de una colección de objetos."
+    levels: [intermedio, avanzado, genio]
+keywords: [fracción, parte de un todo, numerador, denominador, mitad, tercio, cuarto]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: fraction-part, levels: [basico, intermedio, avanzado, genio] }

@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 1 #9 and grado 2 #8.
+id: missing-number
+name:
+  es: "El signo igual y el número desconocido"
+code: IGU
+grades: ["Primero", "Segundo", "Tercero"]
+prerequisites: [whole-number-operations]
+objectives:
+  - id: unknown-addend
+    text:
+      es: "Encuentra el número que falta en una suma o una resta."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: equal-sign-balance
+    text:
+      es: "Interpreta el signo igual como equilibrio entre dos expresiones."
+    levels: [intermedio, avanzado, genio]
+  - id: unknown-factor
+    text:
+      es: "Encuentra el número que falta en una multiplicación o una división."
+    levels: [avanzado, genio]
+keywords: [signo igual, igualdad, número desconocido, número que falta, equilibrio]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: missing-number, levels: [basico, intermedio, avanzado, genio] }

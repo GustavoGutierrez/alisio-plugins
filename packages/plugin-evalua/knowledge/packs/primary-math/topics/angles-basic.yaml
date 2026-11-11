@@ -1,0 +1,24 @@
+# Sources: MEN Estándares Básicos de Competencias en Matemáticas, grados 4-5 (pensamiento espacial).
+id: angles-basic
+name:
+  es: "Ángulos: medición y clasificación"
+code: ANG
+grades: ["Cuarto", "Quinto"]
+prerequisites: []
+objectives:
+  - id: classify-angles
+    text:
+      es: "Clasifica ángulos en agudos, rectos, obtusos y llanos."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: angle-sums
+    text:
+      es: "Calcula ángulos que completan un ángulo recto, un ángulo llano o una vuelta."
+    levels: [intermedio, avanzado, genio]
+keywords: [ángulo, grados, agudo, recto, obtuso, llano, vuelta, transportador]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: family, family: angle-measure, levels: [basico, intermedio, avanzado, genio] }

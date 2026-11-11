@@ -1,0 +1,24 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 2 #8-9.
+id: number-patterns
+name:
+  es: "Secuencias y patrones numéricos"
+code: PAT
+grades: ["Primero", "Segundo", "Tercero"]
+prerequisites: []
+objectives:
+  - id: next-term
+    text:
+      es: "Encuentra el término siguiente de una secuencia que aumenta o disminuye con una regla."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: missing-term
+    text:
+      es: "Encuentra un término que falta y describe la regla del patrón."
+    levels: [intermedio, avanzado, genio]
+keywords: [secuencia, patrón, regularidad, regla, término siguiente, serie]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: number-pattern, levels: [basico, intermedio, avanzado, genio] }

@@ -76,7 +76,7 @@ describe("MEN pensamiento coverage", () => {
 
   it("adds the statistics topic to basic-math", () => {
     const stats = packs.get("basic-math")?.topics.find((topic) => topic.id === "statistics");
-    expect(stats?.grades).toEqual(["Sexto", "Séptimo", "Octavo", "Noveno"]);
+    expect(stats?.grades).toEqual(["Cuarto", "Quinto", "Sexto", "Séptimo", "Octavo", "Noveno"]);
     expect(stats?.sources).toContainEqual({
       kind: "family",
       family: "statistics",

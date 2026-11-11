@@ -157,11 +157,21 @@ alisio-evalua doctor   # salud de la base de conocimiento y navegador
   forma explícita con `EVL-LAY-001` cuando no puede. Una auditoría in-page revisa desbordamiento
   horizontal, cajas solapadas, texto bajo el piso, ajuste de fórmulas y espacio de respuesta
   (`EVL-LAY-002`, `EVL-LAY-004`).
-- **Figuras.** Se generan por código figuras SVG deterministas en escala de grises y se incrustan en
-  los ítems con un bloque `figure`: diagramas de conjuntos (Venn), planos cartesianos, triángulos,
-  cuadrados, rectángulos, polígonos regulares, circunferencias, elipses, prismas, cilindros, conos,
-  rectas numéricas, barras de fracción, gráficas de barras y ángulos. Una pregunta puede mostrar un
-  diagrama sin asset externo ni red.
+- **Cobertura.** Tres packs incluidos siguen los DBA y los Estándares del MEN: `primary-math` de
+  Primero a Quinto (valor posicional, operaciones con naturales, dinero en pesos, la hora, secuencias
+  y patrones, el signo igual y el número desconocido, fracciones como parte de un todo, pictogramas
+  y gráficas de barras, perímetro y área, volumen con cubos, ángulos, fracción/decimal/porcentaje,
+  probabilidad simple y medición), `basic-math` de Cuarto a Noveno (incluye divisibilidad con
+  paridad y múltiplos, estadística y el plano cartesiano del primer cuadrante a los cuatro) y
+  `algebra`.
+- **Figuras.** Se generan por código figuras SVG deterministas a partir de los mismos parámetros que
+  la respuesta y se incrustan en los ítems con un bloque `figure`: diagramas de conjuntos (Venn),
+  planos cartesianos y cuadrículas de coordenadas numeradas, triángulos, cuadrados, rectángulos y
+  figuras en L con sus lados rotulados, polígonos regulares, circunferencias, elipses, prismas
+  (también rotulados o armados con cubos unidad), cilindros, conos, rectas numéricas, barras y
+  círculos de fracción, gráficas de barras y pictogramas, ángulos a escala, relojes de manecillas,
+  ruletas y bolsas de bolas con letras. Cada figura tiene un título accesible en español, se imprime
+  en blanco y negro y no necesita assets externos ni red.
 - **Temas.** Se envían tres temas por datos (`classic`, `blue`, `dark`), elegidos por
   `exam.yaml.template` y extensibles desde `templates/themes/<id>/`.
 - **Textos de cierre.** Un catálogo con fuente (frases célebres y versículos de la Reina-Valera 1909

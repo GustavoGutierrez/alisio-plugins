@@ -11,6 +11,7 @@ import { generateExam } from "../generate.js";
 import { inlineHtml, markupHtml } from "../html/emit.js";
 import { parseItemsFile } from "../items-file.js";
 import { evaluaMathRenderer } from "../katex.js";
+import { gradeMatches } from "../knowledge/grades.js";
 import { shippedLocalesDir } from "../knowledge/index.js";
 import {
   LogoError,
@@ -403,7 +404,7 @@ export class EvaluaAppService {
   private async catalogList(ws: string, grade: string | undefined) {
     const catalog = await this.coordinator.catalogForWorkspace(ws);
     const topics = (catalog.topics?.() ?? []).filter(
-      (topic) => grade === undefined || topic.grades.includes(grade),
+      (topic) => grade === undefined || gradeMatches(topic.grades, grade),
     );
     const packs = new Map<string, Record<string, string>>();
     for (const topic of catalog.topics?.() ?? []) packs.set(topic.pack, topic.packName);

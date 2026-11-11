@@ -222,7 +222,11 @@ export function generateExam(input: GenerateInput): GenerateResult {
       let placed = false;
       for (let attempt = 0; attempt < MAX_SLOT_ATTEMPTS && !placed; attempt += 1) {
         const seedString = `${input.seed}|${cell.topic}|${cell.cognitive}|${cell.type}|${index}|${attempt}`;
-        for (const source of familySources) {
+        // Rotating the first family by slot spreads a multi-family topic across all of them;
+        // without it the first family would fill every slot it can.
+        const start = familySources.length > 0 ? index % familySources.length : 0;
+        const ordered = [...familySources.slice(start), ...familySources.slice(0, start)];
+        for (const source of ordered) {
           const family = familyRegistry[source.family];
           if (family === undefined) continue;
           const rawPrompts = input.prompts?.[source.family] ?? source.params?.prompts;

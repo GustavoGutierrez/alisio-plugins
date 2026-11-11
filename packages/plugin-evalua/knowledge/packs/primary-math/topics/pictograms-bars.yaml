@@ -1,0 +1,24 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 1 #10 and grado 2 #10.
+id: pictograms-bars
+name:
+  es: "Pictogramas y gráficas de barras"
+code: GRA
+grades: ["Primero", "Segundo", "Tercero"]
+prerequisites: []
+objectives:
+  - id: read-data
+    text:
+      es: "Lee datos en tablas, pictogramas y gráficas de barras."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: compare-data
+    text:
+      es: "Compara datos: cuál tiene más, cuál menos, cuántos más y cuántos en total."
+    levels: [basico, intermedio, avanzado, genio]
+keywords: [pictograma, gráfica de barras, tabla de datos, encuesta, datos, votos]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: false
+sources:
+  - { kind: family, family: data-graph, levels: [basico, intermedio, avanzado, genio] }

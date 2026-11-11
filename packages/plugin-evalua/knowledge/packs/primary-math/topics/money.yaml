@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 2 #1 and grado 3 #1.
+id: money
+name:
+  es: "Problemas con dinero en pesos"
+code: DIN
+grades: ["Primero", "Segundo", "Tercero"]
+prerequisites: [whole-number-operations]
+objectives:
+  - id: count-money
+    text:
+      es: "Cuenta cantidades de dinero con monedas y billetes colombianos."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: give-change
+    text:
+      es: "Calcula el total de una compra y el cambio que se recibe."
+    levels: [intermedio, avanzado, genio]
+  - id: how-many-items
+    text:
+      es: "Decide cuántos artículos se pueden comprar con una cantidad de dinero."
+    levels: [avanzado, genio]
+keywords: [dinero, pesos, monedas, billetes, cambio, compra, vueltas]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: money-problems, levels: [basico, intermedio, avanzado, genio] }
