@@ -2,7 +2,13 @@ import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { shippedQuotesDir } from "../src/knowledge/package.js";
-import { loadQuotes, loadQuotesLayers, type QuoteEntry, selectClosing } from "../src/quotes.js";
+import {
+  closingKeywords,
+  loadQuotes,
+  loadQuotesLayers,
+  type QuoteEntry,
+  selectClosing,
+} from "../src/quotes.js";
 import { cleanup, scratchDir } from "./helpers/harness.js";
 
 afterEach(cleanup);
@@ -33,9 +39,9 @@ describe("quotes catalogue", () => {
     }
   });
 
-  it("ships thirteen sourced famous quotes for basic math and algebra", () => {
+  it("ships sourced famous quotes across math areas", () => {
     const quotes = entries.filter((entry) => entry.kind === "quote");
-    expect(quotes).toHaveLength(13);
+    expect(quotes.length).toBeGreaterThanOrEqual(72);
     for (const entry of quotes) {
       expect(entry.author).toBeTruthy();
       expect(entry.source.trim().length).toBeGreaterThan(0);
@@ -111,5 +117,27 @@ describe("workspace quotes layer", () => {
       "docente",
     );
     expect(catalogue.entries.some((entry) => entry.id === "custom-teacher-quote")).toBe(true);
+  });
+});
+
+describe("closingKeywords", () => {
+  it("derives pack, topic and word keywords", () => {
+    const keywords = closingKeywords(["primary-math/simple-probability"], ["primary-math"]);
+    expect(keywords).toEqual(
+      expect.arrayContaining(["primary-math", "simple-probability", "probability", "primary"]),
+    );
+  });
+
+  it("makes a geometry exam close with a geometry quote", async () => {
+    const shipped = (await loadQuotes(shippedQuotesDir())).entries;
+    const closing = selectClosing({
+      kind: "quote",
+      pinned: null,
+      language: "es",
+      keywords: closingKeywords(["basic-math/geometry"], ["basic-math"]),
+      examId: "EX-1",
+      entries: shipped,
+    });
+    expect(closing.entry?.tags).toContain("geometry");
   });
 });

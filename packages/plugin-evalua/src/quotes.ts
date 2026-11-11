@@ -174,6 +174,22 @@ function tieBreak(examId: string, id: string): string {
   return createHash("sha256").update(`${examId}\u0000${id}`).digest("hex");
 }
 
+/**
+ * Tag keywords for an exam's closing: each pack id and topic id (`algebra/factoring` gives
+ * `algebra` and `factoring`), plus the hyphen-separated words of each (`simple-probability` also
+ * gives `probability`), so a quote tagged with a math area ranks first for exams on that area.
+ */
+export function closingKeywords(topics: readonly string[], packs: readonly string[]): string[] {
+  const out = new Set<string>();
+  for (const id of [...packs, ...topics.flatMap((topic) => topic.split("/"))]) {
+    const value = id.trim().toLowerCase();
+    if (value === "") continue;
+    out.add(value);
+    for (const word of value.split("-")) if (word.length > 2) out.add(word);
+  }
+  return [...out];
+}
+
 /** Deterministic closing selection: teacher text wins, then a pinned id, then tag-overlap scoring. */
 export function selectClosing(input: ClosingInput): ClosingSelection {
   if (input.kind === "none") return {};

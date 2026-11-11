@@ -10,13 +10,13 @@
   text: "No hay camino real que lleve a la geometría."
   author: "Euclides (recogido por Proclo)"
   source: "Proclo, Comentario al Libro I de los Elementos de Euclides."
-  tags: [diligence, perseverance]
+  tags: [diligence, perseverance, geometry]
   language: es
 - id: gauss-queen-of-sciences
   text: "La matemática es la reina de las ciencias y la teoría de números, la reina de la matemática."
   author: "Carl Friedrich Gauss"
   source: "Atribuido a Gauss; citado en Sartorius, Gauss zum Gedächtniss (1856)."
-  tags: [knowledge, wisdom]
+  tags: [knowledge, wisdom, numbers, arithmetic]
   language: es
 - id: roger-bacon-door-key
   text: "Las matemáticas son la puerta y la llave de las ciencias."
@@ -40,13 +40,13 @@
   text: "Que no entre quien no sepa geometría."
   author: "Platón"
   source: "Inscripción en la Academia de Platón, recogida por la tradición."
-  tags: [knowledge, logic]
+  tags: [knowledge, logic, geometry]
   language: es
 - id: galileo-measure
   text: "Medid lo que sea medible, y haced medible lo que no lo sea."
   author: "Galileo Galilei"
   source: "Atribuida a Galileo Galilei; citada por Hermann Weyl."
-  tags: [logic, diligence]
+  tags: [logic, diligence, measurement]
   language: es
 - id: cantor-freedom
   text: "La esencia de la matemática está en su libertad."
@@ -76,5 +76,359 @@
   text: "Dividir cada dificultad en tantas partes como sea posible para resolverla mejor."
   author: "René Descartes"
   source: "René Descartes, Discurso del método, Parte II (1637)."
-  tags: [logic, diligence]
+  tags: [logic, diligence, problem-solving]
+  language: es
+- id: polya-grain-of-discovery
+  text: "Un gran descubrimiento resuelve un gran problema, pero en la solución de cualquier problema hay una pizca de descubrimiento. Tu problema puede ser modesto; pero si desafía tu curiosidad y pone en juego tus facultades inventivas, y si lo resuelves por tus propios medios, puedes experimentar la tensión y disfrutar del triunfo del descubrimiento."
+  author: "George Pólya"
+  source: "George Pólya, How to Solve It (Cómo plantear y resolver problemas), prefacio a la primera edición (1945); traducción libre al español."
+  tags: [problem-solving, curiosity, perseverance]
+  language: es
+- id: polya-simpler-problem
+  text: "Si no puedes resolver el problema propuesto, intenta resolver primero un problema relacionado más sencillo."
+  author: "George Pólya"
+  source: "George Pólya, Mathematical Methods in Science (1977); traducción libre al español."
+  tags: [problem-solving, logic]
+  language: es
+- id: polya-learn-guessing
+  text: "Aprendamos a demostrar, pero también aprendamos a conjeturar."
+  author: "George Pólya"
+  source: "George Pólya, Induction and Analogy in Mathematics, vol. I de Mathematics and Plausible Reasoning (1954); traducción libre al español."
+  tags: [logic, creativity, problem-solving]
+  language: es
+- id: halmos-do-mathematics
+  text: "La única manera de aprender matemáticas es hacer matemáticas."
+  author: "Paul Halmos"
+  source: "Paul Halmos, A Hilbert Space Problem Book, prefacio (1967); traducción libre al español."
+  tags: [study, diligence]
+  language: es
+- id: halmos-fight-it
+  text: "¡No te limites a leerlo; lucha con ello! Hazte tus propias preguntas, busca tus propios ejemplos, descubre tus propias demostraciones."
+  author: "Paul Halmos"
+  source: "Paul Halmos, I Want to Be a Mathematician: An Automathography (1985); traducción libre al español."
+  tags: [study, curiosity, problem-solving]
+  language: es
+- id: halmos-never-give-up
+  text: "[…] debes esforzarte continuamente por llegar a la perfección, debes amar las matemáticas más que cualquier otra cosa, debes trabajar en ellas con empeño y sin descanso, y nunca debes rendirte."
+  author: "Paul Halmos"
+  source: "Paul Halmos, I Want to Be a Mathematician: An Automathography (1985); traducción libre al español."
+  tags: [perseverance, diligence]
+  language: es
+- id: hardy-beauty
+  text: "Los patrones del matemático, como los del pintor o los del poeta, deben ser bellos; las ideas, como los colores o las palabras, deben encajar de forma armoniosa. La belleza es la primera prueba: no hay lugar permanente en el mundo para las matemáticas feas."
+  author: "G. H. Hardy"
+  source: "G. H. Hardy, Apología de un matemático, §10 (1940); traducción libre al español."
+  tags: [creativity, wisdom]
+  language: es
+- id: hardy-archimedes
+  text: "Arquímedes será recordado cuando Esquilo haya sido olvidado, porque las lenguas mueren y las ideas matemáticas no."
+  author: "G. H. Hardy"
+  source: "G. H. Hardy, Apología de un matemático (1940); traducción libre al español."
+  tags: [knowledge, wisdom, geometry]
+  language: es
+- id: poincare-logic-intuition
+  text: "Es por la lógica que demostramos, pero por la intuición que descubrimos. Saber criticar es bueno; saber crear es mejor."
+  author: "Henri Poincaré"
+  source: "Henri Poincaré, Ciencia y método, libro II, cap. 2 (1908); traducción libre al español."
+  tags: [logic, creativity]
+  language: es
+- id: poincare-facts-stones
+  text: "La ciencia se construye con hechos, como una casa con piedras; pero una acumulación de hechos no es una ciencia, del mismo modo que un montón de piedras no es una casa."
+  author: "Henri Poincaré"
+  source: "Henri Poincaré, La ciencia y la hipótesis, cap. IX (1902); traducción libre al español."
+  tags: [knowledge, logic, study]
+  language: es
+- id: poincare-pleasure
+  text: "El científico no estudia la naturaleza porque sea útil; la estudia porque le produce placer, y le produce placer porque es bella."
+  author: "Henri Poincaré"
+  source: "Henri Poincaré, Ciencia y método, libro I, cap. 1 (1908); traducción libre al español."
+  tags: [curiosity, knowledge]
+  language: es
+- id: kovalevskaya-imagination
+  text: "Muchos que nunca han tenido la oportunidad de saber más de matemáticas la confunden con la aritmética y la consideran una ciencia árida. En realidad, es una ciencia que requiere una gran dosis de imaginación."
+  author: "Sofía Kovalévskaya"
+  source: "Sofía Kovalévskaya, carta a la señora Shabélskaya (1890), recogida en Sónya Kovalévsky: Her Recollections of Childhood, trad. I. F. Hapgood (1895), p. 316; traducción libre al español."
+  tags: [creativity, knowledge, arithmetic]
+  language: es
+- id: kovalevskaya-poet-sees
+  text: "Me parece que el poeta solo tiene que percibir lo que otros no perciben, mirar más hondo de lo que miran los demás. Y el matemático debe hacer lo mismo."
+  author: "Sofía Kovalévskaya"
+  source: "Sofía Kovalévskaya, carta a la señora Shabélskaya (1890), recogida en Sónya Kovalévsky: Her Recollections of Childhood, trad. I. F. Hapgood (1895), p. 317; traducción libre al español."
+  tags: [curiosity, creativity]
+  language: es
+- id: kovalevskaya-motto
+  text: "Di lo que sabes, haz lo que debes, pase lo que pase."
+  author: "Sofía Kovalévskaya"
+  source: "Sofía Kovalévskaya, lema de su memoria para el Premio Bordin de la Academia de Ciencias de París (1888), recogido por Michèle Audin, Souvenirs sur Sofia Kovalevskaya (2008); traducción libre al español."
+  tags: [perseverance, diligence]
+  language: es
+- id: mirzakhani-patient-followers
+  text: "Entiendo que, sin entusiasmo, las matemáticas pueden parecer inútiles y frías. La belleza de las matemáticas solo se muestra a sus seguidores más pacientes."
+  author: "Maryam Mirzakhani"
+  source: "Maryam Mirzakhani, entrevista en el Clay Mathematics Institute Annual Report (2008); traducción libre al español."
+  tags: [perseverance, curiosity]
+  language: es
+- id: mirzakhani-real-chance
+  text: "Creo que muchos estudiantes no le dan a las matemáticas una verdadera oportunidad. A mí me fue mal en matemáticas durante un par de años en la escuela secundaria; simplemente no me interesaba pensar en ellas."
+  author: "Maryam Mirzakhani"
+  source: "Maryam Mirzakhani, entrevista en el Clay Mathematics Institute Annual Report (2008); traducción libre al español."
+  tags: [mistakes, perseverance, basic-math]
+  language: es
+- id: mirzakhani-jungle
+  text: "No tengo ninguna receta particular. Por eso investigar es un desafío y, a la vez, algo atractivo. Es como estar perdida en una selva e intentar usar todo el conocimiento que puedas reunir para idear nuevos trucos; con algo de suerte, encontrarás una salida."
+  author: "Maryam Mirzakhani"
+  source: "Maryam Mirzakhani, declaraciones en «Stanford's Maryam Mirzakhani wins Fields Medal», Stanford Report (agosto de 2014); traducción libre al español."
+  tags: [problem-solving, perseverance, creativity]
+  language: es
+- id: einstein-difficulties
+  text: "No te preocupes por tus dificultades en matemáticas; te puedo asegurar que las mías son todavía mayores."
+  author: "Albert Einstein"
+  source: "Albert Einstein, carta a la estudiante Barbara Wilson (7 de enero de 1943), Archivo Einstein 42-606; recogida en A. Calaprice, Dear Professor Einstein (2002); traducción libre al español."
+  tags: [perseverance, mistakes, basic-math]
+  language: es
+- id: einstein-questioning
+  text: "Lo importante es no dejar de hacerse preguntas. La curiosidad tiene su propia razón de existir."
+  author: "Albert Einstein"
+  source: "Albert Einstein, citado por William Miller en «Death of a Genius», revista LIFE (2 de mayo de 1955); traducción libre al español."
+  tags: [curiosity, knowledge]
+  language: es
+- id: einstein-passionately-curious
+  text: "No tengo talentos especiales. Solo soy apasionadamente curioso."
+  author: "Albert Einstein"
+  source: "Albert Einstein, carta a Carl Seelig (11 de marzo de 1952), Archivo Einstein 39-013; traducción libre al español."
+  tags: [curiosity, diligence]
+  language: es
+- id: gauss-act-of-learning
+  text: "En verdad, no es el saber sino el aprender, no la posesión sino la adquisición, no el estar ahí sino el llegar, lo que proporciona el mayor goce."
+  author: "Carl Friedrich Gauss"
+  source: "Carl Friedrich Gauss, carta a Farkas Bolyai (2 de septiembre de 1808), en Briefwechsel zwischen C. F. Gauss und W. Bolyai (1899); traducción libre al español."
+  tags: [study, perseverance, knowledge]
+  language: es
+- id: laplace-common-sense
+  text: "La teoría de las probabilidades no es, en el fondo, más que el sentido común reducido a cálculo."
+  author: "Pierre-Simon Laplace"
+  source: "Pierre-Simon Laplace, Ensayo filosófico sobre las probabilidades (1814); traducción libre al español."
+  tags: [logic, probability, probability-statistics]
+  language: es
+- id: laplace-immense
+  text: "Lo que sabemos es poca cosa; lo que ignoramos es inmenso."
+  author: "Pierre-Simon Laplace"
+  source: "Últimas palabras atribuidas a Laplace, recogidas por Joseph Fourier en su Éloge historique de M. le Marquis de Laplace (1829); traducción libre al español."
+  tags: [curiosity, wisdom]
+  language: es
+- id: germain-algebra-geometry
+  text: "El álgebra no es más que una geometría escrita; la geometría no es más que un álgebra figurada."
+  author: "Sophie Germain"
+  source: "Sophie Germain, «Pensées diverses», en Œuvres philosophiques de Sophie Germain, ed. H. Stupuy (1879); traducción libre al español."
+  tags: [knowledge, algebra, geometry]
+  language: es
+- id: germain-geometer-truth
+  text: "Un geómetra es alguien que emprende la tarea de encontrar la verdad, y esa búsqueda es siempre trabajosa, tanto en las ciencias como en la moral."
+  author: "Sophie Germain"
+  source: "Sophie Germain, «Pensées diverses», en Œuvres philosophiques de Sophie Germain, ed. H. Stupuy (1879); traducción libre al español."
+  tags: [perseverance, logic, geometry]
+  language: es
+- id: lovelace-algebraic-patterns
+  text: "Podemos decir, con toda propiedad, que la Máquina Analítica teje patrones algebraicos tal como el telar de Jacquard teje flores y hojas."
+  author: "Ada Lovelace"
+  source: "Ada Lovelace, notas a su traducción de la memoria de L. F. Menabrea sobre la Máquina Analítica, Scientific Memoirs (1843); traducción libre al español."
+  tags: [creativity, algebra]
+  language: es
+- id: noether-methods
+  text: "Mis métodos son, en realidad, métodos de trabajo y de pensamiento; por eso se han infiltrado anónimamente en todas partes."
+  author: "Emmy Noether"
+  source: "Emmy Noether, carta a Helmut Hasse (1931), citada en Auguste Dick, Emmy Noether, 1882-1935 (1981); traducción libre al español."
+  tags: [logic, diligence, algebra]
+  language: es
+- id: curie-perseverance
+  text: "La vida no es fácil para ninguno de nosotros. Pero ¿qué importa? Hay que tener perseverancia y, sobre todo, confianza en uno mismo. Hay que creer que uno está dotado para algo y que esa cosa hay que alcanzarla, cueste lo que cueste."
+  author: "Marie Curie"
+  source: "Marie Curie, carta a su hermano (18 de marzo de 1894), recogida en Eve Curie, Madame Curie (1937); traducción libre al español."
+  tags: [perseverance, diligence]
+  language: es
+- id: sor-juana-ignorar-menos
+  text: "Lo que sólo he deseado es estudiar para ignorar menos."
+  author: "Sor Juana Inés de la Cruz"
+  source: "Sor Juana Inés de la Cruz, Respuesta a sor Filotea de la Cruz (1691)."
+  tags: [study, knowledge]
+  language: es
+- id: sor-juana-aristoteles
+  text: "Si Aristóteles hubiera guisado, mucho más hubiera escrito."
+  author: "Sor Juana Inés de la Cruz"
+  source: "Sor Juana Inés de la Cruz, Respuesta a sor Filotea de la Cruz (1691)."
+  tags: [curiosity, wisdom]
+  language: es
+- id: sor-juana-nada-veia
+  text: "Nada veía sin refleja; nada oía sin consideración, aun en las cosas más menudas y materiales."
+  author: "Sor Juana Inés de la Cruz"
+  source: "Sor Juana Inés de la Cruz, Respuesta a sor Filotea de la Cruz (1691)."
+  tags: [curiosity, logic]
+  language: es
+- id: cajal-escultor
+  text: "Consideremos, además, que todo hombre puede ser, si se lo propone, escultor de su propio cerebro, y que aun el peor dotado es susceptible, al modo de las tierras pobres, pero bien cultivadas y abonadas, de rendir copiosa mies."
+  author: "Santiago Ramón y Cajal"
+  source: "Santiago Ramón y Cajal, Reglas y consejos sobre investigación científica. Los tónicos de la voluntad (1897)."
+  tags: [perseverance, diligence, study]
+  language: es
+- id: cajal-atencion-prolongada
+  text: "Casi todos los que desconfían de sus propias fuerzas ignoran el maravilloso poder de la atención prolongada."
+  author: "Santiago Ramón y Cajal"
+  source: "Santiago Ramón y Cajal, Reglas y consejos sobre investigación científica. Los tónicos de la voluntad (1897)."
+  tags: [diligence, perseverance, study]
+  language: es
+- id: marti-ser-culto
+  text: "Ser bueno es el único modo de ser dichoso. Ser culto es el único modo de ser libre."
+  author: "José Martí"
+  source: "José Martí, «Maestros ambulantes», La América, Nueva York (mayo de 1884)."
+  tags: [knowledge, study, wisdom]
+  language: es
+- id: santalo-mision
+  text: "La misión de los educadores es preparar a las nuevas generaciones para el mundo en que tendrán que vivir."
+  author: "Luis A. Santaló"
+  source: "Luis A. Santaló, «Matemática para no matemáticos», en C. Parra e I. Saiz (comps.), Didáctica de matemáticas. Aportes y reflexiones (1994)."
+  tags: [knowledge, study]
+  language: es
+- id: guzman-arte-juego
+  text: "La matemática ha sido y es arte y juego, y esta componente artística y lúdica es tan consubstancial a la actividad matemática misma que cualquier campo del desarrollo matemático que no alcanza un cierto nivel de satisfacción estética y lúdica permanece inestable."
+  author: "Miguel de Guzmán"
+  source: "Miguel de Guzmán, «Juegos y matemáticas», revista SUMA, n.º 4, pp. 61-64 (1989)."
+  tags: [creativity, problem-solving]
+  language: es
+- id: descartes-apply-well
+  text: "No basta con tener buen ingenio; lo principal es aplicarlo bien."
+  author: "René Descartes"
+  source: "René Descartes, Discurso del método, Parte I (1637); traducción libre al español."
+  tags: [diligence, logic, study]
+  language: es
+- id: descartes-simplest-first
+  text: "Conducir por orden mis pensamientos, empezando por los objetos más simples y más fáciles de conocer, para ascender poco a poco, como por grados, hasta el conocimiento de los más complejos."
+  author: "René Descartes"
+  source: "René Descartes, Discurso del método, Parte II (1637); traducción libre al español."
+  tags: [logic, problem-solving, study]
+  language: es
+- id: descartes-nothing-hidden
+  text: "Con tal de abstenerse de admitir como verdadera ninguna que no lo sea, y de guardar siempre el orden necesario para deducirlas unas de otras, no puede haber ninguna tan lejana que no se alcance al fin, ni tan oculta que no se descubra."
+  author: "René Descartes"
+  source: "René Descartes, Discurso del método, Parte II (1637), sobre las largas cadenas de razones de los geómetras; traducción libre al español."
+  tags: [logic, perseverance, geometry]
+  language: es
+- id: pascal-think-well
+  text: "Toda nuestra dignidad consiste, pues, en el pensamiento. Trabajemos, pues, en pensar bien: he aquí el principio de la moral."
+  author: "Blaise Pascal"
+  source: "Blaise Pascal, Pensamientos, n.º 347 de la edición Brunschvicg (1670); traducción libre al español."
+  tags: [logic, wisdom]
+  language: es
+- id: leibniz-music-counting
+  text: "La música es un ejercicio oculto de aritmética del alma, que no sabe que está contando."
+  author: "Gottfried Wilhelm Leibniz"
+  source: "Gottfried Wilhelm Leibniz, carta a Christian Goldbach (17 de abril de 1712); traducción libre al español."
+  tags: [creativity, arithmetic, numbers]
+  language: es
+- id: newton-shoulders
+  text: "Si he visto más lejos, es porque estoy subido a hombros de gigantes."
+  author: "Isaac Newton"
+  source: "Isaac Newton, carta a Robert Hooke (5 de febrero de 1675/76); traducción libre al español."
+  tags: [knowledge, study, wisdom]
+  language: es
+- id: newton-patient-thought
+  text: "Si he prestado algún servicio al público de esta manera, no se debe a otra cosa que a la laboriosidad y a un pensamiento paciente."
+  author: "Isaac Newton"
+  source: "Isaac Newton, carta a Richard Bentley (10 de diciembre de 1692), en The Correspondence of Isaac Newton, vol. 3; traducción libre al español."
+  tags: [diligence, perseverance]
+  language: es
+- id: euler-maximum-minimum
+  text: "Nada en absoluto ocurre en el universo en lo que no aparezca alguna relación de máximo y mínimo."
+  author: "Leonhard Euler"
+  source: "Leonhard Euler, Methodus inveniendi lineas curvas maximi minimive proprietate gaudentes, apéndice I «De curvis elasticis» (1744); traducción libre al español."
+  tags: [knowledge, calculus, functions]
+  language: es
+- id: aristotle-desire-to-know
+  text: "Todos los seres humanos desean por naturaleza saber."
+  author: "Aristóteles"
+  source: "Aristóteles, Metafísica, libro I, 980a; traducción libre al español."
+  tags: [curiosity, knowledge]
+  language: es
+- id: kelvin-measure
+  text: "Suelo decir que cuando puedes medir aquello de lo que hablas y expresarlo en números, sabes algo de ello; pero cuando no puedes medirlo ni expresarlo en números, tu conocimiento es escaso e insatisfactorio."
+  author: "William Thomson (lord Kelvin)"
+  source: "William Thomson (lord Kelvin), conferencia «Electrical Units of Measurement» (3 de mayo de 1883), en Popular Lectures and Addresses, vol. I; traducción libre al español."
+  tags: [knowledge, measurement, numbers]
+  language: es
+- id: tukey-right-question
+  text: "Es mucho mejor una respuesta aproximada a la pregunta correcta, que suele ser vaga, que una respuesta exacta a la pregunta equivocada, que siempre puede hacerse precisa."
+  author: "John W. Tukey"
+  source: "John W. Tukey, «The Future of Data Analysis», Annals of Mathematical Statistics 33 (1), p. 13 (1962); traducción libre al español."
+  tags: [problem-solving, statistics, probability-statistics]
+  language: es
+- id: hamming-insight
+  text: "El propósito del cálculo es la comprensión, no los números."
+  author: "Richard Hamming"
+  source: "Richard Hamming, Numerical Methods for Scientists and Engineers, prefacio (1962); traducción libre al español."
+  tags: [knowledge, arithmetic, numbers]
+  language: es
+- id: feynman-fool-yourself
+  text: "El primer principio es que no debes engañarte a ti mismo, y tú eres la persona más fácil de engañar."
+  author: "Richard Feynman"
+  source: "Richard Feynman, «Cargo Cult Science», discurso de graduación en Caltech (1974); traducción libre al español."
+  tags: [logic, mistakes]
+  language: es
+- id: bacon-truth-from-error
+  text: "La verdad surge antes del error que de la confusión."
+  author: "Francis Bacon"
+  source: "Francis Bacon, Novum Organum, libro II, aforismo 20 (1620); traducción libre al español."
+  tags: [mistakes, logic]
+  language: es
+- id: bacon-study-mathematics
+  text: "Si el ingenio de alguien es divagante, que estudie las matemáticas; pues en las demostraciones, si su ingenio se distrae aunque sea un poco, debe empezar de nuevo."
+  author: "Francis Bacon"
+  source: "Francis Bacon, «De los estudios», en Ensayos (1625); traducción libre al español."
+  tags: [study, diligence, logic]
+  language: es
+- id: confucius-learning-thought
+  text: "Aprender sin pensar es esfuerzo perdido; pensar sin aprender es peligroso."
+  author: "Confucio"
+  source: "Confucio, Analectas, libro II, 15; traducción libre al español."
+  tags: [study, logic, wisdom]
+  language: es
+- id: leonardo-iron-rusts
+  text: "El hierro se oxida por falta de uso; el agua estancada pierde su pureza y con el frío se congela; así también la inacción agota el vigor de la mente."
+  author: "Leonardo da Vinci"
+  source: "Leonardo da Vinci, Cuadernos de notas, ed. J. P. Richter (1883); traducción libre al español."
+  tags: [diligence, study, perseverance]
+  language: es
+- id: leonardo-certainty
+  text: "No hay certeza en las ciencias donde no se puede aplicar alguna de las ciencias matemáticas, o que no están relacionadas con ellas."
+  author: "Leonardo da Vinci"
+  source: "Leonardo da Vinci, Cuadernos de notas, ed. J. P. Richter (1883), máximas filosóficas; traducción libre al español."
+  tags: [knowledge, logic]
+  language: es
+- id: dewey-failure
+  text: "El fracaso no es un simple fracaso: es instructivo. Quien realmente piensa aprende tanto de sus fracasos como de sus éxitos."
+  author: "John Dewey"
+  source: "John Dewey, How We Think (Cómo pensamos), edición revisada (1933); traducción libre al español."
+  tags: [mistakes, logic, perseverance]
+  language: es
+- id: hilbert-perpetual-call
+  text: "Esta convicción de que todo problema matemático tiene solución es un poderoso incentivo para quien trabaja. Oímos dentro de nosotros la llamada perpetua: ahí está el problema; busca su solución. Puedes encontrarla por la razón pura, pues en matemáticas no hay ignorabimus."
+  author: "David Hilbert"
+  source: "David Hilbert, «Problemas matemáticos», conferencia en el Congreso Internacional de Matemáticos de París (1900); traducción libre al español."
+  tags: [perseverance, problem-solving, logic]
+  language: es
+- id: fourier-nature
+  text: "El estudio profundo de la naturaleza es la fuente más fecunda de los descubrimientos matemáticos."
+  author: "Joseph Fourier"
+  source: "Joseph Fourier, Teoría analítica del calor, discurso preliminar (1822); traducción libre al español."
+  tags: [curiosity, knowledge]
+  language: es
+- id: weierstrass-poet
+  text: "Un matemático que no sea en alguna medida poeta nunca será un matemático completo."
+  author: "Karl Weierstrass"
+  source: "Karl Weierstrass, carta a Sofía Kovalévskaya (27 de agosto de 1883), publicada por G. Mittag-Leffler en las actas del II Congreso Internacional de Matemáticos (1900); traducción libre al español."
+  tags: [creativity, wisdom]
+  language: es
+- id: abel-masters
+  text: "Me parece que, si uno quiere progresar en matemáticas, debe estudiar a los maestros y no a los discípulos."
+  author: "Niels Henrik Abel"
+  source: "Niels Henrik Abel, nota al margen de su cuaderno matemático (hacia 1826), citada por Øystein Ore, Niels Henrik Abel: Mathematician Extraordinary (1957); traducción libre al español."
+  tags: [study, knowledge]
   language: es
