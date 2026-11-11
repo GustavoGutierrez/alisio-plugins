@@ -1,5 +1,99 @@
 # @alisio/plugin-evalua
 
+## 0.13.0
+
+### Minor Changes
+
+- Add 59 sourced motivational quotes (72 in total) and pick the closing quote that matches the exam's
+  topics and packs instead of a random one.
+- 39476d3: Cover primary school (Primero to Quinto) with thirteen new topics, each backed by its own exact,
+  verified item family, and draw the figures they need.
+  
+  - New `primary-math` topics: place value and comparing numbers, time and clocks, money in pesos,
+    number patterns, the equal sign and the missing number, fractions as part of a whole,
+    pictograms and bar charts, perimeter and area of rectangles and L-shapes, volume with cubes and
+    prisms, angles, fraction/decimal/percent, and simple probability. New `basic-math` topic: the
+    coordinate plane (first quadrant at basico for Quinto, all four quadrants from intermedio).
+  - Merged into existing topics: parity, multiples and divisor counts join "Divisibilidad, MCD y
+    MCM" (now Cuarto to Séptimo), and "Estadística descriptiva" now also lists Cuarto and Quinto.
+  - Every new topic fills at least 20 distinct questions per supported type and level; open answers
+    are offered where a short written answer fits, multiple choice is never offered.
+  - New figures, all drawn from the same parameters as the answer, with a Spanish accessible title
+    and hatching or letters instead of colour so they print in black and white: analog clock,
+    fraction circle, pictogram, labelled L-shape/rectangle, unit-cube stack, numbered coordinate
+    grid, spinner and bag of balls; bar charts, angles, prisms and fraction bars gain labelled
+    variants. Existing figures render byte for byte as before.
+  - The figure code is now one small component per figure behind a registry, so new figures are one
+    file and one line.
+  - A topic with several item families now rotates through them slot by slot instead of letting the
+    first family fill nearly every question (affects algebraic expressions, fractions, rational
+    numbers, polynomials, linear equations, whole-number operations and divisibility).
+  - The chat interview matches a grade typed as free text ("primero", "1º", "grado 3"), so the
+    primary grades can be chosen there as in the app.
+- eb66fbf: Cover grades Sexto to Noveno with thirteen new topics, each backed by its own exact, verified item
+  family, three new knowledge packs and the figures they need.
+  
+  - New packs `geometry` ("Geometría y medición"), `probability-statistics` ("Probabilidad y
+    estadística") and `functions` ("Funciones y sucesiones"), calibrated like `basic-math`.
+  - New topics: absolute value and the number line, scientific notation (`basic-math`); scales on
+    maps and plans, angles in triangles and polygons, circumference and area of the circle, the
+    Pythagorean theorem, similarity and Thales, volumes of cylinders, cones and spheres
+    (`geometry`, answers exact in π or as simplified radicals); tree diagrams and compound events,
+    counting with and without replacement (`probability-statistics`); arithmetic and geometric
+    sequences, exponential functions and logarithms, the quadratic function (`functions`).
+  - Merged into existing topics: ratios, sharing in a ratio and direct and inverse proportion join
+    "Porcentajes, razones y proporciones" (the `proportion` family gains word-problem variants);
+    rational versus irrational numbers and repeating decimals join "Conjunto de los números
+    racionales (Q)"; quartiles, the interquartile range and box plots join "Estadística descriptiva"
+    at avanzado and genio.
+  - Every new topic fills at least 20 distinct questions per supported type and level; multiple
+    choice is never offered.
+  - New figures drawn from the same parameters as the answer, with Spanish titles and print-safe
+    strokes: sphere and hemisphere, tree diagram, box plot, function plot (polynomial, exponential
+    and logarithmic curves), similar triangles and Thales' parallels, and scale maps and floor plans.
+    Triangles, polygons, circles, cylinders, cones and number lines gain measured, labelled modes;
+    their original drawings render byte for byte as before.
+- 6f68fa2: Cover grades Décimo and Undécimo with eight new topics and two merges, each backed by its own
+  exact, verified item family, a new `precalculus` knowledge pack and the figures they need.
+  
+  - New pack `precalculus` ("Precálculo y cálculo"), calibrated like `functions` and `algebra`.
+  - New topics: right-triangle trigonometric ratios with exact values at 30°, 45° and 60°; the unit
+    circle, radians and the sine and cosine functions; circles and parabolas (centre, radius, focus,
+    directrix); average rate of change and limits; derivatives of polynomials, powers, sine, cosine
+    and eˣ, with tangent lines, critical points and the chain rule (`precalculus`); range, variance
+    and standard deviation; permutations and combinations; conditional probability, independence and
+    Bayes (`probability-statistics`); domain, range, composition and inverse of functions
+    (`functions`).
+  - Merged into an existing topic: interval notation, double inequalities and absolute-value
+    inequalities join "Inecuaciones e intervalos" (formerly "Inecuaciones lineales") through a second
+    family, `interval-inequality`; the original linear-inequality family is unchanged.
+  - Every new topic fills at least 20 distinct questions per supported type and level; multiple
+    choice is never offered.
+  - New figures drawn from the same parameters as the answer, with Spanish titles and print-safe
+    strokes: the unit circle with a marked angle and point, circles and parabolas on a numbered grid
+    with centre, focus and directrix, and intervals on a number line with open and closed ends.
+    Right triangles can mark an acute angle, and function plots draw sinusoids, secant and tangent
+    lines and leave out any tick number a curve or a point name would cover.
+
+### Patch Changes
+
+- 3ca5c6d: Fix exams that could not be created ("slot could not be filled", "the exam has 12 items").
+  
+  - Factoring draws roots up to ±5..9 (from the level's coefficient range) instead of ±3, so every
+    level offers 38 to 136 distinct trinomials instead of 12. Every item still verifies.
+  - The basic-math "Powers and roots" topic now uses the existing `powers-roots` family besides its
+    bank items, so it is no longer limited to three questions.
+  - The app wizard and the chat interview offer only the item types the chosen topic supports
+    (multiple choice with several answers is not offered for any shipped topic), and accept the same
+    values.
+  - Before recording a plan, the app and the chat dry-run the seeded generation. A topic that cannot
+    fill the request gets a plain message naming the topic, the kind of question and the maximum
+    available, instead of a dead "Create the questions" after Gate A. A blocked generation shows
+    the same message, with the raw finding codes as a small technical detail.
+  - A generator that throws on one seed is a rejected candidate, no longer a crash of the whole run.
+  - The first-run teacher profile form shows the logo picker; the chosen logo is previewed locally
+    and uploaded right after the profile is saved.
+
 ## 0.12.0
 
 ### Minor Changes
