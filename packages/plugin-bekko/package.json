@@ -1,0 +1,63 @@
+{
+  "name": "@alisio/plugin-bekko",
+  "version": "0.1.0",
+  "description": "Bekko System One for Alisio: fast local select, boolean and ordinal decisions from the small Bekko 68M ONNX model, downloaded once from pinned Hugging Face revisions and run on the CPU.",
+  "keywords": [
+    "alisio-plugin",
+    "bekko",
+    "decisions",
+    "system-one",
+    "onnx",
+    "local"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GustavoGutierrez/alisio-plugins.git",
+    "directory": "packages/plugin-bekko"
+  },
+  "homepage": "https://github.com/GustavoGutierrez/alisio-plugins/tree/main/packages/plugin-bekko#readme",
+  "bugs": {
+    "url": "https://github.com/GustavoGutierrez/alisio-plugins/issues"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "cover.svg",
+    "icon.svg"
+  ],
+  "alisio": {
+    "icon": "icon.svg"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "4.3.2",
+    "jev-web": "0.9.2",
+    "onnxruntime-web": "1.31.0-dev.20260914-8d85527a0"
+  },
+  "peerDependencies": {
+    "@alisio/sdk": ">=0.9.0 <0.12.0"
+  },
+  "devDependencies": {
+    "@alisio/sdk": "0.11.4",
+    "typescript": "7.0.2",
+    "vitest": "5.0.4"
+  }
+}
