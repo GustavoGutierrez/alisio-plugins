@@ -1,8 +1,23 @@
 import type { CapacityShortfall } from "../capacity.js";
 import type { Clock } from "../clock.js";
-import { acceptAnswers, answerText, buildDraft, buildRound, nextRound } from "../interview.js";
+import {
+  acceptAnswers,
+  answerText,
+  buildDraft,
+  buildRound,
+  nextRound,
+  offeredItemTypes,
+} from "../interview.js";
 import { localized } from "../knowledge/types.js";
-import type { CatalogTopic, ExamDraft, RoundId, TeacherProfile, TopicCatalog } from "../types.js";
+import {
+  type CatalogTopic,
+  type ExamDraft,
+  type ItemType,
+  itemTypes,
+  type RoundId,
+  type TeacherProfile,
+  type TopicCatalog,
+} from "../types.js";
 
 /**
  * The app's wizard (app spec D4). Pure: the frame sends every answer at once and this validates
@@ -149,4 +164,84 @@ export function capacityErrors(shortfalls: readonly CapacityShortfall[]): Wizard
   if (none.length > 0) errors.push({ field: "types", code: "capacity", capacity: none });
   if (few.length > 0) errors.push({ field: "count", code: "capacity", capacity: few });
   return errors;
+}
+
+/** The settings of an exam the wizard can ask for again (title and theme come from the topic). */
+export type ReusableSettings = Pick<
+  ExamDraft,
+  | "topics"
+  | "grade"
+  | "level"
+  | "itemTypes"
+  | "questionCount"
+  | "distribution"
+  | "bank"
+  | "columns"
+  | "numbering"
+  | "maxPages"
+  | "durationMinutes"
+  | "instrument"
+  | "calculator"
+  | "closing"
+>;
+export interface ReuseResult {
+  settings: ReusableSettings;
+  /** Item types the spec asked for that the topic no longer supports (their questions moved). */
+  removed: ItemType[];
+  /** False when the spec's topic is no longer in the catalog: the teacher picks one again. */
+  topicFound: boolean;
+}
+
+/**
+ * An archived exam's spec as settings for a new exam (read only: the spec is not touched). Only
+ * the item types the topic still supports are kept, like the wizard's own filtering; the
+ * questions of a dropped type move to the first kept type, or to the first offered type when
+ * none is left. `draft.create` validates the result again, like any wizard answer.
+ */
+export function reuseSettings(spec: ReusableSettings, catalog: TopicCatalog): ReuseResult {
+  const topicId = spec.topics[0];
+  const topicFound = topicId !== undefined && catalog.topic?.(topicId) !== undefined;
+  const offered = offeredItemTypes({
+    answers: topicId === undefined ? {} : { topic: topicId },
+    catalog,
+  });
+  const counts = Object.fromEntries(itemTypes.map((type) => [type, 0])) as Record<ItemType, number>;
+  const removed: ItemType[] = [];
+  let moved = 0;
+  for (const type of itemTypes) {
+    const count = spec.itemTypes[type] ?? 0;
+    if (count <= 0) continue;
+    if (offered.includes(type)) counts[type] = count;
+    else {
+      removed.push(type);
+      moved += count;
+    }
+  }
+  if (moved > 0) {
+    const kept = itemTypes.find((type) => counts[type] > 0);
+    const target =
+      kept ??
+      (offered.includes("single_choice") ? "single_choice" : (offered[0] ?? "single_choice"));
+    counts[target] += moved;
+  }
+  return {
+    settings: {
+      topics: [...spec.topics],
+      grade: spec.grade,
+      level: spec.level,
+      itemTypes: counts,
+      questionCount: spec.questionCount,
+      distribution: spec.distribution,
+      ...(spec.bank ? { bank: { ...spec.bank } } : {}),
+      columns: spec.columns,
+      numbering: spec.numbering,
+      maxPages: spec.maxPages,
+      durationMinutes: spec.durationMinutes,
+      instrument: spec.instrument,
+      calculator: spec.calculator,
+      closing: { ...spec.closing },
+    },
+    removed,
+    topicFound,
+  };
 }

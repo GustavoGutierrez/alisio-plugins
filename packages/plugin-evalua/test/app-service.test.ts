@@ -1,8 +1,10 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { parseExam } from "../src/exam.js";
 import { readState } from "../src/storage.js";
+// @ts-expect-error -- plain browser module without declarations.
+import { draftToForm, toAnswers } from "../web/derive.js";
 import { appHarness } from "./helpers/app-harness.js";
 import { cleanup } from "./helpers/harness.js";
 
@@ -243,5 +245,109 @@ describe("idempotency", () => {
     expect(again).toEqual(first);
     const other = await h.call("profile.save", input, { idempotencyKey: "k2" });
     expect(other.error).toBe("state_changed");
+  });
+});
+
+describe("archived exams (read only)", () => {
+  /** e01 is archived once a second exam passes Gate A; e02 becomes the active one. */
+  async function archivedExam(h: Awaited<ReturnType<typeof appHarness>>, generate: boolean) {
+    const first = await h.approvedExam();
+    if (generate) await h.call("exam.generate");
+    await h.approvedExam("basic-math/fractions");
+    return first;
+  }
+  it("shows the settings, the questions and the documents of an archived exam without paths", async () => {
+    const h = await appHarness();
+    const examId = await archivedExam(h, true);
+    const status = (await h.call("status")).value;
+    expect(status.activeExamId).toBe("e02");
+    const folder = status.exams.find((exam: { id: string }) => exam.id === examId).folder;
+    const yamlPath = join(h.workspace, "evalua", "exams", folder, "exam.yaml");
+    const before = {
+      yaml: await readFile(yamlPath, "utf8"),
+      state: (await readState(h.workspace))?.exams[examId],
+    };
+    const view = (await h.call("exam.view", { examId })).value;
+    expect(view.exam).toMatchObject({
+      id: "e01",
+      number: 1,
+      grade: "Séptimo",
+      level: "basico",
+      questionCount: 10,
+      itemTypes: { single_choice: 5, multiple_choice: 0, open: 0, practice: 5 },
+      distribution: "same",
+      columns: 1,
+      active: false,
+      phase: "generated",
+      docs: { html: false, pdf: false },
+    });
+    expect(view.topics).toEqual([
+      { id: "basic-math/integers", name: expect.objectContaining({ es: expect.any(String) }) },
+    ]);
+    expect(view.items.total).toBe(10);
+    expect(view.items.items).toHaveLength(10);
+    expect(view.items.items[0]).toMatchObject({ n: 1, type: expect.any(String) });
+    expect(view.items.items[0].stemHtml).toContain('class="katex"');
+    expect(view.reuse).toMatchObject({ removed: [], topicFound: true });
+    expect(view.reuse.settings.topics).toEqual(["basic-math/integers"]);
+    expect(JSON.stringify(view)).not.toContain(h.workspace);
+    expect(JSON.stringify(view)).not.toContain("exam.yaml");
+    const page = (await h.call("exam.view", { examId, offset: 8, limit: 5 })).value;
+    expect(page.items.items.map((item: { n: number }) => item.n)).toEqual([9, 10]);
+    // Viewing never changes the archived exam, nor the revision the frame holds.
+    expect((await h.call("status")).value.revision).toBe(status.revision);
+    expect({
+      yaml: await readFile(yamlPath, "utf8"),
+      state: (await readState(h.workspace))?.exams[examId],
+    }).toEqual(before);
+  });
+
+  it("says an archived exam without generated questions has none", async () => {
+    const h = await appHarness();
+    const examId = await archivedExam(h, false);
+    const view = (await h.call("exam.view", { examId })).value;
+    expect(view.items).toEqual({ total: 0, items: [] });
+    expect(view.exam.phase).toBe("approved-a");
+  });
+
+  it("refuses an unknown or malformed exam id", async () => {
+    const h = await appHarness();
+    await archivedExam(h, false);
+    expect((await h.call("exam.view", { examId: "e42" })).error).toBe("not_found");
+    expect((await h.call("exam.view", { examId: "../e01" })).error).toBe("invalid_input");
+    expect((await h.call("exam.view", {})).error).toBe("invalid_input");
+  });
+
+  it("drops a type the topic no longer supports and creates a new draft from the settings", async () => {
+    const h = await appHarness();
+    const examId = await archivedExam(h, false);
+    const status = (await h.call("status")).value;
+    const folder = status.exams.find((exam: { id: string }) => exam.id === examId).folder;
+    const yamlPath = join(h.workspace, "evalua", "exams", folder, "exam.yaml");
+    // An exam made by an older version: multiple choice for a topic that never supported it.
+    const old = (await readFile(yamlPath, "utf8")).replace(
+      /itemTypes:\n(?: {2}\w+: \d+\n)+/,
+      "itemTypes:\n  single_choice: 6\n  multiple_choice: 4\n  open: 0\n  practice: 0\n",
+    );
+    await writeFile(yamlPath, old);
+    const view = (await h.call("exam.view", { examId })).value;
+    expect(view.exam.itemTypes.multiple_choice).toBe(4);
+    expect(view.reuse.removed).toEqual(["multiple_choice"]);
+    expect(view.reuse.settings.itemTypes).toMatchObject({ single_choice: 10, multiple_choice: 0 });
+    // The frame turns the settings into wizard answers; draft.create validates them as always.
+    const form = draftToForm(view.reuse.settings, view.reuse.settings.grade);
+    const created = (await h.call("draft.create", { answers: toAnswers(form) })).value;
+    expect(created.draft).toMatchObject({
+      topics: ["basic-math/integers"],
+      grade: "Séptimo",
+      level: "basico",
+      questionCount: 10,
+      itemTypes: { single_choice: 10, multiple_choice: 0 },
+    });
+    // A pending draft is replaced only after the teacher confirms.
+    const again = (await h.call("draft.create", { answers: toAnswers(form) })).value;
+    expect(again).toMatchObject({ confirm: "replace", draft: true });
+    expect(await readFile(yamlPath, "utf8")).toBe(old);
+    expect((await readState(h.workspace))?.activeExamId).toBe("e02");
   });
 });

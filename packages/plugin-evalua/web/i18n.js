@@ -38,7 +38,16 @@ const en = {
   examNo: (n) => `Exam no. ${n}`,
   open: "Open",
   readOnly: "Read only",
-  readOnlyHint: "Older exams can be previewed and downloaded. Only the newest exam can change.",
+  readOnlyHint:
+    "This exam is archived: you can view it and download its documents. To change it or create its questions again, use its settings for a new exam.",
+  archiveSettings: "Settings",
+  archiveNoQuestions: "No questions were created for this exam.",
+  archiveNoDocs: "This exam has no documents.",
+  reuseExam: "Use these settings for a new exam",
+  backHome: "Back to home",
+  reuseTypesRemoved: (names) =>
+    `This topic no longer supports “${names.join("”, “")}”, so ${plural(names.length, "it was", "they were")} removed.`,
+  reuseTopicMissing: "The topic of that exam is no longer available. Choose a topic to continue.",
   phase: {
     draft: "Waiting for your approval",
     "approved-a": "Plan approved",
@@ -387,7 +396,15 @@ const es = {
   open: "Abrir",
   readOnly: "Solo lectura",
   readOnlyHint:
-    "Los exámenes anteriores se pueden ver y descargar. Solo el examen más reciente puede cambiar.",
+    "Este examen está archivado: puedes verlo y descargar sus documentos. Para cambiarlo o volver a crear sus preguntas, usa su configuración en un examen nuevo.",
+  archiveSettings: "Configuración",
+  archiveNoQuestions: "No se crearon preguntas para este examen.",
+  archiveNoDocs: "Este examen no tiene documentos.",
+  reuseExam: "Usar esta configuración en un examen nuevo",
+  backHome: "Volver al inicio",
+  reuseTypesRemoved: (names) =>
+    `Este tema ya no admite «${names.join("», «")}», así que se ${plural(names.length, "quitó", "quitaron")}.`,
+  reuseTopicMissing: "El tema de ese examen ya no está disponible. Elige un tema para continuar.",
   phase: {
     draft: "Espera tu aprobación",
     "approved-a": "Plan aprobado",

@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
-import { runWizard, type WizardAnswers } from "../src/app/wizard.js";
+import { reuseSettings, runWizard, type WizardAnswers } from "../src/app/wizard.js";
 import { fixedClock } from "../src/clock.js";
 import { familyIds } from "../src/families/index.js";
 import { createTopicCatalog } from "../src/knowledge/catalog.js";
@@ -166,5 +166,80 @@ describe("replacing a pending chat interview (EVL-APP-AC-08)", () => {
     const state = await readState(h.workspace);
     expect(state?.interview).toBeUndefined();
     expect(state?.draft?.topics).toEqual(["basic-math/fractions"]);
+  });
+});
+
+describe("reusing an archived exam's settings", () => {
+  const spec = (itemTypes: Record<string, number>, topic = "basic-math/integers") => {
+    const result = runWizard(base(topic), { catalog, profile, clock });
+    if (!("draft" in result)) throw new Error(JSON.stringify(result));
+    return {
+      ...result.draft,
+      distribution: "bank" as const,
+      bank: { size: 30, variants: 3 },
+      columns: 2 as const,
+      numbering: "section" as const,
+      maxPages: 3,
+      durationMinutes: 45,
+      instrument: "pen" as const,
+      calculator: true,
+      closing: { kind: "quote" as const, pinned: null },
+      itemTypes: { single_choice: 0, multiple_choice: 0, open: 0, practice: 0, ...itemTypes },
+    };
+  };
+
+  it("keeps every wizard setting of a spec whose types the topic still supports", () => {
+    const reuse = reuseSettings(spec({ single_choice: 6, practice: 4 }), catalog);
+    expect(reuse.removed).toEqual([]);
+    expect(reuse.topicFound).toBe(true);
+    expect(reuse.settings).toEqual({
+      topics: ["basic-math/integers"],
+      grade: "Séptimo",
+      level: "basico",
+      itemTypes: { single_choice: 6, multiple_choice: 0, open: 0, practice: 4 },
+      questionCount: 10,
+      distribution: "bank",
+      bank: { size: 30, variants: 3 },
+      columns: 2,
+      numbering: "section",
+      maxPages: 3,
+      durationMinutes: 45,
+      instrument: "pen",
+      calculator: true,
+      closing: { kind: "quote", pinned: null },
+    });
+  });
+
+  it("drops a type the topic no longer supports and moves its questions to a supported one", () => {
+    // Integers supports single choice and practice, not multiple choice.
+    const reuse = reuseSettings(spec({ single_choice: 6, multiple_choice: 4 }), catalog);
+    expect(reuse.removed).toEqual(["multiple_choice"]);
+    expect(reuse.settings.itemTypes).toEqual({
+      single_choice: 10,
+      multiple_choice: 0,
+      open: 0,
+      practice: 0,
+    });
+    expect(reuse.settings.questionCount).toBe(10);
+  });
+
+  it("falls back to a supported type when none of the old types is left", () => {
+    const reuse = reuseSettings(spec({ multiple_choice: 10 }), catalog);
+    expect(reuse.removed).toEqual(["multiple_choice"]);
+    expect(reuse.settings.itemTypes).toEqual({
+      single_choice: 10,
+      multiple_choice: 0,
+      open: 0,
+      practice: 0,
+    });
+  });
+
+  it("says when the topic is no longer in the catalog", () => {
+    const reuse = reuseSettings(
+      { ...spec({ single_choice: 10 }), topics: ["gone/topic"] },
+      catalog,
+    );
+    expect(reuse.topicFound).toBe(false);
+    expect(reuse.settings.topics).toEqual(["gone/topic"]);
   });
 });

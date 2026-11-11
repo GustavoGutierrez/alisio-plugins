@@ -227,6 +227,10 @@ let wording;
 let edits = {};
 let wordingDirty = false;
 let items;
+/** The open archived exam (`exam.view`): settings, questions and the settings to reuse. */
+let archive;
+/** One sentence about the archived settings that could not be reused (types removed). */
+let reuseNotice;
 let showAnswers = false;
 let generationResult;
 let docTab = "exam";
@@ -626,6 +630,7 @@ function renderWizard() {
     <div class="wizard-main"><p class="muted small">${esc(tf("stepOf", stepIndex + 1, list.length))}</p>
       <ol class="stepper" aria-label="${attr(t("newExam"))}">${list.map((name, i) => `<li class="${i === stepIndex ? "current" : i < stepIndex ? "done" : ""}" ${i === stepIndex ? 'aria-current="step"' : ""}>${esc(stepTitle(name))}</li>`).join("")}</ol>
       ${heading(stepTitle(step), "h1")}
+      ${reuseNotice ? banner("info", reuseNotice) : ""}
       <div class="stack">${body}</div>
       <div class="row between nav-row">${button(stepIndex === 0 ? "home" : "wizard-back", `${icon("back")}<span>${esc(t("back"))}</span>`, "outline")}${
         last
@@ -757,7 +762,7 @@ function renderReview() {
   if (!draft) return renderHome();
   const rows = sheetRows(draft);
   const blueprint = blueprintRows(draftView.blueprint);
-  return `${topbar(t("reviewTitle"))}<main class="page narrow">${heading(t("reviewTitle"))}<p class="lead">${esc(t("reviewIntro"))}</p>
+  return `${topbar(t("reviewTitle"))}<main class="page narrow">${heading(t("reviewTitle"))}<p class="lead">${esc(t("reviewIntro"))}</p>${reuseNotice ? banner("info", reuseNotice) : ""}
     <section class="paper copyable"><div class="paper-head"><span>${esc(draft.title)}</span>${copyButton("review")}</div>
       <dl class="sheet-rows">${rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
       ${
@@ -900,7 +905,19 @@ function questionsPanel(exam) {
           : ""
       }</div></div>`
     : "";
-  const cards = list
+  return `${questionsHead(list)}
+    ${blocked}
+    ${editable ? `<div class="row">${button("generate", `${icon("sparkle")}<span>${esc(list.length ? t("generateAgain") : t("generate"))}</span>`, list.length ? "outline" : "primary", 'id="generate"')}</div>` : ""}
+    ${list.length ? `${itemCards(list)}${items.total > list.length ? button("more-items", esc(t("moreItems")), "ghost") : ""}` : `<p class="muted">${esc(t("questionsEmpty"))}</p>`}`;
+}
+
+/** The questions heading with the "Show answers" switch (active and archived exams). */
+const questionsHead = (list, level = "h2") =>
+  `<div class="row between"><${level}>${esc(t("questionsTitle"))}</${level}>${list.length ? `<label class="check"><input type="checkbox" id="show-answers" ${showAnswers ? "checked" : ""}><span>${esc(t("showAnswers"))}</span></label>` : ""}</div>`;
+
+/** Generated questions, read only: stem, options and, on request, the answer. */
+function itemCards(list) {
+  return `<ol class="items">${list
     .map(
       (
         item,
@@ -909,11 +926,7 @@ function questionsPanel(exam) {
         ${item.options.length ? `<ol class="options">${item.options.map((option) => `<li class="${showAnswers && option.correct ? "correct" : ""}"><span class="key">${esc(option.key)}</span><span>${option.html}</span>${showAnswers && option.correct ? icon("check") : ""}</li>`).join("")}</ol>` : ""}
         ${showAnswers ? `<p class="answer"><strong>${esc(t("answer"))}:</strong> <span class="math-sample">${item.answerHtml}</span></p>` : ""}</li>`,
     )
-    .join("");
-  return `<div class="row between"><h2>${esc(t("questionsTitle"))}</h2>${list.length ? `<label class="check"><input type="checkbox" id="show-answers" ${showAnswers ? "checked" : ""}><span>${esc(t("showAnswers"))}</span></label>` : ""}</div>
-    ${blocked}
-    ${editable ? `<div class="row">${button("generate", `${icon("sparkle")}<span>${esc(list.length ? t("generateAgain") : t("generate"))}</span>`, list.length ? "outline" : "primary", 'id="generate"')}</div>` : ""}
-    ${list.length ? `<ol class="items">${cards}</ol>${items.total > list.length ? button("more-items", esc(t("moreItems")), "ghost") : ""}` : `<p class="muted">${esc(t("questionsEmpty"))}</p>`}`;
+    .join("")}</ol>`;
 }
 
 function buildStatus() {
@@ -935,8 +948,8 @@ function docTabs() {
     .join("")}</div>`;
 }
 
-function viewerBlock(exam, state) {
-  if (!state.hasHtml && !state.hasPdf) return `<p class="muted">${esc(t("noDocsYet"))}</p>`;
+function viewerBlock(exam, state, empty = t("noDocsYet")) {
+  if (!state.hasHtml && !state.hasPdf) return `<p class="muted">${esc(empty)}</p>`;
   const info = docInfo[`${exam.id}:${docTab}`];
   return `${docTabs()}<div class="row doc-actions">${state.hasPdf ? iconLabel("download-doc", "download", t("downloadPdf"), "outline small", 'data-format="pdf"') : ""}${state.hasHtml ? iconLabel("download-doc", "download", t("downloadHtml"), "outline small", 'data-format="html"') : ""}${info?.pages ? `<span class="muted small">${esc(tf("pagesN", info.pages))}</span>` : ""}</div>
     <div class="viewer" id="viewer" data-exam="${attr(exam.id)}" data-doc="${attr(docTab)}" data-format="${state.hasPdf ? "pdf" : "html"}" aria-live="polite"><p class="muted">${esc(t("loading"))}</p></div>`;
@@ -974,10 +987,79 @@ function approvePanel(exam) {
 function renderArchive() {
   const exam = status.exams.find((entry) => entry.id === view.examId);
   if (!exam) return renderHome();
-  const state = documentsState({ exam, lastBuild: null, doctor: null });
+  const own = archive?.exam?.id === exam.id ? archive : undefined;
+  // `exam.view` is read when the exam opens, so its documents are the freshest.
+  const state = documentsState({ exam: own?.exam ?? exam, lastBuild: null, doctor: null });
+  const list = own?.items?.items ?? [];
+  const topics = (own?.topics ?? []).map((topic) => localName(topic.name) || topic.id).join(", ");
+  const rows = own
+    ? [
+        ...(topics ? [[t("topicsLabel"), topics]] : []),
+        // Title and theme are the heading already.
+        ...sheetRows(own.exam).slice(2),
+      ]
+    : [];
   return `${topbar(tf("examNo", exam.number))}<main class="page">
     <div class="exam-head"><div><p class="muted small">${esc(tf("examNo", exam.number))} · ${esc(gradeName(exam.grade))}</p>${heading(exam.theme)}</div><span class="phase-chip phase-${attr(exam.phase)}">${esc(phaseText(exam.phase))}</span></div>
-    ${banner("info", t("readOnlyHint"), "lock")}${viewerBlock(exam, state)}</main>`;
+    ${banner("info", t("readOnlyHint"), "lock")}
+    <div class="row between archive-section">${iconLabel("home", "back", t("backHome"), "outline", 'id="archive-home"')}${own ? iconLabel("reuse-exam", "plus", t("reuseExam"), "primary", 'id="reuse-exam"') : ""}</div>
+    ${own ? `<section class="paper archive-summary"><h2>${esc(t("archiveSettings"))}</h2><dl class="sheet-rows">${rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl></section>` : `<p class="muted">${esc(t("loading"))}</p>`}
+    ${
+      own
+        ? `<section class="archive-section" id="archive-questions">${questionsHead(list)}${
+            list.length
+              ? `${itemCards(list)}${own.items.total > list.length ? button("more-items", esc(t("moreItems")), "ghost") : ""}`
+              : `<p class="muted">${esc(t("archiveNoQuestions"))}</p>`
+          }</section>`
+        : ""
+    }
+    <section class="archive-section" id="archive-documents"><h2>${esc(t("documentsTitle"))}</h2>${viewerBlock(exam, state, t("archiveNoDocs"))}</section></main>`;
+}
+
+async function loadArchive(examId, limit = 50) {
+  const first = await api("exam.view", { examId });
+  if (limit > 50 && first.items.total > 50) {
+    const more = await api("exam.view", { examId, offset: 50, limit: 50 });
+    first.items = { total: first.items.total, items: [...first.items.items, ...more.items.items] };
+  }
+  archive = first;
+}
+
+/**
+ * "Use these settings for a new exam": the wizard prefilled from the archived spec (only the
+ * types the topic still supports), sent to `draft.create` like the wizard's own "Review", so the
+ * backend validates it, a pending draft or chat interview asks to be replaced, and capacity
+ * problems land on their step. The archived exam itself never changes.
+ */
+async function reuseArchive() {
+  const reuse = archive?.reuse;
+  if (!reuse) return;
+  if (!status.profile) {
+    fieldErrors = {};
+    return go({ name: "profile", after: "wizard" });
+  }
+  await loadCatalog();
+  const settings = reuse.settings;
+  const grade = gradeList(catalog.topics).find((g) => g === settings.grade) ?? settings.grade;
+  form = draftToForm(settings, grade);
+  fieldErrors = {};
+  fieldCapacity = {};
+  topicQuery = "";
+  wizardDirty = false;
+  const names = (reuse.removed ?? []).map((type) => t("itemTypes")[type]?.[0] ?? type);
+  reuseNotice = names.length ? tf("reuseTypesRemoved", names) : undefined;
+  if (!reuse.topicFound) {
+    form.topic = "";
+    reuseNotice = [t("reuseTopicMissing"), reuseNotice].filter(Boolean).join(" ");
+    stepIndex = 0;
+    return go({ name: "wizard" });
+  }
+  view = { name: "wizard" };
+  stepIndex = steps().length - 1;
+  const before = view;
+  await submitWizard(false);
+  // The teacher kept the pending draft: stay on the prefilled wizard to adjust or go back.
+  if (view === before && !Object.keys(fieldErrors).length) go({ name: "wizard" });
 }
 
 // ---------- Settings ----------
@@ -1152,7 +1234,10 @@ async function loadItems(limit = 50) {
 async function openExam(id) {
   const exam = status.exams.find((entry) => entry.id === id);
   if (!exam) return;
-  if (!exam.active) return go({ name: "archive", examId: id });
+  if (!exam.active) {
+    await loadArchive(id);
+    return go({ name: "archive", examId: id });
+  }
   await Promise.all([loadModels(), loadDoctor()]);
   const tab = nextExamStep(exam.phase);
   await openTab(tab, exam);
@@ -1192,6 +1277,11 @@ async function reloadView() {
         await loadWording();
       if (view.tab === "questions") await loadItems(items?.items?.length ?? 50);
     }
+  }
+  if (view.name === "archive") {
+    const exam = status.exams?.find((entry) => entry.id === view.examId);
+    if (!exam) view = { name: "home" };
+    else await loadArchive(exam.id, archive?.items?.items?.length ?? 50);
   }
   if (view.name === "review") {
     draftView = await api("draft.get");
@@ -1344,6 +1434,7 @@ async function handle(action, target) {
       return verifyAvailable();
     case "home":
       if (view.name === "wizard") readStep();
+      reuseNotice = undefined;
       return go({ name: "home" });
     case "profile":
       fieldErrors = {};
@@ -1357,6 +1448,7 @@ async function handle(action, target) {
         return go({ name: "profile", after: "wizard" });
       }
       await loadCatalog();
+      reuseNotice = undefined;
       form = emptyForm();
       stepIndex = 0;
       fieldErrors = {};
@@ -1455,6 +1547,7 @@ async function handle(action, target) {
       return go({ name: "home" });
     case "approve-a": {
       const result = await mutate("exam.approveA");
+      reuseNotice = undefined;
       await loadStatus();
       return openExam(result.examId);
     }
@@ -1527,7 +1620,13 @@ async function handle(action, target) {
       announce(result.count ? tf("generated", result.count) : t("generationBlocked"));
       return render({ keepFocus: true });
     }
+    case "reuse-exam":
+      return reuseArchive();
     case "more-items":
+      if (view.name === "archive") {
+        await loadArchive(view.examId, 100);
+        return render({ keepFocus: true });
+      }
       await loadItems(100);
       return render({ keepFocus: true });
     case "build": {

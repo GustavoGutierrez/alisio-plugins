@@ -835,6 +835,13 @@ dl {
 .paper .sheet-rows dt {
   color: #45526f;
 }
+.archive-summary h2 {
+  margin: 0;
+  padding-top: 18px;
+}
+.archive-section {
+  margin-top: 24px;
+}
 .paper-head {
   display: flex;
   align-items: center;

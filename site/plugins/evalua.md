@@ -71,8 +71,11 @@ answers. It follows Alisio's language (English or Spanish) and its light or dark
 6. **Final approval** (Gate B). When the last build reported problems (for example a page limit it
    could not reach), the app lists them and asks you to confirm.
 
-Older exams stay read only (preview and download). The chat commands and tools keep working as
-before and see the same exams; if the chat changes an exam while the app is open, the app reloads
+Older exams stay read only: opening one shows its settings, its questions (if any were created)
+and its documents to preview and download. To change it or create its questions again, **Use these
+settings for a new exam** opens a new draft with the same settings for review; a kind of question
+the topic no longer offers is removed, and the app says which. The chat commands and tools keep
+working as before and see the same exams; if the chat changes an exam while the app is open, the app reloads
 it, and while the app is creating documents the chat's `generate`, `build`, `approve` and
 `set-prompts` answer that a build is running. On Alisio 0.11.5 the app opens but every save is
 refused unless the session already allows it; older hosts have no app and keep the chat flow.

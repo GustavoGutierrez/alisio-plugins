@@ -65,8 +65,11 @@ oscuro.
 6. **Aprobación final** (Gate B). Si la última creación informó problemas (por ejemplo, un límite de
    páginas que no se pudo cumplir), la app los muestra y pide que los confirmes.
 
-Los exámenes anteriores quedan en solo lectura (ver y descargar). Los comandos y herramientas del
-chat siguen funcionando igual y ven los mismos exámenes; si el chat cambia un examen con la app
+Los exámenes anteriores quedan en solo lectura: al abrir uno se ve su configuración, sus preguntas
+(si llegaron a crearse) y sus documentos para ver y descargar. Para cambiarlo o volver a crear sus
+preguntas, **Usar esta configuración en un examen nuevo** abre un borrador nuevo con la misma
+configuración para revisarlo; un tipo de pregunta que el tema ya no ofrece se quita, y la app avisa
+cuál. Los comandos y herramientas del chat siguen funcionando igual y ven los mismos exámenes; si el chat cambia un examen con la app
 abierta, la app lo vuelve a cargar, y mientras la app crea documentos, `generate`, `build`,
 `approve` y `set-prompts` del chat responden que hay una creación en curso. En Alisio 0.11.5 la app
 abre, pero cada guardado se rechaza salvo que la sesión ya lo permita; los hosts anteriores no

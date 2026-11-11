@@ -26,7 +26,13 @@ import { listExamFolders, nextExamNumber } from "../workspace.js";
 import { AppError } from "./errors.js";
 import type { AppJobs } from "./jobs.js";
 import { type BuildFinding, readPrefs, writePrefs } from "./prefs.js";
-import { capacityErrors, runWizard, WIZARD_FIELDS, type WizardAnswers } from "./wizard.js";
+import {
+  capacityErrors,
+  reuseSettings,
+  runWizard,
+  WIZARD_FIELDS,
+  type WizardAnswers,
+} from "./wizard.js";
 import {
   buildWordingPrompt,
   buildWordingRetry,
@@ -173,6 +179,33 @@ const findingsOf = (list: readonly { id: string; severity: string; message: stri
     }),
   );
 
+/** One page of an exam's generated questions as the app shows them; none before generation. */
+async function itemsPage(folder: string, offset: number, limit: number) {
+  let text: string;
+  try {
+    text = await readFile(join(folder, "items.json"), "utf8");
+  } catch {
+    return { total: 0, items: [] };
+  }
+  const items = parseItemsFile(text);
+  const math = evaluaMathRenderer;
+  return {
+    total: items.length,
+    items: items.slice(offset, offset + limit).map((item, index) => ({
+      n: offset + index + 1,
+      type: item.type,
+      family: item.family,
+      stemHtml: markupHtml(item.stem, math),
+      options: item.options.map((option) => ({
+        key: option.key,
+        html: inlineHtml(option.display, math),
+        correct: option.correct,
+      })),
+      answerHtml: inlineHtml(item.answer.display, math),
+    })),
+  };
+}
+
 export interface ServiceDeps {
   api: PluginAPI;
   coordinator: EvaluaCoordinator;
@@ -215,6 +248,8 @@ export class EvaluaAppService {
         return this.wordingGet(ws);
       case "items.get":
         return this.itemsGet(ws, int(input, "offset", 0, 400, 0), int(input, "limit", 1, 50, 50));
+      case "exam.view":
+        return this.examView(ws, input);
       case "docs.get":
         return this.docsGet(ws, input);
       case "jobs.get": {
@@ -566,28 +601,45 @@ export class EvaluaAppService {
 
   private async itemsGet(ws: string, offset: number, limit: number) {
     const exam = await this.activeExam(ws);
-    let text: string;
-    try {
-      text = await readFile(join(exam.found.path, "items.json"), "utf8");
-    } catch {
-      return { total: 0, items: [] };
-    }
-    const items = parseItemsFile(text);
-    const math = evaluaMathRenderer;
+    return itemsPage(exam.found.path, offset, limit);
+  }
+
+  /**
+   * Any exam, read only (the archive view): its settings, topic names, generated questions and
+   * documents, plus the settings a new exam can reuse. Never a path; nothing is written.
+   */
+  private async examView(ws: string, input: Input) {
+    const examId = str(input, "examId", 4) as string;
+    if (!examIdPattern.test(examId)) invalid();
+    const offset = int(input, "offset", 0, 400, 0);
+    const limit = int(input, "limit", 1, 50, 50);
+    const state = await readState(ws);
+    const base = await this.coordinator.rootFor(ws, state);
+    const entry = (await this.exams(base, state)).find((exam) => exam.id === examId);
+    const found = entry ? await this.coordinator.examFolder(base, examId) : undefined;
+    if (!entry || !found) throw new AppError("not_found");
+    const { spec } = found;
+    const knowledge = await this.coordinator.knowledgeFor(ws);
+    const names = new Map(knowledge.topics.map((topic) => [topic.fullId, topic.name]));
+    const { folder: _folder, ...summary } = entry;
     return {
-      total: items.length,
-      items: items.slice(offset, offset + limit).map((item, index) => ({
-        n: offset + index + 1,
-        type: item.type,
-        family: item.family,
-        stemHtml: markupHtml(item.stem, math),
-        options: item.options.map((option) => ({
-          key: option.key,
-          html: inlineHtml(option.display, math),
-          correct: option.correct,
-        })),
-        answerHtml: inlineHtml(item.answer.display, math),
-      })),
+      exam: {
+        ...summary,
+        itemTypes: spec.itemTypes,
+        distribution: spec.distribution,
+        ...(spec.bank ? { bank: spec.bank } : {}),
+        columns: spec.columns,
+        numbering: spec.numbering,
+        maxPages: spec.maxPages,
+        durationMinutes: spec.durationMinutes,
+        instrument: spec.instrument,
+        calculator: spec.calculator,
+        closing: spec.closing,
+        schoolYear: spec.schoolYear,
+      },
+      topics: spec.topics.map((id) => ({ id, ...(names.has(id) ? { name: names.get(id) } : {}) })),
+      items: await itemsPage(found.path, offset, limit),
+      reuse: reuseSettings(spec, await this.coordinator.catalogForWorkspace(ws)),
     };
   }
 

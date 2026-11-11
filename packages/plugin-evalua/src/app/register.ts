@@ -31,6 +31,7 @@ export const READ_ACTIONS = [
   "draft.get",
   "wording.get",
   "items.get",
+  "exam.view",
   "docs.get",
   "jobs.get",
 ] as const;
@@ -81,6 +82,14 @@ export const SCHEMAS: Record<string, JsonSchema> = {
     offset: { type: "integer", minimum: 0, maximum: 400 },
     limit: { type: "integer", minimum: 1, maximum: 50 },
   }),
+  "exam.view": object(
+    {
+      examId,
+      offset: { type: "integer", minimum: 0, maximum: 400 },
+      limit: { type: "integer", minimum: 1, maximum: 50 },
+    },
+    ["examId"],
+  ),
   "docs.get": object(
     {
       examId,
