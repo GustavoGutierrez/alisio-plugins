@@ -8,6 +8,7 @@ description: "Todos los plugins publicados en este catálogo, en orden A–Z."
 Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portada del catálogo](/es/).
 
 - [Atlassian](./atlassian) — Read-first Jira, Confluence, and Agile tools with strict environment configuration, opt-in writes, and untrusted-content framing (`tools`)
+- [Bekko](./bekko) — Local Bekko System One decision provider: fast select, boolean and ordinal decisions from a small on-device model (`decisions`)
 - [Brave Search](./brave-search) — Brave Search for coding agents: LLM Context grounding with pre-extracted page content under a token budget, plus a compact web search fallback (`search`, `tools`)
 - [Cardsmith](./cardsmith) — Generates finished card images from chat requests: social cards, certificates, badges, banners, photo composites, charts and dynamic data cards. (`tools`)
 - [Context7 Docs](./context7) — Resolve library names and fetch third-party documentation from the Context7 hosted service (`tools`)
@@ -24,6 +25,7 @@ Instala cualquier plugin con `alisio install npm:<package>`. Consulta la [portad
 - [OpenCode Console (Zen)](./opencode) — OpenCode Console gateway for Responses, Chat, and Messages models (`model-provider`)
 - [OpenCode Go](./opencode-go) — OpenCode Go multi-protocol model gateway (`model-provider`)
 - [OpenRouter](./openrouter) — OpenRouter OpenAI-compatible provider (`model-provider`)
+- [ReportForge](./reportforge) — Editorial HTML/SVG reports and infographics from your sources, printable to PDF. (`tools`, `ui`)
 - [Scribe](./scribe) — Scientific writing studio with agent-assisted LaTeX, revisions and PDF builds. (`tools`, `ui`)
 - [Semantic](./semantic) — Local semantic search (LanceDB + multilingual-e5-small) and a Notebook app grounded in your sources. (`search`, `storage`)
 - [Swarm](./swarm) — Runs a handoff-driven pipeline of specialised agents, each in its own git worktree, with durable handoffs and human gates. (`methodology-harness`)

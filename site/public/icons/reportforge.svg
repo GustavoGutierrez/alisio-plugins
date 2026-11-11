@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="rf-icon-title rf-icon-desc">
+  <title id="rf-icon-title">ReportForge</title>
+  <desc id="rf-icon-desc">A white report page with a folded corner and three rising bars on a dark rounded tile.</desc>
+  <g transform="scale(4)"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7F54F9"/><stop offset="1" stop-color="#06C8E8"/></linearGradient></defs><rect width="128" height="128" rx="28" fill="#10162B"/><path d="M35 23h43l18 18v63H35a10 10 0 0 1-10-10V33a10 10 0 0 1 10-10Z" fill="#FFFFFF"/><path d="M78 23v18h18" fill="#C7B4FF"/><path d="M40 51h30" stroke="#9DA8C5" stroke-width="6" stroke-linecap="round"/><rect x="41" y="78" width="10" height="14" rx="3" fill="#7F54F9"/><rect x="56" y="66" width="10" height="26" rx="3" fill="#4B77E4"/><rect x="71" y="57" width="10" height="35" rx="3" fill="#06C8E8"/><path d="M40 47h36" stroke="#DCE3F4" stroke-width="3"/></g>
+</svg>

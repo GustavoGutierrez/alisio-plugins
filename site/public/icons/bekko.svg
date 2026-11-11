@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="bekko-icon-title bekko-icon-desc">
+  <title id="bekko-icon-title">Bekko</title>
+  <desc id="bekko-icon-desc">A cyan letter B with a blue dot on a deep navy tile, representing a small local model that makes fast decisions.</desc>
+  <rect width="512" height="512" rx="120" fill="#020F35"/>
+  <g transform="scale(8)">
+    <path d="M16 19h18c11 0 17 12 9 18 12 8 4 19-9 19H16V19zm9 8v10h9c9 0 9-10 0-10h-9zm0 17v6h11c6 0 6-6 0-6H25z" fill="#0AD9FC"/>
+    <circle cx="49" cy="17" r="6" fill="#0290F0"/>
+  </g>
+</svg>

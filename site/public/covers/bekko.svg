@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Bekko System One</title>
+  <desc id="desc">The cyan Bekko mark on a compact on-device chip sends one quick pulse that splits into three instant answers: a choice among options, a yes or no switch and an ordinal level, representing fast local decisions without an LLM call.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020F35"/>
+      <stop offset="1" stop-color="#06204F"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A1B4D"/>
+      <stop offset="1" stop-color="#0B2A66"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0AD9FC"/>
+      <stop offset="1" stop-color="#0290F0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#0AD9FC" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#0AD9FC" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <g fill="#0AD9FC" opacity="0.08">
+    <circle cx="120" cy="120" r="3"/><circle cx="220" cy="760" r="3"/><circle cx="1480" cy="140" r="3"/>
+    <circle cx="1380" cy="800" r="3"/><circle cx="820" cy="90" r="3"/><circle cx="760" cy="820" r="3"/>
+  </g>
+  <circle cx="420" cy="450" r="330" fill="url(#glow)"/>
+  <g transform="translate(250 280)">
+    <g stroke="#0290F0" stroke-width="12" stroke-linecap="round">
+      <path d="M80 0V-40M170 0V-40M260 0V-40M80 340V380M170 340V380M260 340V380"/>
+      <path d="M0 80H-40M0 170H-40M0 260H-40"/>
+    </g>
+    <rect width="340" height="340" rx="64" fill="url(#chip)" stroke="#0AD9FC" stroke-width="6" stroke-opacity="0.55"/>
+    <g transform="translate(8 40) scale(4.6)">
+      <path d="M16 19h18c11 0 17 12 9 18 12 8 4 19-9 19H16V19zm9 8v10h9c9 0 9-10 0-10h-9zm0 17v6h11c6 0 6-6 0-6H25z" fill="#0AD9FC"/>
+      <circle cx="49" cy="17" r="6" fill="#0290F0"/>
+    </g>
+  </g>
+  <path d="M610 450H760L800 390L850 510L890 450H950" fill="none" stroke="url(#pulse)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="none" stroke="#3B6AB3" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M950 450C1010 450 1010 230 1070 230"/>
+    <path d="M950 450H1070"/>
+    <path d="M950 450C1010 450 1010 670 1070 670"/>
+  </g>
+  <g transform="translate(1090 170)">
+    <rect width="330" height="120" rx="30" fill="#0A1B4D" stroke="#0AD9FC" stroke-opacity="0.4" stroke-width="3"/>
+    <circle cx="70" cy="60" r="22" fill="#0AD9FC"/>
+    <circle cx="150" cy="60" r="22" fill="none" stroke="#3B6AB3" stroke-width="6"/>
+    <circle cx="230" cy="60" r="22" fill="none" stroke="#3B6AB3" stroke-width="6"/>
+    <path d="M60 60l8 8 14-16" fill="none" stroke="#020F35" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(1090 390)">
+    <rect width="330" height="120" rx="30" fill="#0A1B4D" stroke="#0AD9FC" stroke-opacity="0.4" stroke-width="3"/>
+    <rect x="50" y="30" width="120" height="60" rx="30" fill="#0290F0"/>
+    <circle cx="140" cy="60" r="22" fill="#E6FBFF"/>
+    <rect x="200" y="44" width="80" height="32" rx="16" fill="#3B6AB3" opacity="0.6"/>
+  </g>
+  <g transform="translate(1090 610)">
+    <rect width="330" height="120" rx="30" fill="#0A1B4D" stroke="#0AD9FC" stroke-opacity="0.4" stroke-width="3"/>
+    <rect x="50" y="70" width="40" height="22" rx="6" fill="#0AD9FC"/>
+    <rect x="110" y="54" width="40" height="38" rx="6" fill="#0AD9FC"/>
+    <rect x="170" y="38" width="40" height="54" rx="6" fill="#0AD9FC"/>
+    <rect x="230" y="24" width="40" height="68" rx="6" fill="#3B6AB3" opacity="0.6"/>
+  </g>
+</svg>
