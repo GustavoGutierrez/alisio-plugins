@@ -385,6 +385,9 @@ describe("hand-checked answers and helpers", () => {
     expect(sqrtParts(72)).toEqual({ outside: 6, inside: 2 });
     expect(surdText(Rational.one, 49)).toBe("7");
     expect(surdMath(Rational.of(1, 2), 12)).toBe("$\\sqrt{3}$");
+    expect(surdMath(Rational.of(1, 2), 3)).toBe("$\\dfrac{\\sqrt{3}}{2}$");
+    expect(surdMath(Rational.of(-3, 2), 2)).toBe("$-\\dfrac{3\\sqrt{2}}{2}$");
+    expect(surdMath(Rational.of(3), 2)).toBe("$3\\sqrt{2}$");
     const data = [1, 3, 4, 7, 8, 9, 12];
     expect(fiveNumbers(data)).toEqual({
       min: Rational.of(1),

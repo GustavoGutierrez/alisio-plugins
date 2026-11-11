@@ -4,11 +4,16 @@ import { angleMeasure } from "./angle-measure.js";
 import { boxPlot } from "./box-plot.js";
 import { circleMeasure } from "./circle-measure.js";
 import { clockTime } from "./clock-time.js";
+import { combinatorics } from "./combinatorics.js";
 import { compoundProbability } from "./compound-probability.js";
+import { conditionalProbability } from "./conditional-probability.js";
+import { conics } from "./conics.js";
 import { coordinates } from "./coordinates.js";
 import { counting } from "./counting.js";
 import { dataGraph } from "./data-graph.js";
 import { decimalOps } from "./decimal-ops.js";
+import { derivatives } from "./derivatives.js";
+import { dispersion } from "./dispersion.js";
 import { division } from "./division.js";
 import { expLog } from "./exp-log.js";
 import { expressionEvaluate } from "./expression-evaluate.js";
@@ -17,9 +22,11 @@ import { fractionDecimalPercent } from "./fraction-decimal-percent.js";
 import { fractionOps } from "./fraction-ops.js";
 import { fractionPart } from "./fraction-part.js";
 import { fractionSimplify } from "./fraction-simplify.js";
+import { functionProperties } from "./function-properties.js";
 import { gcdLcm } from "./gcd-lcm.js";
 import { geometry } from "./geometry.js";
 import { integerOps } from "./integer-ops.js";
+import { intervalInequality } from "./interval-inequality.js";
 import { likeTerms } from "./like-terms.js";
 import { linearEquation } from "./linear-equation.js";
 import { linearFunction } from "./linear-function.js";
@@ -46,6 +53,7 @@ import { proportion } from "./proportion.js";
 import { pythagorean } from "./pythagorean.js";
 import { quadraticEquation } from "./quadratic-equation.js";
 import { quadraticFunction } from "./quadratic-function.js";
+import { rateLimits } from "./rate-limits.js";
 import { rationalCompare } from "./rational-compare.js";
 import { rationalExpression } from "./rational-expression.js";
 import { roundSolids } from "./round-solids.js";
@@ -56,7 +64,9 @@ import { simpleProbability } from "./simple-probability.js";
 import { specialProducts } from "./special-products.js";
 import { statistics } from "./statistics.js";
 import { triangleAngles } from "./triangle-angles.js";
+import { trigRatios } from "./trig-ratios.js";
 import type { Family } from "./types.js";
+import { unitCircle } from "./unit-circle.js";
 import { wordProblemLinear } from "./word-problem-linear.js";
 
 /** The item-family registry: pure generators with their own solver and distractor model. */
@@ -120,6 +130,16 @@ export const families: Record<string, Family> = {
   [sequences.id]: sequences,
   [similarityThales.id]: similarityThales,
   [triangleAngles.id]: triangleAngles,
+  [trigRatios.id]: trigRatios,
+  [unitCircle.id]: unitCircle,
+  [conics.id]: conics,
+  [dispersion.id]: dispersion,
+  [combinatorics.id]: combinatorics,
+  [conditionalProbability.id]: conditionalProbability,
+  [rateLimits.id]: rateLimits,
+  [derivatives.id]: derivatives,
+  [intervalInequality.id]: intervalInequality,
+  [functionProperties.id]: functionProperties,
 };
 
 export const familyIds: readonly string[] = Object.keys(families).sort();

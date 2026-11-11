@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 10 #5 (lugares geométricos y cónicas); CCSS G-GPE.A.1-2.
+id: conics
+name:
+  es: "Cónicas: circunferencia y parábola"
+code: CNC
+grades: ["Décimo"]
+prerequisites: [basic-math/coordinates, functions/quadratic-function]
+objectives:
+  - id: circle-standard
+    text:
+      es: "Relaciona la ecuación canónica de una circunferencia con su centro y su radio."
+    levels: [basico, intermedio]
+  - id: circle-general
+    text:
+      es: "Completa cuadrados para hallar el centro y el radio desde la ecuación general."
+    levels: [intermedio, avanzado, genio]
+  - id: parabola-focus
+    text:
+      es: "Halla el foco y la directriz de una parábola y lee su ecuación en la gráfica."
+    levels: [intermedio, avanzado, genio]
+keywords: [cónicas, ecuación de la circunferencia, centro y radio, foco, directriz, completar cuadrados]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: conics, levels: [basico, intermedio, avanzado, genio] }

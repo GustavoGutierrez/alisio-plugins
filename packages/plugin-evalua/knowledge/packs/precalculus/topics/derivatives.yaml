@@ -1,0 +1,29 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 11 #5 and #8 (derivada como razón de cambio y
+# pendiente de la tangente); MEN Estándares Básicos de Competencias, grados 10-11.
+id: derivatives
+name:
+  es: "Derivadas de funciones básicas"
+code: DER
+grades: ["Undécimo"]
+prerequisites: [rate-of-change-limits]
+objectives:
+  - id: power-rule
+    text:
+      es: "Deriva polinomios y potencias con la regla de la potencia."
+    levels: [basico, intermedio, avanzado]
+  - id: tangent
+    text:
+      es: "Halla la pendiente y la ecuación de la recta tangente en un punto."
+    levels: [basico, intermedio, avanzado]
+  - id: rules
+    text:
+      es: "Halla puntos críticos y deriva con la regla de la cadena, seno, coseno y exponencial."
+    levels: [avanzado, genio]
+keywords: [derivada, regla de la potencia, recta tangente, regla de la cadena, puntos críticos]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: derivatives, levels: [basico, intermedio, avanzado, genio] }

@@ -1,0 +1,28 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 10-11 (técnicas de conteo); CCSS S-CP.B.9.
+id: permutations-combinations
+name:
+  es: "Permutaciones y combinaciones"
+code: PYC
+grades: ["Décimo", "Undécimo"]
+prerequisites: [counting-techniques]
+objectives:
+  - id: permutations
+    text:
+      es: "Cuenta ordenaciones con permutaciones, también circulares y con letras repetidas."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: combinations
+    text:
+      es: "Cuenta selecciones sin orden con combinaciones."
+    levels: [basico, intermedio, avanzado]
+  - id: committees
+    text:
+      es: "Cuenta comités con condiciones combinando grupos y el complemento."
+    levels: [avanzado, genio]
+keywords: [permutaciones y combinaciones, permutación, combinación, anagrama, comité, coeficiente binomial]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: combinatorics, levels: [basico, intermedio, avanzado, genio] }

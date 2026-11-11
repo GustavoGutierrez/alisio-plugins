@@ -1,0 +1,29 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 10-11 (pensamiento espacial y métrico:
+# razones trigonométricas); CCSS G-SRT.C.6-8.
+id: trig-ratios
+name:
+  es: "Razones trigonométricas en el triángulo rectángulo"
+code: TRI
+grades: ["Décimo"]
+prerequisites: [geometry/pythagorean]
+objectives:
+  - id: ratios
+    text:
+      es: "Calcula el seno, el coseno y la tangente de un ángulo agudo a partir de los lados."
+    levels: [basico, intermedio, avanzado]
+  - id: special-angles
+    text:
+      es: "Usa los valores exactos de las razones de 30°, 45° y 60°."
+    levels: [basico, intermedio, genio]
+  - id: solve-triangles
+    text:
+      es: "Halla lados y ángulos de triángulos rectángulos, también en problemas de elevación."
+    levels: [intermedio, avanzado, genio]
+keywords: [razones trigonométricas, seno, coseno, tangente, ángulos notables, ángulo de elevación]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: trig-ratios, levels: [basico, intermedio, avanzado, genio] }

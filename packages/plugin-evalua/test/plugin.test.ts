@@ -390,6 +390,7 @@ describe("knowledge tools", () => {
       "basic-math",
       "functions",
       "geometry",
+      "precalculus",
       "primary-math",
       "probability-statistics",
     ]);

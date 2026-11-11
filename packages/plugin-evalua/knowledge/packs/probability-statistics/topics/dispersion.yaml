@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 10 #9 (medidas de dispersión); CCSS S-ID.A.2.
+id: dispersion
+name:
+  es: "Rango, varianza y desviación estándar"
+code: DSP
+grades: ["Décimo"]
+prerequisites: [basic-math/statistics]
+objectives:
+  - id: range
+    text:
+      es: "Calcula el rango de un conjunto de datos."
+    levels: [basico, intermedio]
+  - id: variance-std
+    text:
+      es: "Calcula la varianza y la desviación estándar, también desde una tabla de frecuencias."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: transformations
+    text:
+      es: "Predice el efecto de sumar o multiplicar los datos por una constante sobre la dispersión."
+    levels: [genio]
+keywords: [dispersión, varianza, desviación estándar, desviación típica, medidas de dispersión]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: dispersion, levels: [basico, intermedio, avanzado, genio] }

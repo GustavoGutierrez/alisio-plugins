@@ -1,0 +1,34 @@
+# Upper-secondary pack (grades 10-11): trigonometry, conics, limits and derivatives. Calibrated like
+# `functions` and `algebra`. Sources: MEN Derechos Básicos de Aprendizaje Matemáticas v2 (2016) and
+# Estándares Básicos de Competencias en Matemáticas (grados 10-11); Common Core for cross-checks.
+schemaVersion: 1
+id: precalculus
+version: 1
+name:
+  es: "Precálculo y cálculo"
+  en: "Precalculus and calculus"
+code: PRC
+requires: [functions]
+extends: null
+overrides: false
+levels:
+  basico:
+    steps: [1, 2]
+    coefficientRange: [-9, 9]
+    cognitiveMix: { recall: 50, apply: 40, reason: 10 }
+    secondsPerItem: 60
+  intermedio:
+    steps: [2, 3]
+    coefficientRange: [-15, 15]
+    cognitiveMix: { recall: 30, apply: 50, reason: 20 }
+    secondsPerItem: 100
+  avanzado:
+    steps: [3, 5]
+    coefficientRange: [-30, 30]
+    cognitiveMix: { recall: 20, apply: 45, reason: 35 }
+    secondsPerItem: 150
+  genio:
+    steps: [4, 8]
+    coefficientRange: [-60, 60]
+    cognitiveMix: { recall: 10, apply: 35, reason: 55 }
+    secondsPerItem: 240

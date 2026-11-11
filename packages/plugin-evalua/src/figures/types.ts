@@ -29,7 +29,9 @@ export type FigureKind =
   | "box-plot"
   | "function-plot"
   | "similar-triangles"
-  | "scale-drawing";
+  | "scale-drawing"
+  | "unit-circle"
+  | "conic";
 
 export interface FigureSpec {
   kind: FigureKind;

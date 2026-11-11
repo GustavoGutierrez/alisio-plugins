@@ -29,6 +29,7 @@ describe("alisio-evalua CLI", () => {
       "basic-math",
       "functions",
       "geometry",
+      "precalculus",
       "primary-math",
       "probability-statistics",
     ]);

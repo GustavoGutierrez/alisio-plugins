@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 10 #6 (razón de cambio) and grado 11 #5; CCSS F-IF.B.6.
+id: rate-of-change-limits
+name:
+  es: "Tasa de variación media y límites"
+code: LIM
+grades: ["Décimo", "Undécimo"]
+prerequisites: [functions/quadratic-function, basic-math/powers-roots]
+objectives:
+  - id: average-rate
+    text:
+      es: "Calcula la razón de cambio promedio como pendiente de una recta secante."
+    levels: [basico, intermedio, avanzado]
+  - id: limits
+    text:
+      es: "Calcula límites por sustitución, factorización, racionalización y en el infinito."
+    levels: [intermedio, avanzado, genio]
+  - id: instantaneous-rate
+    text:
+      es: "Halla una razón de cambio instantánea como límite del cociente incremental."
+    levels: [avanzado, genio]
+keywords: [razón de cambio promedio, tasa de variación, límite, límites, recta secante, indeterminación]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: rate-limits, levels: [basico, intermedio, avanzado, genio] }

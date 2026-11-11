@@ -28,6 +28,7 @@ function angleMark(vertex: Point, p: Point, q: Point, text: string, r = 22): str
 /**
  * A right triangle drawn to scale from its legs (`legs: [horizontal, vertical]`), with the right
  * angle marked at C and `sideLabels` `[horizontal leg, vertical leg, hypotenuse]` on its sides.
+ * `angleAt: "A" | "B"` marks the acute angle at that vertex with `angleLabel` (default `θ`).
  */
 export function rightTriangle(params: Record<string, unknown>, title?: string): string {
   const raw = Array.isArray(params.legs) ? params.legs : [];
@@ -50,12 +51,16 @@ export function rightTriangle(params: Record<string, unknown>, title?: string): 
   });
   body += label(a[0] + 10, a[1] + 4, "A", { anchor: "start" }) + label(b[0], b[1] - 6, "B");
   body += label(c[0] - 10, c[1] + 14, "C");
+  const at = params.angleAt === "A" || params.angleAt === "B" ? params.angleAt : undefined;
+  const mark = typeof params.angleLabel === "string" ? params.angleLabel : "θ";
+  if (at === "A") body += angleMark(a, b, c, mark, 30);
+  if (at === "B") body += angleMark(b, c, a, mark, 26);
   return figureRoot(
     Math.ceil(w + 110),
     Math.ceil(h + 50),
     body,
     title ?? "Triángulo rectángulo ABC",
-    `Catetos: ${horizontal ?? "?"} y ${vertical ?? "?"}. Hipotenusa: ${hypotenuse ?? "?"}.`,
+    `Catetos: ${horizontal ?? "?"} y ${vertical ?? "?"}. Hipotenusa: ${hypotenuse ?? "?"}.${at === undefined ? "" : ` Ángulo ${mark} marcado en ${at}.`}`,
   );
 }
 

@@ -59,7 +59,11 @@ export function surdMath(coefficient: Rational, radicand: number): string {
   const root = `\\sqrt{${inside}}`;
   if (total.isOne()) return `$${root}$`;
   if (total.equals(Rational.one.neg())) return `$-${root}$`;
-  return `$${latexRational(total)}${root}$`;
+  if (total.isInteger()) return `$${latexRational(total)}${root}$`;
+  // A fractional coefficient is written as the textbook fraction: √3/2, not ½√3.
+  const sign = total.sign() < 0 ? "-" : "";
+  const top = total.n < 0n ? -total.n : total.n;
+  return `$${sign}\\dfrac{${top === 1n ? "" : top}${root}}{${total.d}}$`;
 }
 
 /** An option worth `coefficient·√radicand` (a whole number when the root is exact). */

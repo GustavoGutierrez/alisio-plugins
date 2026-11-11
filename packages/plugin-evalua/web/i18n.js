@@ -748,6 +748,25 @@ export const FAMILY_LABELS = {
   "quadratic-function": { en: "Quadratic functions", es: "Función cuadrática" },
   "number-sets": { en: "Rational and irrational numbers", es: "Racionales e irracionales" },
   "box-plot": { en: "Quartiles and box plots", es: "Cuartiles y diagramas de caja" },
+  "trig-ratios": { en: "Trigonometric ratios", es: "Razones trigonométricas" },
+  "unit-circle": { en: "Unit circle and radians", es: "Círculo unitario y radianes" },
+  conics: { en: "Circles and parabolas", es: "Circunferencia y parábola" },
+  dispersion: { en: "Range, variance and standard deviation", es: "Medidas de dispersión" },
+  combinatorics: { en: "Permutations and combinations", es: "Permutaciones y combinaciones" },
+  "conditional-probability": {
+    en: "Conditional probability",
+    es: "Probabilidad condicional",
+  },
+  "rate-limits": { en: "Average rate of change and limits", es: "Tasa de variación y límites" },
+  derivatives: { en: "Derivatives", es: "Derivadas" },
+  "interval-inequality": {
+    en: "Intervals and absolute-value inequalities",
+    es: "Intervalos e inecuaciones con valor absoluto",
+  },
+  "function-properties": {
+    en: "Domain, range, composition and inverse",
+    es: "Dominio, rango, composición e inversa",
+  },
 };
 
 export const messages = { en, es };

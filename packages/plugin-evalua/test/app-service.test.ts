@@ -31,12 +31,13 @@ describe("status, catalog and doctor", () => {
   it("lists catalog topics filtered by grade with localized names", async () => {
     const h = await appHarness();
     const all = (await h.call("catalog.list")).value;
-    expect(all.topics.length).toBe(49);
+    expect(all.topics.length).toBe(58);
     expect(all.packs.map((pack: { id: string }) => pack.id)).toEqual([
       "algebra",
       "basic-math",
       "functions",
       "geometry",
+      "precalculus",
       "primary-math",
       "probability-statistics",
     ]);

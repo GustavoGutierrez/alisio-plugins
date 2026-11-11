@@ -1,46 +1,9 @@
 import { STROKE } from "../style.js";
 import { dot, figureRoot, fmt, gridLine, label, num, segment } from "../svg.js";
 import type { FigureComponent } from "../types.js";
+import { curves, evaluateCurve } from "./curves.js";
 
-/**
- * One curve, evaluated by the component from exact parameters, so a family draws the very function
- * it asks about. `polynomial` takes ascending coefficients (`[c, b, a]` is `a x² + b x + c`),
- * `exponential` is `a · base^x`, `logarithm` is `log_base(x)`. Later topics add kinds here.
- */
-export type Curve =
-  | { type: "polynomial"; coefficients: number[] }
-  | { type: "exponential"; a: number; base: number }
-  | { type: "logarithm"; base: number };
-
-export function evaluateCurve(curve: Curve, x: number): number {
-  switch (curve.type) {
-    case "polynomial":
-      return curve.coefficients.reduceRight((total, coefficient) => total * x + coefficient, 0);
-    case "exponential":
-      return curve.a * curve.base ** x;
-    case "logarithm":
-      return x > 0 && curve.base > 0 && curve.base !== 1 ? Math.log(x) / Math.log(curve.base) : NaN;
-  }
-}
-
-function curves(value: unknown): Curve[] {
-  if (!Array.isArray(value)) return [];
-  return value.slice(0, 3).flatMap((entry): Curve[] => {
-    if (typeof entry !== "object" || entry === null) return [];
-    const raw = entry as Record<string, unknown>;
-    if (raw.type === "polynomial" && Array.isArray(raw.coefficients)) {
-      const coefficients = raw.coefficients.filter(
-        (c): c is number => typeof c === "number" && Number.isFinite(c),
-      );
-      return coefficients.length === 0 ? [] : [{ type: "polynomial", coefficients }];
-    }
-    if (raw.type === "exponential") {
-      return [{ type: "exponential", a: num(raw.a, 1), base: Math.max(0.01, num(raw.base, 2)) }];
-    }
-    if (raw.type === "logarithm") return [{ type: "logarithm", base: num(raw.base, 2) }];
-    return [];
-  });
-}
+export { type Curve, evaluateCurve } from "./curves.js";
 
 interface Mark {
   x: number;
@@ -89,12 +52,9 @@ export const functionPlot: FigureComponent = (params, title) => {
   body += segment(px(axisX), py(yMin), px(axisX), py(yMax) - 8);
   body += label(px(xMax) + 12, py(axisY) + 4, "x", { anchor: "start" });
   body += label(px(axisX), py(yMax) - 12, "y");
-  for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
-    if (x !== axisX) body += label(px(x), py(axisY) + 13, String(x), { size: 9 });
-  }
-  for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
-    if (y !== axisY) body += label(px(axisX) - 4, py(y) + 3, String(y), { size: 9, anchor: "end" });
-  }
+  // The curves are sampled first, so a tick number they would run through can be left out.
+  let curveBody = "";
+  const traced: Array<[number, number]> = [];
   for (const curve of curves(params.curves)) {
     let path = "";
     let open = false;
@@ -107,11 +67,55 @@ export const functionPlot: FigureComponent = (params, title) => {
       }
       path += `${open ? "L" : "M"}${fmt(px(x))} ${fmt(py(y))} `;
       open = true;
+      // Four sub-samples per step keep steep stretches dense enough for the overlap test.
+      for (let part = 0; part < 4; part += 1) {
+        const sx = x + ((xMax - xMin) * part) / (4 * SAMPLES);
+        const sy = evaluateCurve(curve, sx);
+        if (Number.isFinite(sy)) traced.push([px(sx), py(sy)]);
+      }
     }
     if (path !== "") {
-      body += `<path d="${path.trim()}" fill="none" stroke="${STROKE}" stroke-width="2"/>`;
+      curveBody += `<path d="${path.trim()}" fill="none" stroke="${STROKE}" stroke-width="2"/>`;
     }
   }
+  // A tick number that would touch a point's name or be crossed by a curve is left out: the
+  // neighbouring ticks still number the axis.
+  const nameBoxes = marks(params.points)
+    .filter(
+      (mark) =>
+        mark.name !== "" && mark.x >= xMin && mark.x <= xMax && mark.y >= yMin && mark.y <= yMax,
+    )
+    .map((mark) => {
+      // The name starts 6 px right of the dot; the box keeps a small gap before it as well.
+      const left = px(mark.x) + 1;
+      return {
+        left,
+        right: left + mark.name.length * 8 + 7,
+        top: py(mark.y) - 18,
+        bottom: py(mark.y) - 2,
+      };
+    });
+  const clear = (left: number, right: number, baseline: number): boolean =>
+    nameBoxes.every(
+      (box) =>
+        right < box.left || left > box.right || baseline < box.top || baseline - 9 > box.bottom,
+    ) &&
+    traced.every(
+      ([tx, ty]) => tx < left - 1 || tx > right + 1 || ty < baseline - 9 || ty > baseline + 2,
+    );
+  for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+    const half = String(x).length * 3;
+    if (x !== axisX && clear(px(x) - half, px(x) + half, py(axisY) + 13)) {
+      body += label(px(x), py(axisY) + 13, String(x), { size: 9 });
+    }
+  }
+  for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+    const width = String(y).length * 6;
+    if (y !== axisY && clear(px(axisX) - 4 - width, px(axisX) - 4, py(y) + 3)) {
+      body += label(px(axisX) - 4, py(y) + 3, String(y), { size: 9, anchor: "end" });
+    }
+  }
+  body += curveBody;
   const drawn = marks(params.points).filter(
     (mark) => mark.x >= xMin && mark.x <= xMax && mark.y >= yMin && mark.y <= yMax,
   );

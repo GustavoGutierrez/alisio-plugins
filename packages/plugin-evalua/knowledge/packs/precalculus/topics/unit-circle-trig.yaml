@@ -1,0 +1,29 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 10-11 (funciones trigonométricas, radián);
+# CCSS F-TF.A.1-2, F-TF.B.5.
+id: unit-circle-trig
+name:
+  es: "Círculo unitario, radianes y funciones trigonométricas"
+code: CTR
+grades: ["Décimo"]
+prerequisites: [trig-ratios]
+objectives:
+  - id: radians
+    text:
+      es: "Convierte medidas de ángulos entre grados y radianes."
+    levels: [basico, intermedio]
+  - id: unit-circle
+    text:
+      es: "Ubica ángulos en el círculo unitario y halla valores exactos de seno, coseno y tangente."
+    levels: [intermedio, avanzado, genio]
+  - id: trig-functions
+    text:
+      es: "Lee amplitud y período de funciones sinusoidales y resuelve ecuaciones trigonométricas sencillas."
+    levels: [avanzado, genio]
+keywords: [radianes, círculo unitario, circunferencia unitaria, función seno, función coseno, período, amplitud]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: unit-circle, levels: [basico, intermedio, avanzado, genio] }

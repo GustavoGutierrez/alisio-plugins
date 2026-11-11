@@ -1,5 +1,6 @@
 import { figureRoot, fmt, label, line, num, segment, text, wrap } from "../svg.js";
 import type { FigureComponent } from "../types.js";
+import { intervalLine } from "./interval-line.js";
 
 interface Named {
   value: number;
@@ -67,9 +68,11 @@ function labelled(params: Record<string, unknown>, title?: string): string {
 
 /**
  * A horizontal number line from `min` to `max` with ticks every `step` and dotted `marks`; with
- * named `points` (objects `{ value, name }`) it is the labelled line drawn by `labelled`.
+ * named `points` (objects `{ value, name }`) it is the labelled line drawn by `labelled`; with
+ * `intervals` it is the shaded interval line of `interval-line.ts`.
  */
 export const numberLine: FigureComponent = (params, title) => {
+  if (Array.isArray(params.intervals)) return intervalLine(params, title);
   if (Array.isArray(params.points)) return labelled(params, title);
   const min = num(params.min, -5);
   const max = num(params.max, 5);

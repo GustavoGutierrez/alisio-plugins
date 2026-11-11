@@ -17,6 +17,7 @@ describe("topic catalog", () => {
       "basic-math",
       "functions",
       "geometry",
+      "precalculus",
       "primary-math",
       "probability-statistics",
     ]);
@@ -84,6 +85,6 @@ describe("topic catalog", () => {
     expect(source.topic?.("basic-math/nope")).toBeUndefined();
     const all = source.topics?.() ?? [];
     expect(all.map((entry) => entry.id)).toContain("algebra/algebraic-expressions");
-    expect(all).toHaveLength(49);
+    expect(all).toHaveLength(58);
   });
 });

@@ -1,15 +1,26 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 8-9 (inecuaciones) and 10-11 (intervalos y
+# desigualdades con valor absoluto); CCSS A-REI.B.3. Intervals and absolute-value inequalities are
+# merged here (grades 10) through the interval-inequality family.
 id: linear-inequalities
 name:
-  es: "Inecuaciones lineales"
+  es: "Inecuaciones e intervalos"
 code: INE
-grades: ["Octavo", "Noveno"]
+grades: ["Octavo", "Noveno", "Décimo"]
 prerequisites: [algebra/linear-equations]
 objectives:
   - id: solve-inequality
     text:
       es: "Resuelve inecuaciones lineales y expresa el conjunto solución."
     levels: [basico, intermedio, avanzado, genio]
-keywords: [inecuación, desigualdad, intervalo, frontera]
+  - id: intervals
+    text:
+      es: "Escribe y lee intervalos en notación de intervalo y en la recta numérica."
+    levels: [basico, intermedio]
+  - id: absolute-value-inequalities
+    text:
+      es: "Resuelve desigualdades dobles y con valor absoluto."
+    levels: [intermedio, avanzado, genio]
+keywords: [inecuación, desigualdad, intervalo, frontera, notación de intervalo, desigualdad con valor absoluto]
 supports:
   single_choice: true
   multiple_choice: false
@@ -17,3 +28,4 @@ supports:
   practice: true
 sources:
   - { kind: family, family: linear-inequality, levels: [basico, intermedio, avanzado, genio] }
+  - { kind: family, family: interval-inequality, levels: [basico, intermedio, avanzado, genio] }

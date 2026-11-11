@@ -1,0 +1,30 @@
+# Sources: MEN Estándares Básicos de Competencias, grados 10-11 (pensamiento variacional: dominio,
+# rango, composición e inversa); CCSS F-IF.A.1, F-BF.A.1c, F-BF.B.4a. Owner-approved merge target
+# for "function properties": a functions-pack topic, since "Función lineal" covers only lines.
+id: function-properties
+name:
+  es: "Dominio, rango, composición e inversa de funciones"
+code: PRF
+grades: ["Décimo"]
+prerequisites: [quadratic-function]
+objectives:
+  - id: composition
+    text:
+      es: "Evalúa y escribe la composición de dos funciones."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: inverse
+    text:
+      es: "Halla la inversa de una función lineal y evalúa inversas."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: domain-range
+    text:
+      es: "Determina el dominio y el rango en notación de intervalo."
+    levels: [intermedio, avanzado, genio]
+keywords: [dominio, función compuesta, composición de funciones, función inversa, dominio y rango]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: function-properties, levels: [basico, intermedio, avanzado, genio] }

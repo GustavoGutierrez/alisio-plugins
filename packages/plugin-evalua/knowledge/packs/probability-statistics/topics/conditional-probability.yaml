@@ -1,0 +1,28 @@
+# Sources: MEN DBA Matemáticas v2 (2016), grado 11 #10 (probabilidad condicional); CCSS S-CP.A.3-5.
+id: conditional-probability
+name:
+  es: "Probabilidad condicional e independencia"
+code: PCD
+grades: ["Undécimo"]
+prerequisites: [compound-probability]
+objectives:
+  - id: two-way-tables
+    text:
+      es: "Calcula probabilidades conjuntas y condicionales en tablas de doble entrada."
+    levels: [basico, intermedio, avanzado, genio]
+  - id: definition
+    text:
+      es: "Aplica la definición de probabilidad condicional y la reconoce en extracciones sin reemplazo."
+    levels: [intermedio, avanzado, genio]
+  - id: independence-bayes
+    text:
+      es: "Decide si dos eventos son independientes y aplica el teorema de Bayes."
+    levels: [avanzado, genio]
+keywords: [probabilidad condicional, independencia, eventos independientes, tabla de doble entrada, teorema de bayes]
+supports:
+  single_choice: true
+  multiple_choice: false
+  open: true
+  practice: true
+sources:
+  - { kind: family, family: conditional-probability, levels: [basico, intermedio, avanzado, genio] }

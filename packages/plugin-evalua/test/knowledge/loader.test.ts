@@ -160,6 +160,7 @@ describe("shipped basic-math pack", () => {
       "basic-math",
       "functions",
       "geometry",
+      "precalculus",
       "primary-math",
       "probability-statistics",
     ]);
@@ -191,7 +192,7 @@ describe("layering and collisions (EVL-KB-002)", () => {
     expect(knowledge.report.ok).toBe(false);
     const basicMath = knowledge.packs.find((entry) => entry.id === "basic-math");
     expect(basicMath?.code).toBe("BAS");
-    expect(knowledge.packs).toHaveLength(6);
+    expect(knowledge.packs).toHaveLength(7);
   });
 
   it("replaces a shipped pack when overrides is true", async () => {

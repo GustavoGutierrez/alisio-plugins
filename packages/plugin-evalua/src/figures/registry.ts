@@ -6,6 +6,7 @@ import { circle } from "./components/circle.js";
 import { clock } from "./components/clock.js";
 import { compositeRect } from "./components/composite-rect.js";
 import { cone } from "./components/cone.js";
+import { conic } from "./components/conic.js";
 import { coordinateGrid } from "./components/coordinate-grid.js";
 import { cubeStack } from "./components/cube-stack.js";
 import { cylinder } from "./components/cylinder.js";
@@ -25,6 +26,7 @@ import { spinner } from "./components/spinner.js";
 import { square } from "./components/square.js";
 import { treeDiagram } from "./components/tree-diagram.js";
 import { triangle } from "./components/triangle.js";
+import { unitCircle } from "./components/unit-circle.js";
 import { urn } from "./components/urn.js";
 import { venn } from "./components/venn.js";
 import type { FigureComponent, FigureKind } from "./types.js";
@@ -60,6 +62,8 @@ export const figureRegistry: Readonly<Record<FigureKind, FigureComponent>> = {
   "function-plot": functionPlot,
   "similar-triangles": similarTriangles,
   "scale-drawing": scaleDrawing,
+  "unit-circle": unitCircle,
+  conic,
 };
 
 /** Every registered kind, in registry order. */
