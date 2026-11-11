@@ -1,5 +1,26 @@
 # @alisio/plugin-evalua
 
+## 0.13.1
+
+### Patch Changes
+
+- f61eac4: Opening an older exam in the app is no longer a dead end. Its page shows the exam's settings
+  (grade, level, topics, kinds of question with their counts, number of questions and layout), the
+  questions it created, or a short note when it has none, and its documents to preview and download.
+  **Use these settings for a new exam** prepares a new exam with the same settings and opens it for
+  review, so it can be adjusted and approved; a kind of question the topic no longer offers is
+  removed, and the app says which one. **Back to home** returns to the list. Older exams themselves
+  still never change.
+- 6235152: "Draft with AI" in the Wording step now works for every exam. The step lists every kind of
+  exercise of the chosen topics, even when the plan asks for a kind of question a topic does not
+  offer (for example an exam drafted with an older version). Evalua reads the model's answer more
+  patiently (reasoning blocks, code fences, extra text, a formula written instead of `{expr}`) and
+  asks once more when the first answer is unusable. When drafting still fails, the message says why:
+  the model could not be reached, its answer could not be read, or its sentences had no place for
+  the formula. An exam made only of bank questions turns drafting off with a short note, since its
+  wording is already fixed. Saving the wording always keeps it, and says so when the questions could
+  not be created again.
+
 ## 0.13.0
 
 ### Minor Changes
