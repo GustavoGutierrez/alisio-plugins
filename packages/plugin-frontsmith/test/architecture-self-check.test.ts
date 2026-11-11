@@ -21,5 +21,5 @@ describe("architecture self-check", () => {
     expect(result.violations.map((v) => `${v.ruleId} ${v.file}:${v.line} ${v.detail}`)).toEqual([]);
     expect(result.verdict).toBe("PASS");
     expect(result.filesChecked).toBeGreaterThan(100);
-  });
+  }, 30_000); // Scans all of src: slow when the whole monorepo tests run in parallel.
 });
