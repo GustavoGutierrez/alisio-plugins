@@ -17,6 +17,7 @@ import {
   generationNotices,
   gradeAnswer,
   gradeList,
+  jobView,
   missingFields,
   nextExamStep,
   offeredTypes,
@@ -188,9 +189,36 @@ describe("exam view state (EVL-APP-AC-22)", () => {
       noModel: true,
       drafting: false,
       locked: false,
+      nothingToDraft: false,
     });
     expect(wordingState({ models: { available: true }, phase: "generated" }).canDraft).toBe(true);
     expect(wordingState({ models: { available: true }, phase: "approved-b" }).locked).toBe(true);
+  });
+
+  it("turns drafting off when the exam has no family to word (bank questions only)", () => {
+    const none = wordingState({ models: { available: true }, phase: "generated", families: [] });
+    expect(none).toMatchObject({ canDraft: false, nothingToDraft: true, noModel: false });
+    const some = wordingState({
+      models: { available: true },
+      phase: "generated",
+      families: [{ id: "integer-ops" }],
+    });
+    expect(some).toMatchObject({ canDraft: true, nothingToDraft: false });
+    // A locked exam shows the lock, not the note.
+    expect(
+      wordingState({ models: { available: true }, phase: "approved-b", families: [] })
+        .nothingToDraft,
+    ).toBe(false);
+  });
+
+  it("keeps the safe reason of a failed job", () => {
+    expect(jobView({ state: "failed", error: "model_failed", detail: "rejected" })).toMatchObject({
+      failed: true,
+      error: "model_failed",
+      detail: "rejected",
+    });
+    expect(jobView({ state: "failed", error: "model_failed", detail: "<b>" }).detail).toBeNull();
+    expect(jobView({ state: "done", detail: "rejected" }).detail).toBeNull();
   });
 
   it("shows the no-browser state and the last build's findings on the documents step", () => {

@@ -54,8 +54,10 @@ answers. It follows Alisio's language (English or Spanish) and its light or dark
 3. **Review and approve** the plan (Gate A); the exam folder is created only then.
 4. **Wording**: keep the default sentence of each kind of exercise, write your own, or let the
    model chosen in Settings draft it for you to review and edit. AI-drafted wording can contain
-   mistakes: read every sentence before you approve it. Without a connected model, drafting is off
-   and everything else works.
+   mistakes: read every sentence before you approve it. Every kind of exercise of the chosen
+   topics is listed, whatever kinds of question the plan asks for; an exam made only of bank
+   questions already has its wording, so there is nothing to draft. Without a connected model,
+   drafting is off and everything else works.
 5. **Questions**, then **Documents**: create the four documents with visible progress (and a
    Cancel button), preview them and download the PDF or HTML.
 6. **Final approval** (Gate B). When the last build reported problems (for example a page limit it

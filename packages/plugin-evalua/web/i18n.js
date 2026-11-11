@@ -224,6 +224,10 @@ const en = {
   saveWording: "Save the wording",
   wordingSaved: "Wording saved.",
   wordingRegenerated: "Wording saved and questions updated.",
+  wordingSavedBlocked:
+    "Wording saved, but the questions could not be created again. See the reasons in Questions.",
+  nothingToDraft:
+    "The questions of this exam come from the bank and already have their wording; there is nothing to draft.",
   droppedNotice: (n) =>
     `${n} ${plural(n, "sentence was", "sentences were")} left out: each one needs the math and must not use $, < or >.`,
   noModel:
@@ -324,6 +328,13 @@ const en = {
     not_found: "That item was not found.",
     no_model: "No AI model is connected in Alisio.",
     model_failed: "The AI model did not return usable wording. Try again or write it yourself.",
+    // A failed wording draft, by its safe reason (`code:detail`).
+    "model_failed:model_error":
+      "Evalua could not reach the AI model. Check the model in Settings or try again.",
+    "model_failed:unreadable":
+      "The model answered in a format Evalua could not read. Try again or choose another model in Settings.",
+    "model_failed:rejected":
+      "The model wrote sentences without the place for the formula ({expr}). Try again or write them yourself.",
     file_too_large: "The logo must be 2 MB or smaller.",
     bad_image: "The logo must be a PNG, JPEG or WebP image.",
     cancelled: "Cancelled.",
@@ -561,6 +572,10 @@ const es = {
   saveWording: "Guardar la redacción",
   wordingSaved: "Redacción guardada.",
   wordingRegenerated: "Redacción guardada y preguntas actualizadas.",
+  wordingSavedBlocked:
+    "Redacción guardada, pero no se pudieron volver a crear las preguntas. Revisa los motivos en Preguntas.",
+  nothingToDraft:
+    "Las preguntas de este examen vienen del banco y ya tienen su redacción; no hay nada que redactar.",
   droppedNotice: (n) =>
     `${n} ${plural(n, "frase quedó", "frases quedaron")} fuera: cada una necesita la fórmula y no puede usar $, < ni >.`,
   noModel:
@@ -661,6 +676,13 @@ const es = {
     no_model: "No hay un modelo de IA conectado en Alisio.",
     model_failed:
       "El modelo de IA no devolvió una redacción útil. Inténtalo de nuevo o escríbela tú.",
+    // Un borrador de redacción fallido, según su motivo seguro (`code:detail`).
+    "model_failed:model_error":
+      "No se pudo contactar al modelo de IA. Revisa el modelo en Configuración o inténtalo de nuevo.",
+    "model_failed:unreadable":
+      "El modelo respondió en un formato que Evalúa no pudo leer. Inténtalo de nuevo o prueba otro modelo en Configuración.",
+    "model_failed:rejected":
+      "El modelo escribió frases sin el lugar para la fórmula ({expr}). Inténtalo de nuevo o escríbelas tú.",
     file_too_large: "El logo debe pesar 2 MB o menos.",
     bad_image: "El logo debe ser una imagen PNG, JPEG o WebP.",
     cancelled: "Cancelado.",
@@ -777,7 +799,11 @@ export const tf = (key, ...args) => {
   const value = t(key);
   return typeof value === "function" ? value(...args) : value;
 };
-export const errorText = (code) =>
+/** The message of an error code, or of its safe detail (`code:detail`) when one is known. */
+export const errorText = (code, detail) =>
+  (detail
+    ? (messages[locale].errors[`${code}:${detail}`] ?? messages.en.errors[`${code}:${detail}`])
+    : undefined) ??
   messages[locale].errors[code] ??
   messages.en.errors[code] ??
   messages[locale].errors.operation_failed;

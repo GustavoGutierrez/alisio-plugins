@@ -278,14 +278,20 @@ export function examStepState(phase) {
   };
 }
 
-/** The wording step: drafting needs a model; an approved exam is read only. */
-export function wordingState({ models, phase, job }) {
+/**
+ * The wording step: drafting needs a model and at least one family to word (an exam made only of
+ * bank questions has none); an approved exam is read only. `families` unknown means "not loaded".
+ */
+export function wordingState({ models, phase, job, families }) {
   const available = !!models?.available;
+  const editable = EDITABLE_PHASES.includes(phase);
+  const nothingToDraft = editable && Array.isArray(families) && families.length === 0;
   return {
-    canDraft: available && EDITABLE_PHASES.includes(phase) && !job,
+    canDraft: available && editable && !job && !nothingToDraft,
     noModel: !available,
     drafting: !!job,
-    locked: !EDITABLE_PHASES.includes(phase),
+    locked: !editable,
+    nothingToDraft,
   };
 }
 
@@ -319,6 +325,9 @@ export function buildProgress(job) {
 }
 
 /** What a polled job means for the UI. */
+/** The fixed reasons a failed job may carry (src/app/errors.ts APP_ERROR_DETAILS). */
+const JOB_DETAILS = ["model_error", "unreadable", "rejected"];
+
 export function jobView(job) {
   const state = job?.state ?? "running";
   return {
@@ -327,6 +336,7 @@ export function jobView(job) {
     failed: state === "failed",
     cancelled: state === "cancelled",
     error: state === "failed" ? job?.error || "operation_failed" : null,
+    detail: state === "failed" && JOB_DETAILS.includes(job?.detail) ? job.detail : null,
   };
 }
 

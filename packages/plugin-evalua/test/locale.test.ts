@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { familyIds } from "../src/families/index.js";
 // @ts-expect-error -- plain browser module without declarations.
-import { FAMILY_LABELS, messages, pickLocale } from "../web/i18n.js";
+import { errorText, FAMILY_LABELS, messages, pickLocale, setLocale } from "../web/i18n.js";
 import { CATALOG, frameEnv, statusWith } from "./helpers/frame-env.js";
 
 /** Every key path of a message table, with function arity for sentence builders. */
@@ -31,6 +31,19 @@ describe("UI language (EVL-APP-AC-21)", () => {
     }
     expect(messages.en.questionsN(1)).toBe("1 question");
     expect(messages.es.questionsN(2)).toBe("2 preguntas");
+  });
+
+  it("explains each reason a wording draft failed, in both languages", () => {
+    setLocale("es");
+    expect(errorText("model_failed", "model_error")).toMatch(/No se pudo contactar al modelo/);
+    expect(errorText("model_failed", "unreadable")).toMatch(/formato que Evalúa no pudo leer/);
+    expect(errorText("model_failed", "rejected")).toContain("({expr})");
+    expect(errorText("model_failed")).toBe(messages.es.errors.model_failed);
+    expect(errorText("model_failed", "unknown")).toBe(messages.es.errors.model_failed);
+    setLocale("en");
+    expect(errorText("model_failed", "model_error")).toMatch(/could not reach the AI model/i);
+    expect(messages.es.nothingToDraft).toMatch(/banco/);
+    expect(messages.en.nothingToDraft).toMatch(/bank/);
   });
 
   describe("live switch", () => {

@@ -818,13 +818,14 @@ const markers = () => [messages.en.mathChip, messages.es.mathChip];
 
 function wordingPanel(exam) {
   if (!wording) return `<p class="muted">${esc(t("loading"))}</p>`;
-  const state = wordingState({ models, phase: exam.phase, job: wordingJob });
   const families = wording.families ?? [];
+  const state = wordingState({ models, phase: exam.phase, job: wordingJob, families });
   const pendingDraft = wording.draft;
   const notices = [
     banner("warn", t("disclaimer"), "warning"),
     state.noModel ? banner("info", t("noModel")) : "",
     state.locked ? banner("info", t("wordingLocked"), "lock") : "",
+    state.nothingToDraft ? banner("info", t("nothingToDraft")) : "",
     pendingDraft
       ? banner(
           "info",
@@ -1262,7 +1263,7 @@ async function wordingFinished(job) {
     await loadWording();
     toast(t("draftReady"));
     announce(t("draftReady"));
-  } else if (!state.cancelled) toast(errorText(state.error));
+  } else if (!state.cancelled) toast(errorText(state.error, state.detail));
   render({ keepFocus: true });
 }
 
@@ -1491,6 +1492,12 @@ async function handle(action, target) {
     }
     case "draft-ai": {
       const { jobId } = await mutate("wording.draft");
+      // No job: the exam has nothing to word (bank questions only).
+      if (!jobId) {
+        await loadWording();
+        toast(t("nothingToDraft"));
+        return render({ keepFocus: true });
+      }
       track("wording", jobId);
       render({ keepFocus: true });
       return poll();
@@ -1502,7 +1509,13 @@ async function handle(action, target) {
       generationResult = result.findings?.length ? result : undefined;
       await loadStatus();
       await loadWording();
-      toast(result.regenerated ? t("wordingRegenerated") : t("wordingSaved"));
+      toast(
+        result.regenerated
+          ? t("wordingRegenerated")
+          : result.blocked
+            ? t("wordingSavedBlocked")
+            : t("wordingSaved"),
+      );
       if (result.dropped) toast(tf("droppedNotice", result.dropped));
       return render({ keepFocus: true });
     }

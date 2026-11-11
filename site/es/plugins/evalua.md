@@ -64,8 +64,10 @@ oscuro.
 3. **Revisa y aprueba** el plan (Gate A); solo entonces se crea la carpeta del examen.
 4. **Redacción**: deja la frase predeterminada de cada tipo de ejercicio, escribe la tuya o pide al
    modelo elegido en Configuración un borrador para revisar y editar. La redacción hecha con IA
-   puede contener errores: lee cada frase antes de aprobarla. Sin un modelo conectado, la redacción
-   con IA se apaga y todo lo demás funciona.
+   puede contener errores: lee cada frase antes de aprobarla. Se listan todos los tipos de ejercicio
+   de los temas elegidos, sin importar qué tipos de pregunta pida el plan; un examen hecho solo con
+   preguntas del banco ya tiene su redacción, así que no hay nada que redactar. Sin un modelo
+   conectado, la redacción con IA se apaga y todo lo demás funciona.
 5. **Preguntas** y luego **Documentos**: crea los cuatro documentos con el progreso a la vista (y un
    botón Cancelar), míralos y descarga el PDF o el HTML.
 6. **Aprobación final** (Gate B). Si la última creación informó problemas (por ejemplo, un límite de

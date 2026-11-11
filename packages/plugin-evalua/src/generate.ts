@@ -101,6 +101,55 @@ export function applyPrompts(
   return { ...draft, stem: [instruction, ...draft.stem.slice(1)] };
 }
 
+/** The instruction templates a family source uses: the exam's own, else the topic's. */
+function promptsFor(
+  source: FamilySource,
+  examPrompts: Record<string, string[]> | undefined,
+): string[] | undefined {
+  const raw = examPrompts?.[source.family] ?? source.params?.prompts;
+  return Array.isArray(raw)
+    ? raw.filter((entry): entry is string => typeof entry === "string")
+    : undefined;
+}
+
+/** Seeds a family sample tries before the family is given up as unable to build one. */
+export const SAMPLE_ATTEMPTS = 5;
+
+/**
+ * The first stem line of one deterministic item of a family, worded as the generation would word
+ * it without the exam's own templates (the topic's prompts, else the family default). Independent
+ * of the plan's item types, so a family is listed even when no slot of the plan could use it.
+ * `undefined` when the generator cannot build an item for any of the tried seeds.
+ */
+export function familySample(input: {
+  source: FamilySource;
+  level: Level;
+  calibration: LevelCalibration;
+  seed: string;
+}): string | undefined {
+  const family = familyRegistry[input.source.family];
+  if (family === undefined) return undefined;
+  const prompts = promptsFor(input.source, undefined);
+  for (let attempt = 0; attempt < SAMPLE_ATTEMPTS; attempt += 1) {
+    const seedString = `${input.seed}|${input.source.family}|sample|${attempt}`;
+    let draft: ItemDraft;
+    try {
+      draft = family.generate({
+        rng: createRng(seedString),
+        level: input.level,
+        calibration: input.calibration,
+        ...(input.source.params === undefined ? {} : { params: input.source.params }),
+        ...(prompts === undefined || prompts.length === 0 ? {} : { prompts }),
+      });
+    } catch {
+      continue;
+    }
+    draft = applyPrompts(draft, prompts, createRng(`${seedString}|prompt`));
+    return draft.stem.find((line): line is string => typeof line === "string") ?? "";
+  }
+  return undefined;
+}
+
 export interface GenerateInput {
   blueprint: Blueprint;
   topics: readonly LoadedTopic[];
@@ -229,10 +278,7 @@ export function generateExam(input: GenerateInput): GenerateResult {
         for (const source of ordered) {
           const family = familyRegistry[source.family];
           if (family === undefined) continue;
-          const rawPrompts = input.prompts?.[source.family] ?? source.params?.prompts;
-          const prompts = Array.isArray(rawPrompts)
-            ? rawPrompts.filter((entry): entry is string => typeof entry === "string")
-            : undefined;
+          const prompts = promptsFor(source, input.prompts);
           let draft: ItemDraft;
           try {
             draft = family.generate({

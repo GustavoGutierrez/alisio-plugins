@@ -1,5 +1,11 @@
 import { randomBytes } from "node:crypto";
-import { AppError, type AppErrorCode, errorCode } from "./errors.js";
+import {
+  AppError,
+  type AppErrorCode,
+  type AppErrorDetail,
+  errorCode,
+  errorDetail,
+} from "./errors.js";
 
 export type JobKind = "build" | "wording";
 export type JobState = "running" | "done" | "failed" | "cancelled";
@@ -13,6 +19,8 @@ export interface JobSnapshot {
   phase: string;
   result?: unknown;
   error?: AppErrorCode;
+  /** A fixed sub-reason of `error` (e.g. why a wording draft failed), never free text. */
+  detail?: AppErrorDetail;
 }
 
 export interface JobContext {
@@ -82,6 +90,8 @@ export class AppJobs {
         } else {
           job.state = "failed";
           job.error = errorCode(error);
+          const detail = errorDetail(error);
+          if (detail !== undefined) job.detail = detail;
         }
       }
       this.prune();

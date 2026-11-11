@@ -7,7 +7,7 @@ import { type CapacityShortfall, shortfallsFromFindings } from "../capacity.js";
 import { DEFAULT_ROOT, type EvaluaCoordinator } from "../coordinator.js";
 import { type ExamSpec, parseExam } from "../exam.js";
 import { familyIds } from "../families/index.js";
-import { generateExam } from "../generate.js";
+import { familySample } from "../generate.js";
 import { inlineHtml, markupHtml } from "../html/emit.js";
 import { parseItemsFile } from "../items-file.js";
 import { evaluaMathRenderer } from "../katex.js";
@@ -27,7 +27,14 @@ import { AppError } from "./errors.js";
 import type { AppJobs } from "./jobs.js";
 import { type BuildFinding, readPrefs, writePrefs } from "./prefs.js";
 import { capacityErrors, runWizard, WIZARD_FIELDS, type WizardAnswers } from "./wizard.js";
-import { buildWordingPrompt, parseWordingOutput, validateTemplates } from "./wording.js";
+import {
+  buildWordingPrompt,
+  buildWordingRetry,
+  parseWordingOutput,
+  validateTemplates,
+  type WordingProblem,
+  type WordingPrompt,
+} from "./wording.js";
 
 /** What a handler knows about the call (the host's `PluginAppContext`). */
 export interface ActionContext {
@@ -499,20 +506,32 @@ export class EvaluaAppService {
     return { state, base, active, found, knowledge, calibration, blueprint, phase };
   }
 
-  /** The families an exam's items come from, with one default-worded sample each. */
+  /**
+   * The wording families of the exam: every family source of the exam's topics at its level, in
+   * topic then source order, each with one deterministic default-worded sample. Derived from the
+   * topics, not from a dry generation, so it does not depend on the plan's item types; bank-only
+   * topics contribute nothing, and a family that cannot build a sample is left out.
+   */
   private async families(ws: string) {
     const exam = await this.activeExam(ws);
-    const generated = generateExam({
-      blueprint: exam.blueprint,
-      topics: exam.knowledge.topics,
-      level: exam.found.spec.level,
-      calibration: exam.calibration,
-      seed: exam.found.spec.id,
-    });
+    const { spec } = exam.found;
+    const byId = new Map(exam.knowledge.topics.map((topic) => [topic.fullId, topic]));
+    const topicIds = [
+      ...new Set([...spec.topics, ...exam.blueprint.cells.map((cell) => cell.topic)]),
+    ];
     const samples = new Map<string, string>();
-    for (const item of generated.items) {
-      const first = item.stem.find((line): line is string => typeof line === "string");
-      if (item.family && !samples.has(item.family)) samples.set(item.family, first ?? "");
+    for (const topicId of topicIds) {
+      for (const source of byId.get(topicId)?.sources ?? []) {
+        if (source.kind !== "family" || !source.levels.includes(spec.level)) continue;
+        if (samples.has(source.family)) continue;
+        const sample = familySample({
+          source,
+          level: spec.level,
+          calibration: exam.calibration,
+          seed: spec.id,
+        });
+        if (sample !== undefined) samples.set(source.family, sample);
+      }
     }
     return { exam, samples };
   }
@@ -720,6 +739,8 @@ export class EvaluaAppService {
   private async wordingDraft(ws: string, ctx: ActionContext) {
     const { exam, samples } = await this.families(ws);
     this.requireEditable(exam.phase);
+    // Only bank questions: their wording is fixed, so there is nothing to ask a model for.
+    if (samples.size === 0) return { jobId: null, families: 0 };
     const listed = await this.modelList(ws, ctx.signal);
     if (!listed.available) throw new AppError("no_model");
     const base = exam.base;
@@ -746,21 +767,34 @@ export class EvaluaAppService {
           fallback = true;
         }
       }
-      let text: string;
-      try {
-        text = await this.deps.api.model.complete({
-          ...prompt,
-          signal,
-          ...(model ? { model } : { sessionId: ctx.sessionId }),
-        });
-      } catch {
-        signal.throwIfAborted();
-        throw new AppError("model_failed");
-      }
-      signal.throwIfAborted();
-      const parsed = parseWordingOutput(text, allowed);
-      if (!parsed.valid || Object.keys(parsed.templates).length === 0) {
-        throw new AppError("model_failed");
+      const ask = async (request: WordingPrompt) => {
+        try {
+          return await this.deps.api.model.complete({
+            ...request,
+            signal,
+            ...(model ? { model } : { sessionId: ctx.sessionId }),
+          });
+        } catch {
+          signal.throwIfAborted();
+          throw new AppError("model_failed", "model_error");
+        } finally {
+          signal.throwIfAborted();
+        }
+      };
+      const problemOf = (result: ReturnType<typeof parseWordingOutput>): WordingProblem | null =>
+        !result.valid
+          ? "unreadable"
+          : Object.keys(result.templates).length === 0
+            ? "rejected"
+            : null;
+      const first = await ask(prompt);
+      let parsed = parseWordingOutput(first, allowed);
+      let problem = problemOf(parsed);
+      if (problem !== null) {
+        // One second chance with the problem spelled out; never a loop.
+        parsed = parseWordingOutput(await ask(buildWordingRetry(prompt, first, problem)), allowed);
+        problem = problemOf(parsed);
+        if (problem !== null) throw new AppError("model_failed", problem);
       }
       await this.coordinator.lock.run(async () => {
         const prefs = await readPrefs(ws);
@@ -816,7 +850,8 @@ export class EvaluaAppService {
       saved,
       dropped,
       regenerated,
-      ...(findings ? { findings } : {}),
+      // The templates are saved either way; `blocked` says the questions could not be recreated.
+      ...(findings ? { blocked: true, findings } : {}),
       ...(capacity?.length ? { capacity } : {}),
     };
   }
